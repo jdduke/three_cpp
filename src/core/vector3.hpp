@@ -1,6 +1,8 @@
 #ifndef _VECTOR3_HPP_
 #define _VECTOR3_HPP_
 
+#include "three.hpp"
+
 #include <cmath>
 
 namespace three {
@@ -132,15 +134,6 @@ public:
 		return cross(Vector3(*this), v);
 	}
 
-	enum Order {
-		XYZ,
-		YXZ,
-		ZXY,
-		ZYX,
-		YZX,
-		XZY
-	}
-
 	Vector3& setEulerFromQuaternion(const Quaternion& q, Order order = XYZ) {
 		// q is assumed to be normalized
 
@@ -204,6 +197,16 @@ public:
 	}
 };
 
+inline Vector3 add(const Vector3& a, const Vector3& b ) {
+	return Vector3().add(a, b);
+}
+
+inline Vector3 sub(const Vector3& a, const Vector3& b) {
+	return Vector3().sub(a, b);
+}
+
+inline Vector3 cross(const Vector3& a, const Vector3& b) {
+	return Vector3().cross(a, b);
 }
 
 #endif

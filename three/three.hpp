@@ -30,6 +30,15 @@ enum {
 	CustomBlending      = 5
 };
 
+enum Order {
+	XYZ,
+	YXZ,
+	ZXY,
+	ZYX,
+	YZX,
+	XZY
+};
+
 }
 
 #endif

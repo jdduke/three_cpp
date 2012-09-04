@@ -1,6 +1,8 @@
 #ifndef _QUATERNION_HPP_
 #define _QUATERNION_HPP_
 
+#include "three.hpp"
+
 #include <cmath>
 
 namespace three {
@@ -32,15 +34,6 @@ public:
 		z = v.z;
 		w = v.w;
 		return *this;
-	}
-
-	enum Order {
-		XYZ,
-		YXZ,
-		ZXY,
-		ZYX,
-		YZX,
-		XZY
 	}
 
 	Quaternion& setFromEuler(const Vector3& v, Order order = XYZ) {
