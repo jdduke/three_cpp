@@ -10,6 +10,10 @@ namespace three {
 class Object3D {
 public:
 
+	virtual THREE::Type getType() const { return THREE::Object3D; }
+
+	virtual void visit()( Visitor& v ) { v( *this ); }
+
 	typedef std::shared_ptr<Object3D> Ptr;
 
 	int id;
@@ -107,7 +111,10 @@ public:
 
 	}
 
-	void add ( Object3D::Ptr object ) {
+	void add ( Ptr& object ) {
+
+		if ( !object )
+			return;
 
 		if ( object.get() == this ) {
 
@@ -135,7 +142,7 @@ public:
 
 		}
 
-		if ( scene != nullptr && scene.getType() == THREE.Scene )  {
+		if ( scene != nullptr )  {
 
 			scene.__addObject( object );
 
@@ -143,7 +150,7 @@ public:
 
 	}
 
-	void remove ( Object3D::Ptr object ) {
+	void remove ( Ptr& object ) {
 
 		auto index = std::find( children, object );
 
@@ -162,7 +169,7 @@ public:
 
 			}
 
-			if ( scene != nullptr && scene.getType() == THREE.Scene ) {
+			if ( scene != nullptr ) {
 
 				scene.__removeObject( object );
 
@@ -172,7 +179,7 @@ public:
 
 	}
 
-	Object3D::Ptr getChildByName ( const std::string& name, bool recursive ) {
+	Ptr getChildByName ( const std::string& name, bool recursive ) {
 
 
 		foreach (const auto& child : children ) {
@@ -277,6 +284,10 @@ public:
 
 	}
 */
+
+protected:
+	virtual void __addObject(Ptr& object) { }
+	virtual void __removeObject(Ptr& object) { }
 
 private:
 

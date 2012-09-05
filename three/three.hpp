@@ -3,6 +3,8 @@
 
 namespace three {
 
+namespace THREE {
+
 enum {
 	FrontSide  = 0,
 	BackSide   = 1,
@@ -19,7 +21,7 @@ enum {
 	NoColors     = 0,
 	FaceColors   = 1,
 	VertexColors = 2
-}
+};
 
 enum {
 	NoBlending          = 0,
@@ -38,6 +40,45 @@ enum Order {
 	YZX,
 	XZY
 };
+
+enum Type {
+	Object3D = 0,
+	Bone
+	Camera,
+	Light,
+	Scene,
+};
+
+}
+
+class Object3D;
+class Bone;
+class Camera;
+class Light;
+class Scene;
+
+struct Visitor {
+	virtual void operator() (const Object3D&) { }
+	virtual void operator() (const Bone&)     { }
+	virtual void operator() (const Camera&)   { }
+	virtual void operator() (const Light&)    { }
+	virtual void operator() (const Scene&)    { }
+	virtual ~Visitor() { }
+};
+
+class Vector2;
+class Vector3;
+class Vector4;
+class Matrix4;
+class Quaternion;
+class Ray;
+
+class Spline;
+
+class Material;
+class Shader;
+
+
 
 }
 
