@@ -59,7 +59,7 @@ public:
 
     Vector2& divideScalar ( float s ) {
         if ( s ) {
-        	return multiplyScalar ( 1.f / s );
+            return multiplyScalar ( 1.f / s );
         } else {
             return set ( 0, 0 );
         }
@@ -70,7 +70,7 @@ public:
     }
 
     float dot ( const Vector2& v ) {
-    	return x * v.x + y * v.y;
+        return x * v.x + y * v.y;
     }
 
     float lengthSq() {

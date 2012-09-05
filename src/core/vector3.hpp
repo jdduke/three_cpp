@@ -197,16 +197,20 @@ public:
     }
 };
 
-inline Vector3 add(const Vector3& a, const Vector3& b ) {
-	return Vector3().add(a, b);
+inline Vector3 add ( const Vector3& a, const Vector3& b ) {
+    return Vector3().add ( a, b );
 }
 
-inline Vector3 sub(const Vector3& a, const Vector3& b) {
-	return Vector3().sub(a, b);
+inline Vector3 sub ( const Vector3& a, const Vector3& b ) {
+    return Vector3().sub ( a, b );
 }
 
-inline Vector3 cross(const Vector3& a, const Vector3& b) {
-	return Vector3().cross(a, b);
+inline Vector3 dot ( const Vector3& a, const Vector3& b ) {
+    return a.dot( b );
+}
+
+inline Vector3 cross ( const Vector3& a, const Vector3& b ) {
+    return Vector3().cross ( a, b );
 }
 
 #endif
