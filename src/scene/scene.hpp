@@ -3,12 +3,12 @@
 
 #include "core/object3d.hpp"
 
-#include <memory>
-
-namespacce three {
+namespace three {
 
 class Scene : public Object3D {
 public:
+
+	typedef std::shared_ptr<Scene> Ptr;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -25,11 +25,7 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-	virtual THREE::Type getType() const { return THREE::Scene; }
-
-	virtual void visit()( Visitor& v ) { v( *this ); }
-
-	static Object3D::Ptr create() { return make_shared<Scene>(); }
+	static Ptr create() { return make_shared<Scene>(); }
 
 protected:
 
@@ -131,6 +127,12 @@ private:
 	fog ( nulptr ),
 	overrideMaterial ( nullptr ),
 	matrixAutoUpdate ( false ) { }
+
+	Scene ( const Scene& ) = delete;
+	Scene& operator ( const Scene& ) = delete;
+
+	virtual THREE::Type getType() const { return THREE::Scene; }
+	virtual void visit()( Visitor& v ) { v( *this ); }
 
 };
 

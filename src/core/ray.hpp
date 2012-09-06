@@ -3,6 +3,8 @@
 
 #include "three.hpp"
 
+#include "math.hpp"
+
 namespace three {
 
 class Ray {
@@ -101,7 +103,7 @@ public:
 			auto scale = Vector3( object.matrixWorld.getColumnX().length(),
 			                      object.matrixWorld.getColumnY().length(),
 			                      object.matrixWorld.getColumnZ().length() );
-			auto scaledRadius = object.geometry.boundingSphere.radius * std::max( scale.x, std::max( scale.y, scale.z ) );
+			auto scaledRadius = object.geometry.boundingSphere.radius * Math.max( scale.x, Math.max( scale.y, scale.z ) );
 
 			// Checking distance to ray
 
@@ -149,7 +151,7 @@ public:
 
 				// bail if ray and plane are parallel
 
-				if ( std::abs( dot ) < precision ) continue;
+				if ( Math.abs( dot ) < precision ) continue;
 
 				// calc distance to plane
 

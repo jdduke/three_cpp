@@ -1,6 +1,8 @@
 #ifndef _VECTOR2_HPP_
 #define _VECTOR2_HPP_
 
+#include "math.hpp"
+
 namespace three {
 
 class Vector2 {
@@ -78,7 +80,7 @@ public:
     }
 
     float length() {
-        return std::sqrt ( lengthSq() );
+        return Math.sqrt ( lengthSq() );
     }
 
     Vector2& normalize() {
@@ -86,7 +88,7 @@ public:
     }
 
     float distanceTo ( const Vector2& v ) {
-        return std::sqrt ( distanceToSquared ( v ) );
+        return Math.sqrt ( distanceToSquared ( v ) );
     }
 
     float distanceToSquared ( const Vector2& v ) {

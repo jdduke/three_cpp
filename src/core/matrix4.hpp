@@ -3,7 +3,7 @@
 
 #include "three.hpp"
 
-#include <cmath>
+#include "math.hpp"
 
 namespace three {
 
@@ -401,9 +401,9 @@ class Matrix4 {
     Matrix4& setRotationFromEuler ( const Vector3& v, Order order = XYZ ) {
 
         auto x = v.x, y = v.y, z = v.z;
-        auto a = std::cos ( x ), b = std::sin ( x );
-        auto c = std::cos ( y ), d = std::sin ( y );
-        auto e = std::cos ( z ), f = std::sin ( z );
+        auto a = Math.cos ( x ), b = Math.sin ( x );
+        auto c = Math.cos ( y ), d = Math.sin ( y );
+        auto e = Math.cos ( z ), f = Math.sin ( z );
 
         if ( order == XYZ ) {
 
@@ -651,8 +651,8 @@ Matrix4& translate: function ( v ) {
         auto m23 = te[9];
         auto m33 = te[10];
         auto m43 = te[11];
-        auto c = std::cos ( angle );
-        auto s = std::sin ( angle );
+        auto c = Math.cos ( angle );
+        auto s = Math.sin ( angle );
 
         te[4] = c * m12 + s * m13;
         te[5] = c * m22 + s * m23;
@@ -678,8 +678,8 @@ Matrix4& translate: function ( v ) {
         auto m23 = te[9];
         auto m33 = te[10];
         auto m43 = te[11];
-        auto c = std::cos ( angle );
-        auto s = std::sin ( angle );
+        auto c = Math.cos ( angle );
+        auto s = Math.sin ( angle );
 
         te[0] = c * m11 - s * m13;
         te[1] = c * m21 - s * m23;
@@ -705,8 +705,8 @@ Matrix4& translate: function ( v ) {
         auto m22 = te[5];
         auto m32 = te[6];
         auto m42 = te[7];
-        auto c = std::cos ( angle );
-        auto s = std::sin ( angle );
+        auto c = Math.cos ( angle );
+        auto s = Math.sin ( angle );
 
         te[0] = c * m11 + s * m12;
         te[1] = c * m21 + s * m22;
@@ -739,15 +739,15 @@ Matrix4& translate: function ( v ) {
         }
 
         auto x = axis.x, y = axis.y, z = axis.z;
-        auto n = std::sqrt ( x * x + y * y + z * z );
+        auto n = Math.sqrt ( x * x + y * y + z * z );
 
         x /= n;
         y /= n;
         z /= n;
 
         auto xx = x * x, yy = y * y, zz = z * z;
-        auto c = std::cos ( angle );
-        auto s = std::sin ( angle );
+        auto c = Math.cos ( angle );
+        auto s = Math.sin ( angle );
         auto oneMinusCosine = 1.f - c;
         auto xy = x * y * oneMinusCosine;
         auto xz = x * z * oneMinusCosine;
@@ -811,7 +811,7 @@ Matrix4& translate: function ( v ) {
         auto scaleYSq =  te[4] * te[4] + te[5] * te[5] + te[6] * te[6];
         auto scaleZSq =  te[8] * te[8] + te[9] * te[9] + te[10] * te[10];
 
-        return std::sqrt ( std::max ( scaleXSq, std::max ( scaleYSq, scaleZSq ) ) );
+        return Math.sqrt ( Math.max ( scaleXSq, Math.max ( scaleYSq, scaleZSq ) ) );
 
     }
 
@@ -834,7 +834,7 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeRotationX ( float theta ) {
 
-        auto c = std::cos ( theta ), s = std::sin ( theta );
+        auto c = Math.cos ( theta ), s = Math.sin ( theta );
 
         this.set (
 
@@ -851,7 +851,7 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeRotationY ( float theta ) {
 
-        auto c = std::cos ( theta ), s = std::sin ( theta );
+        auto c = Math.cos ( theta ), s = Math.sin ( theta );
 
         this.set (
 
@@ -868,7 +868,7 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeRotationZ ( float theta ) {
 
-        float c = std::cos ( theta ), s = std::sin ( theta );
+        float c = Math.cos ( theta ), s = Math.sin ( theta );
 
         this.set (
 
@@ -887,8 +887,8 @@ Matrix4& translate: function ( v ) {
 
         // Based on http://www.gamedev.net/reference/articles/article1199.asp
 
-        auto c = std::cos ( angle );
-        auto s = std::sin ( angle );
+        auto c = Math.cos ( angle );
+        auto s = Math.sin ( angle );
         auto t = 1.f - c;
         auto x = axis.x, y = axis.y, z = axis.z;
         auto tx = t * x, ty = t * y;
@@ -942,7 +942,7 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makePerspective ( float fov, float aspect, float near, float far ) {
 
-        auto ymax = near * std::tan ( fov * std::PI / 360 );
+        auto ymax = near * Math.tan ( fov * Math.PI / 360 );
         auto ymin = - ymax;
         auto xmin = ymin * aspect;
         auto xmax = ymax * aspect;

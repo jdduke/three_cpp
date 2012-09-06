@@ -42,12 +42,12 @@ public:
         //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
         //  content/SpinCalc.m
 
-        auto c1 = std::cos ( v.x / 2 );
-        auto c2 = std::cos ( v.y / 2 );
-        auto c3 = std::cos ( v.z / 2 );
-        auto s1 = std::sin ( v.x / 2 );
-        auto s2 = std::sin ( v.y / 2 );
-        auto s3 = std::sin ( v.z / 2 );
+        auto c1 = Math.cos ( v.x / 2 );
+        auto c2 = Math.cos ( v.y / 2 );
+        auto c3 = Math.cos ( v.z / 2 );
+        auto s1 = Math.sin ( v.x / 2 );
+        auto s2 = Math.sin ( v.y / 2 );
+        auto s3 = Math.sin ( v.z / 2 );
 
         if ( order == XYZ ) {
 
@@ -101,12 +101,12 @@ public:
         // axis have to be normalized
 
         float halfAngle = angle / 2.f;
-        float s = std::sin ( halfAngle );
+        float s = Math.sin ( halfAngle );
 
         x = axis.x * s;
         y = axis.y * s;
         z = axis.z * s;
-        w = std::cos ( halfAngle );
+        w = Math.cos ( halfAngle );
 
         return *this;
     }
@@ -125,7 +125,7 @@ public:
 
         if ( trace > 0 ) {
 
-            float s = 0.5f / std::sqrt ( trace + 1.0f );
+            float s = 0.5f / Math.sqrt ( trace + 1.0f );
 
             w = 0.25f / s;
             x = ( m32 - m23 ) * s;
@@ -134,7 +134,7 @@ public:
 
         } else if ( m11 > m22 && m11 > m33 ) {
 
-            float s = 2.0f * std::sqrt ( 1.0f + m11 - m22 - m33 );
+            float s = 2.0f * Math.sqrt ( 1.0f + m11 - m22 - m33 );
 
             w = ( m32 - m23 ) / s;
             x = 0.25f * s;
@@ -143,7 +143,7 @@ public:
 
         } else if ( m22 > m33 ) {
 
-            float s = 2.0f * std::sqrt ( 1.0f + m22 - m11 - m33 );
+            float s = 2.0f * Math.sqrt ( 1.0f + m22 - m11 - m33 );
 
             w = ( m13 - m31 ) / s;
             x = ( m12 + m21 ) / s;
@@ -152,7 +152,7 @@ public:
 
         } else {
 
-            float s = 2.0f * std::sqrt ( 1.0f + m33 - m11 - m22 );
+            float s = 2.0f * Math.sqrt ( 1.0f + m33 - m11 - m22 );
 
             w = ( m21 - m12 ) / s;
             x = ( m13 + m31 ) / s;
@@ -166,7 +166,7 @@ public:
     }
 
     Quaternion& calculateW() {
-        w = - std::sqrt ( std::abs ( 1.f - x * x - y * y - z * z ) );
+        w = - Math.sqrt ( Math.abs ( 1.f - x * x - y * y - z * z ) );
         return *this;
     }
 
@@ -178,7 +178,7 @@ public:
     }
 
     float length() const {
-        return std::sqrt ( lengthSq() );
+        return Math.sqrt ( lengthSq() );
     }
 
     Vector4& normalize() {
@@ -254,10 +254,10 @@ public:
             return *this;
         }
 
-        auto halfTheta    = std::acos ( cosHalfTheta );
-        auto sinHalfTheta = std::sqrt ( 1.0f - cosHalfTheta * cosHalfTheta );
+        auto halfTheta    = Math.acos ( cosHalfTheta );
+        auto sinHalfTheta = Math.sqrt ( 1.0f - cosHalfTheta * cosHalfTheta );
 
-        if ( std::abs ( sinHalfTheta ) < 0.001f ) {
+        if ( Math.abs ( sinHalfTheta ) < 0.001f ) {
             w = 0.5f * ( w + w );
             x = 0.5f * ( x + x );
             y = 0.5f * ( y + y );
@@ -265,8 +265,8 @@ public:
             return *this;
         }
 
-        auto ratioA = std::sin ( ( 1. - t ) * halfTheta ) / sinHalfTheta;
-        auto ratioB = std::sin ( t * halfTheta ) / sinHalfTheta;
+        auto ratioA = Math.sin ( ( 1. - t ) * halfTheta ) / sinHalfTheta;
+        auto ratioB = Math.sin ( t * halfTheta ) / sinHalfTheta;
 
         w = ( w * ratioA + w * ratioB );
         x = ( x * ratioA + x * ratioB );

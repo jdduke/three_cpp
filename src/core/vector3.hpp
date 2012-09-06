@@ -3,7 +3,7 @@
 
 #include "three.hpp"
 
-#include <cmath>
+#include "math.hpp"
 
 namespace three {
 
@@ -93,11 +93,11 @@ public:
     }
 
     float length() const {
-        return std::sqrt ( lengthSq() );
+        return Math.sqrt ( lengthSq() );
     }
 
     float lengthManhattan() const {
-        return std::abs ( x ) + std::abs ( y ) + std::abs ( z );
+        return Math.abs ( x ) + Math.abs ( y ) + Math.abs ( z );
     }
 
     Vector3& normalize() {
@@ -105,7 +105,7 @@ public:
     }
 
     float distanceTo ( const Vector3& v ) {
-        return std::sqrt ( distanceToSquared ( v ) );
+        return Math.sqrt ( distanceToSquared ( v ) );
     }
 
     float distanceToSquared ( const Vector3& v ) {
@@ -139,7 +139,7 @@ public:
 
         // clamp, to handle numerical problems
         auto clamp = [] ( float x ) {
-            return std::min ( std::max ( x, -1.f ), 1.f );
+            return Math.min ( Math.max ( x, -1.f ), 1.f );
         }
 
         auto sqx = q.x * q.x;
@@ -148,29 +148,29 @@ public:
         auto sqw = q.w * q.w;
 
         if ( order == XYZ ) {
-            this.x = std::atan2 ( 2.f * ( q.x * q.w - q.y * q.z ), ( sqw - sqx - sqy + sqz ) );
-            this.y = std::asin ( clamp ( 2.f * ( q.x * q.z + q.y * q.w ) ) );
-            this.z = std::atan2 ( 2.f * ( q.z * q.w - q.x * q.y ), ( sqw + sqx - sqy - sqz ) );
+            this.x = Math.atan2 ( 2.f * ( q.x * q.w - q.y * q.z ), ( sqw - sqx - sqy + sqz ) );
+            this.y = Math.asin ( clamp ( 2.f * ( q.x * q.z + q.y * q.w ) ) );
+            this.z = Math.atan2 ( 2.f * ( q.z * q.w - q.x * q.y ), ( sqw + sqx - sqy - sqz ) );
         } else if ( order == YXZ ) {
-            this.x = std::asin ( clamp ( 2.f * ( q.x * q.w - q.y * q.z ) ) );
-            this.y = std::atan2 ( 2.f * ( q.x * q.z + q.y * q.w ), ( sqw - sqx - sqy + sqz ) );
-            this.z = std::atan2 ( 2.f * ( q.x * q.y + q.z * q.w ), ( sqw - sqx + sqy - sqz ) );
+            this.x = Math.asin ( clamp ( 2.f * ( q.x * q.w - q.y * q.z ) ) );
+            this.y = Math.atan2 ( 2.f * ( q.x * q.z + q.y * q.w ), ( sqw - sqx - sqy + sqz ) );
+            this.z = Math.atan2 ( 2.f * ( q.x * q.y + q.z * q.w ), ( sqw - sqx + sqy - sqz ) );
         } else if ( order == ZXY ) {
-            this.x = std::asin ( clamp ( 2.f * ( q.x * q.w + q.y * q.z ) ) );
-            this.y = std::atan2 ( 2.f * ( q.y * q.w - q.z * q.x ), ( sqw - sqx - sqy + sqz ) );
-            this.z = std::atan2 ( 2.f * ( q.z * q.w - q.x * q.y ), ( sqw - sqx + sqy - sqz ) );
+            this.x = Math.asin ( clamp ( 2.f * ( q.x * q.w + q.y * q.z ) ) );
+            this.y = Math.atan2 ( 2.f * ( q.y * q.w - q.z * q.x ), ( sqw - sqx - sqy + sqz ) );
+            this.z = Math.atan2 ( 2.f * ( q.z * q.w - q.x * q.y ), ( sqw - sqx + sqy - sqz ) );
         } else if ( order == ZYX ) {
-            this.x = std::atan2 ( 2.f * ( q.x * q.w + q.z * q.y ), ( sqw - sqx - sqy + sqz ) );
-            this.y = std::asin ( clamp ( 2.f * ( q.y * q.w - q.x * q.z ) ) );
-            this.z = std::atan2 ( 2.f * ( q.x * q.y + q.z * q.w ), ( sqw + sqx - sqy - sqz ) );
+            this.x = Math.atan2 ( 2.f * ( q.x * q.w + q.z * q.y ), ( sqw - sqx - sqy + sqz ) );
+            this.y = Math.asin ( clamp ( 2.f * ( q.y * q.w - q.x * q.z ) ) );
+            this.z = Math.atan2 ( 2.f * ( q.x * q.y + q.z * q.w ), ( sqw + sqx - sqy - sqz ) );
         } else if ( order == YZX ) {
-            this.x = std::atan2 ( 2.f * ( q.x * q.w - q.z * q.y ), ( sqw - sqx + sqy - sqz ) );
-            this.y = std::atan2 ( 2.f * ( q.y * q.w - q.x * q.z ), ( sqw + sqx - sqy - sqz ) );
-            this.z = std::asin ( clamp ( 2.f * ( q.x * q.y + q.z * q.w ) ) );
+            this.x = Math.atan2 ( 2.f * ( q.x * q.w - q.z * q.y ), ( sqw - sqx + sqy - sqz ) );
+            this.y = Math.atan2 ( 2.f * ( q.y * q.w - q.x * q.z ), ( sqw + sqx - sqy - sqz ) );
+            this.z = Math.asin ( clamp ( 2.f * ( q.x * q.y + q.z * q.w ) ) );
         } else if ( order == XZY ) {
-            this.x = std::atan2 ( 2.f * ( q.x * q.w + q.y * q.z ), ( sqw - sqx + sqy - sqz ) );
-            this.y = std::atan2 ( 2.f * ( q.x * q.z + q.y * q.w ), ( sqw + sqx - sqy - sqz ) );
-            this.z = std::asin ( clamp ( 2.f * ( q.z * q.w - q.x * q.y ) ) );
+            this.x = Math.atan2 ( 2.f * ( q.x * q.w + q.y * q.z ), ( sqw - sqx + sqy - sqz ) );
+            this.y = Math.atan2 ( 2.f * ( q.x * q.z + q.y * q.w ), ( sqw + sqx - sqy - sqz ) );
+            this.z = Math.asin ( clamp ( 2.f * ( q.z * q.w - q.x * q.y ) ) );
         }
 
         return *this;

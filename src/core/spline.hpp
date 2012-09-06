@@ -1,7 +1,12 @@
 #ifndef _SPLINE_HPP_
 #define _SPLINE_HPP_
 
+#include <vector>
+#include <tuple>
+
 #include "three.hpp"
+
+#include "math.hpp"
 
 namespace three {
 
@@ -90,7 +95,7 @@ public:
 			oldPosition.copy( position );
 
 			point = ( points.size() - 1 ) * index;
-			intPoint = std::floor( point );
+			intPoint = Math.floor( point );
 
 			if ( intPoint != oldIntPoint ) {
 
@@ -125,7 +130,7 @@ public:
 
 			auto realDistance = chunks[ i ] - chunks[ i - 1 ];
 
-			auto sampling = std::ceil( samplingCoef * realDistance / total );
+			auto sampling = Math.ceil( samplingCoef * realDistance / total );
 
 			auto indexCurrent = (float)( i - 1 ) / ( length - 1 );
 			auto indexNext = (float)i / ( length - 1 );

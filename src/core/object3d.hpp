@@ -10,10 +10,6 @@ namespace three {
 class Object3D {
 public:
 
-	virtual THREE::Type getType() const { return THREE::Object3D; }
-
-	virtual void visit()( Visitor& v ) { v( *this ); }
-
 	typedef std::shared_ptr<Object3D> Ptr;
 
 	int id;
@@ -288,6 +284,11 @@ public:
 protected:
 	virtual void __addObject(Ptr& object) { }
 	virtual void __removeObject(Ptr& object) { }
+
+	virtual THREE::Type getType() const { return THREE::Object3D; }
+
+	virtual void visit()( Visitor& v ) { v( *this ); }
+
 
 private:
 

@@ -29,7 +29,7 @@ public:
 
         for ( const auto & plane : planes ) {
 
-            plane.divideScalar ( std::sqrt ( plane.x * plane.x + plane.y * plane.y + plane.z * plane.z ) );
+            plane.divideScalar ( Math.sqrt ( plane.x * plane.x + plane.y * plane.y + plane.z * plane.z ) );
 
         }
 
