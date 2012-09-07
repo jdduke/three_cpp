@@ -4,6 +4,7 @@
 #include "three.hpp"
 
 #include "core/object3d.hpp"
+#include "core/matrix4.hpp"
 
 namespace three {
 
@@ -13,8 +14,8 @@ public:
 	typedef std::shared_ptr<Camera> Ptr;
 
 	Matrix4 matrixWorldInverse;
-	Matrix projectionMatrix;
-	Matrix projectionMatrixInverse;
+	Matrix4 projectionMatrix;
+	Matrix4 projectionMatrixInverse;
 
 	/////////////////////////////////////////////////////////////////////////
 
