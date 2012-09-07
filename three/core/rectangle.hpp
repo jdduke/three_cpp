@@ -1,7 +1,7 @@
-#ifndef SPLINEHPP
-#define SPLINEHPP
+#ifndef THREE_RECTANGLE_HPP
+#define THREE_RECTANGLE_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
 namespace three {
 
@@ -167,6 +167,6 @@ private:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_RECTANGLE_HPP

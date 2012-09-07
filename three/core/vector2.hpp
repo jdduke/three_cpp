@@ -1,7 +1,9 @@
-#ifndef _VECTOR2_HPP_
-#define _VECTOR2_HPP_
+#ifndef THREE_VECTOR2_HPP
+#define THREE_VECTOR2_HPP
 
-#include "math.hpp"
+#include <three/common.hpp>
+
+#include <three/core/math.hpp>
 
 namespace three {
 
@@ -119,6 +121,6 @@ public:
     }
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_VECTOR2_HPP

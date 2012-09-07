@@ -1,9 +1,9 @@
-#ifndef _VECTOR3_HPP_
-#define _VECTOR3_HPP_
+#ifndef THREE_VECTOR3_HPP
+#define THREE_VECTOR3_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
-#include "math.hpp"
+#include <three/core/math.hpp>
 
 namespace three {
 
@@ -213,4 +213,6 @@ inline Vector3 cross ( const Vector3& a, const Vector3& b ) {
     return Vector3().cross ( a, b );
 }
 
-#endif
+} // namespace three
+
+#endif // THREE_VECTOR3_HPP

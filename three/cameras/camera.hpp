@@ -1,10 +1,10 @@
-#ifndef _CAMERA_HPP_
-#define _CAMERA_HPP_
+#ifndef THREE_CAMERA_HPP
+#define THREE_CAMERA_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
-#include "core/object3d.hpp"
-#include "core/matrix4.hpp"
+#include <three/core/object3d.hpp>
+#include <three/core/matrix4.hpp>
 
 namespace three {
 
@@ -53,6 +53,6 @@ protected:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_CAMERA_HPP

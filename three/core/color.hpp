@@ -1,7 +1,9 @@
-#ifndef _COLOR_HPP_
-#define _COLOR_HPP_
+#ifndef THREE_COLOR_HPP
+#define THREE_COLOR_HPP
 
-#include "math.hpp"
+#include <three/common.hpp>
+
+#include <three/core/math.hpp>
 
 namespace three {
 
@@ -96,6 +98,6 @@ public:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_COLOR_HPP

@@ -1,7 +1,7 @@
-#ifndef _UV_HPP_
-#define _UV_HPP_
+#ifndef THREE_UV_HPP
+#define THREE_UV_HPP
 
-#include "three.hpp"
+#include <three/core.hpp>
 
 namespace three {
 
@@ -54,6 +54,6 @@ public:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_UV_HPP

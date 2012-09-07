@@ -1,7 +1,7 @@
-#ifndef _QUATERNION_HPP_
-#define _QUATERNION_HPP_
+#ifndef THREE_QUATERNION_HPP
+#define THREE_QUATERNION_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
 #include <cmath>
 
@@ -304,6 +304,6 @@ private:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_QUATERNION_HPP

@@ -1,9 +1,9 @@
-#ifndef _MATRIX4_HPP_
-#define _MATRIX4_HPP_
+#ifndef THREE_MATRIX4_HPP
+#define THREE_MATRIX4_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
-#include "math.hpp"
+#include <three/core/math.hpp>
 
 namespace three {
 
@@ -979,6 +979,6 @@ Matrix4& translate: function ( v ) {
 
 };
 
-}
+} // namespace three
 
-#endif // _MATRIX4_HPP_
+#endif // THREE_MATRIX4_HPP

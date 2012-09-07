@@ -1,9 +1,9 @@
-#ifndef _ORTHOGRAPHIC_CAMERA_HPP_
-#define _ORTHOGRAPHIC_CAMERA_HPP_
+#ifndef THREE_ORTHOGRAPHIC_CAMERA_HPP
+#define THREE_ORTHOGRAPHIC_CAMERA_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
-#include "camera.hpp"
+#include <three/cameras/camera.hpp>
 
 namespace three {
 
@@ -47,6 +47,6 @@ protected:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_ORTHOGRAPHIC_CAMERA_HPP

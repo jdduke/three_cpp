@@ -1,7 +1,9 @@
-#ifndef _SCENE_HPP_
-#define _SCENE_HPP_
+#ifndef THREE_SCENE_HPP
+#define THREE_SCENE_HPP
 
-#include "core/object3d.hpp"
+#include <three/common.hpp>
+
+#include <three/core/object3d.hpp>
 
 namespace three {
 
@@ -136,6 +138,6 @@ private:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_SCENE_HPP

@@ -1,5 +1,7 @@
-#ifndef _MATH_HPP_
-#define _MATH_HPP_
+#ifndef THREE_MATH_HPP
+#define THREE_MATH_HPP
+
+#include <three/common.hpp>
 
 #include <cmath>
 #include <random>
@@ -78,6 +80,6 @@ class Math {
 
 float Math::PI = Math.atan(1.f)/4;
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_MATH_HPP

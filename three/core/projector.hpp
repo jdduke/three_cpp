@@ -1,14 +1,15 @@
-#ifndef _PROJECTOR_HPP_
-#define _PROJECTOR_HPP_
+#ifndef THREE_PROJECTOR_HPP
+#define THREE_PROJECTOR_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
-#include "math.hpp"
-#include "frustum.hpp"
-#include "matrix4.hpp"
-#include "vector3.hpp"
-#include "vector4.hpp"
+#include <three/core/math.hpp>
+#include <three/core/frustum.hpp>
+#include <three/core/matrix4.hpp>
+#include <three/core/vector3.hpp>
+#include <three/core/vector4.hpp>
 
+namespace three {
 
 class Projector {
 public:
@@ -534,3 +535,7 @@ public:
 	}
 
 };
+
+} // namespace three
+
+#endif // THREE_PROJECTOR_HPP

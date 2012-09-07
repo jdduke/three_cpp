@@ -1,9 +1,9 @@
-#ifndef _RAY_HPP_
-#define _RAY_HPP_
+#ifndef THREE_RAY_HPP
+#define THREE_RAY_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
-#include "math.hpp"
+#include <three/core/math.hpp>
 
 namespace three {
 
@@ -238,6 +238,6 @@ private:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE

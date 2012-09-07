@@ -1,7 +1,7 @@
-#ifndef _OBJECT3D_HPP_
-#define _OBJECT3D_HPP_
+#ifndef THREE_OBJECT3D_HPP
+#define THREE_OBJECT3D_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
 #include <memory>
 
@@ -317,6 +317,6 @@ private:
 
 int Object3D::Object3DCount = 0;
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_OBJECT3D_HPP

@@ -1,12 +1,12 @@
-#ifndef _SPLINE_HPP_
-#define _SPLINE_HPP_
+#ifndef THREE_SPLINE_HPP
+#define THREE_SPLINE_HPP
+
+#include <three/common.hpp>
+
+#include <three/core/math.hpp>
 
 #include <vector>
 #include <tuple>
-
-#include "three.hpp"
-
-#include "math.hpp"
 
 namespace three {
 
@@ -166,6 +166,6 @@ public:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_SPLINE_HPP

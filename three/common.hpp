@@ -1,8 +1,8 @@
 #ifndef THREE_COMMON_HPP
 #define THREE_COMMON_HPP
 
-#include "three_config.hpp"
-#include "three_fwd.hpp"
+#include <three/config.hpp>
+#include <three/fwd.hpp>
 
 namespace three {
 

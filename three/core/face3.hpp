@@ -1,10 +1,12 @@
-#ifndef _FACE3_HPP_
-#define _FACE3_HPP_
+#ifndef THREE_FACE3_HPP
+#define THREE_FACE3_HPP
+
+#include <three/common.hpp>
+
+#include <three/core/color.hpp>
+#include <three/core/vector3.hpp>
 
 #include <vector>
-
-#include "color.hpp"
-#include "vector3.hpp"
 
 namespace three {
 
@@ -49,6 +51,6 @@ public:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_FACE3_HPP

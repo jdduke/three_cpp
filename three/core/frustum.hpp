@@ -1,9 +1,11 @@
-#ifndef _FRUSTUM_HPP_
-#define _FRUSTUM_HPP_
+#ifndef THREE_FRUSTUM_HPP
+#define THREE_FRUSTUM_HPP
+
+#include <three/common.hpp>
+
+#include <three/core/vector4.hpp>
 
 #include <array>
-
-#include "vector4.hpp"
 
 namespace three {
 
@@ -56,6 +58,6 @@ public:
     std::array<Vector4, 6> planes;
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_FRUSTUM_HPP

@@ -1,9 +1,9 @@
-#ifndef _PERSPECTIVE_CAMERA_HPP_
-#define _PERSPECTIVE_CAMERA_HPP_
+#ifndef THREE_PERSPECTIVE_CAMERA_HPP
+#define THREE_PERSPECTIVE_CAMERA_HPP
 
-#include "three.hpp"
+#include <three/common.hpp>
 
-#include "camera.hpp"
+#include <three/cameras/camera.hpp>
 
 namespace three {
 
@@ -130,6 +130,6 @@ protected:
 
 };
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_PERSPECTIVE_CAMERA_HPP
