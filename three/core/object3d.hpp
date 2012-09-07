@@ -3,11 +3,18 @@
 
 #include <three/common.hpp>
 
+#include <three/core/vector3.hpp>
+#include <three/core/quaternion.hpp>
+#include <three/core/matrix4.hpp>
+#include <three/extras/noncopyable.hpp>
+
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace three {
 
-class Object3D {
+class Object3D : NonCopyable {
 public:
 
 	typedef std::shared_ptr<Object3D> Ptr;
@@ -24,7 +31,7 @@ public:
 
 	Vector3 position;
 	Vector3 rotation;
-	Order eulerOrder;
+	THREE::Order eulerOrder;
 	Vector3 scale;
 
 	void* renderDepth = nullptr;
@@ -59,12 +66,12 @@ public:
 
 		matrix.multiply( m, matrix );
 
-		scale.getScaleFromMatrix( matrix );
+		scale = matrix.getScale();
 
 		auto mat = Matrix4().extractRotation( matrix );
 		rotation.setEulerFromRotationMatrix( mat, eulerOrder );
 
-		position.getPositionFromMatrix( matrix );
+		position = matrix.getPosition();
 
 	}
 
@@ -114,7 +121,7 @@ public:
 
 		if ( object.get() == this ) {
 
-			console.warn( 'THREE.Object3D.add: An object can\'t be added as a child of itself.' );
+			console.warn( "THREE.Object3D.add: An object can't be added as a child of itself." );
 			return;
 
 		}
@@ -282,18 +289,19 @@ public:
 */
 
 protected:
+
 	virtual void __addObject(Ptr& object) { }
+
 	virtual void __removeObject(Ptr& object) { }
 
-	virtual THREE::Type getType() const { return THREE::Object3D; }
+	virtual THREE::Type getType() const { return THREE.Object3D; }
 
-	virtual void visit()( Visitor& v ) { v( *this ); }
-
+	virtual void visit ( Visitor& v ) { v( *this ); }
 
 private:
 
 	Object3D ()
-	: id ( Object3DCount++ ),
+	: id ( Object3DCount()++ ),
 	parent ( nullptr ),
 	up ( 0, 1, 0 ),
 	eulerOrder ( XYZ ),
@@ -310,12 +318,12 @@ private:
 	receiveShadow ( false ),
 	frustumCulled ( true ) { }
 
-
-	static int Object3DCount;
+	static int& Object3DCount() {
+		static int sObject3DCount = 0;
+		return sObject3DCount;
+	}
 
 };
-
-int Object3D::Object3DCount = 0;
 
 } // namespace three
 

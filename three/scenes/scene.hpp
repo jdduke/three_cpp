@@ -12,10 +12,12 @@ public:
 
 	typedef std::shared_ptr<Scene> Ptr;
 
+	static Ptr create() { return make_shared<Scene>(); }
+
 	/////////////////////////////////////////////////////////////////////////
 
 	void* fog;
-	void* overrideMaterial;
+	Material* overrideMaterial;
 
 	bool matrixAutoUpdate;
 
@@ -26,8 +28,6 @@ public:
 	std::vector<Object3D::Ptr> __objectsRemoved;
 
 	/////////////////////////////////////////////////////////////////////////
-
-	static Ptr create() { return make_shared<Scene>(); }
 
 protected:
 
@@ -48,6 +48,7 @@ protected:
 
 	struct Add {
 		Add( Scene& s, Object3D::Ptr& o ) : scene ( s ), object ( o ) { }
+
 		void operator() ( Object3D& o ) {
 			if ( !contains( s.__objects, &o ) ) {
 
@@ -57,7 +58,6 @@ protected:
 				erase( s.__objectsRemoved, object );
 			}
 		}
-
 		void operator() ( Scene& s ) { (*this)(static_cast<Object3D&>(s)); }
 		void operator() ( Light& l ) {
 			if ( !contains( s.__lights, &l) {
@@ -122,18 +122,16 @@ protected:
 
 	}
 
-private:
+protected:
 
 	Scene ()
 	: Object3D(),
-	fog ( nulptr ),
+	fog ( nullptr ),
 	overrideMaterial ( nullptr ),
 	matrixAutoUpdate ( false ) { }
 
-	Scene ( const Scene& ) = delete;
-	Scene& operator ( const Scene& ) = delete;
-
 	virtual THREE::Type getType() const { return THREE::Scene; }
+
 	virtual void visit()( Visitor& v ) { v( *this ); }
 
 };

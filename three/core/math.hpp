@@ -9,6 +9,7 @@
 namespace three {
 
 class Math {
+public:
 
 	static const float PI;
 
@@ -17,7 +18,7 @@ class Math {
 
 	template < typename T > static T acos( T t )  { return std::acos( t ); }
 	template < typename T > static T asin( T t )  { return std::asin( t ); }
-	template < typename T > static T atan2( T t ) { return std::atan2( t ); }
+	template < typename T > static T atan2( T y, T x ) { return std::atan2( y, x ); }
 	template < typename T > static T atan( T t )  { return std::atan( t ); }
 	template < typename T > static T cos( T t )   { return std::cos( t ); }
 	template < typename T > static T sin( T t )   { return std::sin( t ); }
@@ -33,7 +34,7 @@ class Math {
 
 	// Linear mapping from range <a1, a2> to range <b1, b2>
 	template < typename T >
-	static mapLinear( T x, T a1, T a2, T b1, T b2 ) {
+	static T mapLinear( T x, T a1, T a2, T b1, T b2 ) {
 		return b1 + ( x - a1 ) * ( b2 - b1 ) / ( a2 - a1 );
 	}
 
@@ -43,7 +44,7 @@ class Math {
 		static std::random_device rd;
 		static std::mt19937 rng( rd() );
 		std::uniform_real_distribution<T> dis ( low, high );
-		return dis();
+		return dis( rng );
 	}
 
 	static float random ( float low = 0, float high = 1 ) {
@@ -58,7 +59,7 @@ class Math {
 
 	// Random integer from <low, high> interval
 	static int randInt ( int low, int high ) {
-		return low + floor( Math.random() * ( high - low + 1 ) );
+		return low + floor( random() * ( high - low + 1 ) );
 	}
 
 	// Random float from <low, high> interval
@@ -78,7 +79,7 @@ class Math {
 
 };
 
-float Math::PI = Math.atan(1.f)/4;
+const float Math::PI = std::atan(1.f)/4;
 
 } // namespace three
 

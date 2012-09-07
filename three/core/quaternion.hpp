@@ -3,7 +3,9 @@
 
 #include <three/common.hpp>
 
-#include <cmath>
+#include <three/core/math.hpp>
+#include <three/core/vector3.hpp>
+//#include <three/core/matrix4.hpp>
 
 namespace three {
 
@@ -18,9 +20,9 @@ public:
     Quaternion() : x ( 0 ), y ( 0 ), z ( 0 ), w ( 1.f ) { }
     Quaternion ( float xIn, float yIn, float zIn, float wIn = 1.f ) : x ( xIn ), y ( yIn ), z ( zIn ), w ( wIn ) { }
     Quaternion ( const Quaternion& v ) : x ( v.x ), y ( v.y ), z ( v.z ), w ( v.w ) { }
-    Quaternion& operator= ( const Quaternion& v ) { copy ( v ); }
+    Quaternion& operator= ( const Quaternion& v ) { return copy ( v ); }
 
-    Vector4& set ( float xIn, float yIn, float zIn, float wIn ) {
+    Quaternion& set ( float xIn, float yIn, float zIn, float wIn ) {
         x = xIn;
         y = yIn;
         z = zIn;
@@ -28,7 +30,7 @@ public:
         return *this;
     }
 
-    Vector4& copy ( const Vector4& v ) {
+    Quaternion& copy ( const Quaternion& v ) {
         x = v.x;
         y = v.y;
         z = v.z;
@@ -36,55 +38,55 @@ public:
         return *this;
     }
 
-    Quaternion& setFromEuler ( const Vector3& v, Order order = XYZ ) {
+    Quaternion& setFromEuler ( const Vector3& v, THREE::Order order = THREE::XYZ ) {
 
         // http://www.mathworks.com/matlabcentral/fileexchange/
         //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
         //  content/SpinCalc.m
 
-        auto c1 = Math.cos ( v.x / 2 );
-        auto c2 = Math.cos ( v.y / 2 );
-        auto c3 = Math.cos ( v.z / 2 );
-        auto s1 = Math.sin ( v.x / 2 );
-        auto s2 = Math.sin ( v.y / 2 );
-        auto s3 = Math.sin ( v.z / 2 );
+        auto c1 = Math::cos ( v.x / 2 );
+        auto c2 = Math::cos ( v.y / 2 );
+        auto c3 = Math::cos ( v.z / 2 );
+        auto s1 = Math::sin ( v.x / 2 );
+        auto s2 = Math::sin ( v.y / 2 );
+        auto s3 = Math::sin ( v.z / 2 );
 
-        if ( order == XYZ ) {
+        if ( order == THREE::XYZ ) {
 
             x = s1 * c2 * c3 + c1 * s2 * s3;
             y = c1 * s2 * c3 - s1 * c2 * s3;
             z = c1 * c2 * s3 + s1 * s2 * c3;
             w = c1 * c2 * c3 - s1 * s2 * s3;
 
-        } else if ( order == YXZ ) {
+        } else if ( order == THREE::YXZ ) {
 
             x = s1 * c2 * c3 + c1 * s2 * s3;
             y = c1 * s2 * c3 - s1 * c2 * s3;
             z = c1 * c2 * s3 - s1 * s2 * c3;
             w = c1 * c2 * c3 + s1 * s2 * s3;
 
-        } else if ( order == ZXY ) {
+        } else if ( order == THREE::ZXY ) {
 
             x = s1 * c2 * c3 - c1 * s2 * s3;
             y = c1 * s2 * c3 + s1 * c2 * s3;
             z = c1 * c2 * s3 + s1 * s2 * c3;
             w = c1 * c2 * c3 - s1 * s2 * s3;
 
-        } else if ( order == ZYX ) {
+        } else if ( order == THREE::ZYX ) {
 
             x = s1 * c2 * c3 - c1 * s2 * s3;
             y = c1 * s2 * c3 + s1 * c2 * s3;
             z = c1 * c2 * s3 - s1 * s2 * c3;
             w = c1 * c2 * c3 + s1 * s2 * s3;
 
-        } else if ( order == YZX ) {
+        } else if ( order == THREE::YZX ) {
 
             x = s1 * c2 * c3 + c1 * s2 * s3;
             y = c1 * s2 * c3 + s1 * c2 * s3;
             z = c1 * c2 * s3 - s1 * s2 * c3;
             w = c1 * c2 * c3 - s1 * s2 * s3;
 
-        } else if ( order == XZY ) {
+        } else if ( order == THREE::XZY ) {
 
             x = s1 * c2 * c3 - c1 * s2 * s3;
             y = c1 * s2 * c3 - s1 * c2 * s3;
@@ -101,31 +103,36 @@ public:
         // axis have to be normalized
 
         float halfAngle = angle / 2.f;
-        float s = Math.sin ( halfAngle );
+        float s = Math::sin ( halfAngle );
 
         x = axis.x * s;
         y = axis.y * s;
         z = axis.z * s;
-        w = Math.cos ( halfAngle );
+        w = Math::cos ( halfAngle );
 
         return *this;
     }
 
-    Quaternion& setFromRotationMatrix ( const Matrix4& m ) {
+    Quaternion& setFromRotationMatrix ( const float (&te)[16] ) { //Matrix4& m ) {
         // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
         // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
-        const auto& te = m.elements;
-        float
-        m11 = te[0], m12 = te[4], m13 = te[8],
-        m21 = te[1], m22 = te[5], m23 = te[9],
-        m31 = te[2], m32 = te[6], m33 = te[10],
+        //const auto& te = m.elements;
+        auto m11 = te[0];
+        auto m12 = te[4];
+        auto m13 = te[8];
+        auto m21 = te[1];
+        auto m22 = te[5];
+        auto m23 = te[9];
+        auto m31 = te[2];
+        auto m32 = te[6];
+        auto m33 = te[10];
 
-        trace = m11 + m22 + m33;
+        auto trace = m11 + m22 + m33;
 
         if ( trace > 0 ) {
 
-            float s = 0.5f / Math.sqrt ( trace + 1.0f );
+            float s = 0.5f / Math::sqrt ( trace + 1.0f );
 
             w = 0.25f / s;
             x = ( m32 - m23 ) * s;
@@ -134,7 +141,7 @@ public:
 
         } else if ( m11 > m22 && m11 > m33 ) {
 
-            float s = 2.0f * Math.sqrt ( 1.0f + m11 - m22 - m33 );
+            float s = 2.0f * Math::sqrt ( 1.0f + m11 - m22 - m33 );
 
             w = ( m32 - m23 ) / s;
             x = 0.25f * s;
@@ -143,7 +150,7 @@ public:
 
         } else if ( m22 > m33 ) {
 
-            float s = 2.0f * Math.sqrt ( 1.0f + m22 - m11 - m33 );
+            float s = 2.0f * Math::sqrt ( 1.0f + m22 - m11 - m33 );
 
             w = ( m13 - m31 ) / s;
             x = ( m12 + m21 ) / s;
@@ -152,7 +159,7 @@ public:
 
         } else {
 
-            float s = 2.0f * Math.sqrt ( 1.0f + m33 - m11 - m22 );
+            float s = 2.0f * Math::sqrt ( 1.0f + m33 - m11 - m22 );
 
             w = ( m21 - m12 ) / s;
             x = ( m13 + m31 ) / s;
@@ -166,7 +173,7 @@ public:
     }
 
     Quaternion& calculateW() {
-        w = - Math.sqrt ( Math.abs ( 1.f - x * x - y * y - z * z ) );
+        w = - Math::sqrt ( Math::abs ( 1.f - x * x - y * y - z * z ) );
         return *this;
     }
 
@@ -178,10 +185,10 @@ public:
     }
 
     float length() const {
-        return Math.sqrt ( lengthSq() );
+        return Math::sqrt ( lengthSq() );
     }
 
-    Vector4& normalize() {
+    Quaternion& normalize() {
         return divideScalar ( length() );
     }
 
@@ -254,10 +261,10 @@ public:
             return *this;
         }
 
-        auto halfTheta    = Math.acos ( cosHalfTheta );
-        auto sinHalfTheta = Math.sqrt ( 1.0f - cosHalfTheta * cosHalfTheta );
+        auto halfTheta    = Math::acos ( cosHalfTheta );
+        auto sinHalfTheta = Math::sqrt ( 1.0f - cosHalfTheta * cosHalfTheta );
 
-        if ( Math.abs ( sinHalfTheta ) < 0.001f ) {
+        if ( Math::abs ( sinHalfTheta ) < 0.001f ) {
             w = 0.5f * ( w + w );
             x = 0.5f * ( x + x );
             y = 0.5f * ( y + y );
@@ -265,8 +272,8 @@ public:
             return *this;
         }
 
-        auto ratioA = Math.sin ( ( 1. - t ) * halfTheta ) / sinHalfTheta;
-        auto ratioB = Math.sin ( t * halfTheta ) / sinHalfTheta;
+        auto ratioA = Math::sin ( ( 1. - t ) * halfTheta ) / sinHalfTheta;
+        auto ratioB = Math::sin ( t * halfTheta ) / sinHalfTheta;
 
         w = ( w * ratioA + w * ratioB );
         x = ( x * ratioA + x * ratioB );
@@ -294,7 +301,7 @@ private:
         return *this;
     }
 
-    Vector4& divideScalar ( float s ) {
+    Quaternion& divideScalar ( float s ) {
         if ( s != 0.f ) {
             return multiplyScalar ( 1.f / s );
         } else {

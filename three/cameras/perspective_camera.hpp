@@ -3,6 +3,7 @@
 
 #include <three/common.hpp>
 
+#include <three/core/math.hpp>
 #include <three/cameras/camera.hpp>
 
 namespace three {
@@ -31,7 +32,7 @@ public:
 
 	void setLens ( float focalLength, float frameHeight = 24 ) {
 
-		fov = 2.f * Math.atan( frameHeight / ( focalLength * 2 ) ) * ( 180 / Math.PI );
+		fov = 2.f * Math::atan( frameHeight / ( focalLength * 2 ) ) * ( 180 / Math::PI );
 		updateProjectionMatrix();
 
 	}
@@ -91,12 +92,12 @@ public:
 		if ( fullWidth != 0.f ) {
 
 			auto asp    = fullWidth / fullHeight;
-			auto top    = Math.tan( fov * Math.PI / 360 ) * near;
+			auto top    = Math::tan( fov * Math::PI / 360 ) * near;
 			auto bottom = -top;
 			auto left   = asp * bottom;
 			auto right  = asp * top;
-			auto w      = Math.abs( right - left );
-			auto h      = Math.abs( top - bottom );
+			auto w      = Math::abs( right - left );
+			auto h      = Math::abs( top - bottom );
 
 			projectionMatrix.makeFrustum(left + x * w / fullWidth,
 			                             left + ( x + width ) * w / fullWidth,

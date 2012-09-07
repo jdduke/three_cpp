@@ -121,7 +121,7 @@ public:
 
 			if ( !object.visible ) return;
 
-			if ( ( object.getType() == THREE.Mesh || object.getType() == THREE.Line ) &&
+			if ( ( object.getType() == THREE::Mesh || object.getType() == THREE::Line ) &&
 			     ( !object.frustumCulled || _frustum.contains( object ) ) ) {
 
 				_vector3.copy( object.matrixWorld.getPosition() );
@@ -133,7 +133,7 @@ public:
 
 				_renderData.objects.push_back( renderable );
 
-			} else if ( object.getType() == THREE.Sprite || object.getType() == THREE.Particle ) {
+			} else if ( object.getType() == THREE::Sprite || object.getType() == THREE::Particle ) {
 
 				_vector3.copy( object.matrixWorld.getPosition() );
 				_viewProjectionMatrix.multiplyVector3( _vector3 );
@@ -144,7 +144,7 @@ public:
 
 				_renderData.sprites.push_back( renderable );
 
-			} else if ( object.getType() == THREE.Light ) {
+			} else if ( object.getType() == THREE::Light ) {
 
 				_renderData.lights.push_back( &object );
 
@@ -186,7 +186,7 @@ public:
 
 			auto rotationMatrix = object.matrixRotationWorld.extractRotation( modelMatrix );
 
-			isFaceMaterial = object.material->getType() == THREE.MeshFaceMaterial;
+			isFaceMaterial = object.material->getType() == THREE::MeshFaceMaterial;
 
 			for ( const auto& v : vertices ) {
 
@@ -213,7 +213,7 @@ public:
 
 				auto side = material.side;
 
-				if ( face instanceof THREE.Face3 ) {
+				if ( face instanceof THREE::Face3 ) {
 
 					const auto& v1 = _vertexPool[ face.a ];
 					const auto& v2 = _vertexPool[ face.b ];
@@ -224,7 +224,7 @@ public:
 						visible = ( ( v3.positionScreen.x - v1.positionScreen.x ) * ( v2.positionScreen.y - v1.positionScreen.y ) -
 						            ( v3.positionScreen.y - v1.positionScreen.y ) * ( v2.positionScreen.x - v1.positionScreen.x ) ) < 0;
 
-						if ( side == THREE.DoubleSide || visible == ( side == THREE.FrontSide ) ) {
+						if ( side == THREE::DoubleSide || visible == ( side == THREE::FrontSide ) ) {
 
 							auto& face = _face3s.next();
 
@@ -244,7 +244,7 @@ public:
 
 					}
 
-				} /*else if ( face instanceof THREE.Face4 ) {
+				} /*else if ( face instanceof THREE::Face4 ) {
 
 					v1 = _vertexPool[ face.a ];
 					v2 = _vertexPool[ face.b ];
@@ -259,7 +259,7 @@ public:
 							( v2.positionScreen.y - v3.positionScreen.y ) * ( v4.positionScreen.x - v3.positionScreen.x ) < 0;
 
 
-						if ( side === THREE.DoubleSide || visible === ( side === THREE.FrontSide ) ) {
+						if ( side === THREE::DoubleSide || visible === ( side === THREE::FrontSide ) ) {
 
 							_face = getNextFace4InPool();
 
@@ -285,7 +285,7 @@ public:
 				auto& _face = _face3s.current()
 				_face.normalWorld.copy( face.normal );
 
-				if ( !visible && ( side == THREE.BackSide || side == THREE.DoubleSide ) ) _face.normalWorld.negate();
+				if ( !visible && ( side == THREE::BackSide || side == THREE::DoubleSide ) ) _face.normalWorld.negate();
 				rotationMatrix.multiplyVector3( _face.normalWorld );
 
 				_face.centroidWorld.copy( face.centroid );
@@ -301,7 +301,7 @@ public:
 					auto& normal = _face.vertexNormalsWorld[ n ];
 					normal.copy( faceVertexNormals[ n ] );
 
-					if ( !visible && ( side == THREE.BackSide || side == THREE.DoubleSide ) ) normal.negate();
+					if ( !visible && ( side == THREE::BackSide || side == THREE::DoubleSide ) ) normal.negate();
 
 					rotationMatrix.multiplyVector3( normal );
 
@@ -341,7 +341,7 @@ public:
 			p._modelViewProjectionMatrix.multiplyVector4( v1.positionScreen );
 
 			// Handle LineStrip and LinePieces
-			auto step = object.type == THREE.LinePieces ? 2 : 1;
+			auto step = object.type == THREE::LinePieces ? 2 : 1;
 
 			for ( v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
@@ -425,7 +425,7 @@ public:
 
 			const auto& modelMatrix = object.matrixWorld;
 
-			if ( object.getType() == THREE.Particle ) {
+			if ( object.getType() == THREE::Particle ) {
 
 				_vector4.set( modelMatrix.elements[12], modelMatrix.elements[13], modelMatrix.elements[14], 1 );
 				_viewProjectionMatrix.multiplyVector4( _vector4 );

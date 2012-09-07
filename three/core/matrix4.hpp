@@ -4,10 +4,15 @@
 #include <three/common.hpp>
 
 #include <three/core/math.hpp>
+#include <three/core/quaternion.hpp>
+#include <three/core/vector3.hpp>
+#include <three/core/vector4.hpp>
+
 
 namespace three {
 
 class Matrix4 {
+public:
 
     union {
         float elements[16];
@@ -54,31 +59,27 @@ class Matrix4 {
         te[2] = n31; te[6] = n32; te[10] = n33; te[14] = n34;
         te[3] = n41; te[7] = n42; te[11] = n43; te[15] = n44;
 
-        return &this;
+        return *this;
 
     }
 
     Matrix4& identity() {
 
-        return this.set (
-                   1, 0, 0, 0,
-                   0, 1, 0, 0,
-                   0, 0, 1, 0,
-                   0, 0, 0, 1
-               );
+        return set ( 1, 0, 0, 0,
+                     0, 1, 0, 0,
+                     0, 0, 1, 0,
+                     0, 0, 0, 1 );
 
     }
 
-    Matrix4& copy ( const Mat4rix4& m ) {
+    Matrix4& copy ( const Matrix4& m ) {
 
         const auto& me = m.elements;
 
-        return set (
-                   me[0], me[4], me[8], me[12],
-                   me[1], me[5], me[9], me[13],
-                   me[2], me[6], me[10], me[14],
-                   me[3], me[7], me[11], me[15]
-               );
+        return set ( me[0], me[4], me[8], me[12],
+                     me[1], me[5], me[9], me[13],
+                     me[2], me[6], me[10], me[14],
+                     me[3], me[7], me[11], me[15] );
 
     }
 
@@ -91,7 +92,7 @@ class Matrix4 {
 
         auto x = cross ( up, z ).normalize();
         if ( x.length() == 0 ) {
-            z.x += 0.0001.f;
+            z.x += 0.0001f;
             x = cross ( up, z ).normalize();
         }
 
@@ -200,9 +201,9 @@ class Matrix4 {
 
     std::vector<float>& multiplyVector3Array ( std::vector<float>& a ) const {
 
-        Matrix4 tmp;
+        Vector3 tmp;
 
-        for ( size_t i = 0, il = a.length(); i < il; i += 3 ) {
+        for ( size_t i = 0, il = a.size(); i < il; i += 3 ) {
 
             tmp.x = a[ i ];
             tmp.y = a[ i + 1 ];
@@ -340,6 +341,13 @@ class Matrix4 {
 
     }
 
+    Vector3 getScale() {
+        auto sx = Vector3 ( me[0], me[1], me[2] ).length();
+        auto sy = Vector3 ( me[4], me[5], me[6] ).length();
+        auto sz = Vector3 ( me[8], me[9], me[10] ).length();
+        return Vector3 ( sx, sy, sz );
+    }
+
     Vector3 getPosition() {
         return Vector3 ( te[12], te[13], te[14] );
     }
@@ -392,20 +400,20 @@ class Matrix4 {
         te[7] = n12 * n33 * n41 - n13 * n32 * n41 + n13 * n31 * n42 - n11 * n33 * n42 - n12 * n31 * n43 + n11 * n32 * n43;
         te[11] = n13 * n22 * n41 - n12 * n23 * n41 - n13 * n21 * n42 + n11 * n23 * n42 + n12 * n21 * n43 - n11 * n22 * n43;
         te[15] = n12 * n23 * n31 - n13 * n22 * n31 + n13 * n21 * n32 - n11 * n23 * n32 - n12 * n21 * n33 + n11 * n22 * n33;
-        this.multiplyScalar ( 1 / m.determinant() );
+        multiplyScalar ( 1 / m.determinant() );
 
         return *this;
 
     }
 
-    Matrix4& setRotationFromEuler ( const Vector3& v, Order order = XYZ ) {
+    Matrix4& setRotationFromEuler ( const Vector3& v, THREE::Order order = THREE::XYZ ) {
 
         auto x = v.x, y = v.y, z = v.z;
-        auto a = Math.cos ( x ), b = Math.sin ( x );
-        auto c = Math.cos ( y ), d = Math.sin ( y );
-        auto e = Math.cos ( z ), f = Math.sin ( z );
+        auto a = Math::cos ( x ), b = Math::sin ( x );
+        auto c = Math::cos ( y ), d = Math::sin ( y );
+        auto e = Math::cos ( z ), f = Math::sin ( z );
 
-        if ( order == XYZ ) {
+        if ( order == THREE::XYZ ) {
 
             float ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -421,7 +429,7 @@ class Matrix4 {
             te[6] = be + af * d;
             te[10] = a * c;
 
-        } else if ( order == YXZ ) {
+        } else if ( order == THREE::YXZ ) {
 
             float ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -437,7 +445,7 @@ class Matrix4 {
             te[6] = df + ce * b;
             te[10] = a * c;
 
-        } else if ( order == ZXY ) {
+        } else if ( order == THREE::ZXY ) {
 
             auto ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -453,7 +461,7 @@ class Matrix4 {
             te[6] = b;
             te[10] = a * c;
 
-        } else if ( order == ZYX ) {
+        } else if ( order == THREE::ZYX ) {
 
             auto ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -469,7 +477,7 @@ class Matrix4 {
             te[6] = b * c;
             te[10] = a * c;
 
-        } else if ( order == YZX ) {
+        } else if ( order == THREE::YZX ) {
 
             auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 
@@ -485,7 +493,7 @@ class Matrix4 {
             te[6] = ad * f + bc;
             te[10] = ac - bd * f;
 
-        } else if ( order == XZY ) {
+        } else if ( order == THREE::XZY ) {
 
             auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 
@@ -531,17 +539,17 @@ class Matrix4 {
 
     }
 
-    Matrix4& compose ( const Vector3& translation, const Vector3& rotation, const Vector3& scale ) {
+    Matrix4& compose ( const Vector3& translation, const Quaternion& rotation, const Vector3& scale ) {
 
-        Vector3 tmpRotation;
-        Vector3 tmpScale;
+        Matrix4 tmpRotation;
+        Matrix4 tmpScale;
 
         tmpRotation.identity();
         tmpRotation.setRotationFromQuaternion ( rotation );
 
         tmpScale.makeScale ( scale.x, scale.y, scale.z );
 
-        multiply ( mRotation, mScale );
+        multiply ( tmpRotation, tmpScale );
 
         te[12] = translation.x;
         te[13] = translation.y;
@@ -551,6 +559,7 @@ class Matrix4 {
 
     }
 
+/*
     void decompose ( Vector3& translation, Vector3& rotation, Vector3& scale ) {
 
         Vector3 x ( te[0], te[1], te[2] );
@@ -586,6 +595,7 @@ class Matrix4 {
         //return [ translation, rotation, scale ];
 
     }
+*/
 
     Matrix4& extractPosition ( const Matrix4& m ) {
 
@@ -627,9 +637,8 @@ class Matrix4 {
 
     //
 
-Matrix4& translate: function ( v ) {
+    Matrix4& translate ( const Vector3& v ) {
 
-        auto te = this.elements;
         auto x = v.x, y = v.y, z = v.z;
 
         te[12] = te[0] * x + te[4] * y + te[8] * z + te[12];
@@ -639,7 +648,7 @@ Matrix4& translate: function ( v ) {
 
         return *this;
 
-    },
+    }
 
     Matrix4& rotateX ( float angle ) {
 
@@ -651,8 +660,8 @@ Matrix4& translate: function ( v ) {
         auto m23 = te[9];
         auto m33 = te[10];
         auto m43 = te[11];
-        auto c = Math.cos ( angle );
-        auto s = Math.sin ( angle );
+        auto c = Math::cos ( angle );
+        auto s = Math::sin ( angle );
 
         te[4] = c * m12 + s * m13;
         te[5] = c * m22 + s * m23;
@@ -678,8 +687,8 @@ Matrix4& translate: function ( v ) {
         auto m23 = te[9];
         auto m33 = te[10];
         auto m43 = te[11];
-        auto c = Math.cos ( angle );
-        auto s = Math.sin ( angle );
+        auto c = Math::cos ( angle );
+        auto s = Math::sin ( angle );
 
         te[0] = c * m11 - s * m13;
         te[1] = c * m21 - s * m23;
@@ -705,8 +714,8 @@ Matrix4& translate: function ( v ) {
         auto m22 = te[5];
         auto m32 = te[6];
         auto m42 = te[7];
-        auto c = Math.cos ( angle );
-        auto s = Math.sin ( angle );
+        auto c = Math::cos ( angle );
+        auto s = Math::sin ( angle );
 
         te[0] = c * m11 + s * m12;
         te[1] = c * m21 + s * m22;
@@ -724,30 +733,30 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& rotateByAxis ( const Vector3& axis, float angle ) {
 
-        if ( axis.x == = 1 && axis.y == = 0 && axis.z == = 0 ) {
+        if ( axis.x == 1 && axis.y == 0 && axis.z == 0 ) {
 
-            return *this.rotateX ( angle );
+            return rotateX ( angle );
 
-        } else if ( axis.x == = 0 && axis.y == = 1 && axis.z == = 0 ) {
+        } else if ( axis.x == 0 && axis.y == 1 && axis.z == 0 ) {
 
-            return *this.rotateY ( angle );
+            return rotateY ( angle );
 
-        } else if ( axis.x == = 0 && axis.y == = 0 && axis.z == = 1 ) {
+        } else if ( axis.x == 0 && axis.y == 0 && axis.z == 1 ) {
 
-            return *this.rotateZ ( angle );
+            return rotateZ ( angle );
 
         }
 
         auto x = axis.x, y = axis.y, z = axis.z;
-        auto n = Math.sqrt ( x * x + y * y + z * z );
+        auto n = Math::sqrt ( x * x + y * y + z * z );
 
         x /= n;
         y /= n;
         z /= n;
 
         auto xx = x * x, yy = y * y, zz = z * z;
-        auto c = Math.cos ( angle );
-        auto s = Math.sin ( angle );
+        auto c = Math::cos ( angle );
+        auto s = Math::sin ( angle );
         auto oneMinusCosine = 1.f - c;
         auto xy = x * y * oneMinusCosine;
         auto xz = x * z * oneMinusCosine;
@@ -805,13 +814,11 @@ Matrix4& translate: function ( v ) {
 
     float getMaxScaleOnAxis () const {
 
-        auto te = this.elements;
-
         auto scaleXSq =  te[0] * te[0] + te[1] * te[1] + te[2] * te[2];
         auto scaleYSq =  te[4] * te[4] + te[5] * te[5] + te[6] * te[6];
         auto scaleZSq =  te[8] * te[8] + te[9] * te[9] + te[10] * te[10];
 
-        return Math.sqrt ( Math.max ( scaleXSq, Math.max ( scaleYSq, scaleZSq ) ) );
+        return Math::sqrt ( Math::max ( scaleXSq, Math::max ( scaleYSq, scaleZSq ) ) );
 
     }
 
@@ -819,14 +826,10 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeTranslation ( float x, float y, float z ) {
 
-        this.set (
-
-            1, 0, 0, x,
-            0, 1, 0, y,
-            0, 0, 1, z,
-            0, 0, 0, 1
-
-        );
+        set ( 1, 0, 0, x,
+              0, 1, 0, y,
+              0, 0, 1, z,
+              0, 0, 0, 1 );
 
         return *this;
 
@@ -834,16 +837,12 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeRotationX ( float theta ) {
 
-        auto c = Math.cos ( theta ), s = Math.sin ( theta );
+        auto c = Math::cos ( theta ), s = Math::sin ( theta );
 
-        this.set (
-
-            1, 0,  0, 0,
-            0, c, -s, 0,
-            0, s,  c, 0,
-            0, 0,  0, 1
-
-        );
+        set ( 1, 0,  0, 0,
+              0, c, -s, 0,
+              0, s,  c, 0,
+              0, 0,  0, 1 );
 
         return *this;
 
@@ -851,16 +850,12 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeRotationY ( float theta ) {
 
-        auto c = Math.cos ( theta ), s = Math.sin ( theta );
+        auto c = Math::cos ( theta ), s = Math::sin ( theta );
 
-        this.set (
-
-            c, 0, s, 0,
-            0, 1, 0, 0,
-            -s, 0, c, 0,
-            0, 0, 0, 1
-
-        );
+        set ( c, 0, s, 0,
+              0, 1, 0, 0,
+              -s, 0, c, 0,
+              0, 0, 0, 1 );
 
         return *this;
 
@@ -868,16 +863,12 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeRotationZ ( float theta ) {
 
-        float c = Math.cos ( theta ), s = Math.sin ( theta );
+        float c = Math::cos ( theta ), s = Math::sin ( theta );
 
-        this.set (
-
-            c, -s, 0, 0,
-            s,  c, 0, 0,
-            0,  0, 1, 0,
-            0,  0, 0, 1
-
-        );
+        set ( c, -s, 0, 0,
+              s,  c, 0, 0,
+              0,  0, 1, 0,
+              0,  0, 0, 1 );
 
         return *this;
 
@@ -887,20 +878,16 @@ Matrix4& translate: function ( v ) {
 
         // Based on http://www.gamedev.net/reference/articles/article1199.asp
 
-        auto c = Math.cos ( angle );
-        auto s = Math.sin ( angle );
+        auto c = Math::cos ( angle );
+        auto s = Math::sin ( angle );
         auto t = 1.f - c;
         auto x = axis.x, y = axis.y, z = axis.z;
         auto tx = t * x, ty = t * y;
 
-        this.set (
-
-            tx * x + c, tx * y - s * z, tx * z + s * y, 0,
-            tx * y + s * z, ty * y + c, ty * z - s * x, 0,
-            tx * z - s * y, ty * z + s * x, t * z * z + c, 0,
-            0, 0, 0, 1
-
-        );
+        set ( tx * x + c, tx * y - s * z, tx * z + s * y, 0,
+              tx * y + s * z, ty * y + c, ty * z - s * x, 0,
+              tx * z - s * y, ty * z + s * x, t * z * z + c, 0,
+              0, 0, 0, 1 );
 
         return *this;
 
@@ -908,14 +895,10 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makeScale ( float x, float y, float z ) {
 
-        this.set (
-
-            x, 0, 0, 0,
-            0, y, 0, 0,
-            0, 0, z, 0,
-            0, 0, 0, 1
-
-        );
+        set ( x, 0, 0, 0,
+              0, y, 0, 0,
+              0, 0, z, 0,
+              0, 0, 0, 1 );
 
         return *this;
 
@@ -942,7 +925,7 @@ Matrix4& translate: function ( v ) {
 
     Matrix4& makePerspective ( float fov, float aspect, float near, float far ) {
 
-        auto ymax = near * Math.tan ( fov * Math.PI / 360 );
+        auto ymax = near * Math::tan ( fov * Math::PI / 360 );
         auto ymin = - ymax;
         auto xmin = ymin * aspect;
         auto xmax = ymax * aspect;

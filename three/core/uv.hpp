@@ -1,7 +1,7 @@
 #ifndef THREE_UV_HPP
 #define THREE_UV_HPP
 
-#include <three/core.hpp>
+#include <three/common.hpp>
 
 namespace three {
 

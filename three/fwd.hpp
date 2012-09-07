@@ -9,7 +9,7 @@ class shared_ptr;
 template < typename T, class... Args >
 shared_ptr<T> make_shared( Args... args );
 
-}
+} // namespace std
 
 namespace three {
 
@@ -36,6 +36,6 @@ template < typename T >
 using shared_ptr = std::shared_ptr<T>;
 using std::make_shared;
 
-}
+} // namespace three
 
-#endif
+#endif // THREE_FWD_HPP
