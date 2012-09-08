@@ -13,13 +13,13 @@ public:
 
 	typedef std::shared_ptr<Camera> Ptr;
 
-	Matrix4 matrixWorldInverse;
-	Matrix4 projectionMatrix;
-	Matrix4 projectionMatrixInverse;
+	static Ptr create() { return make_shared<Camera>(); }
 
 	/////////////////////////////////////////////////////////////////////////
 
-	static Ptr create() { return make_shared<Camera>(); }
+	Matrix4 matrixWorldInverse;
+	Matrix4 projectionMatrix;
+	Matrix4 projectionMatrixInverse;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -27,9 +27,9 @@ public:
 
 		matrix.lookAt( position, vector, up );
 
-		if ( rotationAutoUpdate === true ) {
+		if ( rotationAutoUpdate ) {
 
-			rotation.setEulerFromRotationMatrix( matrix, eulerOrder );
+			rotation = matrix.getEulerRotation ( eulerOrder );
 
 		}
 
@@ -42,14 +42,11 @@ protected:
 	Camera ()
 	: Object3D() { }
 
-	Camera ( const Camera& ) = delete;
-	Camera& operator= ( const Camera& ) = delete;
-
 	/////////////////////////////////////////////////////////////////////////
 
 	virtual THREE::Type getType() const { return THREE::Camera; }
 
-	virtual void visit()( Visitor& v ) { v( *this ); }
+	virtual void visit( Visitor& v ) { v( *this ); }
 
 };
 

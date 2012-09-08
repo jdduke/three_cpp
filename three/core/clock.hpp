@@ -10,7 +10,7 @@ namespace three {
 class Clock {
 public:
     typedef std::chrono::time_point< std::chrono::system_clock > Time;
-    typedef std::chrono::duration< float, std::chrono::seconds > Duration;
+    typedef std::chrono::duration< float > Duration;
 
     Clock ( bool autostart = true )
      : mbAutoStart ( autostart ), mbRunning ( false ) { }
@@ -18,12 +18,12 @@ public:
     void start() {
         mStartTime = std::chrono::system_clock::now();
         mOldTime = mStartTime;
-        mRunning = true;
+        mbRunning = true;
     }
 
     void stop() {
         getElapsedTime();
-        mRunning = false;
+        mbRunning = false;
     }
 
     float getElapsedTime() {
@@ -42,8 +42,8 @@ private:
 
         if ( mbRunning ) {
             auto newTime = std::chrono::system_clock::now();
-            diff = std::chrono::duration_cast< Duration > ( newTime - oldTime );
-            oldTime = newTime;
+            diff = std::chrono::duration_cast< Duration > ( newTime - mOldTime );
+            mOldTime = newTime;
         }
 
         return diff;

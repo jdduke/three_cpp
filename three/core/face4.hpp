@@ -14,24 +14,16 @@ class Face4 {
 public:
 
     Face4 ( int a, int b, int c, int d, const Vector3& normal = Vector3(), const Color& color = Color(), int materialIndex = 0 )
-        : a ( a ), b ( b ), c ( c ), d ( d ), normal ( normal ), color ( color ), materialIndex ( materialIndex ) {
-
-    }
-
-    Face4( ) = delete;
+        : a ( a ), b ( b ), c ( c ), d ( d ), normal ( normal ), color ( color ), materialIndex ( materialIndex ) { }
 
     Face4 ( const Face4& other ) = default;
-    Face4 ( Face4 && ) = default;
-
+    Face4 ( Face4 && )           = default;
     Face4& operator= ( const Face4& other ) = default;
-    Face4& operator= ( Face4 && other ) = default;
+    Face4& operator= ( Face4 && other )     = default;
 
     Face4 clone() const {
-
-        return Face ( *this );
-
+        return Face4 ( *this );
     }
-
 
 public:
 
@@ -48,6 +40,10 @@ public:
     int materialIndex;
 
     Vector3 centroid;
+
+private:
+
+    Face4( ) = delete;
 
 };
 

@@ -38,6 +38,50 @@ public:
         return *this;
     }
 
+    Vector3 getEuler ( THREE::Order order = THREE::XYZ ) const {
+        // assumed to be normalized
+
+        // clamp, to handle numerical problems
+        auto clamp = [] ( float x ) {
+            return Math::min ( Math::max ( x, -1.f ), 1.f );
+        };
+
+        auto sqx = x * x;
+        auto sqy = y * y;
+        auto sqz = z * z;
+        auto sqw = w * w;
+
+        Vector3 euler;
+
+        if ( order == THREE::XYZ ) {
+            euler.x = Math::atan2 ( 2.f * ( x * w - y * z ), ( sqw - sqx - sqy + sqz ) );
+            euler.y = Math::asin ( clamp ( 2.f * ( x * z + y * w ) ) );
+            euler.z = Math::atan2 ( 2.f * ( z * w - x * y ), ( sqw + sqx - sqy - sqz ) );
+        } else if ( order == THREE::YXZ ) {
+            euler.x = Math::asin ( clamp ( 2.f * ( x * w - y * z ) ) );
+            euler.y = Math::atan2 ( 2.f * ( x * z + y * w ), ( sqw - sqx - sqy + sqz ) );
+            euler.z = Math::atan2 ( 2.f * ( x * y + z * w ), ( sqw - sqx + sqy - sqz ) );
+        } else if ( order == THREE::ZXY ) {
+            euler.x = Math::asin ( clamp ( 2.f * ( x * w + y * z ) ) );
+            euler.y = Math::atan2 ( 2.f * ( y * w - z * x ), ( sqw - sqx - sqy + sqz ) );
+            euler.z = Math::atan2 ( 2.f * ( z * w - x * y ), ( sqw - sqx + sqy - sqz ) );
+        } else if ( order == THREE::ZYX ) {
+            euler.x = Math::atan2 ( 2.f * ( x * w + z * y ), ( sqw - sqx - sqy + sqz ) );
+            euler.y = Math::asin ( clamp ( 2.f * ( y * w - x * z ) ) );
+            euler.z = Math::atan2 ( 2.f * ( x * y + z * w ), ( sqw + sqx - sqy - sqz ) );
+        } else if ( order == THREE::YZX ) {
+            euler.x = Math::atan2 ( 2.f * ( x * w - z * y ), ( sqw - sqx + sqy - sqz ) );
+            euler.y = Math::atan2 ( 2.f * ( y * w - x * z ), ( sqw + sqx - sqy - sqz ) );
+            euler.z = Math::asin ( clamp ( 2.f * ( x * y + z * w ) ) );
+        } else if ( order == THREE::XZY ) {
+            euler.x = Math::atan2 ( 2.f * ( x * w + y * z ), ( sqw - sqx + sqy - sqz ) );
+            euler.y = Math::atan2 ( 2.f * ( x * z + y * w ), ( sqw + sqx - sqy - sqz ) );
+            euler.z = Math::asin ( clamp ( 2.f * ( z * w - x * y ) ) );
+        }
+
+        return euler;
+    }
+
     Quaternion& setFromEuler ( const Vector3& v, THREE::Order order = THREE::XYZ ) {
 
         // http://www.mathworks.com/matlabcentral/fileexchange/
@@ -111,65 +155,6 @@ public:
         w = Math::cos ( halfAngle );
 
         return *this;
-    }
-
-    Quaternion& setFromRotationMatrix ( const float (&te)[16] ) { //Matrix4& m ) {
-        // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
-        // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
-
-        //const auto& te = m.elements;
-        auto m11 = te[0];
-        auto m12 = te[4];
-        auto m13 = te[8];
-        auto m21 = te[1];
-        auto m22 = te[5];
-        auto m23 = te[9];
-        auto m31 = te[2];
-        auto m32 = te[6];
-        auto m33 = te[10];
-
-        auto trace = m11 + m22 + m33;
-
-        if ( trace > 0 ) {
-
-            float s = 0.5f / Math::sqrt ( trace + 1.0f );
-
-            w = 0.25f / s;
-            x = ( m32 - m23 ) * s;
-            y = ( m13 - m31 ) * s;
-            z = ( m21 - m12 ) * s;
-
-        } else if ( m11 > m22 && m11 > m33 ) {
-
-            float s = 2.0f * Math::sqrt ( 1.0f + m11 - m22 - m33 );
-
-            w = ( m32 - m23 ) / s;
-            x = 0.25f * s;
-            y = ( m12 + m21 ) / s;
-            z = ( m13 + m31 ) / s;
-
-        } else if ( m22 > m33 ) {
-
-            float s = 2.0f * Math::sqrt ( 1.0f + m22 - m11 - m33 );
-
-            w = ( m13 - m31 ) / s;
-            x = ( m12 + m21 ) / s;
-            y = 0.25f * s;
-            z = ( m23 + m32 ) / s;
-
-        } else {
-
-            float s = 2.0f * Math::sqrt ( 1.0f + m33 - m11 - m22 );
-
-            w = ( m21 - m12 ) / s;
-            x = ( m13 + m31 ) / s;
-            y = ( m23 + m32 ) / s;
-            z = 0.25f * s;
-
-        }
-
-        return *this;
-
     }
 
     Quaternion& calculateW() {

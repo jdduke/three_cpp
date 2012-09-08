@@ -8,7 +8,6 @@
 #include <three/core/vector3.hpp>
 #include <three/core/vector4.hpp>
 
-
 namespace three {
 
 class Matrix4 {
@@ -341,15 +340,287 @@ public:
 
     }
 
-    Vector3 getScale() {
-        auto sx = Vector3 ( me[0], me[1], me[2] ).length();
-        auto sy = Vector3 ( me[4], me[5], me[6] ).length();
-        auto sz = Vector3 ( me[8], me[9], me[10] ).length();
+    Vector3 getScale() const {
+        auto sx = Vector3 ( te[0], te[1], te[2] ).length();
+        auto sy = Vector3 ( te[4], te[5], te[6] ).length();
+        auto sz = Vector3 ( te[8], te[9], te[10] ).length();
         return Vector3 ( sx, sy, sz );
     }
 
-    Vector3 getPosition() {
+    Vector3 getPosition() const {
         return Vector3 ( te[12], te[13], te[14] );
+    }
+
+    Quaternion getRotation() const {
+
+        // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+        // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+        float x, y, z, w;
+
+        auto m11 = te[0];
+        auto m12 = te[4];
+        auto m13 = te[8];
+        auto m21 = te[1];
+        auto m22 = te[5];
+        auto m23 = te[9];
+        auto m31 = te[2];
+        auto m32 = te[6];
+        auto m33 = te[10];
+
+        auto trace = m11 + m22 + m33;
+
+        if ( trace > 0 ) {
+
+            float s = 0.5f / Math::sqrt ( trace + 1.0f );
+
+            w = 0.25f / s;
+            x = ( m32 - m23 ) * s;
+            y = ( m13 - m31 ) * s;
+            z = ( m21 - m12 ) * s;
+
+        } else if ( m11 > m22 && m11 > m33 ) {
+
+            float s = 2.0f * Math::sqrt ( 1.0f + m11 - m22 - m33 );
+
+            w = ( m32 - m23 ) / s;
+            x = 0.25f * s;
+            y = ( m12 + m21 ) / s;
+            z = ( m13 + m31 ) / s;
+
+        } else if ( m22 > m33 ) {
+
+            float s = 2.0f * Math::sqrt ( 1.0f + m22 - m11 - m33 );
+
+            w = ( m13 - m31 ) / s;
+            x = ( m12 + m21 ) / s;
+            y = 0.25f * s;
+            z = ( m23 + m32 ) / s;
+
+        } else {
+
+            float s = 2.0f * Math::sqrt ( 1.0f + m33 - m11 - m22 );
+
+            w = ( m21 - m12 ) / s;
+            x = ( m13 + m31 ) / s;
+            y = ( m23 + m32 ) / s;
+            z = 0.25f * s;
+
+        }
+
+        return Quaternion ( x, y, z, w );
+    }
+
+
+    Vector3 getEulerRotation ( THREE::Order order = THREE::XYZ ) const {
+        // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+        // clamp, to handle numerical problems
+        auto clamp = [] ( float x ) {
+            return Math::min ( Math::max ( x, -1.f ), 1.f );
+        };
+
+        Vector3 euler;
+
+        auto m11 = te[0], m12 = te[4], m13 = te[8];
+        auto m21 = te[1], m22 = te[5], m23 = te[9];
+        auto m31 = te[2], m32 = te[6], m33 = te[10];
+
+        float x, y, z;
+
+        if ( order == THREE::XYZ ) {
+
+            y = Math::asin( clamp( m13 ) );
+
+            if ( Math::abs( m13 ) < 0.99999f ) {
+
+                x = Math::atan2( - m23, m33 );
+                z = Math::atan2( - m12, m11 );
+
+            } else {
+
+                x = Math::atan2( m21, m22 );
+                z = 0;
+
+            }
+
+        } else if ( order == THREE::YXZ ) {
+
+            x = Math::asin( - clamp( m23 ) );
+
+            if ( Math::abs( m23 ) < 0.99999f ) {
+
+                y = Math::atan2( m13, m33 );
+                z = Math::atan2( m21, m22 );
+
+            } else {
+
+                y = Math::atan2( - m31, m11 );
+                z = 0;
+
+            }
+
+        } else if ( order == THREE::ZXY ) {
+
+            x = Math::asin( clamp( m32 ) );
+
+            if ( Math::abs( m32 ) < 0.99999f ) {
+
+                y = Math::atan2( - m31, m33 );
+                z = Math::atan2( - m12, m22 );
+
+            } else {
+
+                y = 0;
+                z = Math::atan2( m13, m11 );
+
+            }
+
+        } else if ( order == THREE::ZYX ) {
+
+            y = Math::asin( - clamp( m31 ) );
+
+            if ( Math::abs( m31 ) < 0.99999f ) {
+
+                x = Math::atan2( m32, m33 );
+                z = Math::atan2( m21, m11 );
+
+            } else {
+
+                x = 0;
+                z = Math::atan2( - m12, m22 );
+
+            }
+
+        } else if ( order == THREE::YZX ) {
+
+            z = Math::asin( clamp( m21 ) );
+
+            if ( Math::abs( m21 ) < 0.99999f ) {
+
+                x = Math::atan2( - m23, m22 );
+                y = Math::atan2( - m31, m11 );
+
+            } else {
+
+                x = 0;
+                y = Math::atan2( m31, m33 );
+
+            }
+
+        } else if ( order == THREE::XZY ) {
+
+            z = Math::asin( - clamp( m12 ) );
+
+            if ( Math::abs( m12 ) < 0.99999f ) {
+
+                x = Math::atan2( m32, m22 );
+                y = Math::atan2( m13, m11 );
+
+            } else {
+
+                x = Math::atan2( - m13, m33 );
+                y = 0;
+
+            }
+
+        }
+
+        return euler;
+
+    }
+
+
+
+    Vector4 getAxisAngle ( ) const {
+        // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToAngle/index.htm
+        // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+        float angle, x, y, z, w; // variables for result
+        float epsilon = 0.01f;   // margin to allow for rounding errors
+        float epsilon2 = 0.1f;   // margin to distinguish between 0 and 180 degrees
+        float m11 = te[0], m12 = te[4], m13 = te[8],
+              m21 = te[1], m22 = te[5], m23 = te[9],
+              m31 = te[2], m32 = te[6], m33 = te[10];
+
+        if ( ( Math::abs ( m12 - m21 ) < epsilon )
+                && ( Math::abs ( m13 - m31 ) < epsilon )
+                && ( Math::abs ( m23 - m32 ) < epsilon ) ) {
+
+            // singularity found
+            // first check for identity matrix which must have +1 for all terms
+            // in leading diagonal and zero in other terms
+
+            if ( ( Math::abs ( m12 + m21 ) < epsilon2 )
+                    && ( Math::abs ( m13 + m31 ) < epsilon2 )
+                    && ( Math::abs ( m23 + m32 ) < epsilon2 )
+                    && ( Math::abs ( m11 + m22 + m33 - 3 ) < epsilon2 ) ) {
+
+                // this singularity is identity matrix so angle = 0
+                return Vector4 ( 1, 0, 0, 0 ); // zero angle, arbitrary axis
+            }
+
+            // otherwise this singularity is angle = 180
+            angle = Math::PI;
+
+            auto xx = ( m11 + 1.f ) / 2.f;
+            auto yy = ( m22 + 1.f ) / 2.f;
+            auto zz = ( m33 + 1.f ) / 2.f;
+            auto xy = ( m12 + m21 ) / 4.f;
+            auto xz = ( m13 + m31 ) / 4.f;
+            auto yz = ( m23 + m32 ) / 4.f;
+
+            if ( ( xx > yy ) && ( xx > zz ) ) { // m11 is the largest diagonal term
+                if ( xx < epsilon ) {
+                    x = 0;
+                    y = 0.707106781f;
+                    z = 0.707106781f;
+                } else {
+                    x = Math::sqrt ( xx );
+                    y = xy / x;
+                    z = xz / x;
+                }
+            } else if ( yy > zz ) { // m22 is the largest diagonal term
+                if ( yy < epsilon ) {
+                    x = 0.707106781f;
+                    y = 0;
+                    z = 0.707106781f;
+                } else {
+                    y = Math::sqrt ( yy );
+                    x = xy / y;
+                    z = yz / y;
+                }
+            } else { // m33 is the largest diagonal term so base result on this
+                if ( zz < epsilon ) {
+                    x = 0.707106781f;
+                    y = 0.707106781f;
+                    z = 0;
+                } else {
+                    z = Math::sqrt ( zz );
+                    x = xz / z;
+                    y = yz / z;
+                }
+            }
+
+            return Vector4 ( x, y, z, angle ); // return 180 deg rotation
+        }
+
+        // as we have reached here there are no singularities so we can handle normally
+        auto s = Math::sqrt ( ( m32 - m23 ) * ( m32 - m23 )
+                             + ( m13 - m31 ) * ( m13 - m31 )
+                             + ( m21 - m12 ) * ( m21 - m12 ) ); // used to normalize
+
+        if ( Math::abs ( s ) < 0.001f ) s = 1;
+
+        // prevent divide by zero, should not happen if matrix is orthogonal and should be
+        // caught by singularity test above, but I've left it in just in case
+
+        x = ( m32 - m23 ) / s;
+        y = ( m13 - m31 ) / s;
+        z = ( m21 - m12 ) / s;
+        w = Math::acos ( ( m11 + m22 + m33 - 1 ) / 2 );
+
+        return Vector4 ( x, y, z, w );
     }
 
     Matrix4& setPosition ( const Vector3& v ) {
@@ -370,7 +641,7 @@ public:
         return Vector3 ( te[4], te[5], te[6] );
     }
 
-    Vector3 getColumnZ() {
+    Vector3 getColumnZ() const {
         return Vector3 ( te[8], te[9], te[10] );
     }
 
@@ -559,8 +830,7 @@ public:
 
     }
 
-/*
-    void decompose ( Vector3& translation, Vector3& rotation, Vector3& scale ) {
+    void decompose ( Vector3& translation, Quaternion& rotation, Vector3& scale ) {
 
         Vector3 x ( te[0], te[1], te[2] );
         Vector3 y ( te[4], te[5], te[6] );
@@ -590,12 +860,11 @@ public:
         matrix.elements[9] /= scale.z;
         matrix.elements[10] /= scale.z;
 
-        rotation.setFromRotationMatrix ( matrix );
+        rotation = matrix.getRotation();
 
         //return [ translation, rotation, scale ];
 
     }
-*/
 
     Matrix4& extractPosition ( const Matrix4& m ) {
 

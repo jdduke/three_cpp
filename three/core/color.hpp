@@ -15,6 +15,8 @@ public:
         float rgb[3];
     };
 
+    Color () : r ( 1 ), g ( 1 ), b ( 1 ) { }
+
     Color ( unsigned hex ) { setHex ( hex ); }
 
     Color ( float r, float g, float b )
@@ -41,7 +43,7 @@ public:
         if ( v == 0.f ) {
             r = g = b = 0;
         } else {
-            auto i = ( int ) Math.floor ( h * 6.f );
+            auto i = ( int ) Math::floor ( h * 6.f );
             auto f = ( h * 6 ) - i;
             auto p = v * ( 1.f - s );
             auto q = v * ( 1.f - ( s * f ) );

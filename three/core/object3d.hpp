@@ -8,6 +8,7 @@
 #include <three/core/matrix4.hpp>
 #include <three/extras/noncopyable.hpp>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -18,6 +19,12 @@ class Object3D : NonCopyable {
 public:
 
 	typedef std::shared_ptr<Object3D> Ptr;
+
+	Object3D::Ptr create() {
+		return make_shared<Object3D>();
+	}
+
+	/////////////////////////////////////////////////////////////////////////
 
 	int id;
 
@@ -58,9 +65,13 @@ public:
 
 	bool frustumCulled;
 
-	Object3D::Ptr create() {
-		return make_shared<Object3D>();
-	}
+	/////////////////////////////////////////////////////////////////////////
+
+	virtual THREE::Type getType() const { return THREE::Object3D; }
+
+	virtual void visit ( Visitor& v ) { v( *this ); }
+
+	/////////////////////////////////////////////////////////////////////////
 
 	void applyMatrix ( const Matrix4& m ) {
 
@@ -69,7 +80,7 @@ public:
 		scale = matrix.getScale();
 
 		auto mat = Matrix4().extractRotation( matrix );
-		rotation.setEulerFromRotationMatrix( mat, eulerOrder );
+		rotation = mat.getEulerRotation( eulerOrder );
 
 		position = matrix.getPosition();
 
@@ -108,7 +119,7 @@ public:
 
 		if ( rotationAutoUpdate ) {
 
-			rotation.setEulerFromRotationMatrix( matrix, eulerOrder );
+			rotation = matrix.getEulerRotation( eulerOrder );
 
 		}
 
@@ -121,33 +132,33 @@ public:
 
 		if ( object.get() == this ) {
 
-			console.warn( "THREE.Object3D.add: An object can't be added as a child of itself." );
+			console().warn( "Three.Object3D.add: An object can't be added as a child of itself." );
 			return;
 
 		}
 
-		if ( object.parent != nullptr ) {
+		if ( object->parent != nullptr ) {
 
-			object.parent->remove( object );
+			object->parent->remove( object );
 
 		}
 
-		object.parent = this;
-		children.push( object );
+		object->parent = this;
+		children.push_back( object );
 
 		// add to scene
 
 		auto scene = this;
 
-		while ( scene.parent != nullptr ) {
+		while ( scene->parent != nullptr ) {
 
-			scene = scene.parent;
+			scene = scene->parent;
 
 		}
 
 		if ( scene != nullptr )  {
 
-			scene.__addObject( object );
+			scene->__addObject( object );
 
 		}
 
@@ -155,26 +166,26 @@ public:
 
 	void remove ( Ptr& object ) {
 
-		auto index = std::find( children, object );
+		auto index = std::find( children.begin(), children.end(), object );
 
 		if ( index != children.end() ) {
 
-			object.parent = nullptr;
+			object->parent = nullptr;
 			children.erase( index );
 
 			// remove from scene
 
 			auto scene = this;
 
-			while ( scene.parent !== undefined ) {
+			while ( scene->parent != nullptr ) {
 
-				scene = scene.parent;
+				scene = scene->parent;
 
 			}
 
 			if ( scene != nullptr ) {
 
-				scene.__removeObject( object );
+				scene->__removeObject( object );
 
 			}
 
@@ -184,10 +195,9 @@ public:
 
 	Ptr getChildByName ( const std::string& name, bool recursive ) {
 
+		for ( auto& child : children ) {
 
-		foreach (const auto& child : children ) {
-
-			if ( child.name == name ) {
+			if ( child->name == name ) {
 
 				return child;
 
@@ -195,7 +205,7 @@ public:
 
 			if ( recursive ) {
 
-				auto recursive_child = child.getChildByName( name, recursive );
+				auto recursive_child = child->getChildByName( name, recursive );
 
 				if ( recursive_child ) {
 
@@ -207,7 +217,7 @@ public:
 
 		}
 
-		return Object3D::Ptr;
+		return Object3D::Ptr();
 
 	}
 
@@ -215,7 +225,7 @@ public:
 
 		matrix.setPosition( position );
 
-		if ( useQuaternion === true )  {
+		if ( useQuaternion )  {
 
 			matrix.setRotationFromQuaternion( quaternion );
 
@@ -244,7 +254,7 @@ public:
 
 			if ( parent != nullptr ) {
 
-				matrixWorld.multiply( parent.matrixWorld, matrix );
+				matrixWorld.multiply( parent->matrixWorld, matrix );
 
 			} else {
 
@@ -260,9 +270,9 @@ public:
 
 		// update children
 
-		for ( const auto& chidl : children ) {
+		for ( auto& child : children ) {
 
-			child.updateMatrixWorld( force );
+			child->updateMatrixWorld( force );
 
 		}
 
@@ -272,7 +282,7 @@ public:
 
 		return Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
 
-	},
+	}
 
 	Vector3 localToWorld ( const Vector3& vector ) {
 
@@ -290,21 +300,11 @@ public:
 
 protected:
 
-	virtual void __addObject(Ptr& object) { }
-
-	virtual void __removeObject(Ptr& object) { }
-
-	virtual THREE::Type getType() const { return THREE.Object3D; }
-
-	virtual void visit ( Visitor& v ) { v( *this ); }
-
-private:
-
 	Object3D ()
 	: id ( Object3DCount()++ ),
 	parent ( nullptr ),
 	up ( 0, 1, 0 ),
-	eulerOrder ( XYZ ),
+	eulerOrder ( THREE::XYZ ),
 	scale ( 1, 1, 1 ),
 	renderDepth ( nullptr ),
 	rotationAutoUpdate ( true ),
@@ -317,6 +317,12 @@ private:
 	castShadow ( false ),
 	receiveShadow ( false ),
 	frustumCulled ( true ) { }
+
+	virtual void __addObject(Ptr& object) { }
+
+	virtual void __removeObject(Ptr& object) { }
+
+private:
 
 	static int& Object3DCount() {
 		static int sObject3DCount = 0;

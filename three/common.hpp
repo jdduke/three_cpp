@@ -11,33 +11,6 @@ typedef void(*LogP)(const char*);
 class THREE {
 public:
 
-	class Console {
-
-		Console()
-		: info ( dummy ),
-		log    ( dummy ),
-		debug  ( dummy ),
-		warn   ( dummy ),
-		error  ( dummy ) { }
-
-		static void dummy(const char*) { }
-
-		LogP info;
-		LogP log;
-		LogP debug;
-		LogP warn;
-		LogP error;
-
-	};
-
-	static Console console;
-/*
-	static Console& console() {
-		static Console sConsole;
-		return sConsole;
-	}
-*/
-
 	enum Side {
 		FrontSide  = 0,
 		BackSide   = 1,
@@ -169,6 +142,8 @@ public:
 
 };
 
+/////////////////////////////////////////////////////////////////////////
+
 struct Visitor {
 	virtual void operator() (const Object3D&) { }
 	virtual void operator() (const Bone&)     { }
@@ -181,6 +156,41 @@ struct Visitor {
 	virtual void operator() (const Line&)     { }
 	virtual ~Visitor() { }
 };
+
+/////////////////////////////////////////////////////////////////////////
+
+
+class Console {
+public:
+	LogP info;
+	LogP log;
+	LogP debug;
+	LogP warn;
+	LogP error;
+
+	static Console& instance() {
+		static Console sConsole;
+		return sConsole;
+	}
+
+private:
+
+	Console()
+	: info ( dummy ),
+	log    ( dummy ),
+	debug  ( dummy ),
+	warn   ( dummy ),
+	error  ( dummy ) { }
+
+	static void dummy(const char*) { }
+};
+
+//static Console console;
+
+static Console& console() {
+	return Console::instance();
+}
+
 
 } // namespace three
 

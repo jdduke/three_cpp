@@ -4,6 +4,7 @@
 #include <three/common.hpp>
 
 #include <three/core/math.hpp>
+#include <three/objects/mesh.hpp>
 
 namespace three {
 
@@ -15,20 +16,10 @@ public:
 	float near;
 	float far;
 
-	Ray ( const Vector3& origin = Vector3(), const Vector3& direction, float near = 0, float far = std::numeric_limits<float>::infinity() )
+	Ray ( const Vector3& origin = Vector3(), const Vector3& direction = Vector3(), float near = 0, float far = std::numeric_limits<float>::infinity() )
 	: origin ( origin ), direction ( direction ), near ( near ), far ( far ) { }
 
-	//
-
-	static float distanceFromIntersection ( const vector3& origin, const Vector3& direction, const Vector3& position ) {
-
-		auto v0 = sub( position, origin );
-		auto d  = dot( v0, direction );
-
-		auto intersect = add( origin, Vector3( direction ).multiplyScalar( d ) );
-		return position.distanceTo( intersect );
-
-	}
+	/////////////////////////////////////////////////////////////////////////
 
 	// http://www.blackpawn.com/texts/pointinpoly/default.html
 
@@ -45,21 +36,21 @@ public:
 		auto dot12 = v1.dot( v2 );
 
 		auto invDenom = 1.f / ( dot00 * dot11 - dot01 * dot01 );
-		u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
-		v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+		auto u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+		auto v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
 
 		return ( u >= 0.f ) && ( v >= 0.f ) && ( u + v < 1.f );
 
 	}
 
-	//
+	/////////////////////////////////////////////////////////////////////////
 
 	struct Intersection {
 		float distance;
 		Vector3 point;
 		Face3* face;
 		int faceIndex;
-		Object* object;
+		Object3D* object;
 	};
 
 	static bool descSort ( const Intersection& a, const Intersection& b ) {
@@ -69,7 +60,7 @@ public:
 	}
 
 
-	std::vector<Intersection> intersectObject ( const Object& object, bool recursive = true ) {
+	std::vector<Intersection> intersectObject ( const Object3D& object, bool recursive = true ) {
 
 		std::vector<Intersection> intersects;
 
@@ -77,14 +68,14 @@ public:
 
 			for ( const auto& child : object.children ) {
 
-				auto iter_intersects = intersectObject( child, recursive ) );
-				intersects.insert( insersects.end(), iter_intersects.begin(), iter_intersects.end() );
+				auto iter_intersects = intersectObject ( *child, recursive );
+				intersects.insert( intersects.end(), iter_intersects.begin(), iter_intersects.end() );
 
 			}
 
 		}
 
-		if ( object.getType() == THREE.Particle ) {
+		if ( object.getType() == THREE::Particle ) {
 
 			auto distance = distanceFromIntersection( origin, direction, object.matrixWorld.getPosition() );
 
@@ -96,18 +87,33 @@ public:
 
 			intersects.emplace_back( distance, object.position, nullptr, 0, &object );
 
-		} else if ( object.getType() == THREE.Mesh ) {
+		} else if ( object.getType() == THREE::Mesh ) {
+
+			const Geometry* pGeometry = nullptr;
+
+			struct ExtractGeometry : public Visitor {
+				ExtractGeometry( const Geometry*& geometry ) : pGeometry( geometry ) { }
+				void operator() ( Mesh& mesh ) { pGeometry = mesh.geometry.get(); }
+				const Geometry*& pGeometry;
+			};
+
+			object.visit ( ExtractGeometry(pGeometry) );
+
+			if ( !pGeometry )
+				break;
 
 			// Checking boundingSphere
+
+			const auto& geometry = *pGeometry;
 
 			auto scale = Vector3( object.matrixWorld.getColumnX().length(),
 			                      object.matrixWorld.getColumnY().length(),
 			                      object.matrixWorld.getColumnZ().length() );
-			auto scaledRadius = object.geometry.boundingSphere.radius * Math.max( scale.x, Math.max( scale.y, scale.z ) );
+			auto scaledRadius = geometry.boundingSphere.radius * Math.max( scale.x, Math.max( scale.y, scale.z ) );
 
 			// Checking distance to ray
 
-			auto distance = distanceFromIntersection( this.origin, this.direction, object.matrixWorld.getPosition() );
+			auto distance = distanceFromIntersection( origin, direction, matrixWorld.getPosition() );
 
 			if ( distance > scaledRadius) {
 
@@ -118,10 +124,9 @@ public:
 			// Checking faces
 
 			auto rangeSq = range * range;
-			const auto& geometry = object.geometry;
 			const auto& vertices = geometry.vertices;
 			const auto& geometryMaterials = object.geometry.materials;
-			auto isFaceMaterial = object.material.getType() == THREE.MeshFaceMaterial;
+			auto isFaceMaterial = object.material.getType() == THREE::MeshFaceMaterial;
 			auto side = object.material.side;
 
 			object.matrixRotationWorld.extractRotation( object.matrixWorld );
@@ -161,7 +166,7 @@ public:
 
 				if ( scalar < 0 ) continue;
 
-				if ( side === THREE.DoubleSide || ( side === THREE.FrontSide ? dot < 0 : dot > 0 ) ) {
+				if ( side === THREE::DoubleSide || ( side === THREE::FrontSide ? dot < 0 : dot > 0 ) ) {
 
 					intersectPoint.add( originCopy, directionCopy.multiplyScalar( scalar ) );
 
@@ -170,7 +175,7 @@ public:
 					if ( distance < this.near ) continue;
 					if ( distance > this.far ) continue;
 
-					/*if ( face.getType() == THREE.Face3 ) */{
+					/*if ( face.getType() == THREE::Face3 ) */{
 
 						a = objMatrix.multiplyVector3( vertices[ face.a ] );
 						b = objMatrix.multiplyVector3( vertices[ face.b ] );
@@ -182,7 +187,7 @@ public:
 
 						}
 
-					} /*else if ( face.getType() == THREE.Face4 ) {
+					} /*else if ( face.getType() == THREE::Face4 ) {
 
 						a = objMatrix.multiplyVector3( a.copy( vertices[ face.a ] ) );
 						b = objMatrix.multiplyVector3( b.copy( vertices[ face.b ] ) );
@@ -209,7 +214,7 @@ public:
 
 	}
 
-	std::vector<Intersection> intersectObjects ( const std::vector<Object>& objects, bool recursive ) {
+	std::vector<Intersection> intersectObjects ( const std::vector<Object3D*>& objects, bool recursive ) {
 
 		std::vector<Intersection> interesects;
 
@@ -233,6 +238,16 @@ public:
 	}
 
 private:
+
+	float distanceFromIntersection ( const Vector3& origin, const Vector3& direction, const Vector3& position ) {
+
+		auto v0 = sub( position, origin );
+		auto d  = dot( v0, direction );
+
+		auto intersect = add( origin, Vector3( direction ).multiplyScalar( d ) );
+		return position.distanceTo( intersect );
+
+	}
 
 	float precision = 0.0001f;
 

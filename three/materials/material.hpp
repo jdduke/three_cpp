@@ -12,6 +12,8 @@ public:
 
 	typedef shared_ptr<Material> Ptr;
 
+	static Ptr create( int hex ) { return make_shared<Material>( ); }
+
 	/////////////////////////////////////////////////////////////////////////
 
 	int id;
@@ -42,10 +44,6 @@ public:
 	bool visible;
 
 	bool needsUpdate;
-
-	/////////////////////////////////////////////////////////////////////////
-
-	static Ptr create( int hex ) { return make_shared<Material>( ); }
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -101,6 +99,8 @@ protected:
 	overdraw ( false ),
 	visible ( true ),
 	needsUpdate ( true ) { }
+
+private:
 
 	static int& MaterialCount() {
 		static int sMaterialCount = 0;

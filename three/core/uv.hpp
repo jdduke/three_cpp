@@ -39,8 +39,8 @@ public:
 
 	UV& lerpSelf ( const UV& uv, float alpha ) {
 
-		u += ( uv.u - this.u ) * alpha;
-		v += ( uv.v - this.v ) * alpha;
+		u += ( uv.u - u ) * alpha;
+		v += ( uv.v - v ) * alpha;
 
 		return *this;
 

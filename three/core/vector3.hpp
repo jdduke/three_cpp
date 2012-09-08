@@ -4,7 +4,6 @@
 #include <three/common.hpp>
 
 #include <three/core/math.hpp>
-//#include <three/core/quaternion.hpp>
 
 namespace three {
 
@@ -134,50 +133,6 @@ public:
     Vector3& crossSelf ( const Vector3& v ) {
         return cross ( Vector3 ( *this ), v );
     }
-
-/*
-    Vector3& setEulerFromQuaternion ( const Quaternion& q, THREE::Order order = THREE::XYZ ) {
-        // q is assumed to be normalized
-
-        // clamp, to handle numerical problems
-        auto clamp = [] ( float x ) {
-            return Math::min ( Math::max ( x, -1.f ), 1.f );
-        };
-
-        auto sqx = q.x * q.x;
-        auto sqy = q.y * q.y;
-        auto sqz = q.z * q.z;
-        auto sqw = q.w * q.w;
-
-        if ( order == XYZ ) {
-            this.x = Math::atan2 ( 2.f * ( q.x * q.w - q.y * q.z ), ( sqw - sqx - sqy + sqz ) );
-            this.y = Math::asin ( clamp ( 2.f * ( q.x * q.z + q.y * q.w ) ) );
-            this.z = Math::atan2 ( 2.f * ( q.z * q.w - q.x * q.y ), ( sqw + sqx - sqy - sqz ) );
-        } else if ( order == YXZ ) {
-            this.x = Math::asin ( clamp ( 2.f * ( q.x * q.w - q.y * q.z ) ) );
-            this.y = Math::atan2 ( 2.f * ( q.x * q.z + q.y * q.w ), ( sqw - sqx - sqy + sqz ) );
-            this.z = Math::atan2 ( 2.f * ( q.x * q.y + q.z * q.w ), ( sqw - sqx + sqy - sqz ) );
-        } else if ( order == ZXY ) {
-            this.x = Math::asin ( clamp ( 2.f * ( q.x * q.w + q.y * q.z ) ) );
-            this.y = Math::atan2 ( 2.f * ( q.y * q.w - q.z * q.x ), ( sqw - sqx - sqy + sqz ) );
-            this.z = Math::atan2 ( 2.f * ( q.z * q.w - q.x * q.y ), ( sqw - sqx + sqy - sqz ) );
-        } else if ( order == ZYX ) {
-            this.x = Math::atan2 ( 2.f * ( q.x * q.w + q.z * q.y ), ( sqw - sqx - sqy + sqz ) );
-            this.y = Math::asin ( clamp ( 2.f * ( q.y * q.w - q.x * q.z ) ) );
-            this.z = Math::atan2 ( 2.f * ( q.x * q.y + q.z * q.w ), ( sqw + sqx - sqy - sqz ) );
-        } else if ( order == YZX ) {
-            this.x = Math::atan2 ( 2.f * ( q.x * q.w - q.z * q.y ), ( sqw - sqx + sqy - sqz ) );
-            this.y = Math::atan2 ( 2.f * ( q.y * q.w - q.x * q.z ), ( sqw + sqx - sqy - sqz ) );
-            this.z = Math::asin ( clamp ( 2.f * ( q.x * q.y + q.z * q.w ) ) );
-        } else if ( order == XZY ) {
-            this.x = Math::atan2 ( 2.f * ( q.x * q.w + q.y * q.z ), ( sqw - sqx + sqy - sqz ) );
-            this.y = Math::atan2 ( 2.f * ( q.x * q.z + q.y * q.w ), ( sqw + sqx - sqy - sqz ) );
-            this.z = Math::asin ( clamp ( 2.f * ( q.z * q.w - q.x * q.y ) ) );
-        }
-
-        return *this;
-    }
-*/
 
     bool equals ( const Vector3& v ) {
         return ( ( v.x == x ) && ( v.y == y ) && ( v.z == z ) );
