@@ -31,13 +31,22 @@
 #include <three/lights/point_light.hpp>
 #include <three/lights/spot_light.hpp>
 
-#include <three/objects/line.hpp>
-#include <three/objects/mesh.hpp>
-
 #include <three/materials/material.hpp>
 #include <three/materials/shader_material.hpp>
 
+#include <three/objects/line.hpp>
+#include <three/objects/mesh.hpp>
+#include <three/objects/particle.hpp>
+#include <three/objects/particle_system.hpp>
+
+#include <three/renderers/gl_renderer.hpp>
+#include <three/renderers/gl_shaders.hpp>
+
+#include <three/renderers/renderables/renderable_face.hpp>
+#include <three/renderers/renderables/renderable_line.hpp>
 #include <three/renderers/renderables/renderable_object.hpp>
+#include <three/renderers/renderables/renderable_particle.hpp>
+#include <three/renderers/renderables/renderable_vertex.hpp>
 
 #include <three/scenes/fog.hpp>
 #include <three/scenes/fog_exp2.hpp>
