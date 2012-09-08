@@ -3,6 +3,7 @@
 
 #include <three/common.hpp>
 
+#include <three/core/color.hpp>
 #include <three/core/object3d.hpp>
 
 namespace three {
@@ -12,21 +13,22 @@ public:
 
 	typedef std::shared_ptr<Light> Ptr;
 
-	static Ptr create( int hex ) { return std::make_shared<Light>( hex ); }
-
 	/////////////////////////////////////////////////////////////////////////
 
 	Color color;
+
+	Object3D* target;
 
 	/////////////////////////////////////////////////////////////////////////
 
 protected:
 
-	Light ( int hex ) : Object3D(), color( hex ) { }
+	explicit Light ( int hex ) : Object3D(), color( hex ), target ( nullptr ) { }
 
-	virtual THREE::Type getType() const { return THREE::Light; }
+	virtual THREE::Type type() const { return THREE::Light; }
 
-	virtual void visit( Visitor& v ) const { v( *this ); }
+	virtual void visit( Visitor& v ) { v( *this ); }
+	virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 };
 

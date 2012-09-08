@@ -5,6 +5,7 @@
 
 #include <three/core/math.hpp>
 #include <three/core/color.hpp>
+#include <three/core/face.hpp>
 #include <three/core/vector3.hpp>
 #include <three/core/vertex.hpp>
 #include <three/core/uv.hpp>
@@ -25,7 +26,7 @@ inline void hash_combine(std::size_t& seed, const T& v)
 }
 
 struct PointHash {
-    std::size_t operator() ( const std::tuple<int,int,int>& e ) {
+    std::size_t operator() ( const std::tuple<int,int,int>& e ) const {
         std::size_t seed = 0;
         hash_combine( seed, std::get<0>(e) );
         hash_combine( seed, std::get<1>(e) );
@@ -74,7 +75,7 @@ public:
 
     typedef std::shared_ptr<Geometry> Ptr;
 
-    Ptr create() { return std::make_shared<Geometry>(); }
+    Ptr create() { return make_shared<Geometry>(); }
 
     /////////////////////////////////////////////////////////////////////////
 
@@ -88,10 +89,10 @@ public:
 
     std::vector<Material::Ptr> materials;
 
-    std::vector<Face3> faces;
+    std::vector<Face> faces;
 
     std::vector<std::vector<UV>> faceUvs;
-    std::vector<std::vector<std::array<UV,4>>> faceVertexUvs;
+    std::vector<std::array<std::vector<UV>, 4>> faceVertexUvs;
 
     std::vector<MorphTarget> morphTargets;
     std::vector<Color> morphColors;
@@ -229,7 +230,7 @@ public:
         std::vector<Vector3> tan1 ( vertices.size() );
         std::vector<Vector3> tan2 ( vertices.size() );
 
-        auto handleTriangle = [&,this] (const std::array<UV,4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
+        auto handleTriangle = [&,this] (const std::vector<UV>& uv, int a, int b, int c, int ua, int ub, int uc ) {
 
             const auto& vA = vertices[ a ].position;
             const auto& vB = vertices[ b ].position;

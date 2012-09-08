@@ -2,10 +2,12 @@
 #define THREE_OBJECT3D_HPP
 
 #include <three/common.hpp>
+#include <three/utils.hpp>
 
 #include <three/core/vector3.hpp>
 #include <three/core/quaternion.hpp>
 #include <three/core/matrix4.hpp>
+
 #include <three/extras/noncopyable.hpp>
 
 #include <algorithm>
@@ -20,9 +22,14 @@ public:
 
 	typedef std::shared_ptr<Object3D> Ptr;
 
-	Object3D::Ptr create() {
-		return std::make_shared<Object3D>();
-	}
+	/////////////////////////////////////////////////////////////////////////
+
+	virtual THREE::Type type() const { return THREE::Object3D; }
+
+	virtual void visit( Visitor& v ) = 0;
+	virtual void visit( ConstVisitor& v ) const = 0;
+
+	virtual ~Object3D() { }
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -64,12 +71,6 @@ public:
 	bool receiveShadow;
 
 	bool frustumCulled;
-
-	/////////////////////////////////////////////////////////////////////////
-
-	virtual THREE::Type getType() const { return THREE::Object3D; }
-
-	virtual void visit ( Visitor& v ) const  = 0;//{ v( *this ); }
 
 	/////////////////////////////////////////////////////////////////////////
 

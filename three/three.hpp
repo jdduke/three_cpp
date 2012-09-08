@@ -15,7 +15,7 @@
 #include <three/core/math.hpp>
 #include <three/core/matrix4.hpp>
 #include <three/core/object3d.hpp>
-//#include <three/core/projector.hpp>
+#include <three/core/projector.hpp>
 #include <three/core/quaternion.hpp>
 #include <three/core/ray.hpp>
 #include <three/core/rectangle.hpp>
@@ -31,9 +31,16 @@
 #include <three/lights/point_light.hpp>
 #include <three/lights/spot_light.hpp>
 
+#include <three/objects/line.hpp>
+#include <three/objects/mesh.hpp>
+
 #include <three/materials/material.hpp>
 #include <three/materials/shader_material.hpp>
 
+#include <three/renderers/renderables/renderable_object.hpp>
+
+#include <three/scenes/fog.hpp>
+#include <three/scenes/fog_exp2.hpp>
 #include <three/scenes/scene.hpp>
 
 #endif // THREE_HPP

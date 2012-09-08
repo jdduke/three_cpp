@@ -38,7 +38,7 @@ public:
 
 	typedef std::shared_ptr<ShaderMaterial> Ptr;
 
-	static Ptr create( /* parameters */ ) { return std::make_shared<ShaderMaterial>( ); }
+	static Ptr create( /* parameters */ ) { return make_shared<ShaderMaterial>( ); }
 
 	/////////////////////////////////////////////////////////////////////////
 

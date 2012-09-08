@@ -14,4 +14,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_COMMON_HPP
+#endif // THREE_NONCOPYABLE_HPP

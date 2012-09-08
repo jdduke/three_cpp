@@ -124,6 +124,11 @@ public:
 		Line
 	};
 
+	enum LineType {
+		LineStrip = 0,
+		LinePieces = 1
+	};
+
 	enum FaceType {
 		Face3 = 0,
 		Face4
@@ -146,6 +151,21 @@ public:
 /////////////////////////////////////////////////////////////////////////
 
 struct Visitor {
+	virtual void operator() (Object3D&) { }
+	virtual void operator() (Bone&)     { }
+	virtual void operator() (Camera&)   { }
+	virtual void operator() (Light&)    { }
+	virtual void operator() (Scene&)    { }
+	virtual void operator() (Particle&) { }
+	virtual void operator() (Sprite&)   { }
+	virtual void operator() (Mesh&)     { }
+	virtual void operator() (Line&)     { }
+	virtual ~Visitor() { }
+	template < typename T >
+	void fallback( T& object ) { (*this)( static_cast<Object3D&>(object) ); }
+};
+
+struct ConstVisitor {
 	virtual void operator() (const Object3D&) { }
 	virtual void operator() (const Bone&)     { }
 	virtual void operator() (const Camera&)   { }
@@ -155,7 +175,9 @@ struct Visitor {
 	virtual void operator() (const Sprite&)   { }
 	virtual void operator() (const Mesh&)     { }
 	virtual void operator() (const Line&)     { }
-	virtual ~Visitor() { }
+	virtual ~ConstVisitor() { }
+	template < typename T >
+	void fallback( const T& object ) { (*this)( static_cast<const Object3D&>(object) ); }
 };
 
 /////////////////////////////////////////////////////////////////////////

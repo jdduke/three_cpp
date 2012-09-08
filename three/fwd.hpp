@@ -11,13 +11,21 @@ class Scene;
 class Particle;
 class Sprite;
 class Mesh;
+class Face;
 class Line;
+class Rectangle;
 class Vector2;
 class Vector3;
 class Vector4;
 class Matrix4;
 class Quaternion;
 class Ray;
+
+class RenderableFace;
+class RenderableObject;
+class RenderableLine;
+class RenderableParticle;
+class RenderableVertex;
 
 class Spline;
 

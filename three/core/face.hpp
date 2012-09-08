@@ -5,6 +5,7 @@
 
 #include <three/core/color.hpp>
 #include <three/core/vector3.hpp>
+#include <three/core/vector4.hpp>
 
 #include <vector>
 
@@ -57,8 +58,8 @@ public:
 
 private:
 
-    const THREE::FaceType mType;
-    const int mSize;
+    THREE::FaceType mType;
+    int mSize;
 
     Face( ) = delete;
 

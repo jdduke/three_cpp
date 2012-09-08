@@ -14,14 +14,12 @@ public:
 	typedef std::shared_ptr<PerspectiveCamera> Ptr;
 
 	static Ptr create( float fov = 50, float aspect = 1, float near = 0.1f, float far = 2000 ) {
-		return std::make_shared<PerspectiveCamera>( fov, aspect, near, far );
+		return make_shared<PerspectiveCamera>( fov, aspect, near, far );
 	}
-
 
 	/////////////////////////////////////////////////////////////////////////
 
 	float fov, aspect;
-	float near, far;
 
 	float fullWidth, fullHeight;
 	float x, y;
@@ -83,7 +81,7 @@ public:
 
 		updateProjectionMatrix();
 
-	};
+	}
 
 
 	void updateProjectionMatrix () {
@@ -118,15 +116,12 @@ public:
 protected:
 
 	PerspectiveCamera ( float fov, float aspect, float near, float far )
-	: Camera(), fov ( fov ), aspect ( aspect ), near ( near ), far ( far ),
+	: Camera( near, far ), fov ( fov ), aspect ( aspect ),
 	  fullWidth ( 0 ), fullHeight ( 0 ), x ( 0 ), y ( 0 ), width ( 0 ), height ( 0 ) {
 
 		updateProjectionMatrix();
 
 	}
-
-	PerspectiveCamera ( const PerspectiveCamera& ) = delete;
-	PerspectiveCamera& operator= ( const PerspectiveCamera& ) = delete;
 
 };
 

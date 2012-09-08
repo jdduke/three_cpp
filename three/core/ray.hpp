@@ -48,9 +48,9 @@ public:
 	struct Intersection {
 		float distance;
 		Vector3 point;
-		Face3* face;
+		const Face* face;
 		int faceIndex;
-		Object3D* object;
+		const Object3D* object;
 	};
 
 	static bool descSort ( const Intersection& a, const Intersection& b ) {
@@ -60,7 +60,7 @@ public:
 	}
 
 
-	std::vector<Intersection> intersectObject ( const Object3D& object, bool recursive = true ) {
+	std::vector<Intersection> intersectObject ( Object3D& object, bool recursive = true ) {
 
 		std::vector<Intersection> intersects;
 
@@ -75,7 +75,7 @@ public:
 
 		}
 
-		if ( object.getType() == THREE::Particle ) {
+		if ( object.type() == THREE::Particle ) {
 
 			auto distance = distanceFromIntersection( origin, direction, object.matrixWorld.getPosition() );
 
@@ -85,35 +85,23 @@ public:
 
 			}
 
-			intersects.emplace_back( distance, object.position, nullptr, 0, &object );
+			intersects.push_back( Intersection({distance, object.position, nullptr, 0, &object}) );
 
-		} else if ( object.getType() == THREE::Mesh ) {
+		} else if ( object.type() == THREE::Mesh ) {
 
-			const Geometry* pGeometry = nullptr;
-			const Material* pMaterial = nullptr;
+			ExtractMeshData meshData;
 
-			struct ExtractMeshData : public Visitor {
-				ExtractMeshData( const Geometry*& geometry, const Material*& material )
-				: pGeometry( geometry ), pMaterial ( material ) { }
-				void operator() ( const Mesh& mesh ) {
-					pGeometry = mesh.geometry.get();
-					pMaterial = mesh.material.get();
-				}
-				const Geometry*& pGeometry;
-				const Material*& pMaterial;
-			} extract ( pGeometry, pMaterial );
+			object.visit ( meshData );
 
-			object.visit ( extract );
-
-			if ( !pGeometry || !pMaterial ) {
+			if ( !meshData.geometry || !meshData.material ) {
 				console().warn( "Error extracting mesh geometry/material." );
 				return std::vector<Intersection>();
 			}
 
-			// Checking boundingSphere
+			const auto& geometry = *meshData.geometry;
+			const auto& material = *meshData.material;
 
-			const auto& geometry = *pGeometry;
-			const auto& material = *pMaterial;
+			// Checking boundingSphere
 
 			auto scale = Vector3( object.matrixWorld.getColumnX().length(),
 			                      object.matrixWorld.getColumnY().length(),
@@ -134,7 +122,7 @@ public:
 
 			const auto& vertices = geometry.vertices;
 			const auto& geometryMaterials = geometry.materials;
-			auto isFaceMaterial = material.getType() == THREE::MeshFaceMaterial;
+			auto isFaceMaterial = material.type() == THREE::MeshFaceMaterial;
 			auto side = material.side;
 
 			object.matrixRotationWorld.extractRotation( object.matrixWorld );
@@ -191,7 +179,7 @@ public:
 
 						if ( pointInFace3( intersectPoint, a, b, c ) ) {
 
-							intersects.emplace_back( distance, intersectPoint, &face, f, &object );
+							intersects.push_back( Intersection({distance, intersectPoint, &face, f, &object}) );
 
 						}
 
@@ -204,7 +192,7 @@ public:
 
 						if ( pointInFace3( intersectPoint, a, b, d ) || pointInFace3( intersectPoint, b, c, d ) ) {
 
-							intersects.emplace_back( distance, intersectPoint, face, f, &object );
+							intersects.push_back( Intersection({distance, intersectPoint, &face, f, &object}) );
 
 						}
 

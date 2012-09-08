@@ -6,17 +6,42 @@
 #include <three/core/math.hpp>
 #include <three/core/frustum.hpp>
 #include <three/core/matrix4.hpp>
+#include <three/core/ray.hpp>
 #include <three/core/vector3.hpp>
 #include <three/core/vector4.hpp>
+
+#include <three/objects/line.hpp>
+#include <three/objects/mesh.hpp>
+#include <three/objects/particle.hpp>
+
+#include <three/renderers/renderables/renderable_object.hpp>
+#include <three/renderers/renderables/renderable_vertex.hpp>
+#include <three/renderers/renderables/renderable_face.hpp>
+#include <three/renderers/renderables/renderable_line.hpp>
+#include <three/renderers/renderables/renderable_particle.hpp>
+
+#include <three/scenes/scene.hpp>
+
+#include <vector>
 
 namespace three {
 
 class Projector {
 public:
 
+	struct RenderData {
+		// TODO: Fill these with pointers AFTER creating with the pool
+		std::vector<RenderableObject> objects;
+		std::vector<RenderableObject> sprites;
+		std::vector<Object3D*>        lights;
+		std::vector<Renderable*>      elements;
+	};
+
+protected:
+
 	template < typename Renderable >
 	struct Renderables {
-		Renderables () : renderable ( nullptr ), count ( 0 ) { }
+		Renderables () : count ( 0 ) { }
 
 		Renderable& next() {
 			if ( count == pool.size() ) {
@@ -24,7 +49,8 @@ public:
 				++count;
 				return pool.back();
 			} else {
-			return pool[ count++ ];
+				return pool[ count++ ];
+			}
 		}
 		Renderable& current() {
 			return pool[ count ];
@@ -37,30 +63,22 @@ public:
 		int count;
 	};
 
-	Renderables<RenderableObject> _objects;
-	Renderables<RenderableVertex> _vertices;
-	Renderables<RenderableFace3> _face3s;
-	Renderables<RenderableFace4> _face4s;
-	Renderables<RenderableLine> _lines;
+	Renderables<RenderableObject>   _objects;
+	Renderables<RenderableVertex>   _vertices;
+	Renderables<RenderableFace>     _faces;
+	Renderables<RenderableLine>     _lines;
 	Renderables<RenderableParticle> _particles;
 
-	struct RenderData {
-		// TODO: Fill these with pointers AFTER creating with the pool
-		std::vector<RenderableObject> objects;
-		std::vector<RenderableObject> sprites;
-		std::vector<Object3D*> lights;
-		std::vector<Renderable*> elements;
-	} _renderData;
+	RenderData _renderData;
 
 	Matrix4 _viewProjectionMatrix;
 	Matrix4 _modelViewProjectionMatrix;
 
 	Frustum _frustum;
 
-	Projector () {
+public:
 
-	}
-
+	Projector () { }
 
 	Vector3& projectVector ( Vector3& vector, const Camera& camera ) {
 
@@ -101,9 +119,11 @@ public:
 	}
 
 	struct PainterSort {
-		template <typename T>
-		operator()(const T& a, const T& b) {
+		bool operator()(const RenderableObject& a, const RenderableObject& b) {
 			return b.z < a.z;
+		}
+		bool operator()(const Renderable* a, const Renderable* b) {
+			return b->z < a->z;
 		}
 	};
 
@@ -117,14 +137,14 @@ public:
 
 		Vector3 _vector3;
 
-		std::function<void(Object3D&)> projectObject = [this] ( Object3D& object ) {
+		std::function<void(Object3D&)> projectObject = [&projectObject,this] ( Object3D& object ) {
 
 			if ( !object.visible ) return;
 
-			if ( ( object.getType() == THREE::Mesh || object.getType() == THREE::Line ) &&
+			if ( ( object.type() == THREE::Mesh || object.type() == THREE::Line ) &&
 			     ( !object.frustumCulled || _frustum.contains( object ) ) ) {
 
-				_vector3.copy( object.matrixWorld.getPosition() );
+				Vector3 _vector3 = object.matrixWorld.getPosition();
 				_viewProjectionMatrix.multiplyVector3( _vector3 );
 
 				auto& renderable = _objects.next();
@@ -133,9 +153,9 @@ public:
 
 				_renderData.objects.push_back( renderable );
 
-			} else if ( object.getType() == THREE::Sprite || object.getType() == THREE::Particle ) {
+			} else if ( object.type() == THREE::Sprite || object.type() == THREE::Particle ) {
 
-				_vector3.copy( object.matrixWorld.getPosition() );
+				Vector3 _vector3 = object.matrixWorld.getPosition();
 				_viewProjectionMatrix.multiplyVector3( _vector3 );
 
 				auto& renderable = _objects.next();
@@ -144,15 +164,15 @@ public:
 
 				_renderData.sprites.push_back( renderable );
 
-			} else if ( object.getType() == THREE::Light ) {
+			} else if ( object.type() == THREE::Light ) {
 
 				_renderData.lights.push_back( &object );
 
 			}
 
-			foreach ( auto& child : object.children ) {
+			for ( auto& child : object.children ) {
 
-				projectObject( child );
+				projectObject( *child );
 
 			}
 
@@ -167,66 +187,72 @@ public:
 
 	}
 
-	struct SceneVisitor() {
-		Projector& p
+	friend struct SceneVisitor;
+
+	struct SceneVisitor : public ConstVisitor {
+		Projector& p;
+		Camera& c;
 		Matrix4& modelMatrix;
+		Matrix4& viewProjectionMatrix;
 
-		SceneVisitor (Projector& p, Matrix4& model) : p ( p ), modelMatrix ( model ) { }
+		SceneVisitor (Projector& p, Camera& c, Matrix4& model, Matrix4& viewProjection)
+		: p ( p ), c ( c ), modelMatrix ( model ), viewProjectionMatrix ( viewProjection ) { }
 
-		virtual void operator() ( const Particle& p) {
-
-		}
-
+		virtual void operator() ( const Particle& p) { }
 		virtual void operator() ( const Mesh& object ) {
-			const auto& geometry          = object.geometry;
-			const auto& geometryMaterials = object.geometry.materials;
+			const auto& geometry          = *object.geometry;
+			const auto& geometryMaterials = geometry.materials;
 			const auto& vertices          = geometry.vertices;
 			const auto& faces             = geometry.faces;
 			const auto& faceVertexUvs     = geometry.faceVertexUvs;
 
 			auto rotationMatrix = object.matrixRotationWorld.extractRotation( modelMatrix );
 
-			isFaceMaterial = object.material->getType() == THREE::MeshFaceMaterial;
+			auto isFaceMaterial = object.material->type() == THREE::MeshFaceMaterial;
 
 			for ( const auto& v : vertices ) {
 
 				auto& vertex = p._vertices.next();
-				vertex.positionWorld.copy( vertices[ v ] );
+				vertex.positionWorld.copy( v.position );
 
 				modelMatrix.multiplyVector3( vertex.positionWorld );
 
 				vertex.positionScreen.copy( vertex.positionWorld );
-				_viewProjectionMatrix.multiplyVector4( vertex.positionScreen );
+				viewProjectionMatrix.multiplyVector4( vertex.positionScreen );
 
 				vertex.positionScreen.x /= vertex.positionScreen.w;
 				vertex.positionScreen.y /= vertex.positionScreen.w;
 
-				vertex.visible = vertex.positionScreen.z > near && vertex.positionScreen.z < far;
+				vertex.visible = vertex.positionScreen.z > c.near && vertex.positionScreen.z < c.far;
 
 			}
 
-			for ( const auto& face : faces ) {
+			for ( int f = 0; f < faces.size(); ++f ) {
+
+				auto& face = faces[ f ];
+
+				bool visible = false;
 
 				auto material = isFaceMaterial ? geometryMaterials[ face.materialIndex ] : object.material;
 
 				if ( material == nullptr ) continue;
 
-				auto side = material.side;
+				auto side = material->side;
 
-				if ( face instanceof THREE::Face3 ) {
+				if ( face.type() == THREE::Face3 ) {
 
-					const auto& v1 = _vertexPool[ face.a ];
-					const auto& v2 = _vertexPool[ face.b ];
-					const auto& v3 = _vertexPool[ face.c ];
+					const auto& v1 = p._vertices.pool[ face.a ];
+					const auto& v2 = p._vertices.pool[ face.b ];
+					const auto& v3 = p._vertices.pool[ face.c ];
 
 					if ( v1.visible && v2.visible && v3.visible ) {
 
-						visible = ( ( v3.positionScreen.x - v1.positionScreen.x ) * ( v2.positionScreen.y - v1.positionScreen.y ) -
-						            ( v3.positionScreen.y - v1.positionScreen.y ) * ( v2.positionScreen.x - v1.positionScreen.x ) ) < 0;
+						const auto visible = ( ( v3.positionScreen.x - v1.positionScreen.x ) * ( v2.positionScreen.y - v1.positionScreen.y ) -
+						                       ( v3.positionScreen.y - v1.positionScreen.y ) * ( v2.positionScreen.x - v1.positionScreen.x ) ) < 0;
 
 						if ( side == THREE::DoubleSide || visible == ( side == THREE::FrontSide ) ) {
 
-							auto& face = _face3s.next();
+							auto& face = p._faces.next();
 
 							face.v1.copy( v1 );
 							face.v2.copy( v2 );
@@ -244,24 +270,24 @@ public:
 
 					}
 
-				} /*else if ( face instanceof THREE::Face4 ) {
+				} else if ( face.type() == THREE::Face4 ) {
 
-					v1 = _vertexPool[ face.a ];
-					v2 = _vertexPool[ face.b ];
-					v3 = _vertexPool[ face.c ];
-					v4 = _vertexPool[ face.d ];
+					const auto& v1 = p._vertices.pool[ face.a ];
+					const auto& v2 = p._vertices.pool[ face.b ];
+					const auto& v3 = p._vertices.pool[ face.c ];
+					const auto& v4 = p._vertices.pool[ face.d ];
 
-					if ( v1.visible === true && v2.visible === true && v3.visible === true && v4.visible === true ) {
+					if ( v1.visible && v2.visible && v3.visible && v4.visible ) {
 
-						visible = ( v4.positionScreen.x - v1.positionScreen.x ) * ( v2.positionScreen.y - v1.positionScreen.y ) -
-							( v4.positionScreen.y - v1.positionScreen.y ) * ( v2.positionScreen.x - v1.positionScreen.x ) < 0 ||
-							( v2.positionScreen.x - v3.positionScreen.x ) * ( v4.positionScreen.y - v3.positionScreen.y ) -
-							( v2.positionScreen.y - v3.positionScreen.y ) * ( v4.positionScreen.x - v3.positionScreen.x ) < 0;
+						const auto visible = ( v4.positionScreen.x - v1.positionScreen.x ) * ( v2.positionScreen.y - v1.positionScreen.y ) -
+						                     ( v4.positionScreen.y - v1.positionScreen.y ) * ( v2.positionScreen.x - v1.positionScreen.x ) < 0 ||
+						                     ( v2.positionScreen.x - v3.positionScreen.x ) * ( v4.positionScreen.y - v3.positionScreen.y ) -
+						                     ( v2.positionScreen.y - v3.positionScreen.y ) * ( v4.positionScreen.x - v3.positionScreen.x ) < 0;
 
 
-						if ( side === THREE::DoubleSide || visible === ( side === THREE::FrontSide ) ) {
+						if ( side == THREE::DoubleSide || visible == ( side == THREE::FrontSide ) ) {
 
-							_face = getNextFace4InPool();
+							auto& _face = p._faces.next();
 
 							_face.v1.copy( v1 );
 							_face.v2.copy( v2 );
@@ -280,9 +306,9 @@ public:
 
 					}
 
-				}*/
+				}
 
-				auto& _face = _face3s.current()
+				auto& _face = p._faces.current();
 				_face.normalWorld.copy( face.normal );
 
 				if ( !visible && ( side == THREE::BackSide || side == THREE::DoubleSide ) ) _face.normalWorld.negate();
@@ -296,7 +322,7 @@ public:
 
 				auto& faceVertexNormals = face.vertexNormals;
 
-				for ( auto n = 0, nl = faceVertexNormals.size(); n < nl; n++ ) {
+				for ( auto n = 0, nl = face.size(); n < nl; n++ ) {
 
 					auto& normal = _face.vertexNormalsWorld[ n ];
 					normal.copy( faceVertexNormals[ n ] );
@@ -307,13 +333,11 @@ public:
 
 				}
 
-				for ( auto c = 0, cl = faceVertexUvs.size(); c < cl; c ++ ) {
+				for ( int c = 0, cl = face.size(); c < cl; c ++ ) {
 
-					uvs = faceVertexUvs[ c ][ f ];
+					const auto& uvs = faceVertexUvs[ c ][ f ];
 
-					if ( uvs == nullptr ) continue;
-
-					for ( auto u = 0, ul = uvs.size(); u < ul; u ++ ) {
+					for ( int u = 0, ul = uvs.size(); u < ul; u ++ ) {
 
 						_face.uvs[ c ][ u ] = uvs[ u ];
 
@@ -321,56 +345,57 @@ public:
 
 				}
 
-				_face.material = material;
+				_face.material = material.get();
 
 				_face.z = _face.centroidScreen.z;
 
-				_renderData.elements.push_back( _face );
+				// TODO: FIX!!!
+				p._renderData.elements.push_back( &_face );
 
 			}
 		}
 
 		virtual void operator() ( const Line& object ) {
 
-			p._modelViewProjectionMatrix.multiply( _viewProjectionMatrix, modelMatrix );
+			p._modelViewProjectionMatrix.multiply( p._viewProjectionMatrix, modelMatrix );
 
-			auto& vertices = object.geometry.vertices;
+			auto& vertices = object.geometry->vertices;
 
-			auto& v1 = _vertices.next();
-			v1.positionScreen.copy( vertices[ 0 ] );
+			auto& v1 = p._vertices.next();
+			v1.positionScreen.copy( vertices[ 0 ].position );
 			p._modelViewProjectionMatrix.multiplyVector4( v1.positionScreen );
 
 			// Handle LineStrip and LinePieces
-			auto step = object.type == THREE::LinePieces ? 2 : 1;
+			auto step = object.lineType == THREE::LinePieces ? 2 : 1;
 
-			for ( v = 1, vl = vertices.size(); v < vl; v ++ ) {
+			for ( int v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
-				auto& v1 = _vertices.next();
-				v1.positionScreen.copy( vertices[ v ] );
+				auto& v1 = p._vertices.next();
+				v1.positionScreen.copy( vertices[ v ].position );
 				p._modelViewProjectionMatrix.multiplyVector4( v1.positionScreen );
 
 				if ( ( v + 1 ) % step > 0 ) continue;
 
-				auto& v2 = _vertices.pool[ _vertices.count - 2 ];
+				auto& v2 = p._vertices.pool[ p._vertices.count - 2 ];
 
 				auto _clippedVertex1PositionScreen = v1.positionScreen;
 				auto _clippedVertex2PositionScreen = v2.positionScreen;
 
-				if ( clipLine( _clippedVertex1PositionScreen, _clippedVertex2PositionScreen ) === true ) {
+				if ( clipLine( _clippedVertex1PositionScreen, _clippedVertex2PositionScreen ) ) {
 
 					// Perform the perspective divide
 					_clippedVertex1PositionScreen.multiplyScalar( 1.f / _clippedVertex1PositionScreen.w );
 					_clippedVertex2PositionScreen.multiplyScalar( 1.f / _clippedVertex2PositionScreen.w );
 
-					auto& _line = _lines.next();
+					auto& _line = p._lines.next();
 					_line.v1.positionScreen.copy( _clippedVertex1PositionScreen );
 					_line.v2.positionScreen.copy( _clippedVertex2PositionScreen );
 
-					_line.z = Math.max( _clippedVertex1PositionScreen.z, _clippedVertex2PositionScreen.z );
+					_line.z = Math::max( _clippedVertex1PositionScreen.z, _clippedVertex2PositionScreen.z );
 
-					_line.material = object.material;
+					_line.material = object.material.get();
 
-					_renderData.elements.push_back( _line );
+					p._renderData.elements.push_back( &_line );
 
 				}
 			}
@@ -379,15 +404,7 @@ public:
 
 	RenderData& projectScene ( Scene& scene, Camera& camera, bool sort ) {
 
-		var near = camera.near, far = camera.far, visible = false,
-		o, ol, v, vl, f, fl, n, nl, c, cl, u, ul, object,
-		modelMatrix, rotationMatrix,
-		geometry, geometryMaterials, vertices, vertex, vertexPositionScreen,
-		faces, face, faceVertexNormals, normal, faceVertexUvs, uvs,
-		v1, v2, v3, v4, isFaceMaterial, material, side;
-
-		_face3s.reset();
-		_face4s.reset();
+		_faces.reset();
 		_lines.reset();
 		_particles.reset();
 
@@ -405,15 +422,17 @@ public:
 
 		_renderData = projectGraph( scene, false );
 
-		for ( auto& renderObject : _renderData.objects )
+		for ( auto& renderObject : _renderData.objects ) {
 
 			auto& object = *renderObject.object;
 
-			modelMatrix = object.matrixWorld;
+			auto& modelMatrix = object.matrixWorld;
 
 			_vertices.reset();
 
-			object.visit( SceneVisitor(*this, modelMatrix) );
+			SceneVisitor visitor( *this, camera, modelMatrix, _viewProjectionMatrix );
+
+			object.visit( visitor );
 
 		}
 
@@ -423,40 +442,55 @@ public:
 
 			auto& object = *renderSprite.object;
 
-			const auto& modelMatrix = object.matrixWorld;
+			struct SpriteVisitor : public Visitor {
 
-			if ( object.getType() == THREE::Particle ) {
+				SpriteVisitor ( Projector& p, Camera& c )
+				 : p ( p ), c ( c ) { }
 
-				_vector4.set( modelMatrix.elements[12], modelMatrix.elements[13], modelMatrix.elements[14], 1 );
-				_viewProjectionMatrix.multiplyVector4( _vector4 );
+				void operator() ( Particle& object ) {
 
-				_vector4.z /= _vector4.w;
+					const auto& modelMatrix = object.matrixWorld;
 
-				if ( _vector4.z > 0 && _vector4.z < 1 ) {
+					Vector4 _vector4 ( modelMatrix.elements[12], modelMatrix.elements[13], modelMatrix.elements[14], 1 );
+					p._viewProjectionMatrix.multiplyVector4( _vector4 );
 
-					auto& _particle = _particles.next();
-					_particle.object = &object;
-					_particle.x = _vector4.x / _vector4.w;
-					_particle.y = _vector4.y / _vector4.w;
-					_particle.z = _vector4.z;
+					_vector4.z /= _vector4.w;
 
-					_particle.rotation = object.rotation.z;
+					if ( _vector4.z > 0 && _vector4.z < 1 ) {
 
-					_particle.scale.x = object.scale.x * Math.abs( _particle.x - ( _vector4.x + camera.projectionMatrix.elements[0] ) / ( _vector4.w + camera.projectionMatrix.elements[12] ) );
-					_particle.scale.y = object.scale.y * Math.abs( _particle.y - ( _vector4.y + camera.projectionMatrix.elements[5] ) / ( _vector4.w + camera.projectionMatrix.elements[13] ) );
+						auto& _particle = p._particles.next();
+						_particle.object = &object;
+						_particle.x = _vector4.x / _vector4.w;
+						_particle.y = _vector4.y / _vector4.w;
+						_particle.z = _vector4.z;
 
-					_particle.material = object.material;
+						_particle.rotation = object.rotation.z;
 
-					_renderData.elements.push_back( _particle );
+						_particle.scale.x = object.scale.x * Math::abs( _particle.x - ( _vector4.x + c.projectionMatrix.elements[0] ) / ( _vector4.w + c.projectionMatrix.elements[12] ) );
+						_particle.scale.y = object.scale.y * Math::abs( _particle.y - ( _vector4.y + c.projectionMatrix.elements[5] ) / ( _vector4.w + c.projectionMatrix.elements[13] ) );
+
+						_particle.material = object.material.get();
+
+						p._renderData.elements.push_back( &_particle );
+
+					}
 
 				}
 
-			}
+				Projector& p;
+				Camera& c;
+
+			} visitor ( *this, camera );
+
+			object.visit ( visitor );
 
 		}
 
-		if ( sort )
-			std::sort(_renderData.elements.begin(), _renderData.elements.end(), PainterSort() );
+		if ( sort ) {
+
+			std::sort( _renderData.elements.begin(), _renderData.elements.end(), PainterSort() );
+
+		}
 
 		return _renderData;
 
@@ -464,15 +498,15 @@ public:
 
 	//
 
-	bool clipLine( const Vector4& s1, const Vector4& s2 ) {
+	static bool clipLine( Vector4& s1, Vector4& s2 ) {
 
-		float alpha1 = 0, alpha2 = 1,
+		float alpha1 = 0, alpha2 = 1;
 
 		// Calculate the boundary coordinate of each vertex for the near and far clip planes,
 		// Z = -1 and Z = +1, respectively.
-		auto bc1near =  s1.z + s1.w,
-		auto bc2near =  s2.z + s2.w,
-		auto bc1far =  - s1.z + s1.w,
+		auto bc1near =  s1.z + s1.w;
+		auto bc2near =  s2.z + s2.w;
+		auto bc1far =  - s1.z + s1.w;
 		auto bc2far =  - s2.z + s2.w;
 
 		if ( bc1near >= 0 && bc2near >= 0 && bc1far >= 0 && bc2far >= 0 ) {
@@ -492,24 +526,24 @@ public:
 			if ( bc1near < 0 ) {
 
 				// v1 lies outside the near plane, v2 inside
-				alpha1 = Math.max( alpha1, bc1near / ( bc1near - bc2near ) );
+				alpha1 = Math::max( alpha1, bc1near / ( bc1near - bc2near ) );
 
 			} else if ( bc2near < 0 ) {
 
 				// v2 lies outside the near plane, v1 inside
-				alpha2 = Math.min( alpha2, bc1near / ( bc1near - bc2near ) );
+				alpha2 = Math::min( alpha2, bc1near / ( bc1near - bc2near ) );
 
 			}
 
 			if ( bc1far < 0 ) {
 
 				// v1 lies outside the far plane, v2 inside
-				alpha1 = Math.max( alpha1, bc1far / ( bc1far - bc2far ) );
+				alpha1 = Math::max( alpha1, bc1far / ( bc1far - bc2far ) );
 
 			} else if ( bc2far < 0 ) {
 
 				// v2 lies outside the far plane, v2 inside
-				alpha2 = Math.min( alpha2, bc1far / ( bc1far - bc2far ) );
+				alpha2 = Math::min( alpha2, bc1far / ( bc1far - bc2far ) );
 
 			}
 

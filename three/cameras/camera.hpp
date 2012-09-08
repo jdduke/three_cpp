@@ -13,13 +13,13 @@ public:
 
 	typedef std::shared_ptr<Camera> Ptr;
 
-	static Ptr create() { return std::make_shared<Camera>(); }
-
 	/////////////////////////////////////////////////////////////////////////
 
-	Matrix4 matrixWorldInverse;
+	mutable Matrix4 matrixWorldInverse;
 	Matrix4 projectionMatrix;
-	Matrix4 projectionMatrixInverse;
+	mutable Matrix4 projectionMatrixInverse;
+
+	float near, far;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -39,14 +39,15 @@ public:
 
 protected:
 
-	Camera ()
-	: Object3D() { }
+	Camera ( float near, float far )
+	 : Object3D(), near ( near ), far ( far ) { }
 
 	/////////////////////////////////////////////////////////////////////////
 
-	virtual THREE::Type getType() const { return THREE::Camera; }
+	virtual THREE::Type type() const { return THREE::Camera; }
 
 	virtual void visit( Visitor& v ) { v( *this ); }
+	virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 };
 

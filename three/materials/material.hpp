@@ -7,14 +7,14 @@
 
 namespace three {
 
-class Material : NonCopyable {
+class Material : public NonCopyable {
 public:
 
 	typedef std::shared_ptr<Material> Ptr;
 
-	static Ptr create( int hex ) { return std::make_shared<Material>( ); }
+	static Ptr create( int hex ) { return make_shared<Material>( ); }
 
-	virtual THREE::MaterialType getType() const { return THREE::Material; }
+	virtual THREE::MaterialType type() const { return THREE::Material; }
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +84,7 @@ public:
 protected:
 
 	Material ()
-	: id ( MaterialCount()++ ),
+	: id ( 0 ),//MaterialCount++ ),
 	side ( THREE::FrontSide ),
 	opacity ( 1 ),
 	transparent ( false ),
@@ -104,10 +104,10 @@ protected:
 
 private:
 
-	static int& MaterialCount() {
+	/*static int& MaterialCount() {
 		static int sMaterialCount = 0;
 		return sMaterialCount;
-	}
+	}*/
 
 };
 

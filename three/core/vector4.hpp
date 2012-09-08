@@ -5,7 +5,7 @@
 
 #include <three/core/math.hpp>
 #include <three/core/quaternion.hpp>
-#include <three/core/matrix4.hpp>
+#include <three/core/vector3.hpp>
 
 namespace three {
 
@@ -19,14 +19,24 @@ public:
 
     Vector4() : x ( 0 ), y ( 0 ), z ( 0 ), w ( 1.f ) { }
     Vector4 ( float xIn, float yIn, float zIn, float wIn = 1.f ) : x ( xIn ), y ( yIn ), z ( zIn ), w ( wIn ) { }
-    Vector4 ( const Vector4& v ) : x ( v.x ), y ( v.y ), z ( v.z ), w ( v.w ) { }
-    Vector4& operator= ( const Vector4& v ) { copy ( v ); }
+    Vector4 ( Vector4&& v )      = default;
+    Vector4 ( const Vector4& v ) = default;
+    Vector4& operator= ( const Vector4& v ) = default;
+    Vector4& operator= ( Vector4&& v )      = default;
 
     Vector4& set ( float xIn, float yIn, float zIn, float wIn ) {
         x = xIn;
         y = yIn;
         z = zIn;
         w = wIn;
+        return *this;
+    }
+
+    Vector4& copy ( const Vector3& v ) {
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        w = 1;
         return *this;
     }
 

@@ -7,12 +7,19 @@
 #include <three/core/geometry.hpp>
 #include <three/core/vector4.hpp>
 
+#include <three/objects/mesh.hpp>
+
+#include <three/utils.hpp>
+
 #include <array>
 
 namespace three {
 
-class Frustum {
+class Frustum : public NonCopyable {
 public:
+
+    Frustum() { }
+    Frustum( const Matrix4& m ) { setFromMatrix ( m ); }
 
     void setFromMatrix ( const Matrix4& m ) {
 
@@ -38,13 +45,19 @@ public:
 
     }
 
-    bool contains ( const Object3D& object, const Geometry& geometry ) {
+    bool contains ( const Object3D& object ) {
+
+        ExtractMeshData extract;
+
+        object.visit( extract );
+
+        if ( !extract.geometry )
+            return false;
 
         auto distance = 0.0f;
         const auto& matrix = object.matrixWorld;
         const auto& me = matrix.elements;
-        //auto radius = -object.geometry.boundingSphere.radius * matrix.getMaxScaleOnAxis();
-        auto radius = -geometry.boundingSphere.radius * matrix.getMaxScaleOnAxis();
+        auto radius = -extract.geometry->boundingSphere.radius * matrix.getMaxScaleOnAxis();
 
         for ( int i = 0; i < 6; i ++ ) {
 

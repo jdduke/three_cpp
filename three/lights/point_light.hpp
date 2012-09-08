@@ -13,7 +13,7 @@ public:
 	typedef std::shared_ptr<PointLight> Ptr;
 
 	static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
-		return std::make_shared<PointLight>( hex, intensity, distance );
+		return make_shared<PointLight>( hex, intensity, distance );
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////
 
 
-private:
+protected:
 
 	PointLight ( int hex, float intensity, float distance )
 	 : Light ( hex ), intensity ( intensity ), distance ( distance ) {

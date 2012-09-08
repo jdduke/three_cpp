@@ -4,6 +4,8 @@
 #include <three/common.hpp>
 
 #include <three/core/object3d.hpp>
+#include <three/core/geometry.hpp>
+#include <three/materials/material.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -16,9 +18,17 @@ public:
 
 	typedef std::shared_ptr<Mesh> Ptr;
 
-	static Ptr create( Geometry::Ptr& geometry, Material::Ptr& material ) {
-		return std::make_shared<Mesh>( geometry, material );
+	static Ptr create( Geometry::Ptr geometry, Material::Ptr material ) {
+		//return make_shared<Mesh>( geometry, material );
+		return Ptr( new Mesh( geometry, material ) );
 	}
+
+	/////////////////////////////////////////////////////////////////////////
+
+	virtual THREE::Type type() const { return THREE::Mesh; }
+
+	virtual void visit( Visitor& v ) { v( *this ); }
+	virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +55,7 @@ public:
 
 protected:
 
-	Mesh ( Geometry::Ptr& geometry, Material::Ptr& material )
+	Mesh ( Geometry::Ptr geometry, Material::Ptr material )
 	 : Object3D(), geometry ( geometry ), material ( material ),
 	 boundRadius ( 0 ), morphTargetBase ( -1 ) {
 
@@ -73,11 +83,17 @@ protected:
 			}
 		}
 	 }
+};
 
-	virtual THREE::Type getType() const { return THREE::Mesh; }
-
-	virtual void visit( Visitor& v ) const { v( *this ); }
-
+struct ExtractMeshData : public ConstVisitor {
+	ExtractMeshData( )
+		: geometry( nullptr ), material ( nullptr ) { }
+	void operator() ( const Mesh& mesh ) {
+		geometry = mesh.geometry.get();
+		material = mesh.material.get();
+	}
+	const Geometry* geometry;
+	const Material* material;
 };
 
 } // namespace three

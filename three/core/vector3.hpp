@@ -17,8 +17,10 @@ public:
 
     Vector3() : x ( 0 ), y ( 0 ), z ( 0 ) { }
     Vector3 ( float xIn, float yIn, float zIn ) : x ( xIn ), y ( yIn ), z ( zIn ) { }
-    Vector3 ( const Vector3& v ) : x ( v.x ), y ( v.y ), z ( v.z ) { }
-    Vector3& operator= ( const Vector3& v ) { copy ( v ); }
+    Vector3 ( Vector3&& v )      = default;
+    Vector3 ( const Vector3& v ) = default;
+    Vector3& operator= ( Vector3&& v )      = default;
+    Vector3& operator= ( const Vector3& v ) = default;
 
     Vector3& set ( float xIn, float yIn, float zIn ) {
         x = xIn;

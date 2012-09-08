@@ -12,7 +12,11 @@ public:
 
 	typedef std::shared_ptr<AmbientLight> Ptr;
 
-	static Ptr create( int hex ) { return std::make_shared<AmbientLight>(); }
+	static Ptr create( int hex ) { return make_shared<AmbientLight>( hex ); }
+
+protected:
+
+	AmbientLight( int hex ) : Light( hex ) { }
 
 };
 

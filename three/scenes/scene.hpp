@@ -2,6 +2,7 @@
 #define THREE_SCENE_HPP
 
 #include <three/common.hpp>
+#include <three/utils.hpp>
 
 #include <three/core/object3d.hpp>
 
@@ -24,47 +25,31 @@ public:
 
 protected:
 
-	template <typename T>
-	static bool contains( std::vector<T>& v, T& elem ) {
-		return std::find( v.begin(), v.end(), elem ) != v.end();
-	}
-
-	template <typename T>
-	static bool erase( std::vector<T>& v, T& elem ) {
-		auto i = std::find( v.begin(), v.end(), elem );
-		if ( i != v.end() ) {
-			v.erase( i );
-			return true;
-		}
-		return false;
-	}
-
-	struct Add {
-		Add( Scene& s, Object3D::Ptr& o ) : scene ( s ), object ( o ) { }
+	struct Add : public Visitor {
+		Add( Scene& s, Object3D::Ptr& o )
+		 : s ( s ), object ( o ) { }
 
 		void operator() ( Object3D& o ) {
-			if ( !contains( s.__objects, &o ) ) {
+			if ( push_unique( s.__objects, &o ) ) {
 
-				s.__objects.push( &o );
-				s.__objectsAdded.push( object );
+				s.__objectsAdded.push_back( object );
 
 				erase( s.__objectsRemoved, object );
 			}
 		}
-		void operator() ( Scene& s ) { (*this)(static_cast<Object3D&>(s)); }
+		void operator() ( Scene& s ) { fallback ( s ); }
 		void operator() ( Light& l ) {
-			if ( !contains( s.__lights, &l) {
-				s.__lights.push_back( &l );
-			}
-			if ( l.target && l.target.parent == nullptr ) {
+			push_unique( s.__lights, &l );
+			// TODO:
+			/*if ( l.target && l.target->parent == nullptr ) {
 				s.add( l.target );
-			}
+			}*/
 		}
 		void operator() ( Bone& ) { }
 		void operator() ( Camera& ) { }
 
 		Scene& s;
-		Object3D::Ptr object;
+		Object3D::Ptr& object;
 	};
 
 	virtual void __addObject( Object3D::Ptr& object ) {
@@ -72,7 +57,8 @@ protected:
 		if (!object)
 			return;
 
-		object.visit( Add( *this, object ) );
+		Add objectAdd( *this, object );
+		object->visit( objectAdd );
 
 		for ( auto& child : object->children ) {
 			__addObject( child );
@@ -81,33 +67,30 @@ protected:
 	}
 
 
-	struct Remove {
-		Remove( Scene& s, Object3D::Ptr& o ) : scene ( s ), object ( o ) { }
+	struct Remove : public Visitor {
+		Remove( Scene& s, Object3D::Ptr& o ) : s ( s ), object ( o ) { }
 		void operator() ( Object3D& o ) {
-			auto i = std::find( s.__objects.begin(), s.__objects.end(), &o);
-			if ( i != s.__objects.end() ) {
-
-				s.__objects.erase( i );
-				s.__objectsRemoved.push( object );
-
+			if ( erase( s.__objects, &o) ) {
+				s.__objectsRemoved.push_back( object );
 				erase ( s.__objectsAdded, object );
 			}
 		}
 
-		void operator() ( Scene& s ) { (*this)(static_cast<Object3D&>(s)); }
+		void operator() ( Scene& s ) { fallback( s ); }
 		void operator() ( Light& l ) { erase( s.__lights, &l ); }
 		void operator() ( Bone& ) { }
 		void operator() ( Camera& ) { }
 
 		Scene& s;
-		Object3D::Ptr object;
+		Object3D::Ptr& object;
 	};
 
 	virtual void __removeObject( Object3D::Ptr& object ) {
 		if (!object)
 			return;
 
-		object.visit( Remove( *this, object ) );
+		Remove objectRemove( *this, object );
+		object->visit( objectRemove );
 
 		for ( auto& child : object->children ) {
 			__removeObject( child );
@@ -123,9 +106,10 @@ protected:
 	overrideMaterial ( nullptr ),
 	matrixAutoUpdate ( false ) { }
 
-	virtual THREE::Type getType() const { return THREE::Scene; }
+	virtual THREE::Type type() const { return THREE::Scene; }
 
-	virtual void visit()( Visitor& v ) { v( *this ); }
+	virtual void visit( Visitor& v ) { v( *this ); }
+	virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 	std::vector<Object3D*> __objects;
 	std::vector<Light*>    __lights;

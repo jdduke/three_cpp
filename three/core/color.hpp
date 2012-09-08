@@ -17,13 +17,15 @@ public:
 
     Color () : r ( 1 ), g ( 1 ), b ( 1 ) { }
 
-    Color ( unsigned hex ) { setHex ( hex ); }
+    explicit Color ( unsigned hex ) { setHex ( hex ); }
 
     Color ( float r, float g, float b )
         : r ( r ), g ( g ), b ( b ) { }
 
-    Color ( const Color& other )
-        : r ( other.r ), g ( other.g ), b ( other.b ) { }
+    Color ( Color&& other )      = default;
+    Color ( const Color& other ) = default;
+    Color& operator=( Color&& other )      = default;
+    Color& operator=( const Color& other ) = default;
 
     Color& copyGammaToLinear ( const Color& color ) {
         r = color.r * color.r;
