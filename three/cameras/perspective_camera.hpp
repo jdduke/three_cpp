@@ -11,7 +11,14 @@ namespace three {
 class PerspectiveCamera : public Camera {
 public:
 
-	typedef shared_ptr<PerspectiveCamera> Ptr;
+	typedef std::shared_ptr<PerspectiveCamera> Ptr;
+
+	static Ptr create( float fov = 50, float aspect = 1, float near = 0.1f, float far = 2000 ) {
+		return std::make_shared<PerspectiveCamera>( fov, aspect, near, far );
+	}
+
+
+	/////////////////////////////////////////////////////////////////////////
 
 	float fov, aspect;
 	float near, far;
@@ -19,14 +26,6 @@ public:
 	float fullWidth, fullHeight;
 	float x, y;
 	float width, height;
-
-	/////////////////////////////////////////////////////////////////////////
-
-	static Ptr create( float fov = 50, float aspect = 1, float near = 0.1f, float far = 2000 ) {
-
-		return make_shared<PerspectiveCamera>( fov, aspect, near, far );
-
-	}
 
 	/////////////////////////////////////////////////////////////////////////
 

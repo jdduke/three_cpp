@@ -10,7 +10,9 @@ namespace three {
 class Light : public Object3D {
 public:
 
-	typedef shared_ptr<Light> Ptr;
+	typedef std::shared_ptr<Light> Ptr;
+
+	static Ptr create( int hex ) { return std::make_shared<Light>( hex ); }
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -18,15 +20,13 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-	static Ptr create( int hex ) { return make_shared<Light>( hex ); }
-
 protected:
 
 	Light ( int hex ) : Object3D(), color( hex ) { }
 
-	virtual THREE::Type getType() const { return THREE.Light; }
+	virtual THREE::Type getType() const { return THREE::Light; }
 
-	virtual void visit()( Visitor& v ) { v( *this ); }
+	virtual void visit( Visitor& v ) const { v( *this ); }
 
 };
 

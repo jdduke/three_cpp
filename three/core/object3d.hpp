@@ -21,7 +21,7 @@ public:
 	typedef std::shared_ptr<Object3D> Ptr;
 
 	Object3D::Ptr create() {
-		return make_shared<Object3D>();
+		return std::make_shared<Object3D>();
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ public:
 
 	Matrix4 matrix;
 	Matrix4 matrixWorld;
-	Matrix4 matrixRotationWorld;
+	mutable Matrix4 matrixRotationWorld;
 
 	bool matrixAutoUpdate;
 	bool matrixWorldNeedsUpdate;
@@ -69,7 +69,7 @@ public:
 
 	virtual THREE::Type getType() const { return THREE::Object3D; }
 
-	virtual void visit ( Visitor& v ) { v( *this ); }
+	virtual void visit ( Visitor& v ) const  = 0;//{ v( *this ); }
 
 	/////////////////////////////////////////////////////////////////////////
 

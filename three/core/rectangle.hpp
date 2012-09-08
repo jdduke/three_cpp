@@ -55,7 +55,7 @@ public:
 			resize();
 		}
 
-		return &this;
+		return *this;
 
 	}
 

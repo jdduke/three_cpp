@@ -36,9 +36,9 @@ namespace three {
 class ShaderMaterial : public Material {
 public:
 
-	typedef shared_ptr<ShaderMaterial> Ptr;
+	typedef std::shared_ptr<ShaderMaterial> Ptr;
 
-	static Ptr create( /* parameters */ ) { return make_shared<ShaderMaterial>( ); }
+	static Ptr create( /* parameters */ ) { return std::make_shared<ShaderMaterial>( ); }
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -117,8 +117,6 @@ protected:
 	morphNormals ( false ) { }
 
 };
-
-int Material::MaterialCount = 0;
 
 } // namespace three
 

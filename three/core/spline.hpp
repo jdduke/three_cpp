@@ -22,10 +22,10 @@ public:
 
 	Spline& initFromArray( const float* a, size_t n ) {
 
-		point.resize( n );
+		points.resize( n );
 
 		for ( size_t i = 0; i < n; i += 3 ) {
-			point [ i ].set( a[ i ], a[ i + 1 ], a[ i + 2 ]);
+			points [ i ].set( a[ i ], a[ i + 1 ], a[ i + 2 ]);
 		}
 
 	}
@@ -35,6 +35,7 @@ public:
 		float point = k * ( points.size() - 1 );
 		int intPoint = std::floor( point );
 		float weight = point - intPoint;
+		int c[4];
 
 		c[ 0 ] = intPoint == 0 ? intPoint : intPoint - 1;
 		c[ 1 ] = intPoint;
@@ -67,11 +68,11 @@ public:
 
 	// approximate length by summing linear segments
 
-	std::pair<std::vector<float>, float> getLength ( size_t nSubDivisions = 0 ) {
+	std::tuple<std::vector<float>, float> getLength ( size_t nSubDivisions = 0 ) {
 
 		// first point has 0 length
 
-		std::vector<int> chunkLengths( 1, 0 );
+		std::vector<float> chunkLengths( 1, 0 );
 
 		float totalLength = 0;
 
@@ -83,6 +84,7 @@ public:
 		auto nSamples = points.size() * nSubDivisions;
 
 		Vector3 oldPosition( points[ 0 ] );
+		int oldIntPoint = 0;
 
 		for ( size_t i = 1; i < nSamples; i ++ ) {
 
@@ -94,8 +96,8 @@ public:
 
 			oldPosition.copy( position );
 
-			point = ( points.size() - 1 ) * index;
-			intPoint = Math.floor( point );
+			auto point = ((float)( points.size() - 1 )) * index;
+			auto intPoint = (int)Math::floor( point );
 
 			if ( intPoint != oldIntPoint ) {
 
@@ -119,8 +121,8 @@ public:
 		if ( points.size() == 0 ) return;
 
 		auto sl = getLength();
-		const auto& chunks = sl.first;
-		const auto& total  = sl.second;
+		const auto& chunks = std::get<0>(sl);
+		const auto& total  = std::get<1>(sl);
 
 		std::vector<Vector3> newpoints ( 1, points[ 0 ] );
 
@@ -130,7 +132,7 @@ public:
 
 			auto realDistance = chunks[ i ] - chunks[ i - 1 ];
 
-			auto sampling = Math.ceil( samplingCoef * realDistance / total );
+			auto sampling = Math::ceil( samplingCoef * realDistance / total );
 
 			auto indexCurrent = (float)( i - 1 ) / ( length - 1 );
 			auto indexNext = (float)i / ( length - 1 );
@@ -143,7 +145,7 @@ public:
 
 			}
 
-			newpoints.push_back( points[ i ] ) );
+			newpoints.push_back( points[ i ] );
 
 		}
 

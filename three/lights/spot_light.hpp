@@ -10,7 +10,12 @@ namespace three {
 class SpotLight : public Light {
 public:
 
-	typedef shared_ptr<PointLight> Ptr;
+	typedef std::shared_ptr<SpotLight> Ptr;
+
+	static Ptr create( int hex, float intensity = 1, float distance = 0, float angle = Math::PI / 2, float exponent = 10 ) {
+		return std::make_shared<SpotLight>( hex, intensity, distance, angle, exponent );
+	}
+
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -44,19 +49,13 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-	static Ptr create( int hex, float intensity = 1, float distance = 0, float angle = Math.PI / 2, float exponent = 10 ) {
-
-		return make_shared<AmbientLight>( hex, intensity, distance, angle, exponent );
-
-	}
-
 private:
 
 	SpotLight ( int hex, float intensity, float distance, float angle, float exponent )
 	 : Light ( hex ),
 	 target ( nullptr ),
 	 intensity ( intensity ), distance ( distance ), angle ( angle ), exponent ( exponent ),
-	 castShadow ( false ), onlyShadow ( false )
+	 castShadow ( false ), onlyShadow ( false ),
 	 shadowCameraNear ( 50 ), shadowCameraFar ( 5000 ), shadowCameraFov ( 50 ),
 	 shadowCameraVisible ( false ),
 	 shadowBias ( 0 ),

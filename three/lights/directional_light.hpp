@@ -10,7 +10,11 @@ namespace three {
 class DirectionalLight : public Light {
 public:
 
-	typedef shared_ptr<DirectionalLight> Ptr;
+	typedef std::shared_ptr<DirectionalLight> Ptr;
+
+	static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
+		return std::make_shared<DirectionalLight>( hex, intensity, distance );
+	}
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -62,12 +66,6 @@ public:
 	*/
 
 	/////////////////////////////////////////////////////////////////////////
-
-	static void create( int hex, float intensity = 1, float distance = 0 ) {
-
-		return make_shared<AmbientLight>( hex, intensity, distance );
-
-	}
 
 private:
 

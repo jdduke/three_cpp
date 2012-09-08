@@ -90,30 +90,39 @@ public:
 		} else if ( object.getType() == THREE::Mesh ) {
 
 			const Geometry* pGeometry = nullptr;
+			const Material* pMaterial = nullptr;
 
-			struct ExtractGeometry : public Visitor {
-				ExtractGeometry( const Geometry*& geometry ) : pGeometry( geometry ) { }
-				void operator() ( Mesh& mesh ) { pGeometry = mesh.geometry.get(); }
+			struct ExtractMeshData : public Visitor {
+				ExtractMeshData( const Geometry*& geometry, const Material*& material )
+				: pGeometry( geometry ), pMaterial ( material ) { }
+				void operator() ( const Mesh& mesh ) {
+					pGeometry = mesh.geometry.get();
+					pMaterial = mesh.material.get();
+				}
 				const Geometry*& pGeometry;
-			};
+				const Material*& pMaterial;
+			} extract ( pGeometry, pMaterial );
 
-			object.visit ( ExtractGeometry(pGeometry) );
+			object.visit ( extract );
 
-			if ( !pGeometry )
-				break;
+			if ( !pGeometry || !pMaterial ) {
+				console().warn( "Error extracting mesh geometry/material." );
+				return std::vector<Intersection>();
+			}
 
 			// Checking boundingSphere
 
 			const auto& geometry = *pGeometry;
+			const auto& material = *pMaterial;
 
 			auto scale = Vector3( object.matrixWorld.getColumnX().length(),
 			                      object.matrixWorld.getColumnY().length(),
 			                      object.matrixWorld.getColumnZ().length() );
-			auto scaledRadius = geometry.boundingSphere.radius * Math.max( scale.x, Math.max( scale.y, scale.z ) );
+			auto scaledRadius = geometry.boundingSphere.radius * Math::max( scale.x, Math::max( scale.y, scale.z ) );
 
 			// Checking distance to ray
 
-			auto distance = distanceFromIntersection( origin, direction, matrixWorld.getPosition() );
+			auto distance = distanceFromIntersection( origin, direction, object.matrixWorld.getPosition() );
 
 			if ( distance > scaledRadius) {
 
@@ -123,24 +132,23 @@ public:
 
 			// Checking faces
 
-			auto rangeSq = range * range;
 			const auto& vertices = geometry.vertices;
-			const auto& geometryMaterials = object.geometry.materials;
-			auto isFaceMaterial = object.material.getType() == THREE::MeshFaceMaterial;
-			auto side = object.material.side;
+			const auto& geometryMaterials = geometry.materials;
+			auto isFaceMaterial = material.getType() == THREE::MeshFaceMaterial;
+			auto side = material.side;
 
 			object.matrixRotationWorld.extractRotation( object.matrixWorld );
 
-			Vector3 vector, normal, dot;
+			Vector3 vector, normal, intersectPoint;
 
-			for ( auto f = 0, fl = geometry.faces.size(); f < fl; f ++ ) {
+			for ( int f = 0, fl = geometry.faces.size(); f < fl; f ++ ) {
 
 				const auto& face = geometry.faces[ f ];
 
-				const auto& material = isFaceMaterial ? geometryMaterials[ face.materialIndex ] : object.material;
-				if ( !material ) continue;
+				const auto& face_material = isFaceMaterial ? geometryMaterials[ face.materialIndex ].get() : &material;
+				//if ( !face_material ) continue;
 
-				auto side = material.side;
+				auto side = face_material->side;
 
 				Vector3 originCopy( origin );
 				Vector3 directionCopy( direction );
@@ -152,34 +160,34 @@ public:
 
 				vector = objMatrix.multiplyVector3( vector.copy( face.centroid ) ).subSelf( originCopy );
 				normal = object.matrixRotationWorld.multiplyVector3( normal.copy( face.normal ) );
-				dot = directionCopy.dot( normal );
+				auto d = directionCopy.dot( normal );
 
 				// bail if ray and plane are parallel
 
-				if ( Math.abs( dot ) < precision ) continue;
+				if ( Math::abs( d ) < precision ) continue;
 
 				// calc distance to plane
 
-				auto scalar = normal.dot( vector ) / dot;
+				auto scalar = normal.dot( vector ) / d;
 
 				// if negative distance, then plane is behind ray
 
 				if ( scalar < 0 ) continue;
 
-				if ( side === THREE::DoubleSide || ( side === THREE::FrontSide ? dot < 0 : dot > 0 ) ) {
+				if ( side == THREE::DoubleSide || ( side == THREE::FrontSide ? dot < 0 : dot > 0 ) ) {
 
 					intersectPoint.add( originCopy, directionCopy.multiplyScalar( scalar ) );
 
 					auto distance = originCopy.distanceTo( intersectPoint );
 
-					if ( distance < this.near ) continue;
-					if ( distance > this.far ) continue;
+					if ( distance < near ) continue;
+					if ( distance > far ) continue;
 
-					/*if ( face.getType() == THREE::Face3 ) */{
+					if ( face.type() == THREE::Face3 ) {
 
-						a = objMatrix.multiplyVector3( vertices[ face.a ] );
-						b = objMatrix.multiplyVector3( vertices[ face.b ] );
-						c = objMatrix.multiplyVector3( vertices[ face.c ] );
+						auto a = objMatrix.multiplyVector3( vertices[ face.a ].position );
+						auto b = objMatrix.multiplyVector3( vertices[ face.b ].position );
+						auto c = objMatrix.multiplyVector3( vertices[ face.c ].position );
 
 						if ( pointInFace3( intersectPoint, a, b, c ) ) {
 
@@ -187,12 +195,12 @@ public:
 
 						}
 
-					} /*else if ( face.getType() == THREE::Face4 ) {
+					} else if ( face.type() == THREE::Face4 ) {
 
-						a = objMatrix.multiplyVector3( a.copy( vertices[ face.a ] ) );
-						b = objMatrix.multiplyVector3( b.copy( vertices[ face.b ] ) );
-						c = objMatrix.multiplyVector3( c.copy( vertices[ face.c ] ) );
-						d = objMatrix.multiplyVector3( d.copy( vertices[ face.d ] ) );
+						auto a = objMatrix.multiplyVector3( vertices[ face.a ].position );
+						auto b = objMatrix.multiplyVector3( vertices[ face.b ].position );
+						auto c = objMatrix.multiplyVector3( vertices[ face.c ].position );
+						auto d = objMatrix.multiplyVector3( vertices[ face.d ].position );
 
 						if ( pointInFace3( intersectPoint, a, b, d ) || pointInFace3( intersectPoint, b, c, d ) ) {
 
@@ -200,7 +208,7 @@ public:
 
 						}
 
-					}*/
+					}
 
 				}
 
@@ -208,7 +216,7 @@ public:
 
 		}
 
-		std::sort( intersects, descSort );
+		std::sort( intersects.begin(), intersects.end(), descSort );
 
 		return intersects;
 
@@ -216,16 +224,16 @@ public:
 
 	std::vector<Intersection> intersectObjects ( const std::vector<Object3D*>& objects, bool recursive ) {
 
-		std::vector<Intersection> interesects;
+		std::vector<Intersection> intersects;
 
 		for ( const auto& object : objects ) {
 
-			auto iter_intersects = intersectObject( object, recursive );
-			intersects.insert( interesects.end(), iter_intersects.begin(), iter_intersects.end() );
+			auto iter_intersects = intersectObject( *object, recursive );
+			intersects.insert( intersects.end(), iter_intersects.begin(), iter_intersects.end() );
 
 		}
 
-		std::sort( intersects, descSort );
+		std::sort( intersects.begin(), intersects.end(), descSort );
 
 		return intersects;
 

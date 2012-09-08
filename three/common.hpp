@@ -137,7 +137,8 @@ public:
 	};
 
 	enum MaterialType {
-		MeshFaceMaterial = 0
+		Material = 0,
+		MeshFaceMaterial = 1
 	};
 
 };

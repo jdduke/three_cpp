@@ -1,16 +1,6 @@
 #ifndef THREE_FWD_HPP
 #define THREE_FWD_HPP
 
-namespace std {
-
-template < typename T >
-class shared_ptr;
-
-template < typename T, class... Args >
-shared_ptr<T> make_shared( Args... args );
-
-} // namespace std
-
 namespace three {
 
 class Object3D;
@@ -28,13 +18,13 @@ class Vector4;
 class Matrix4;
 class Quaternion;
 class Ray;
+
 class Spline;
+
+class Geometry;
+class Vertex;
 class Material;
 class Shader;
-
-template < typename T >
-using shared_ptr = std::shared_ptr<T>;
-using std::make_shared;
 
 } // namespace three
 

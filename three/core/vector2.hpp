@@ -82,7 +82,7 @@ public:
     }
 
     float length() {
-        return Math.sqrt ( lengthSq() );
+        return Math::sqrt ( lengthSq() );
     }
 
     Vector2& normalize() {
@@ -90,7 +90,7 @@ public:
     }
 
     float distanceTo ( const Vector2& v ) {
-        return Math.sqrt ( distanceToSquared ( v ) );
+        return Math::sqrt ( distanceToSquared ( v ) );
     }
 
     float distanceToSquared ( const Vector2& v ) {

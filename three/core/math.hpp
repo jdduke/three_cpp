@@ -24,6 +24,7 @@ public:
 	template < typename T > static T sin( T t )   { return std::sin( t ); }
 	template < typename T > static T tan( T t )   { return std::tan( t ); }
 
+	template < typename T > static T round ( T t ) { return std::round( t ); }
 	template < typename T > static T ceil ( T t )  { return std::ceil( t ); }
 	template < typename T > static T floor ( T t ) { return std::floor( t ); }
 
@@ -31,6 +32,7 @@ public:
 	template < typename T > static T max( T a, T b )   { return std::max( a, b ); }
 	template < typename T > static T clamp ( T x, T a, T b )  { return x < a ? a : ( ( x > b ) ? b : x ); }
 	template < typename T > static T clampBottom ( T x, T a ) { return x < a ? a : x; }
+	template < typename T, typename U > static T pow( T a, U b )   { return std::pow( a, b ); }
 
 	// Linear mapping from range <a1, a2> to range <b1, b2>
 	template < typename T >

@@ -104,11 +104,11 @@ public:
         return divideScalar ( length() );
     }
 
-    float distanceTo ( const Vector3& v ) {
+    float distanceTo ( const Vector3& v ) const {
         return Math::sqrt ( distanceToSquared ( v ) );
     }
 
-    float distanceToSquared ( const Vector3& v ) {
+    float distanceToSquared ( const Vector3& v ) const {
         return Vector3().sub ( *this, v ).lengthSq();
     }
 

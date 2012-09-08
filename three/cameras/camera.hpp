@@ -13,7 +13,7 @@ public:
 
 	typedef std::shared_ptr<Camera> Ptr;
 
-	static Ptr create() { return make_shared<Camera>(); }
+	static Ptr create() { return std::make_shared<Camera>(); }
 
 	/////////////////////////////////////////////////////////////////////////
 

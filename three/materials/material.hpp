@@ -10,9 +10,11 @@ namespace three {
 class Material : NonCopyable {
 public:
 
-	typedef shared_ptr<Material> Ptr;
+	typedef std::shared_ptr<Material> Ptr;
 
-	static Ptr create( int hex ) { return make_shared<Material>( ); }
+	static Ptr create( int hex ) { return std::make_shared<Material>( ); }
+
+	virtual THREE::MaterialType getType() const { return THREE::Material; }
 
 	/////////////////////////////////////////////////////////////////////////
 

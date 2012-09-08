@@ -10,13 +10,9 @@ namespace three {
 class AmbientLight : public Light {
 public:
 
-	typedef shared_ptr<AmbientLight> Ptr;
+	typedef std::shared_ptr<AmbientLight> Ptr;
 
-	/////////////////////////////////////////////////////////////////////////
-
-	static void create( int hex ) { return make_shared<AmbientLight>(); }
-
-private:
+	static Ptr create( int hex ) { return std::make_shared<AmbientLight>(); }
 
 };
 

@@ -10,18 +10,16 @@ namespace three {
 class OrthographicCamera : public Camera {
 public:
 
-	typedef shared_ptr<OrthographicCamera> Ptr;
+	typedef std::shared_ptr<OrthographicCamera> Ptr;
 
-	float left, right, top, bottom;
-	float near, far;
+	static Ptr create( float left, float right, float top, float bottom, float near = 0.1f, float far = 2000 ) {
+		return std::make_shared<OrthographicCamera>( left, right, top, bottom, near, far );
+	}
 
 	/////////////////////////////////////////////////////////////////////////
 
-	static Ptr create( float left, float right, float top, float bottom, float near = 0.1f, float far = 2000 ) {
-
-		return make_shared<OrthographicCamera>( left, right, top, bottom, near, far );
-
-	}
+	float left, right, top, bottom;
+	float near, far;
 
 	/////////////////////////////////////////////////////////////////////////
 

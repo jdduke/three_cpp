@@ -18,14 +18,7 @@ public:
 
 	void* fog;
 	Material* overrideMaterial;
-
 	bool matrixAutoUpdate;
-
-	std::vector<Object3D*> __objects;
-	std::vector<Light*>    __lights;
-
-	std::vector<Object3D::Ptr> __objectsAdded;
-	std::vector<Object3D::Ptr> __objectsRemoved;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -133,6 +126,12 @@ protected:
 	virtual THREE::Type getType() const { return THREE::Scene; }
 
 	virtual void visit()( Visitor& v ) { v( *this ); }
+
+	std::vector<Object3D*> __objects;
+	std::vector<Light*>    __lights;
+
+	std::vector<Object3D::Ptr> __objectsAdded;
+	std::vector<Object3D::Ptr> __objectsRemoved;
 
 };
 
