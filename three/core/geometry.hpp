@@ -113,8 +113,6 @@ public:
     void applyMatrix ( const Matrix4& matrix ) {
 
         Matrix4 matrixRotation;
-        // BUGBUG
-        //matrixRotation.extractRotation( matrix, Vector3( 1, 1, 1 ) );
         matrixRotation.extractRotation( matrix );
 
         for ( auto& vertex : vertices ) {

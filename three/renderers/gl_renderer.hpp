@@ -1,6 +1,10 @@
 #ifndef THREE_GL_RENDERER
 #define THREE_GL_RENDERER
 
+#include <three/common.hpp>
+
+#include <three/gl.hpp>
+
 namespace three {
 
 class GLRenderTarget;
@@ -9,7 +13,8 @@ class GLRenderer {
 
 	struct Parameters {
 		Parameters()
-		: precision ( THREE::PrecisionHigh ),
+		: width ( 1024 ), height ( 768 ),
+		precision ( THREE::PrecisionHigh ),
 		alpha ( true ),
 		premultipliedAlpha ( true ),
 		antialias ( false ),
@@ -19,6 +24,7 @@ class GLRenderer {
 		clearAlpha ( 0 ),
 		maxLights ( 4 ) { }
 
+		int width, height;
 		THREE::PrecisionType precision;
 		bool alpha;
 		bool premultipliedAlpha;
@@ -30,15 +36,19 @@ class GLRenderer {
 		int maxLights;
 	};
 
-	GLRenderer( Parameters parameters )
-	: _precision ( parameters.precision ),
+private:
+
+	THREE_DECL GLRenderer( Parameters parameters )
+	: _width ( parameters.width ),
+	_height ( parameters.height ),
+	_precision ( parameters.precision ),
 	_alpha ( parameters.alpha ),
 	_premultipliedAlpha ( parameters.premultipliedAlpha ),
 	_antialias ( parameters.antialias ),
 	_stencil ( parameters.stencil ),
 	_preserveDrawingBuffer ( parameters.preserveDrawingBuffer ),
 	_clearColor ( parameters.clearColor ),
-	_clearAlpha ( parameters.clearAlpha )
+	_clearAlpha ( parameters.clearAlpha ),
 	_maxLights ( parameters.maxLights ),
 	context ( nullptr ),
 	autoClear ( true ),
@@ -61,11 +71,11 @@ class GLRenderer {
 	maxMorphNormals ( 4 ),
 	autoScaleCubemaps ( true ),
 	_programs_counter ( 0 ),
-	_currentProgram ( null ),
-	_currentFramebuffer ( null ),
+	_currentProgram ( nullptr ),
+	_currentFramebuffer ( nullptr ),
 	_currentMaterialId ( -1 ),
-	_currentGeometryGroupHash ( null ),
-	_currentCamera ( null ),
+	_currentGeometryGroupHash ( 0 ),
+	_currentCamera ( ),
 	_geometryGroupCounter ( 0 ),
 	_oldDoubleSided ( -1 ),
 	_oldFlipSided ( -1 ),
@@ -75,10 +85,10 @@ class GLRenderer {
 	_oldBlendDst ( -1 ),
 	_oldDepthTest ( -1 ),
 	_oldDepthWrite ( -1 ),
-	_oldPolygonOffset ( null ),
-	_oldPolygonOffsetFactor ( null ),
-	_oldPolygonOffsetUnits ( null ),
-	_oldLineWidth ( null ),
+	_oldPolygonOffset ( 0 ),
+	_oldPolygonOffsetFactor ( 0 ),
+	_oldPolygonOffsetUnits ( 0 ),
+	_oldLineWidth ( 0 ),
 	_viewportX ( 0 ),
 	_viewportY ( 0 ),
 	_viewportWidth ( 0 ),
@@ -90,6 +100,19 @@ class GLRenderer {
 	{
 		console().log( "THREE.GLRenderer" );
 	}
+
+	int _width, _height;
+	THREE::PrecisionType _precision;
+	bool _alpha;
+	bool _premultipliedAlpha;
+	bool _antialias;
+	bool _stencil;
+	bool _preserveDrawingBuffer;
+	Color _clearColor;
+	float _clearAlpha;
+	int _maxLights;
+
+public:
 
 	void* context;
 
@@ -136,6 +159,8 @@ class GLRenderer {
 	//renderPluginsPre = [];
 	//renderPluginsPost = [];
 
+private:
+
 	// info
 
 	struct Info {
@@ -163,9 +188,7 @@ class GLRenderer {
 
 		} render;
 
-	} info;
-
-private:
+	} _info;
 
 	// internal properties
 
@@ -287,7 +310,7 @@ private:
 private:
 
 
-	void initialize() {
+	THREE_DECL void initialize() {
 
 		console().log( "THREE.GLRenderer.Initialize" );
 
@@ -301,24 +324,24 @@ private:
 
 		// GPU capabilities
 
-		_maxVertexTextures = gl::getParameter( gl::GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
-		_maxTextureSize = gl::getParameter( gl::GL_MAX_TEXTURE_SIZE ),
-		_maxCubemapSize = gl::getParameter( gl::GL_MAX_CUBE_MAP_TEXTURE_SIZE );
-
-		_maxAnisotropy = 1;//_glExtensionTextureFilterAnisotropic ? _gl.getParameter( _glExtensionTextureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT ) : 0;
-
+		// TODO: Fix
+		_maxVertexTextures = 4;//glGetTexParameter( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
+		_maxTextureSize    = 8192;//glGetTexParameter( GL_MAX_TEXTURE_SIZE ),
+		_maxCubemapSize    = 8192;//glGetTexParameter( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
+		_maxAnisotropy = 1;//glExtensionTextureFilterAnisotropic ? _gl.getParameter( _glExtensionTextureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT ) : 0;
 		_supportsVertexTextures = ( _maxVertexTextures > 0 );
 		_supportsBoneTextures = false;//_supportsVertexTextures && _glExtensionTextureFloat;
 
 	}
 
-	void initGL () {
+	THREE_DECL void initGL () {
 
+		// TODO: Force client to initialize opengl
+
+		/*
 		if ( glload::LoadFunctions() == glload::LS_LOAD_FAILED ) {
-
 			console().error( "Error loading OpenGL functions" );
-
-		}
+		}*/
 
 		/*
 		_glExtensionTextureFloat = _gl.getExtension( 'OES_texture_float' );
@@ -349,24 +372,24 @@ private:
 
 	}
 
-	void setDefaultGLState () {
+	THREE_DECL void setDefaultGLState () {
 
-		gl::clearColor( 0, 0, 0, 1 );
-		gl::clearDepth( 1 );
-		gl::clearStencil( 0 );
+		glClearColor( 0, 0, 0, 1 );
+		glClearDepth( 1 );
+		glClearStencil( 0 );
 
-		gl::enable( gl::GL_DEPTH_TEST );
-		gl::depthFunc( gl::GL_LEQUAL );
+		glEnable( GL_DEPTH_TEST );
+		glDepthFunc( GL_LEQUAL );
 
-		gl::frontFace( gl::GL_CCW );
-		gl::cullFace( gl::GL_BACK );
-		gl::enable( gl::GL_CULL_FACE );
+		glFrontFace( GL_CCW );
+		glCullFace( GL_BACK );
+		glEnable( GL_CULL_FACE );
 
-		gl::enable( gl::GL_BLEND );
-		gl::blendEquation( gl::GL_FUNC_ADD );
-		gl::blendFunc( gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA );
+		glEnable( GL_BLEND );
+		glBlendEquation( GL_FUNC_ADD );
+		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-		gl::clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+		glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 
 	}
 
@@ -392,57 +415,57 @@ public:
 
 	}
 
-	void setSize ( int width, int height ) {
+	THREE_DECL void setSize ( int width, int height ) {
 
 		// TODO: Implement
-		//_canvas.width = width;
-		//_canvas.height = height;
+		_width = width;
+		_height = height;
 
-		setViewport( 0, 0, _canvas.width, _canvas.height );
+		setViewport( 0, 0, _width, _height );
 
 	}
 
-	void setViewport ( int x = 0, int y = 0, int width = 0, int height = 0 ) {
+	THREE_DECL void setViewport ( int x = 0, int y = 0, int width = -1, int height = -1 ) {
 
 		_viewportX = x;
 		_viewportY = y;
 
-		_viewportWidth = width;// !== undefined ? width : _canvas.width;
-		_viewportHeight = height;// !== undefined ? height : _canvas.height;
+		_viewportWidth  = width  != -1 ? width  : _width;
+		_viewportHeight = height != -1 ? height : _height;
 
-		gl::viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
-
-	}
-
-	void setScissor ( int x, int y, int width, int height ) {
-
-		gl::scissor( x, y, width, height );
+		glViewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
 
 	}
 
-	void enableScissorTest ( bool enable ) {
+	THREE_DECL void setScissor ( int x, int y, int width, int height ) {
 
-		enable ? gl::enable( gl::GL_SCISSOR_TEST ) : gl::disable( gl::GL_SCISSOR_TEST );
+		glScissor( x, y, width, height );
+
+	}
+
+	THREE_DECL void enableScissorTest ( bool enable ) {
+
+		enable ? glEnable( GL_SCISSOR_TEST ) : glDisable( GL_SCISSOR_TEST );
 
 	}
 
 	// Clearing
 
-	void setClearColorHex ( int hex, float alpha ) {
+	THREE_DECL void setClearColorHex ( int hex, float alpha ) {
 
 		_clearColor.setHex( hex );
 		_clearAlpha = alpha;
 
-		gl::clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+		glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 
 	}
 
-	void setClearColor ( Color color, float alpha ) {
+	THREE_DECL void setClearColor ( Color color, float alpha ) {
 
 		_clearColor.copy( color );
 		_clearAlpha = alpha;
 
-		gl::clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+		glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 
 	}
 
@@ -458,19 +481,19 @@ public:
 
 	}
 
-	void clear ( bool color = true, bool depth = true, bool stencil = true ) {
+	THREE_DECL void clear ( bool color = true, bool depth = true, bool stencil = true ) {
 
 		int bits = 0;
 
-		if ( color )   bits |= gl::GL_COLOR_BUFFER_BIT;
-		if ( depth )   bits |= gl::GL_DEPTH_BUFFER_BIT;
-		if ( stencil ) bits |= gl::GL_STENCIL_BUFFER_BIT;
+		if ( color )   bits |= GL_COLOR_BUFFER_BIT;
+		if ( depth )   bits |= GL_DEPTH_BUFFER_BIT;
+		if ( stencil ) bits |= GL_STENCIL_BUFFER_BIT;
 
-		gl::clear( bits );
+		glClear( bits );
 
 	}
 
-	void clearTarget ( GLRenderTarget& renderTarget, bool color = true, bool depth = true, bool stencil = true ) {
+	THREE_DECL void clearTarget ( GLRenderTarget& renderTarget, bool color = true, bool depth = true, bool stencil = true ) {
 
 		// TODO: setRenderTarget( renderTarget );
 		clear( color, depth, stencil );
@@ -502,7 +525,7 @@ public:
 #if 0
 	// Deallocation
 
-	void deallocateObject ( Object3D::Ptr object ) {
+	THREE_DECL void deallocateObject ( Object3D::Ptr object ) {
 
 		if ( ! object.__webglInit ) return;
 
@@ -539,42 +562,42 @@ public:
 
 	};
 
-	void deallocateTexture ( Texture::Ptr texture ) {
+	THREE_DECL void deallocateTexture ( Texture::Ptr texture ) {
 
 		if ( ! texture.__webglInit ) return;
 
 		texture.__webglInit = false;
-		gl::deleteTexture( texture.__webglTexture );
+		glDeleteTexture( texture.__webglTexture );
 
 		_info.memory.textures --;
 
 	};
 
-	void deallocateRenderTarget ( RenderTarget::Ptr renderTarget ) {
+	THREE_DECL void deallocateRenderTarget ( RenderTarget::Ptr renderTarget ) {
 
 		if ( !renderTarget || ! renderTarget.__webglTexture ) return;
 
-		gl::deleteTexture( renderTarget.__webglTexture );
+		glDeleteTexture( renderTarget.__webglTexture );
 
 		if ( renderTarget instanceof THREE.WebGLRenderTargetCube ) {
 
 			for ( var i = 0; i < 6; i ++ ) {
 
-				gl::deleteFramebuffer( renderTarget.__webglFramebuffer[ i ] );
-				gl::deleteRenderbuffer( renderTarget.__webglRenderbuffer[ i ] );
+				glDeleteFramebuffer( renderTarget.__webglFramebuffer[ i ] );
+				glDeleteRenderbuffer( renderTarget.__webglRenderbuffer[ i ] );
 
 			}
 
 		} else {
 
-			gl::deleteFramebuffer( renderTarget.__webglFramebuffer );
-			gl::deleteRenderbuffer( renderTarget.__webglRenderbuffer );
+			glDeleteFramebuffer( renderTarget.__webglFramebuffer );
+			glDeleteRenderbuffer( renderTarget.__webglRenderbuffer );
 
 		}
 
 	};
 
-	void deallocateMaterial ( Material::Ptr material ) {
+	THREE_DECL void deallocateMaterial ( Material::Ptr material ) {
 
 		var program = material.program;
 
@@ -629,7 +652,7 @@ public:
 
 			_programs = newPrograms;
 
-			gl::deleteProgram( program );
+			glDeleteProgram( program );
 
 			_info.memory.programs --;
 
@@ -641,9 +664,9 @@ public:
 
 	// Rendering
 
-	void updateShadowMap ( const Scene::Ptr& scene, const Camera::Ptr& camera ) {
+	THREE_DECL void updateShadowMap ( const Scene::Ptr& scene, const Camera::Ptr& camera ) {
 
-		_currentProgram = null;
+		_currentProgram = nullptr;
 		_oldBlending = -1;
 		_oldDepthTest = -1;
 		_oldDepthWrite = -1;
@@ -660,51 +683,67 @@ public:
 
 	// Internal functions
 
+#ifndef THREE_GLES
+
+	static unsigned glCreateBuffer() {
+		unsigned buffer = 0;
+		glGenBuffers( 1, &buffer );
+		return buffer;
+	}
+
+	static unsigned glDeleteBuffer( unsigned buffer ) {
+		glDeleteBuffers( 1, &buffer );
+	}
+
+#endif
+
 	// Buffer allocation
 
-	void createParticleBuffers ( Geometry& geometry ) {
+	THREE_DECL void createParticleBuffers ( Geometry& geometry ) {
 
-		geometry.__webglVertexBuffer = gl::createBuffer();
-		geometry.__webglColorBuffer = gl::createBuffer();
+		geometry.__webglVertexBuffer = glCreateBuffer();
+		geometry.__webglColorBuffer = glCreateBuffer();
 
-		_info.geometries ++;
+		// BUGBUG _info.geometries ++;
+		_info.memory.geometries ++;
 
 	}
 
-	void createLineBuffers ( Geometry& geometry ) {
+	THREE_DECL void createLineBuffers ( Geometry& geometry ) {
 
-		geometry.__webglVertexBuffer = gl::createBuffer();
-		geometry.__webglColorBuffer = gl::createBuffer();
+		geometry.__webglVertexBuffer = glCreateBuffer();
+		geometry.__webglColorBuffer = glCreateBuffer();
 
 		_info.memory.geometries ++;
 
 	}
 
-	void createRibbonBuffers ( Geometry& geometry ) {
+	THREE_DECL void createRibbonBuffers ( Geometry& geometry ) {
 
-		geometry.__webglVertexBuffer = gl::createBuffer();
-		geometry.__webglColorBuffer = gl::createBuffer();
+		geometry.__webglVertexBuffer = glCreateBuffer();
+		geometry.__webglColorBuffer = glCreateBuffer();
 
 		_info.memory.geometries ++;
 
 	}
 
-	void createMeshBuffers ( GeometryGroup& geometryGroup ) {
+#if 0
+	THREE_DECL void createMeshBuffers ( GeometryGroup& geometryGroup ) {
 
-		geometryGroup.__webglVertexBuffer = gl::createBuffer();
-		geometryGroup.__webglNormalBuffer = gl::createBuffer();
-		geometryGroup.__webglTangentBuffer = gl::createBuffer();
-		geometryGroup.__webglColorBuffer = gl::createBuffer();
-		geometryGroup.__webglUVBuffer = gl::createBuffer();
-		geometryGroup.__webglUV2Buffer = gl::createBuffer();
+		geometryGroup.__webglVertexBuffer = glCreateBuffer();
+		geometryGroup.__webglNormalBuffer = glCreateBuffer();
+		geometryGroup.__webglTangentBuffer = glCreateBuffer();
+		geometryGroup.__webglColorBuffer = glCreateBuffer();
+		geometryGroup.__webglUVBuffer = glCreateBuffer();
+		geometryGroup.__webglUV2Buffer = glCreateBuffer();
 
-		geometryGroup.__webglSkinVertexABuffer = gl::createBuffer();
-		geometryGroup.__webglSkinVertexBBuffer = gl::createBuffer();
-		geometryGroup.__webglSkinIndicesBuffer = gl::createBuffer();
-		geometryGroup.__webglSkinWeightsBuffer = gl::createBuffer();
+		geometryGroup.__webglSkinVertexABuffer = glCreateBuffer();
+		geometryGroup.__webglSkinVertexBBuffer = glCreateBuffer();
+		geometryGroup.__webglSkinIndicesBuffer = glCreateBuffer();
+		geometryGroup.__webglSkinWeightsBuffer = glCreateBuffer();
 
-		geometryGroup.__webglFaceBuffer = gl::createBuffer();
-		geometryGroup.__webglLineBuffer = gl::createBuffer();
+		geometryGroup.__webglFaceBuffer = glCreateBuffer();
+		geometryGroup.__webglLineBuffer = glCreateBuffer();
 
 		var m, ml;
 
@@ -714,7 +753,7 @@ public:
 
 			for ( m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
 
-				geometryGroup.__webglMorphTargetsBuffers.push( gl::GL_createBuffer() );
+				geometryGroup.__webglMorphTargetsBuffers.push( GL_createBuffer() );
 
 			}
 
@@ -726,7 +765,7 @@ public:
 
 			for ( m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
 
-				geometryGroup.__webglMorphNormalsBuffers.push( gl::GL_createBuffer() );
+				geometryGroup.__webglMorphNormalsBuffers.push( GL_createBuffer() );
 
 			}
 
@@ -735,52 +774,54 @@ public:
 		_info.memory.geometries ++;
 
 	}
+#endif
 
 	// Buffer deallocation
 
-	void deleteParticleBuffers ( Geometry& geometry ) {
+	THREE_DECL void deleteParticleBuffers ( Geometry& geometry ) {
 
-		gl::deleteBuffer( geometry.__webglVertexBuffer );
-		gl::deleteBuffer( geometry.__webglColorBuffer );
-
-		_info.memory.geometries --;
-
-	}
-
-	void deleteLineBuffers ( Geometry& geometry ) {
-
-		gl::deleteBuffer( geometry.__webglVertexBuffer );
-		gl::deleteBuffer( geometry.__webglColorBuffer );
+		glDeleteBuffer( geometry.__webglVertexBuffer );
+		glDeleteBuffer( geometry.__webglColorBuffer );
 
 		_info.memory.geometries --;
 
 	}
 
-	void deleteRibbonBuffers ( Geometry& geometry ) {
+	THREE_DECL void deleteLineBuffers ( Geometry& geometry ) {
 
-		gl::deleteBuffer( geometry.__webglVertexBuffer );
-		gl::deleteBuffer( geometry.__webglColorBuffer );
+		glDeleteBuffer( geometry.__webglVertexBuffer );
+		glDeleteBuffer( geometry.__webglColorBuffer );
 
 		_info.memory.geometries --;
 
 	}
 
-	void deleteMeshBuffers ( GeometryGroup& geometryGroup ) {
+	THREE_DECL void deleteRibbonBuffers ( Geometry& geometry ) {
 
-		gl::deleteBuffer( geometryGroup.__webglVertexBuffer );
-		gl::deleteBuffer( geometryGroup.__webglNormalBuffer );
-		gl::deleteBuffer( geometryGroup.__webglTangentBuffer );
-		gl::deleteBuffer( geometryGroup.__webglColorBuffer );
-		gl::deleteBuffer( geometryGroup.__webglUVBuffer );
-		gl::deleteBuffer( geometryGroup.__webglUV2Buffer );
+		glDeleteBuffer( geometry.__webglVertexBuffer );
+		glDeleteBuffer( geometry.__webglColorBuffer );
 
-		gl::deleteBuffer( geometryGroup.__webglSkinVertexABuffer );
-		gl::deleteBuffer( geometryGroup.__webglSkinVertexBBuffer );
-		gl::deleteBuffer( geometryGroup.__webglSkinIndicesBuffer );
-		gl::deleteBuffer( geometryGroup.__webglSkinWeightsBuffer );
+		_info.memory.geometries --;
 
-		gl::deleteBuffer( geometryGroup.__webglFaceBuffer );
-		gl::deleteBuffer( geometryGroup.__webglLineBuffer );
+	}
+
+#if 0
+	THREE_DECL void deleteMeshBuffers ( GeometryGroup& geometryGroup ) {
+
+		glDeleteBuffer( geometryGroup.__webglVertexBuffer );
+		glDeleteBuffer( geometryGroup.__webglNormalBuffer );
+		glDeleteBuffer( geometryGroup.__webglTangentBuffer );
+		glDeleteBuffer( geometryGroup.__webglColorBuffer );
+		glDeleteBuffer( geometryGroup.__webglUVBuffer );
+		glDeleteBuffer( geometryGroup.__webglUV2Buffer );
+
+		glDeleteBuffer( geometryGroup.__webglSkinVertexABuffer );
+		glDeleteBuffer( geometryGroup.__webglSkinVertexBBuffer );
+		glDeleteBuffer( geometryGroup.__webglSkinIndicesBuffer );
+		glDeleteBuffer( geometryGroup.__webglSkinWeightsBuffer );
+
+		glDeleteBuffer( geometryGroup.__webglFaceBuffer );
+		glDeleteBuffer( geometryGroup.__webglLineBuffer );
 
 		var m, ml;
 
@@ -788,7 +829,7 @@ public:
 
 			for ( m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
 
-				gl::deleteBuffer( geometryGroup.__webglMorphTargetsBuffers[ m ] );
+				glDeleteBuffer( geometryGroup.__webglMorphTargetsBuffers[ m ] );
 
 			}
 
@@ -798,7 +839,7 @@ public:
 
 			for ( m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
 
-				gl::deleteBuffer( geometryGroup.__webglMorphNormalsBuffers[ m ] );
+				glDeleteBuffer( geometryGroup.__webglMorphNormalsBuffers[ m ] );
 
 			}
 
@@ -809,7 +850,7 @@ public:
 
 			for ( var id in geometryGroup.__webglCustomAttributesList ) {
 
-				gl::deleteBuffer( geometryGroup.__webglCustomAttributesList[ id ].buffer );
+				glDeleteBuffer( geometryGroup.__webglCustomAttributesList[ id ].buffer );
 
 			}
 
@@ -818,6 +859,7 @@ public:
 		_info.memory.geometries --;
 
 	}
+#endif
 
 #if 0
 
@@ -856,7 +898,7 @@ public:
 
 					attribute.array = new Float32Array( nvertices * size );
 
-					attribute.buffer = gl::createBuffer();
+					attribute.buffer = glCreateBuffer();
 					attribute.buffer.belongsToAttribute = a;
 
 					attribute.needsUpdate = true;
@@ -1046,7 +1088,7 @@ public:
 
 					attribute.array = new Float32Array( nvertices * size );
 
-					attribute.buffer = gl::createBuffer();
+					attribute.buffer = glCreateBuffer();
 					attribute.buffer.belongsToAttribute = a;
 
 					originalAttribute.needsUpdate = true;
@@ -1152,10 +1194,10 @@ public:
 
 			attribute = geometry.attributes[ a ];
 
-			attribute.buffer = gl::createBuffer();
+			attribute.buffer = glCreateBuffer();
 
-			gl::bindBuffer( type, attribute.buffer );
-			gl::bufferData( type, attribute.array, _gl.STATIC_DRAW );
+			glbindBuffer( type, attribute.buffer );
+			glbufferData( type, attribute.array, _gl.STATIC_DRAW );
 
 		}
 
@@ -1453,15 +1495,15 @@ public:
 
 		if ( dirtyVertices || object.sortParticles ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, vertexArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
+			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
 		if ( dirtyColors || object.sortParticles ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, colorArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
+			glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 		}
 
@@ -1473,8 +1515,8 @@ public:
 
 				if ( customAttribute.needsUpdate || object.sortParticles ) {
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, customAttribute.buffer );
-					gl::bufferData( gl::GL_ARRAY_BUFFER, customAttribute.array, hint );
+					glbindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
+					glbufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
 
 				}
 
@@ -1520,8 +1562,8 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, vertexArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
+			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
@@ -1539,8 +1581,8 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, colorArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
+			glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 		}
 
@@ -1628,8 +1670,8 @@ public:
 
 					}
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, customAttribute.buffer );
-					gl::bufferData( gl::GL_ARRAY_BUFFER, customAttribute.array, hint );
+					glbindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
+					glbufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
 
 				}
 
@@ -1668,8 +1710,8 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, vertexArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
+			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
@@ -1687,8 +1729,8 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, colorArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
+			glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 		}
 
@@ -1846,8 +1888,8 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, vertexArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
+			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
@@ -2002,13 +2044,13 @@ public:
 
 				}
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ vk ] );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, morphTargetsArrays[ vk ], hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ vk ] );
+				glbufferData( GL_ARRAY_BUFFER, morphTargetsArrays[ vk ], hint );
 
 				if ( material.morphNormals ) {
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ vk ] );
-					gl::bufferData( gl::GL_ARRAY_BUFFER, morphNormalsArrays[ vk ], hint );
+					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ vk ] );
+					glbufferData( GL_ARRAY_BUFFER, morphNormalsArrays[ vk ], hint );
 
 				}
 
@@ -2228,17 +2270,17 @@ public:
 
 			if ( offset_skin > 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexABuffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, skinVertexAArray, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexABuffer );
+				glbufferData( GL_ARRAY_BUFFER, skinVertexAArray, hint );
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexBBuffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, skinVertexBArray, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexBBuffer );
+				glbufferData( GL_ARRAY_BUFFER, skinVertexBArray, hint );
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinIndicesBuffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, skinIndexArray, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinIndicesBuffer );
+				glbufferData( GL_ARRAY_BUFFER, skinIndexArray, hint );
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinWeightsBuffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, skinWeightArray, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinWeightsBuffer );
+				glbufferData( GL_ARRAY_BUFFER, skinWeightArray, hint );
 
 			}
 
@@ -2328,8 +2370,8 @@ public:
 
 			if ( offset_color > 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglColorBuffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, colorArray, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglColorBuffer );
+				glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 			}
 
@@ -2401,8 +2443,8 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglTangentBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, tangentArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglTangentBuffer );
+			glbufferData( GL_ARRAY_BUFFER, tangentArray, hint );
 
 		}
 
@@ -2482,8 +2524,8 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglNormalBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, normalArray, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglNormalBuffer );
+			glbufferData( GL_ARRAY_BUFFER, normalArray, hint );
 
 		}
 
@@ -2535,8 +2577,8 @@ public:
 
 			if ( offset_uv > 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglUVBuffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, uvArray, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUVBuffer );
+				glbufferData( GL_ARRAY_BUFFER, uvArray, hint );
 
 			}
 
@@ -2590,8 +2632,8 @@ public:
 
 			if ( offset_uv2 > 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglUV2Buffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, uv2Array, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUV2Buffer );
+				glbufferData( GL_ARRAY_BUFFER, uv2Array, hint );
 
 			}
 
@@ -2656,11 +2698,11 @@ public:
 
 			}
 
-			gl::bindBuffer( gl::GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglFaceBuffer );
-			gl::bufferData( gl::GL_ELEMENT_ARRAY_BUFFER, faceArray, hint );
+			glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglFaceBuffer );
+			glbufferData( GL_ELEMENT_ARRAY_BUFFER, faceArray, hint );
 
-			gl::bindBuffer( gl::GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglLineBuffer );
-			gl::bufferData( gl::GL_ELEMENT_ARRAY_BUFFER, lineArray, hint );
+			glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglLineBuffer );
+			glbufferData( GL_ELEMENT_ARRAY_BUFFER, lineArray, hint );
 
 		}
 
@@ -3206,8 +3248,8 @@ public:
 
 				}
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, customAttribute.buffer );
-				gl::bufferData( gl::GL_ARRAY_BUFFER, customAttribute.array, hint );
+				glbindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
+				glbufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
 
 			}
 
@@ -3246,43 +3288,43 @@ public:
 
 		if ( geometry.elementsNeedUpdate && index !== undefined ) {
 
-			gl::bindBuffer( gl::GL_ELEMENT_ARRAY_BUFFER, index.buffer );
-			gl::bufferData( gl::GL_ELEMENT_ARRAY_BUFFER, index.array, hint );
+			glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
+			glbufferData( GL_ELEMENT_ARRAY_BUFFER, index.array, hint );
 
 		}
 
 		if ( geometry.verticesNeedUpdate && position !== undefined ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, position.buffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, position.array, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, position.buffer );
+			glbufferData( GL_ARRAY_BUFFER, position.array, hint );
 
 		}
 
 		if ( geometry.normalsNeedUpdate && normal !== undefined ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, normal.buffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, normal.array, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, normal.buffer );
+			glbufferData( GL_ARRAY_BUFFER, normal.array, hint );
 
 		}
 
 		if ( geometry.uvsNeedUpdate && uv !== undefined ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, uv.buffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, uv.array, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, uv.buffer );
+			glbufferData( GL_ARRAY_BUFFER, uv.array, hint );
 
 		}
 
 		if ( geometry.colorsNeedUpdate && color !== undefined ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, color.buffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, color.array, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, color.buffer );
+			glbufferData( GL_ARRAY_BUFFER, color.array, hint );
 
 		}
 
 		if ( geometry.tangentsNeedUpdate && tangent !== undefined ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, tangent.buffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, tangent.array, hint );
+			glbindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
+			glbufferData( GL_ARRAY_BUFFER, tangent.array, hint );
 
 		}
 
@@ -3302,23 +3344,23 @@ public:
 
 	renderBufferImmediate = function ( object, program, material ) {
 
-		if ( object.hasPositions && ! object.__webglVertexBuffer ) object.__webglVertexBuffer = gl::createBuffer();
-		if ( object.hasNormals && ! object.__webglNormalBuffer ) object.__webglNormalBuffer = gl::createBuffer();
-		if ( object.hasUvs && ! object.__webglUvBuffer ) object.__webglUvBuffer = gl::createBuffer();
-		if ( object.hasColors && ! object.__webglColorBuffer ) object.__webglColorBuffer = gl::createBuffer();
+		if ( object.hasPositions && ! object.__webglVertexBuffer ) object.__webglVertexBuffer = glCreateBuffer();
+		if ( object.hasNormals && ! object.__webglNormalBuffer ) object.__webglNormalBuffer = glCreateBuffer();
+		if ( object.hasUvs && ! object.__webglUvBuffer ) object.__webglUvBuffer = glCreateBuffer();
+		if ( object.hasColors && ! object.__webglColorBuffer ) object.__webglColorBuffer = glCreateBuffer();
 
 		if ( object.hasPositions ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, object.__webglVertexBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, object.positionArray, _gl.DYNAMIC_DRAW );
-			gl::enableVertexAttribArray( program.attributes.position );
-			gl::vertexAttribPointer( program.attributes.position, 3, _gl.FLOAT, false, 0, 0 );
+			glbindBuffer( GL_ARRAY_BUFFER, object.__webglVertexBuffer );
+			glbufferData( GL_ARRAY_BUFFER, object.positionArray, _gl.DYNAMIC_DRAW );
+			glEnableVertexAttribArray( program.attributes.position );
+			glvertexAttribPointer( program.attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
 
 		if ( object.hasNormals ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, object.__webglNormalBuffer );
+			glbindBuffer( GL_ARRAY_BUFFER, object.__webglNormalBuffer );
 
 			if ( material.shading == THREE.FlatShading ) {
 
@@ -3363,31 +3405,31 @@ public:
 
 			}
 
-			gl::bufferData( gl::GL_ARRAY_BUFFER, object.normalArray, _gl.DYNAMIC_DRAW );
-			gl::enableVertexAttribArray( program.attributes.normal );
-			gl::vertexAttribPointer( program.attributes.normal, 3, _gl.FLOAT, false, 0, 0 );
+			glbufferData( GL_ARRAY_BUFFER, object.normalArray, _gl.DYNAMIC_DRAW );
+			glEnableVertexAttribArray( program.attributes.normal );
+			glvertexAttribPointer( program.attributes.normal, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
 
 		if ( object.hasUvs && material.map ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, object.__webglUvBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, object.uvArray, _gl.DYNAMIC_DRAW );
-			gl::enableVertexAttribArray( program.attributes.uv );
-			gl::vertexAttribPointer( program.attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
+			glbindBuffer( GL_ARRAY_BUFFER, object.__webglUvBuffer );
+			glbufferData( GL_ARRAY_BUFFER, object.uvArray, _gl.DYNAMIC_DRAW );
+			glEnableVertexAttribArray( program.attributes.uv );
+			glvertexAttribPointer( program.attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
 
 		}
 
 		if ( object.hasColors && material.vertexColors !== THREE.NoColors ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, object.__webglColorBuffer );
-			gl::bufferData( gl::GL_ARRAY_BUFFER, object.colorArray, _gl.DYNAMIC_DRAW );
-			gl::enableVertexAttribArray( program.attributes.color );
-			gl::vertexAttribPointer( program.attributes.color, 3, _gl.FLOAT, false, 0, 0 );
+			glbindBuffer( GL_ARRAY_BUFFER, object.__webglColorBuffer );
+			glbufferData( GL_ARRAY_BUFFER, object.colorArray, _gl.DYNAMIC_DRAW );
+			glEnableVertexAttribArray( program.attributes.color );
+			glvertexAttribPointer( program.attributes.color, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
 
-		gl::drawArrays( gl::GL_TRIANGLES, 0, object.count );
+		gldrawArrays( GL_TRIANGLES, 0, object.count );
 
 		object.count = 0;
 
@@ -3437,8 +3479,8 @@ public:
 					var position = geometry.attributes[ "position" ];
 					var positionSize = position.itemSize;
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, position.buffer );
-					gl::vertexAttribPointer( attributes.position, positionSize, _gl.FLOAT, false, 0, startIndex * positionSize * 4 ); // 4 bytes per Float32
+					glbindBuffer( GL_ARRAY_BUFFER, position.buffer );
+					glvertexAttribPointer( attributes.position, positionSize, _gl.FLOAT, false, 0, startIndex * positionSize * 4 ); // 4 bytes per Float32
 
 					// normals
 
@@ -3448,8 +3490,8 @@ public:
 
 						var normalSize = normal.itemSize;
 
-						gl::bindBuffer( gl::GL_ARRAY_BUFFER, normal.buffer );
-						gl::vertexAttribPointer( attributes.normal, normalSize, _gl.FLOAT, false, 0, startIndex * normalSize * 4 );
+						glbindBuffer( GL_ARRAY_BUFFER, normal.buffer );
+						glvertexAttribPointer( attributes.normal, normalSize, _gl.FLOAT, false, 0, startIndex * normalSize * 4 );
 
 					}
 
@@ -3463,14 +3505,14 @@ public:
 
 							var uvSize = uv.itemSize;
 
-							gl::bindBuffer( gl::GL_ARRAY_BUFFER, uv.buffer );
-							gl::vertexAttribPointer( attributes.uv, uvSize, _gl.FLOAT, false, 0, startIndex * uvSize * 4 );
+							glbindBuffer( GL_ARRAY_BUFFER, uv.buffer );
+							glvertexAttribPointer( attributes.uv, uvSize, _gl.FLOAT, false, 0, startIndex * uvSize * 4 );
 
-							gl::enableVertexAttribArray( attributes.uv );
+							glEnableVertexAttribArray( attributes.uv );
 
 						} else {
 
-							gl::disableVertexAttribArray( attributes.uv );
+							glDisableVertexAttribArray( attributes.uv );
 
 						}
 
@@ -3484,8 +3526,8 @@ public:
 
 						var colorSize = color.itemSize;
 
-						gl::bindBuffer( gl::GL_ARRAY_BUFFER, color.buffer );
-						gl::vertexAttribPointer( attributes.color, colorSize, _gl.FLOAT, false, 0, startIndex * colorSize * 4 );
+						glbindBuffer( GL_ARRAY_BUFFER, color.buffer );
+						glvertexAttribPointer( attributes.color, colorSize, _gl.FLOAT, false, 0, startIndex * colorSize * 4 );
 
 					}
 
@@ -3497,8 +3539,8 @@ public:
 
 						var tangentSize = tangent.itemSize;
 
-						gl::bindBuffer( gl::GL_ARRAY_BUFFER, tangent.buffer );
-						gl::vertexAttribPointer( attributes.tangent, tangentSize, _gl.FLOAT, false, 0, startIndex * tangentSize * 4 );
+						glbindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
+						glvertexAttribPointer( attributes.tangent, tangentSize, _gl.FLOAT, false, 0, startIndex * tangentSize * 4 );
 
 					}
 
@@ -3506,13 +3548,13 @@ public:
 
 					var index = geometry.attributes[ "index" ];
 
-					gl::bindBuffer( gl::GL_ELEMENT_ARRAY_BUFFER, index.buffer );
+					glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
 
 				}
 
 				// render indexed triangles
 
-				gl::drawElements( gl::GL_TRIANGLES, offsets[ i ].count, _gl.UNSIGNED_SHORT, offsets[ i ].start * 2 ); // 2 bytes per Uint16
+				gldrawElements( GL_TRIANGLES, offsets[ i ].count, _gl.UNSIGNED_SHORT, offsets[ i ].start * 2 ); // 2 bytes per Uint16
 
 				_info.render.calls ++;
 				_info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
@@ -3551,8 +3593,8 @@ public:
 
 			if ( updateBuffers ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
-				gl::vertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
+				glvertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 			}
 
@@ -3581,8 +3623,8 @@ public:
 
 					if( attributes[ attribute.buffer.belongsToAttribute ] >= 0 ) {
 
-						gl::bindBuffer( gl::GL_ARRAY_BUFFER, attribute.buffer );
-						gl::vertexAttribPointer( attributes[ attribute.buffer.belongsToAttribute ], attribute.size, _gl.FLOAT, false, 0, 0 );
+						glbindBuffer( GL_ARRAY_BUFFER, attribute.buffer );
+						glvertexAttribPointer( attributes[ attribute.buffer.belongsToAttribute ], attribute.size, _gl.FLOAT, false, 0, 0 );
 
 					}
 
@@ -3595,8 +3637,8 @@ public:
 
 			if ( attributes.color >= 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglColorBuffer );
-				gl::vertexAttribPointer( attributes.color, 3, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglColorBuffer );
+				glvertexAttribPointer( attributes.color, 3, _gl.FLOAT, false, 0, 0 );
 
 			}
 
@@ -3604,8 +3646,8 @@ public:
 
 			if ( attributes.normal >= 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglNormalBuffer );
-				gl::vertexAttribPointer( attributes.normal, 3, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglNormalBuffer );
+				glvertexAttribPointer( attributes.normal, 3, _gl.FLOAT, false, 0, 0 );
 
 			}
 
@@ -3613,8 +3655,8 @@ public:
 
 			if ( attributes.tangent >= 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglTangentBuffer );
-				gl::vertexAttribPointer( attributes.tangent, 4, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglTangentBuffer );
+				glvertexAttribPointer( attributes.tangent, 4, _gl.FLOAT, false, 0, 0 );
 
 			}
 
@@ -3624,14 +3666,14 @@ public:
 
 				if ( geometryGroup.__webglUVBuffer ) {
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglUVBuffer );
-					gl::vertexAttribPointer( attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
+					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUVBuffer );
+					glvertexAttribPointer( attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
 
-					gl::enableVertexAttribArray( attributes.uv );
+					glEnableVertexAttribArray( attributes.uv );
 
 				} else {
 
-					gl::disableVertexAttribArray( attributes.uv );
+					glDisableVertexAttribArray( attributes.uv );
 
 				}
 
@@ -3641,14 +3683,14 @@ public:
 
 				if ( geometryGroup.__webglUV2Buffer ) {
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglUV2Buffer );
-					gl::vertexAttribPointer( attributes.uv2, 2, _gl.FLOAT, false, 0, 0 );
+					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUV2Buffer );
+					glvertexAttribPointer( attributes.uv2, 2, _gl.FLOAT, false, 0, 0 );
 
-					gl::enableVertexAttribArray( attributes.uv2 );
+					glEnableVertexAttribArray( attributes.uv2 );
 
 				} else {
 
-					gl::disableVertexAttribArray( attributes.uv2 );
+					glDisableVertexAttribArray( attributes.uv2 );
 
 				}
 
@@ -3658,17 +3700,17 @@ public:
 				 attributes.skinVertexA >= 0 && attributes.skinVertexB >= 0 &&
 				 attributes.skinIndex >= 0 && attributes.skinWeight >= 0 ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexABuffer );
-				gl::vertexAttribPointer( attributes.skinVertexA, 4, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexABuffer );
+				glvertexAttribPointer( attributes.skinVertexA, 4, _gl.FLOAT, false, 0, 0 );
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexBBuffer );
-				gl::vertexAttribPointer( attributes.skinVertexB, 4, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexBBuffer );
+				glvertexAttribPointer( attributes.skinVertexB, 4, _gl.FLOAT, false, 0, 0 );
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinIndicesBuffer );
-				gl::vertexAttribPointer( attributes.skinIndex, 4, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinIndicesBuffer );
+				glvertexAttribPointer( attributes.skinIndex, 4, _gl.FLOAT, false, 0, 0 );
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglSkinWeightsBuffer );
-				gl::vertexAttribPointer( attributes.skinWeight, 4, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinWeightsBuffer );
+				glvertexAttribPointer( attributes.skinWeight, 4, _gl.FLOAT, false, 0, 0 );
 
 			}
 
@@ -3684,15 +3726,15 @@ public:
 
 				setLineWidth( material.wireframeLinewidth );
 
-				if ( updateBuffers ) _gl.bindBuffer( gl::GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglLineBuffer );
-				gl::drawElements( gl::GL_LINES, geometryGroup.__webglLineCount, _gl.UNSIGNED_SHORT, 0 );
+				if ( updateBuffers ) _gl.bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglLineBuffer );
+				gldrawElements( GL_LINES, geometryGroup.__webglLineCount, _gl.UNSIGNED_SHORT, 0 );
 
 			// triangles
 
 			} else {
 
-				if ( updateBuffers ) _gl.bindBuffer( gl::GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglFaceBuffer );
-				gl::drawElements( gl::GL_TRIANGLES, geometryGroup.__webglFaceCount, _gl.UNSIGNED_SHORT, 0 );
+				if ( updateBuffers ) _gl.bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglFaceBuffer );
+				gldrawElements( GL_TRIANGLES, geometryGroup.__webglFaceCount, _gl.UNSIGNED_SHORT, 0 );
 
 			}
 
@@ -3708,7 +3750,7 @@ public:
 
 			setLineWidth( material.linewidth );
 
-			gl::drawArrays( primitives, 0, geometryGroup.__webglLineCount );
+			gldrawArrays( primitives, 0, geometryGroup.__webglLineCount );
 
 			_info.render.calls ++;
 
@@ -3716,7 +3758,7 @@ public:
 
 		} else if ( object instanceof THREE.ParticleSystem ) {
 
-			gl::drawArrays( gl::GL_POINTS, 0, geometryGroup.__webglParticleCount );
+			gldrawArrays( GL_POINTS, 0, geometryGroup.__webglParticleCount );
 
 			_info.render.calls ++;
 			_info.render.points += geometryGroup.__webglParticleCount;
@@ -3725,7 +3767,7 @@ public:
 
 		} else if ( object instanceof THREE.Ribbon ) {
 
-			gl::drawArrays( gl::GL_TRIANGLE_STRIP, 0, geometryGroup.__webglVertexCount );
+			gldrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.__webglVertexCount );
 
 			_info.render.calls ++;
 
@@ -3741,13 +3783,13 @@ public:
 
 		if ( object.morphTargetBase !== -1 ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ object.morphTargetBase ] );
-			gl::vertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
+			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ object.morphTargetBase ] );
+			glvertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 		} else if ( attributes.position >= 0 ) {
 
-			gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
-			gl::vertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
+			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
+			glvertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
 
@@ -3761,13 +3803,13 @@ public:
 
 			while ( m < material.numSupportedMorphTargets && m < order.length ) {
 
-				gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ order[ m ] ] );
-				gl::vertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
+				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ order[ m ] ] );
+				glvertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 				if ( material.morphNormals ) {
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ order[ m ] ] );
-					gl::vertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
+					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ order[ m ] ] );
+					glvertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 				}
 
@@ -3819,14 +3861,14 @@ public:
 
 					influenceIndex = activeInfluenceIndices[ m ][ 0 ];
 
-					gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ influenceIndex ] );
+					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ influenceIndex ] );
 
-					gl::vertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
+					glvertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 					if ( material.morphNormals ) {
 
-						gl::bindBuffer( gl::GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ influenceIndex ] );
-						gl::vertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
+						glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ influenceIndex ] );
+						glvertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 					}
 
@@ -3834,11 +3876,11 @@ public:
 
 				} else {
 
-					gl::vertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
+					glvertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 					if ( material.morphNormals ) {
 
-						gl::vertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
+						glvertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 					}
 
@@ -3856,7 +3898,7 @@ public:
 
 		if ( material.program.uniforms.morphTargetInfluences !== null ) {
 
-			gl::uniform1fv( material.program.uniforms.morphTargetInfluences, object.__webglMorphTargetInfluences );
+			gluniform1fv( material.program.uniforms.morphTargetInfluences, object.__webglMorphTargetInfluences );
 
 		}
 
@@ -4892,10 +4934,10 @@ public:
 			 attributes.skinVertexA >=0 && attributes.skinVertexB >= 0 &&
 			 attributes.skinIndex >= 0 && attributes.skinWeight >= 0 ) {
 
-			gl::enableVertexAttribArray( attributes.skinVertexA );
-			gl::enableVertexAttribArray( attributes.skinVertexB );
-			gl::enableVertexAttribArray( attributes.skinIndex );
-			gl::enableVertexAttribArray( attributes.skinWeight );
+			glEnableVertexAttribArray( attributes.skinVertexA );
+			glEnableVertexAttribArray( attributes.skinVertexB );
+			glEnableVertexAttribArray( attributes.skinIndex );
+			glEnableVertexAttribArray( attributes.skinWeight );
 
 		}
 
@@ -4921,7 +4963,7 @@ public:
 
 				if ( attributes[ id ] >= 0 ) {
 
-					gl::enableVertexAttribArray( attributes[ id ] );
+					glEnableVertexAttribArray( attributes[ id ] );
 					material.numSupportedMorphTargets ++;
 
 				}
@@ -4942,7 +4984,7 @@ public:
 
 				if ( attributes[ id ] >= 0 ) {
 
-					gl::enableVertexAttribArray( attributes[ id ] );
+					glEnableVertexAttribArray( attributes[ id ] );
 					material.numSupportedMorphNormals ++;
 
 				}
@@ -4998,7 +5040,7 @@ public:
 
 		if ( program !== _currentProgram ) {
 
-			gl::useProgram( program );
+			gluseProgram( program );
 			_currentProgram = program;
 
 			refreshMaterial = true;
@@ -5014,7 +5056,7 @@ public:
 
 		if ( refreshMaterial || camera !== _currentCamera ) {
 
-			gl::uniformMatrix4fv( p_uniforms.projectionMatrix, false, camera._projectionMatrixArray );
+			gluniformMatrix4fv( p_uniforms.projectionMatrix, false, camera._projectionMatrixArray );
 
 			if ( camera !== _currentCamera ) _currentCamera = camera;
 
@@ -5103,7 +5145,7 @@ public:
 				if ( p_uniforms.cameraPosition !== null ) {
 
 					var position = camera.matrixWorld.getPosition();
-					gl::uniform3f( p_uniforms.cameraPosition, position.x, position.y, position.z );
+					gluniform3f( p_uniforms.cameraPosition, position.x, position.y, position.z );
 
 				}
 
@@ -5116,7 +5158,7 @@ public:
 
 				if ( p_uniforms.viewMatrix !== null ) {
 
-					gl::uniformMatrix4fv( p_uniforms.viewMatrix, false, camera._viewMatrixArray );
+					gluniformMatrix4fv( p_uniforms.viewMatrix, false, camera._viewMatrixArray );
 
 				}
 
@@ -5135,7 +5177,7 @@ public:
 
 					var textureUnit = 12;
 
-					gl::uniform1i( p_uniforms.boneTexture, textureUnit );
+					gluniform1i( p_uniforms.boneTexture, textureUnit );
 					_setTexture( object.boneTexture, textureUnit );
 
 				}
@@ -5144,7 +5186,7 @@ public:
 
 				if ( p_uniforms.boneGlobalMatrices !== null ) {
 
-					gl::uniformMatrix4fv( p_uniforms.boneGlobalMatrices, false, object.boneMatrices );
+					gluniformMatrix4fv( p_uniforms.boneGlobalMatrices, false, object.boneMatrices );
 
 				}
 
@@ -5156,7 +5198,7 @@ public:
 
 		if ( p_uniforms.modelMatrix !== null ) {
 
-			gl::uniformMatrix4fv( p_uniforms.modelMatrix, false, object.matrixWorld.elements );
+			gluniformMatrix4fv( p_uniforms.modelMatrix, false, object.matrixWorld.elements );
 
 		}
 
@@ -5380,11 +5422,11 @@ public:
 
 	function loadUniformsMatrices ( uniforms, object ) {
 
-		gl::uniformMatrix4fv( uniforms.modelViewMatrix, false, object._modelViewMatrix.elements );
+		gluniformMatrix4fv( uniforms.modelViewMatrix, false, object._modelViewMatrix.elements );
 
 		if ( uniforms.normalMatrix ) {
 
-			gl::uniformMatrix3fv( uniforms.normalMatrix, false, object._normalMatrix.elements );
+			gluniformMatrix3fv( uniforms.normalMatrix, false, object._normalMatrix.elements );
 
 		}
 
@@ -5406,43 +5448,43 @@ public:
 
 			if ( type == "i" ) { // single integer
 
-				gl::uniform1i( location, value );
+				gluniform1i( location, value );
 
 			} else if ( type == "f" ) { // single float
 
-				gl::uniform1f( location, value );
+				gluniform1f( location, value );
 
 			} else if ( type == "v2" ) { // single THREE.Vector2
 
-				gl::uniform2f( location, value.x, value.y );
+				gluniform2f( location, value.x, value.y );
 
 			} else if ( type == "v3" ) { // single THREE.Vector3
 
-				gl::uniform3f( location, value.x, value.y, value.z );
+				gluniform3f( location, value.x, value.y, value.z );
 
 			} else if ( type == "v4" ) { // single THREE.Vector4
 
-				gl::uniform4f( location, value.x, value.y, value.z, value.w );
+				gluniform4f( location, value.x, value.y, value.z, value.w );
 
 			} else if ( type == "c" ) { // single THREE.Color
 
-				gl::uniform3f( location, value.r, value.g, value.b );
+				gluniform3f( location, value.r, value.g, value.b );
 
 			} else if ( type == "iv1" ) { // flat array of integers (JS or typed array)
 
-				gl::uniform1iv( location, value );
+				gluniform1iv( location, value );
 
 			} else if ( type == "iv" ) { // flat array of integers with 3 x N size (JS or typed array)
 
-				gl::uniform3iv( location, value );
+				gluniform3iv( location, value );
 
 			} else if ( type == "fv1" ) { // flat array of floats (JS or typed array)
 
-				gl::uniform1fv( location, value );
+				gluniform1fv( location, value );
 
 			} else if ( type == "fv" ) { // flat array of floats with 3 x N size (JS or typed array)
 
-				gl::uniform3fv( location, value );
+				gluniform3fv( location, value );
 
 			} else if ( type == "v2v" ) { // array of THREE.Vector2
 
@@ -5461,7 +5503,7 @@ public:
 
 				}
 
-				gl::uniform2fv( location, uniform._array );
+				gluniform2fv( location, uniform._array );
 
 			} else if ( type == "v3v" ) { // array of THREE.Vector3
 
@@ -5481,7 +5523,7 @@ public:
 
 				}
 
-				gl::uniform3fv( location, uniform._array );
+				gluniform3fv( location, uniform._array );
 
 			} else if ( type == "v4v" ) { // array of THREE.Vector4
 
@@ -5502,7 +5544,7 @@ public:
 
 				}
 
-				gl::uniform4fv( location, uniform._array );
+				gluniform4fv( location, uniform._array );
 
 			} else if ( type == "m4") { // single THREE.Matrix4
 
@@ -5513,7 +5555,7 @@ public:
 				}
 
 				value.flattenToArray( uniform._array );
-				gl::uniformMatrix4fv( location, false, uniform._array );
+				gluniformMatrix4fv( location, false, uniform._array );
 
 			} else if ( type == "m4v" ) { // array of THREE.Matrix4
 
@@ -5529,11 +5571,11 @@ public:
 
 				}
 
-				gl::uniformMatrix4fv( location, false, uniform._array );
+				gluniformMatrix4fv( location, false, uniform._array );
 
 			} else if ( type == "t" ) { // single THREE.Texture (2d or cube)
 
-				gl::uniform1i( location, value );
+				gluniform1i( location, value );
 
 				texture = uniform.texture;
 
@@ -5567,7 +5609,7 @@ public:
 
 				}
 
-				gl::uniform1iv( location, uniform._array );
+				gluniform1iv( location, uniform._array );
 
 				for( i = 0, il = uniform.texture.length; i < il; i ++ ) {
 
@@ -5774,33 +5816,33 @@ public:
 
 			if ( !frontFace || frontFace == "ccw" ) {
 
-				gl::frontFace( gl::GL_CCW );
+				glFrontFace( GL_CCW );
 
 			} else {
 
-				gl::frontFace( gl::GL_CW );
+				glFrontFace( GL_CW );
 
 			}
 
 			if( cullFace == "back" ) {
 
-				gl::cullFace( gl::GL_BACK );
+				glCullFace( GL_BACK );
 
 			} else if( cullFace == "front" ) {
 
-				gl::cullFace( gl::GL_FRONT );
+				glCullFace( GL_FRONT );
 
 			} else {
 
-				gl::cullFace( gl::GL_FRONT_AND_BACK );
+				glCullFace( GL_FRONT_AND_BACK );
 
 			}
 
-			gl::enable( gl::GL_CULL_FACE );
+			glEnable( GL_CULL_FACE );
 
 		} else {
 
-			gl::disable( gl::GL_CULL_FACE );
+			glDisable( GL_CULL_FACE );
 
 		}
 
@@ -5815,11 +5857,11 @@ public:
 
 			if ( doubleSided ) {
 
-				gl::disable( gl::GL_CULL_FACE );
+				glDisable( GL_CULL_FACE );
 
 			} else {
 
-				gl::enable( gl::GL_CULL_FACE );
+				glEnable( GL_CULL_FACE );
 
 			}
 
@@ -5831,11 +5873,11 @@ public:
 
 			if ( flipSided ) {
 
-				gl::frontFace( gl::GL_CW );
+				glFrontFace( GL_CW );
 
 			} else {
 
-				gl::frontFace( gl::GL_CCW );
+				glFrontFace( GL_CCW );
 
 			}
 
@@ -5851,11 +5893,11 @@ public:
 
 			if ( depthTest ) {
 
-				gl::enable( gl::GL_DEPTH_TEST );
+				glEnable( GL_DEPTH_TEST );
 
 			} else {
 
-				gl::disable( gl::GL_DEPTH_TEST );
+				glDisable( GL_DEPTH_TEST );
 
 			}
 
@@ -5869,7 +5911,7 @@ public:
 
 		if ( _oldDepthWrite !== depthWrite ) {
 
-			gl::depthMask( depthWrite );
+			glDepthMask( depthWrite );
 			_oldDepthWrite = depthWrite;
 
 		}
@@ -5880,7 +5922,7 @@ public:
 
 		if ( width !== _oldLineWidth ) {
 
-			gl::lineWidth( width );
+			gllineWidth( width );
 
 			_oldLineWidth = width;
 
@@ -5894,11 +5936,11 @@ public:
 
 			if ( polygonoffset ) {
 
-				gl::enable( gl::GL_POLYGON_OFFSET_FILL );
+				glEnable( GL_POLYGON_OFFSET_FILL );
 
 			} else {
 
-				gl::disable( gl::GL_POLYGON_OFFSET_FILL );
+				glDisable( GL_POLYGON_OFFSET_FILL );
 
 			}
 
@@ -5908,7 +5950,7 @@ public:
 
 		if ( polygonoffset && ( _oldPolygonOffsetFactor !== factor || _oldPolygonOffsetUnits !== units ) ) {
 
-			gl::polygonOffset( factor, units );
+			glpolygonOffset( factor, units );
 
 			_oldPolygonOffsetFactor = factor;
 			_oldPolygonOffsetUnits = units;
@@ -5923,37 +5965,37 @@ public:
 
 			if ( blending == THREE.NoBlending ) {
 
-				gl::disable( gl::GL_BLEND );
+				glDisable( GL_BLEND );
 
 			} else if ( blending == THREE.AdditiveBlending ) {
 
-				gl::enable( gl::GL_BLEND );
-				gl::blendEquation( gl::GL_FUNC_ADD );
-				gl::blendFunc( gl::GL_SRC_ALPHA, _gl.ONE );
+				glEnable( GL_BLEND );
+				glBlendEquation( GL_FUNC_ADD );
+				glBlendFunc( GL_SRC_ALPHA, _gl.ONE );
 
 			} else if ( blending == THREE.SubtractiveBlending ) {
 
 				// TODO: Find blendFuncSeparate() combination
-				gl::enable( gl::GL_BLEND );
-				gl::blendEquation( gl::GL_FUNC_ADD );
-				gl::blendFunc( gl::GL_ZERO, _gl.ONE_MINUS_SRC_COLOR );
+				glEnable( GL_BLEND );
+				glBlendEquation( GL_FUNC_ADD );
+				glBlendFunc( GL_ZERO, _gl.ONE_MINUS_SRC_COLOR );
 
 			} else if ( blending == THREE.MultiplyBlending ) {
 
 				// TODO: Find blendFuncSeparate() combination
-				gl::enable( gl::GL_BLEND );
-				gl::blendEquation( gl::GL_FUNC_ADD );
-				gl::blendFunc( gl::GL_ZERO, _gl.SRC_COLOR );
+				glEnable( GL_BLEND );
+				glBlendEquation( GL_FUNC_ADD );
+				glBlendFunc( GL_ZERO, _gl.SRC_COLOR );
 
 			} else if ( blending == THREE.CustomBlending ) {
 
-				gl::enable( gl::GL_BLEND );
+				glEnable( GL_BLEND );
 
 			} else {
 
-				gl::enable( gl::GL_BLEND );
-				gl::blendEquationSeparate( gl::GL_FUNC_ADD, _gl.FUNC_ADD );
-				gl::blendFuncSeparate( gl::GL_SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA, _gl.ONE, _gl.ONE_MINUS_SRC_ALPHA );
+				glEnable( GL_BLEND );
+				glBlendEquationSeparate( GL_FUNC_ADD, _gl.FUNC_ADD );
+				glBlendFuncSeparate( GL_SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA, _gl.ONE, _gl.ONE_MINUS_SRC_ALPHA );
 
 			}
 
@@ -5965,7 +6007,7 @@ public:
 
 			if ( blendEquation !== _oldBlendEquation ) {
 
-				gl::blendEquation( paramThreeToGL( blendEquation ) );
+				glBlendEquation( paramThreeToGL( blendEquation ) );
 
 				_oldBlendEquation = blendEquation;
 
@@ -5973,7 +6015,7 @@ public:
 
 			if ( blendSrc !== _oldBlendSrc || blendDst !== _oldBlendDst ) {
 
-				gl::blendFunc( paramThreeToGL( blendSrc ), paramThreeToGL( blendDst ) );
+				glBlendFunc( paramThreeToGL( blendSrc ), paramThreeToGL( blendDst ) );
 
 				_oldBlendSrc = blendSrc;
 				_oldBlendDst = blendDst;
@@ -6041,7 +6083,7 @@ public:
 
 		//
 
-		program = gl::createProgram();
+		program = glCreateProgram();
 
 		var prefix_vertex = [
 
@@ -6189,10 +6231,10 @@ public:
 		var glFragmentShader = getShader( "fragment", prefix_fragment + fragmentShader );
 		var glVertexShader = getShader( "vertex", prefix_vertex + vertexShader );
 
-		gl::attachShader( program, glVertexShader );
-		gl::attachShader( program, glFragmentShader );
+		glattachShader( program, glVertexShader );
+		glattachShader( program, glFragmentShader );
 
-		gl::linkProgram( program );
+		gllinkProgram( program );
 
 		if ( !_gl.getProgramParameter( program, _gl.LINK_STATUS ) ) {
 
@@ -6202,8 +6244,8 @@ public:
 
 		// clean up
 
-		gl::deleteShader( glFragmentShader );
-		gl::deleteShader( glVertexShader );
+		glDeleteShader( glFragmentShader );
+		glDeleteShader( glVertexShader );
 
 		//console.log( prefix_fragment + fragmentShader );
 		//console.log( prefix_vertex + vertexShader );
@@ -6330,20 +6372,20 @@ public:
 
 		if ( type == "fragment" ) {
 
-			shader = gl::createShader( gl::GL_FRAGMENT_SHADER );
+			shader = glCreateShader( GL_FRAGMENT_SHADER );
 
 		} else if ( type == "vertex" ) {
 
-			shader = gl::createShader( gl::GL_VERTEX_SHADER );
+			shader = glCreateShader( GL_VERTEX_SHADER );
 
 		}
 
-		gl::shaderSource( shader, string );
-		gl::compileShader( shader );
+		glshaderSource( shader, string );
+		glcompileShader( shader );
 
 		if ( !_gl.getShaderParameter( shader, _gl.COMPILE_STATUS ) ) {
 
-			console.error( gl::GL_getShaderInfoLog( shader ) );
+			console.error( GL_getShaderInfoLog( shader ) );
 			console.error( addLineNumbers( string ) );
 			return null;
 
@@ -6366,19 +6408,19 @@ public:
 
 		if ( isImagePowerOfTwo ) {
 
-			gl::texParameteri( textureType, _gl.TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
-			gl::texParameteri( textureType, _gl.TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
+			gltexParameteri( textureType, _gl.TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
+			gltexParameteri( textureType, _gl.TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
 
-			gl::texParameteri( textureType, _gl.TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
-			gl::texParameteri( textureType, _gl.TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
+			gltexParameteri( textureType, _gl.TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
+			gltexParameteri( textureType, _gl.TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
 
 		} else {
 
-			gl::texParameteri( textureType, _gl.TEXTURE_WRAP_S, _gl.CLAMP_TO_EDGE );
-			gl::texParameteri( textureType, _gl.TEXTURE_WRAP_T, _gl.CLAMP_TO_EDGE );
+			gltexParameteri( textureType, _gl.TEXTURE_WRAP_S, _gl.CLAMP_TO_EDGE );
+			gltexParameteri( textureType, _gl.TEXTURE_WRAP_T, _gl.CLAMP_TO_EDGE );
 
-			gl::texParameteri( textureType, _gl.TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
-			gl::texParameteri( textureType, _gl.TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
+			gltexParameteri( textureType, _gl.TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
+			gltexParameteri( textureType, _gl.TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
 
 		}
 
@@ -6386,7 +6428,7 @@ public:
 
 			if ( texture.anisotropy > 1 || texture.__oldAnisotropy ) {
 
-				gl::texParameterf( textureType, _glExtensionTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
+				gltexParameterf( textureType, _glExtensionTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
 				texture.__oldAnisotropy = texture.anisotropy;
 
 			}
@@ -6402,36 +6444,36 @@ public:
 			if ( ! texture.__webglInit ) {
 
 				texture.__webglInit = true;
-				texture.__webglTexture = gl::createTexture();
+				texture.__webglTexture = glCreateTexture();
 
 				_info.memory.textures ++;
 
 			}
 
-			gl::activeTexture( gl::GL_TEXTURE0 + slot );
-			gl::bindTexture( gl::GL_TEXTURE_2D, texture.__webglTexture );
+			glactiveTexture( GL_TEXTURE0 + slot );
+			glbindTexture( GL_TEXTURE_2D, texture.__webglTexture );
 
-			gl::pixelStorei( gl::GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
-			gl::pixelStorei( gl::GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
+			glpixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
+			glpixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
 
 			var image = texture.image,
 			isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height ),
 			glFormat = paramThreeToGL( texture.format ),
 			glType = paramThreeToGL( texture.type );
 
-			setTextureParameters( gl::GL_TEXTURE_2D, texture, isImagePowerOfTwo );
+			setTextureParameters( GL_TEXTURE_2D, texture, isImagePowerOfTwo );
 
 			if ( texture instanceof THREE.DataTexture ) {
 
-				gl::texImage2D( gl::GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data );
+				gltexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data );
 
 			} else {
 
-				gl::texImage2D( gl::GL_TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image );
+				gltexImage2D( GL_TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image );
 
 			}
 
-			if ( texture.generateMipmaps && isImagePowerOfTwo ) _gl.generateMipmap( gl::GL_TEXTURE_2D );
+			if ( texture.generateMipmaps && isImagePowerOfTwo ) _gl.generateMipmap( GL_TEXTURE_2D );
 
 			texture.needsUpdate = false;
 
@@ -6439,8 +6481,8 @@ public:
 
 		} else {
 
-			gl::activeTexture( gl::GL_TEXTURE0 + slot );
-			gl::bindTexture( gl::GL_TEXTURE_2D, texture.__webglTexture );
+			glactiveTexture( GL_TEXTURE0 + slot );
+			glbindTexture( GL_TEXTURE_2D, texture.__webglTexture );
 
 		}
 
@@ -6480,14 +6522,14 @@ public:
 
 				if ( ! texture.image.__webglTextureCube ) {
 
-					texture.image.__webglTextureCube = gl::createTexture();
+					texture.image.__webglTextureCube = glCreateTexture();
 
 				}
 
-				gl::activeTexture( gl::GL_TEXTURE0 + slot );
-				gl::bindTexture( gl::GL_TEXTURE_CUBE_MAP, texture.image.__webglTextureCube );
+				glactiveTexture( GL_TEXTURE0 + slot );
+				glbindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__webglTextureCube );
 
-				gl::pixelStorei( gl::GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
+				glpixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
 
 				var cubeImage = [];
 
@@ -6510,17 +6552,17 @@ public:
 				glFormat = paramThreeToGL( texture.format ),
 				glType = paramThreeToGL( texture.type );
 
-				setTextureParameters( gl::GL_TEXTURE_CUBE_MAP, texture, isImagePowerOfTwo );
+				setTextureParameters( GL_TEXTURE_CUBE_MAP, texture, isImagePowerOfTwo );
 
 				for ( var i = 0; i < 6; i ++ ) {
 
-					gl::texImage2D( gl::GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
+					gltexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
 
 				}
 
 				if ( texture.generateMipmaps && isImagePowerOfTwo ) {
 
-					gl::generateMipmap( gl::GL_TEXTURE_CUBE_MAP );
+					glgenerateMipmap( GL_TEXTURE_CUBE_MAP );
 
 				}
 
@@ -6530,8 +6572,8 @@ public:
 
 			} else {
 
-				gl::activeTexture( gl::GL_TEXTURE0 + slot );
-				gl::bindTexture( gl::GL_TEXTURE_CUBE_MAP, texture.image.__webglTextureCube );
+				glactiveTexture( GL_TEXTURE0 + slot );
+				glbindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__webglTextureCube );
 
 			}
 
@@ -6541,8 +6583,8 @@ public:
 
 	function setCubeTextureDynamic ( texture, slot ) {
 
-		gl::activeTexture( gl::GL_TEXTURE0 + slot );
-		gl::bindTexture( gl::GL_TEXTURE_CUBE_MAP, texture.__webglTexture );
+		glactiveTexture( GL_TEXTURE0 + slot );
+		glbindTexture( GL_TEXTURE_CUBE_MAP, texture.__webglTexture );
 
 	};
 
@@ -6550,34 +6592,34 @@ public:
 
 	function setupFrameBuffer ( framebuffer, renderTarget, textureTarget ) {
 
-		gl::bindFramebuffer( gl::GL_FRAMEBUFFER, framebuffer );
-		gl::framebufferTexture2D( gl::GL_FRAMEBUFFER, _gl.COLOR_ATTACHMENT0, textureTarget, renderTarget.__webglTexture, 0 );
+		glbindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+		glframebufferTexture2D( GL_FRAMEBUFFER, _gl.COLOR_ATTACHMENT0, textureTarget, renderTarget.__webglTexture, 0 );
 
 	};
 
 	function setupRenderBuffer ( renderbuffer, renderTarget  ) {
 
-		gl::bindRenderbuffer( gl::GL_RENDERBUFFER, renderbuffer );
+		glbindRenderbuffer( GL_RENDERBUFFER, renderbuffer );
 
 		if ( renderTarget.depthBuffer && ! renderTarget.stencilBuffer ) {
 
-			gl::renderbufferStorage( gl::GL_RENDERBUFFER, _gl.DEPTH_COMPONENT16, renderTarget.width, renderTarget.height );
-			gl::framebufferRenderbuffer( gl::GL_FRAMEBUFFER, _gl.DEPTH_ATTACHMENT, _gl.RENDERBUFFER, renderbuffer );
+			glrenderbufferStorage( GL_RENDERBUFFER, _gl.DEPTH_COMPONENT16, renderTarget.width, renderTarget.height );
+			glframebufferRenderbuffer( GL_FRAMEBUFFER, _gl.DEPTH_ATTACHMENT, _gl.RENDERBUFFER, renderbuffer );
 
 		/* For some reason this is not working. Defaulting to RGBA4.
 		} else if( ! renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
-			gl::renderbufferStorage( gl::GL_RENDERBUFFER, _gl.STENCIL_INDEX8, renderTarget.width, renderTarget.height );
-			gl::framebufferRenderbuffer( gl::GL_FRAMEBUFFER, _gl.STENCIL_ATTACHMENT, _gl.RENDERBUFFER, renderbuffer );
+			glrenderbufferStorage( GL_RENDERBUFFER, _gl.STENCIL_INDEX8, renderTarget.width, renderTarget.height );
+			glframebufferRenderbuffer( GL_FRAMEBUFFER, _gl.STENCIL_ATTACHMENT, _gl.RENDERBUFFER, renderbuffer );
 		*/
 		} else if( renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
-			gl::renderbufferStorage( gl::GL_RENDERBUFFER, _gl.DEPTH_STENCIL, renderTarget.width, renderTarget.height );
-			gl::framebufferRenderbuffer( gl::GL_FRAMEBUFFER, _gl.DEPTH_STENCIL_ATTACHMENT, _gl.RENDERBUFFER, renderbuffer );
+			glrenderbufferStorage( GL_RENDERBUFFER, _gl.DEPTH_STENCIL, renderTarget.width, renderTarget.height );
+			glframebufferRenderbuffer( GL_FRAMEBUFFER, _gl.DEPTH_STENCIL_ATTACHMENT, _gl.RENDERBUFFER, renderbuffer );
 
 		} else {
 
-			gl::renderbufferStorage( gl::GL_RENDERBUFFER, _gl.RGBA4, renderTarget.width, renderTarget.height );
+			glrenderbufferStorage( GL_RENDERBUFFER, _gl.RGBA4, renderTarget.width, renderTarget.height );
 
 		}
 
@@ -6592,7 +6634,7 @@ public:
 			if ( renderTarget.depthBuffer == undefined ) renderTarget.depthBuffer = true;
 			if ( renderTarget.stencilBuffer == undefined ) renderTarget.stencilBuffer = true;
 
-			renderTarget.__webglTexture = gl::createTexture();
+			renderTarget.__webglTexture = glCreateTexture();
 
 			// Setup texture, create render and frame buffers
 
@@ -6605,37 +6647,37 @@ public:
 				renderTarget.__webglFramebuffer = [];
 				renderTarget.__webglRenderbuffer = [];
 
-				gl::bindTexture( gl::GL_TEXTURE_CUBE_MAP, renderTarget.__webglTexture );
-				setTextureParameters( gl::GL_TEXTURE_CUBE_MAP, renderTarget, isTargetPowerOfTwo );
+				glbindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__webglTexture );
+				setTextureParameters( GL_TEXTURE_CUBE_MAP, renderTarget, isTargetPowerOfTwo );
 
 				for ( var i = 0; i < 6; i ++ ) {
 
-					renderTarget.__webglFramebuffer[ i ] = gl::createFramebuffer();
-					renderTarget.__webglRenderbuffer[ i ] = gl::createRenderbuffer();
+					renderTarget.__webglFramebuffer[ i ] = glCreateFramebuffer();
+					renderTarget.__webglRenderbuffer[ i ] = glCreateRenderbuffer();
 
-					gl::texImage2D( gl::GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
+					gltexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
 
 					setupFrameBuffer( renderTarget.__webglFramebuffer[ i ], renderTarget, _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i );
 					setupRenderBuffer( renderTarget.__webglRenderbuffer[ i ], renderTarget );
 
 				}
 
-				if ( isTargetPowerOfTwo ) _gl.generateMipmap( gl::GL_TEXTURE_CUBE_MAP );
+				if ( isTargetPowerOfTwo ) _gl.generateMipmap( GL_TEXTURE_CUBE_MAP );
 
 			} else {
 
-				renderTarget.__webglFramebuffer = gl::createFramebuffer();
-				renderTarget.__webglRenderbuffer = gl::createRenderbuffer();
+				renderTarget.__webglFramebuffer = glCreateFramebuffer();
+				renderTarget.__webglRenderbuffer = glCreateRenderbuffer();
 
-				gl::bindTexture( gl::GL_TEXTURE_2D, renderTarget.__webglTexture );
-				setTextureParameters( gl::GL_TEXTURE_2D, renderTarget, isTargetPowerOfTwo );
+				glbindTexture( GL_TEXTURE_2D, renderTarget.__webglTexture );
+				setTextureParameters( GL_TEXTURE_2D, renderTarget, isTargetPowerOfTwo );
 
-				gl::texImage2D( gl::GL_TEXTURE_2D, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
+				gltexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
 
 				setupFrameBuffer( renderTarget.__webglFramebuffer, renderTarget, _gl.TEXTURE_2D );
 				setupRenderBuffer( renderTarget.__webglRenderbuffer, renderTarget );
 
-				if ( isTargetPowerOfTwo ) _gl.generateMipmap( gl::GL_TEXTURE_2D );
+				if ( isTargetPowerOfTwo ) _gl.generateMipmap( GL_TEXTURE_2D );
 
 			}
 
@@ -6643,16 +6685,16 @@ public:
 
 			if ( isCube ) {
 
-				gl::bindTexture( gl::GL_TEXTURE_CUBE_MAP, null );
+				glbindTexture( GL_TEXTURE_CUBE_MAP, null );
 
 			} else {
 
-				gl::bindTexture( gl::GL_TEXTURE_2D, null );
+				glbindTexture( GL_TEXTURE_2D, null );
 
 			}
 
-			gl::bindRenderbuffer( gl::GL_RENDERBUFFER, null );
-			gl::bindFramebuffer( gl::GL_FRAMEBUFFER, null);
+			glbindRenderbuffer( GL_RENDERBUFFER, null );
+			glbindFramebuffer( GL_FRAMEBUFFER, null);
 
 		}
 
@@ -6690,8 +6732,8 @@ public:
 
 		if ( framebuffer !== _currentFramebuffer ) {
 
-			gl::bindFramebuffer( gl::GL_FRAMEBUFFER, framebuffer );
-			gl::viewport( vx, vy, width, height );
+			glbindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+			glViewport( vx, vy, width, height );
 
 			_currentFramebuffer = framebuffer;
 
@@ -6706,15 +6748,15 @@ public:
 
 		if ( renderTarget instanceof THREE.WebGLRenderTargetCube ) {
 
-			gl::bindTexture( gl::GL_TEXTURE_CUBE_MAP, renderTarget.__webglTexture );
-			gl::generateMipmap( gl::GL_TEXTURE_CUBE_MAP );
-			gl::bindTexture( gl::GL_TEXTURE_CUBE_MAP, null );
+			glbindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__webglTexture );
+			glgenerateMipmap( GL_TEXTURE_CUBE_MAP );
+			glbindTexture( GL_TEXTURE_CUBE_MAP, null );
 
 		} else {
 
-			gl::bindTexture( gl::GL_TEXTURE_2D, renderTarget.__webglTexture );
-			gl::generateMipmap( gl::GL_TEXTURE_2D );
-			gl::bindTexture( gl::GL_TEXTURE_2D, null );
+			glbindTexture( GL_TEXTURE_2D, renderTarget.__webglTexture );
+			glgenerateMipmap( GL_TEXTURE_2D );
+			glbindTexture( GL_TEXTURE_2D, null );
 
 		}
 
@@ -6740,52 +6782,52 @@ public:
 
 		switch ( p ) {
 
-			case THREE.RepeatWrapping: return gl::GL_REPEAT;
-			case THREE.ClampToEdgeWrapping: return gl::GL_CLAMP_TO_EDGE;
-			case THREE.MirroredRepeatWrapping: return gl::GL_MIRRORED_REPEAT;
+			case THREE.RepeatWrapping: return GL_REPEAT;
+			case THREE.ClampToEdgeWrapping: return GL_CLAMP_TO_EDGE;
+			case THREE.MirroredRepeatWrapping: return GL_MIRRORED_REPEAT;
 
-			case THREE.NearestFilter: return gl::GL_NEAREST;
-			case THREE.NearestMipMapNearestFilter: return gl::GL_NEAREST_MIPMAP_NEAREST;
-			case THREE.NearestMipMapLinearFilter: return gl::GL_NEAREST_MIPMAP_LINEAR;
+			case THREE.NearestFilter: return GL_NEAREST;
+			case THREE.NearestMipMapNearestFilter: return GL_NEAREST_MIPMAP_NEAREST;
+			case THREE.NearestMipMapLinearFilter: return GL_NEAREST_MIPMAP_LINEAR;
 
-			case THREE.LinearFilter: return gl::GL_LINEAR;
-			case THREE.LinearMipMapNearestFilter: return gl::GL_LINEAR_MIPMAP_NEAREST;
-			case THREE.LinearMipMapLinearFilter: return gl::GL_LINEAR_MIPMAP_LINEAR;
+			case THREE.LinearFilter: return GL_LINEAR;
+			case THREE.LinearMipMapNearestFilter: return GL_LINEAR_MIPMAP_NEAREST;
+			case THREE.LinearMipMapLinearFilter: return GL_LINEAR_MIPMAP_LINEAR;
 
-			case THREE.UnsignedByteType: return gl::GL_UNSIGNED_BYTE;
-			case THREE.UnsignedShort4444Type: return gl::GL_UNSIGNED_SHORT_4_4_4_4;
-			case THREE.UnsignedShort5551Type: return gl::GL_UNSIGNED_SHORT_5_5_5_1;
-			case THREE.UnsignedShort565Type: return gl::GL_UNSIGNED_SHORT_5_6_5;
+			case THREE.UnsignedByteType: return GL_UNSIGNED_BYTE;
+			case THREE.UnsignedShort4444Type: return GL_UNSIGNED_SHORT_4_4_4_4;
+			case THREE.UnsignedShort5551Type: return GL_UNSIGNED_SHORT_5_5_5_1;
+			case THREE.UnsignedShort565Type: return GL_UNSIGNED_SHORT_5_6_5;
 
-			case THREE.ByteType: return gl::GL_BYTE;
-			case THREE.ShortType: return gl::GL_SHORT;
-			case THREE.UnsignedShortType: return gl::GL_UNSIGNED_SHORT;
-			case THREE.IntType: return gl::GL_INT;
-			case THREE.UnsignedIntType: return gl::GL_UNSIGNED_INT;
-			case THREE.FloatType: return gl::GL_FLOAT;
+			case THREE.ByteType: return GL_BYTE;
+			case THREE.ShortType: return GL_SHORT;
+			case THREE.UnsignedShortType: return GL_UNSIGNED_SHORT;
+			case THREE.IntType: return GL_INT;
+			case THREE.UnsignedIntType: return GL_UNSIGNED_INT;
+			case THREE.FloatType: return GL_FLOAT;
 
-			case THREE.AlphaFormat: return gl::GL_ALPHA;
-			case THREE.RGBFormat: return gl::GL_RGB;
-			case THREE.RGBAFormat: return gl::GL_RGBA;
-			case THREE.LuminanceFormat: return gl::GL_LUMINANCE;
-			case THREE.LuminanceAlphaFormat: return gl::GL_LUMINANCE_ALPHA;
+			case THREE.AlphaFormat: return GL_ALPHA;
+			case THREE.RGBFormat: return GL_RGB;
+			case THREE.RGBAFormat: return GL_RGBA;
+			case THREE.LuminanceFormat: return GL_LUMINANCE;
+			case THREE.LuminanceAlphaFormat: return GL_LUMINANCE_ALPHA;
 
-			case THREE.AddEquation: return gl::GL_FUNC_ADD;
-			case THREE.SubtractEquation: return gl::GL_FUNC_SUBTRACT;
-			case THREE.ReverseSubtractEquation: return gl::GL_FUNC_REVERSE_SUBTRACT;
+			case THREE.AddEquation: return GL_FUNC_ADD;
+			case THREE.SubtractEquation: return GL_FUNC_SUBTRACT;
+			case THREE.ReverseSubtractEquation: return GL_FUNC_REVERSE_SUBTRACT;
 
-			case THREE.ZeroFactor: return gl::GL_ZERO;
-			case THREE.OneFactor: return gl::GL_ONE;
-			case THREE.SrcColorFactor: return gl::GL_SRC_COLOR;
-			case THREE.OneMinusSrcColorFactor: return gl::GL_ONE_MINUS_SRC_COLOR;
-			case THREE.SrcAlphaFactor: return gl::GL_SRC_ALPHA;
-			case THREE.OneMinusSrcAlphaFactor: return gl::GL_ONE_MINUS_SRC_ALPHA;
-			case THREE.DstAlphaFactor: return gl::GL_DST_ALPHA;
-			case THREE.OneMinusDstAlphaFactor: return gl::GL_ONE_MINUS_DST_ALPHA;
+			case THREE.ZeroFactor: return GL_ZERO;
+			case THREE.OneFactor: return GL_ONE;
+			case THREE.SrcColorFactor: return GL_SRC_COLOR;
+			case THREE.OneMinusSrcColorFactor: return GL_ONE_MINUS_SRC_COLOR;
+			case THREE.SrcAlphaFactor: return GL_SRC_ALPHA;
+			case THREE.OneMinusSrcAlphaFactor: return GL_ONE_MINUS_SRC_ALPHA;
+			case THREE.DstAlphaFactor: return GL_DST_ALPHA;
+			case THREE.OneMinusDstAlphaFactor: return GL_ONE_MINUS_DST_ALPHA;
 
-			case THREE.DstColorFactor: return gl::GL_DST_COLOR;
-			case THREE.OneMinusDstColorFactor: return gl::GL_ONE_MINUS_DST_COLOR;
-			case THREE.SrcAlphaSaturateFactor: return gl::GL_SRC_ALPHA_SATURATE;
+			case THREE.DstColorFactor: return GL_DST_COLOR;
+			case THREE.OneMinusDstColorFactor: return GL_ONE_MINUS_DST_COLOR;
+			case THREE.SrcAlphaSaturateFactor: return GL_SRC_ALPHA_SATURATE;
 
 			default: return 0;
 
@@ -6810,7 +6852,7 @@ public:
 			//  - limit here is ANGLE's 254 max uniform vectors
 			//    (up to 54 should be safe)
 
-			auto nVertexUniforms = gl::getParameter( gl::GL_MAX_VERTEX_UNIFORM_VECTORS );
+			auto nVertexUniforms = glGetParameter( GL_MAX_VERTEX_UNIFORM_VECTORS );
 			auto nVertexMatrices = Math::floor( ( nVertexUniforms - 20 ) / 4 );
 
 			auto maxBones = nVertexMatrices;
@@ -6833,7 +6875,7 @@ public:
 
 	};
 
-	void allocateLights ( std::vector<Light::Ptr> lights ) {
+	THREE_DECL void allocateLights ( std::vector<Light::Ptr> lights ) {
 
 		var l, ll, light, dirLights, pointLights, spotLights, maxDirLights, maxPointLights, maxSpotLights;
 
@@ -6869,7 +6911,7 @@ public:
 
 	};
 
-	void allocateShadows ( std::vector<Light::Ptr> lights ) {
+	THREE_DECL void allocateShadows ( std::vector<Light::Ptr> lights ) {
 
 		int maxShadows = 0;
 
@@ -6889,6 +6931,8 @@ public:
 };
 
 #endif // DISABLED CODE
+
+}; // class GLRenderer
 
 } // namespace three
 

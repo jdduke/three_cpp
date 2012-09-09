@@ -96,6 +96,10 @@ public:
         return *this;
     }
 
+    Color& copy( const Color& color ) {
+        return *this = color;
+    }
+
     Color clone() {
         return *this;
     }

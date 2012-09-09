@@ -123,6 +123,7 @@ file(GLOB THREE_HEADERS three/*.hpp)
 source_group(three FILES ${THREE_HEADERS})
 
 if(BUILD_THREE_EXAMPLES)
+  add_subdirectory(externals/glew-1.9.0)
   add_subdirectory(examples)
 endif()
 

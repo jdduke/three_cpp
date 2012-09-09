@@ -4,9 +4,10 @@
 #include <three/config.hpp>
 #include <three/fwd.hpp>
 
-namespace three {
+#include <memory>
+#include <sstream>
 
-typedef void(*LogP)(const char*);
+namespace three {
 
 class THREE {
 public:
@@ -188,19 +189,60 @@ struct ConstVisitor {
 
 /////////////////////////////////////////////////////////////////////////
 
-
 class Console {
 public:
+
+	typedef void(*LogP)(const char*);
+
+	class LogProxy {
+	public:
+		template <class T>
+		LogProxy& operator<<( const T& rhs ) {
+			stream << rhs;
+			return *this;
+		}
+
+		~LogProxy() {
+			if ( stream && log ) {
+				log( stream->str().c_str() );
+			}
+		}
+		LogProxy( LogProxy&& other )
+		: log ( nullptr ) {
+			std::swap( log, other.log );
+			std::swap( stream, other.stream );
+		}
+		LogProxy& operator= ( LogProxy other )        = delete;
+		LogProxy( const LogProxy& other )             = delete;
+		LogProxy& operator= ( const LogProxy& other ) = delete;
+
+	private:
+
+		friend class Console;
+
+		LogProxy( LogP log )
+		 : stream ( new std::stringstream() ), log( log ) {}
+
+		std::unique_ptr<std::stringstream> stream;
+		LogP log;
+	};
+
+	static Console& instance() {
+		static Console sConsole;
+		return sConsole;
+	}
+
 	LogP info;
 	LogP log;
 	LogP debug;
 	LogP warn;
 	LogP error;
 
-	static Console& instance() {
-		static Console sConsole;
-		return sConsole;
-	}
+	LogProxy sinfo()  const { return LogProxy( info ); }
+	LogProxy slog()   const { return LogProxy( log ); }
+	LogProxy sdebug() const { return LogProxy( debug ); }
+	LogProxy swarn()  const { return LogProxy( warn ); }
+	LogProxy serror() const { return LogProxy( error ); }
 
 private:
 
@@ -213,8 +255,6 @@ private:
 
 	static void dummy(const char*) { }
 };
-
-//static Console console;
 
 static Console& console() {
 	return Console::instance();
