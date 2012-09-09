@@ -146,6 +146,12 @@ public:
 		MeshFaceMaterial = 1
 	};
 
+	enum PrecisionType {
+		PrecisionHigh = 0,
+		PrecisionMedium,
+		PrecisionLow
+	};
+
 };
 
 /////////////////////////////////////////////////////////////////////////
