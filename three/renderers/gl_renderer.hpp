@@ -33,6 +33,7 @@ struct ExtractMaterialAndGeometry : public Visitor {
 };
 
 class GLRenderer {
+public:
 
 	struct Parameters {
 		Parameters()
@@ -59,9 +60,18 @@ class GLRenderer {
 		int maxLights;
 	};
 
-private:
+	typedef std::shared_ptr<GLRenderer> Ptr;
 
-	THREE_DECL GLRenderer( Parameters parameters )
+	static Ptr create( const Parameters& parameters = Parameters() ) {
+
+		return make_shared<GLRenderer>( parameters );
+
+	}
+
+
+protected:
+
+	THREE_DECL GLRenderer( const Parameters& parameters )
 	: _width ( parameters.width ),
 	_height ( parameters.height ),
 	_precision ( parameters.precision ),

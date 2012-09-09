@@ -92,3 +92,5 @@ endif ()
 target_link_libraries(glew  ${GLEW_DEP_LIBS})
 target_link_libraries(glews ${GLEW_DEP_LIBS})
 
+set_target_properties(glews PROPERTIES COMPILE_DEFINITIONS "GLEW_STATIC")
+

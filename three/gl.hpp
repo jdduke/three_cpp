@@ -18,9 +18,14 @@
 #if defined(THREE_GLES)
 #  include <GLES/gl.h>
 #elif defined(THREE_GLEW)
+#  define NO_SDL_GLEXT
 #  include <GL/glew.h>
 #else
 #  include <GL/gl.h>
+#endif
+
+#if defined(THREE_SDL)
+#include <SDL_opengl.h>
 #endif
 
 namespace three {

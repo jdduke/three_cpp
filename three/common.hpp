@@ -5,6 +5,7 @@
 #include <three/fwd.hpp>
 
 #include <memory>
+#include <iostream>
 #include <sstream>
 
 namespace three {
@@ -203,7 +204,7 @@ public:
 	public:
 		template <class T>
 		LogProxy& operator<<( const T& rhs ) {
-			stream << rhs;
+			*stream << rhs;
 			return *this;
 		}
 
@@ -258,7 +259,7 @@ private:
 	warn   ( dummy ),
 	error  ( dummy ) { }
 
-	static void dummy(const char*) { }
+	static void dummy( const char* msg ) { std::cout << msg << std::endl; }
 };
 
 static Console& console() {

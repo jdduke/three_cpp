@@ -51,10 +51,10 @@ inline std::shared_ptr<T> make_shared( Args&&... args ) {
 	return std::make_shared<Derived<T>>( std::move(args)... );
 }
 
-template < typename T, typename... Args >
+/*template < typename T, typename... Args >
 inline std::shared_ptr<T> make_shared( const Args&... args ) {
 	return std::make_shared<Derived<T>>( args... );
-}
+}*/
 
 } // namespace three
 
