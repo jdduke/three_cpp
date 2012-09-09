@@ -23,4 +23,24 @@
 #  include <GL/gl.h>
 #endif
 
+namespace three {
+
+#ifndef THREE_GLES
+
+inline GLuint glCreateBuffer() {
+	GLuint buffer = 0;
+	glGenBuffers( 1, &buffer );
+	return buffer;
+}
+
+inline GLuint glDeleteBuffer( GLuint& buffer ) {
+	glDeleteBuffers( 1, &buffer );
+	buffer = 0;
+}
+
+#endif
+
+
+}
+
 #endif // THREE_GL_HPP

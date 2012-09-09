@@ -3,6 +3,8 @@
 
 #include <three/common.hpp>
 
+#include <three/core/geometry_buffer.hpp>
+
 #include <three/core/math.hpp>
 #include <three/core/color.hpp>
 #include <three/core/face.hpp>
@@ -108,9 +110,11 @@ public:
 
     bool dynamic;
 
+    GeometryBuffer buffer;
+
     /////////////////////////////////////////////////////////////////////////
 
-    void applyMatrix ( const Matrix4& matrix ) {
+    THREE_DECL void applyMatrix ( const Matrix4& matrix ) {
 
         Matrix4 matrixRotation;
         matrixRotation.extractRotation( matrix );
@@ -137,7 +141,7 @@ public:
 
     }
 
-    void computeCentroids () {
+    THREE_DECL void computeCentroids () {
 
         for ( auto& face : faces ) {
 
@@ -155,7 +159,7 @@ public:
 
     }
 
-    void computeFaceNormals () {
+    THREE_DECL void computeFaceNormals () {
 
         for ( auto& face : faces ) {
 
@@ -179,7 +183,7 @@ public:
 
     }
 
-    void computeVertexNormals () {
+    THREE_DECL void computeVertexNormals () {
 
         // create internal buffers for reuse when calling this method repeatedly
         // (otherwise memory allocation / deallocation every frame is big resource hog)
@@ -220,7 +224,7 @@ public:
 
     }
 
-    void computeTangents () {
+    THREE_DECL void computeTangents () {
 
         // based on http://www.terathon.com/code/tangent.html
         // tangents go to vertices
@@ -319,7 +323,7 @@ public:
 
     }
 
-    void computeBoundingBox () {
+    THREE_DECL void computeBoundingBox () {
 
         if ( vertices.size() > 0 ) {
 
@@ -337,7 +341,7 @@ public:
 
     }
 
-    void computeBoundingSphere () {
+    THREE_DECL void computeBoundingSphere () {
 
         // var radius = this.boundingSphere === null ? 0 : this.boundingSphere.radius;
 
@@ -359,7 +363,7 @@ public:
      * and faces' vertices are updated.
      */
 
-    void mergeVertices () {
+    THREE_DECL void mergeVertices () {
 
         typedef std::tuple<int,int,int> Key;
         std::unordered_map<Key,int,PointHash> verticesMap; // Hashmap for looking up vertice by position coordinates (and making sure they are unique)

@@ -47,16 +47,12 @@ public:
 	//this.uniforms = {};
 	//this.attributes = null;
 
-	THREE::Shading shading;
-
 	bool wireframe;
 	float wireframeLinewidth;
 
 	bool fog;
 
 	bool lights;
-
-	THREE::Colors vertexColors;
 
 	bool skinning; // set to use skinning attribute streams
 
@@ -78,16 +74,12 @@ public:
 		//material.uniforms = uniforms;
 		//material.attributes = attributes;
 
-		material.shading = shading;
-
 		material.wireframe = wireframe;
 		material.wireframeLinewidth = wireframeLinewidth;
 
 		material.fog = fog;
 
 		material.lights = lights;
-
-		material.vertexColors = vertexColors;
 
 		material.skinning = skinning;
 
@@ -106,15 +98,17 @@ protected:
 	vertexShader ( "void main() {}" ),
 	//uniforms ( {} ),
 	//attributes ( null ),
-	shading ( THREE::SmoothShading ),
 	wireframe ( false ),
 	wireframeLinewidth ( 1 ),
 	fog ( false ),
 	lights ( false ),
-	vertexColors ( THREE::NoColors ),
 	skinning ( false ),
 	morphTargets ( false ),
-	morphNormals ( false ) { }
+	morphNormals ( false ) {
+
+		shading = THREE::SmoothShading;
+
+	}
 
 };
 

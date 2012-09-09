@@ -30,9 +30,13 @@ class RenderableVertex;
 class Spline;
 
 class Geometry;
+class GeometryBuffer;
+class GeometryGroup;
 class Vertex;
 class Material;
 class Shader;
+
+class GLRenderer;
 
 } // namespace three
 

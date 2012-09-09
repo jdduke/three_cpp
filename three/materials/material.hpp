@@ -27,6 +27,9 @@ public:
 	float opacity;
 	bool transparent;
 
+	THREE::Shading shading;
+	THREE::Colors vertexColors;
+
 	THREE::Blending blending;
 	THREE::BlendFactor blendSrc;
 	THREE::BlendFactor blendDst;
@@ -58,6 +61,10 @@ public:
 		material.opacity             = opacity;
 		material.transparent         = transparent;
 
+		material.shading             = shading;
+
+		material.vertexColors        = vertexColors;
+
 		material.blending            = blending;
 
 		material.blendSrc            = blendSrc;
@@ -88,6 +95,8 @@ protected:
 	side ( THREE::FrontSide ),
 	opacity ( 1 ),
 	transparent ( false ),
+	shading ( THREE::NoShading ),
+	vertexColors ( THREE::NoColors ),
 	blending ( THREE::NormalBlending ),
 	blendSrc ( THREE::SrcAlphaFactor ),
 	blendDst ( THREE::OneMinusSrcAlphaFactor ),

@@ -9,6 +9,8 @@
 
 namespace three {
 
+typedef int Buffer;
+
 class THREE {
 public:
 
@@ -144,7 +146,10 @@ public:
 
 	enum MaterialType {
 		Material = 0,
-		MeshFaceMaterial = 1
+		MeshBasicMaterial,
+		MeshDepthMaterial,
+		MeshFaceMaterial,
+		ShaderMaterial
 	};
 
 	enum PrecisionType {

@@ -4,10 +4,33 @@
 #include <three/common.hpp>
 
 #include <three/gl.hpp>
+#include <three/core/geometry.hpp>
+#include <three/core/geometry_group.hpp>
 
 namespace three {
 
 class GLRenderTarget;
+
+struct ExtractMaterialAndGeometry : public Visitor {
+
+	ExtractMaterialAndGeometry()
+	 : material ( nullptr ), geometry ( nullptr ) { }
+
+	//virtual void operator() (Particle& object) { extract( object ); }
+	// TODO: virtual void operator() (Sprite&   object) { material = object.material.get(); }
+	virtual void operator() (Mesh&     object) { extract( object ); }
+	virtual void operator() (Line&     object) { extract( object ); }
+
+	template < typename Object >
+	void extract ( Object& object ) {
+		material = object.material.get();
+		geometry = object.geometry.get();
+	}
+
+	Material* material;
+	Geometry* geometry;
+
+};
 
 class GLRenderer {
 
@@ -98,7 +121,7 @@ private:
 	_lightsNeedUpdate ( true )
 
 	{
-		console().log( "THREE.GLRenderer" );
+		console().log( "THREE::GLRenderer" );
 	}
 
 	int _width, _height;
@@ -281,9 +304,9 @@ private:
 
 	void* _gl;
 
-	//var _glExtensionTextureFloat;
-	//var _glExtensionStandardDerivatives;
-	//var _glExtensionTextureFilterAnisotropic;
+	//auto _glExtensionTextureFloat;
+	//auto _glExtensionStandardDerivatives;
+	//auto _glExtensionTextureFilterAnisotropic;
 
 	// GPU capabilities
 
@@ -300,11 +323,11 @@ private:
 	/*
 	// default plugins (order is important)
 
-	shadowMapPlugin = new THREE.ShadowMapPlugin();
+	shadowMapPlugin = new THREE::ShadowMapPlugin();
 	addPrePlugin( shadowMapPlugin );
 
-	addPostPlugin( new THREE.SpritePlugin() );
-	addPostPlugin( new THREE.LensFlarePlugin() );
+	addPostPlugin( new THREE::SpritePlugin() );
+	addPostPlugin( new THREE::LensFlarePlugin() );
 	*/
 
 private:
@@ -312,9 +335,9 @@ private:
 
 	THREE_DECL void initialize() {
 
-		console().log( "THREE.GLRenderer.Initialize" );
+		console().log( "THREE::GLRenderer.Initialize" );
 
-		//var _gl;
+		//auto _gl;
 
 		initGL();
 
@@ -353,19 +376,19 @@ private:
 
 		if ( ! _glExtensionTextureFloat ) {
 
-			console.log( 'THREE.WebGLRenderer: Float textures not supported.' );
+			console.log( 'THREE::WebGLRenderer: Float textures not supported.' );
 
 		}
 
 		if ( ! _glExtensionStandardDerivatives ) {
 
-			console.log( 'THREE.WebGLRenderer: Standard derivatives not supported.' );
+			console.log( 'THREE::WebGLRenderer: Standard derivatives not supported.' );
 
 		}
 
 		if ( ! _glExtensionTextureFilterAnisotropic ) {
 
-			console.log( 'THREE.WebGLRenderer: Anisotropic texture filtering not supported.' );
+			console.log( 'THREE::WebGLRenderer: Anisotropic texture filtering not supported.' );
 
 		}
 		*/
@@ -508,14 +531,14 @@ public:
 	addPostPlugin = function ( plugin ) {
 
 		plugin.init( this );
-		renderPluginsPost.push( plugin );
+		renderPluginsPost.push_back( plugin );
 
 	};
 
 	addPrePlugin = function ( plugin ) {
 
 		plugin.init( this );
-		renderPluginsPre.push( plugin );
+		renderPluginsPre.push_back( plugin );
 
 	};
 #endif
@@ -527,9 +550,9 @@ public:
 
 	THREE_DECL void deallocateObject ( Object3D::Ptr object ) {
 
-		if ( ! object.__webglInit ) return;
+		if ( ! object.__glInit ) return;
 
-		object.__webglInit = false;
+		object.__glInit = false;
 
 		delete object._modelViewMatrix;
 		delete object._normalMatrix;
@@ -538,23 +561,23 @@ public:
 		delete object._modelViewMatrixArray;
 		delete object._modelMatrixArray;
 
-		if ( object instanceof THREE.Mesh ) {
+		if ( object instanceof THREE::Mesh ) {
 
-			for ( var g in object.geometry.geometryGroups ) {
+			for ( auto g in object.geometry.geometryGroups ) {
 
 				deleteMeshBuffers( object.geometry.geometryGroups[ g ] );
 
 			}
 
-		} else if ( object instanceof THREE.Ribbon ) {
+		} else if ( object instanceof THREE::Ribbon ) {
 
 			deleteRibbonBuffers( object.geometry );
 
-		} else if ( object instanceof THREE.Line ) {
+		} else if ( object instanceof THREE::Line ) {
 
 			deleteLineBuffers( object.geometry );
 
-		} else if ( object instanceof THREE.ParticleSystem ) {
+		} else if ( object instanceof THREE::ParticleSystem ) {
 
 			deleteParticleBuffers( object.geometry );
 
@@ -564,10 +587,10 @@ public:
 
 	THREE_DECL void deallocateTexture ( Texture::Ptr texture ) {
 
-		if ( ! texture.__webglInit ) return;
+		if ( ! texture.__glInit ) return;
 
-		texture.__webglInit = false;
-		glDeleteTexture( texture.__webglTexture );
+		texture.__glInit = false;
+		glDeleteTexture( texture.__glTexture );
 
 		_info.memory.textures --;
 
@@ -575,23 +598,23 @@ public:
 
 	THREE_DECL void deallocateRenderTarget ( RenderTarget::Ptr renderTarget ) {
 
-		if ( !renderTarget || ! renderTarget.__webglTexture ) return;
+		if ( !renderTarget || ! renderTarget.__glTexture ) return;
 
-		glDeleteTexture( renderTarget.__webglTexture );
+		glDeleteTexture( renderTarget.__glTexture );
 
-		if ( renderTarget instanceof THREE.WebGLRenderTargetCube ) {
+		if ( renderTarget instanceof THREE::WebGLRenderTargetCube ) {
 
-			for ( var i = 0; i < 6; i ++ ) {
+			for ( auto i = 0; i < 6; i ++ ) {
 
-				glDeleteFramebuffer( renderTarget.__webglFramebuffer[ i ] );
-				glDeleteRenderbuffer( renderTarget.__webglRenderbuffer[ i ] );
+				glDeleteFramebuffer( renderTarget.__glFramebuffer[ i ] );
+				glDeleteRenderbuffer( renderTarget.__glRenderbuffer[ i ] );
 
 			}
 
 		} else {
 
-			glDeleteFramebuffer( renderTarget.__webglFramebuffer );
-			glDeleteRenderbuffer( renderTarget.__webglRenderbuffer );
+			glDeleteFramebuffer( renderTarget.__glFramebuffer );
+			glDeleteRenderbuffer( renderTarget.__glRenderbuffer );
 
 		}
 
@@ -599,7 +622,7 @@ public:
 
 	THREE_DECL void deallocateMaterial ( Material::Ptr material ) {
 
-		var program = material.program;
+		auto program = material.program;
 
 		if ( ! program ) return;
 
@@ -609,10 +632,10 @@ public:
 		// assumed there is only single copy of any program in the _programs list
 		// (that's how it's constructed)
 
-		var i, il, programInfo;
-		var deleteProgram = false;
+		auto i, il, programInfo;
+		auto deleteProgram = false;
 
-		for ( i = 0, il = _programs.length; i < il; i ++ ) {
+		for ( i = 0, il = _programs.size(); i < il; i ++ ) {
 
 			programInfo = _programs[ i ];
 
@@ -636,15 +659,15 @@ public:
 
 			// avoid using array.splice, this is costlier than creating new array from scratch
 
-			var newPrograms = [];
+			auto newPrograms = [];
 
-			for ( i = 0, il = _programs.length; i < il; i ++ ) {
+			for ( i = 0, il = _programs.size(); i < il; i ++ ) {
 
 				programInfo = _programs[ i ];
 
 				if ( programInfo.program !== program ) {
 
-					newPrograms.push( programInfo );
+					newPrograms.push_back( programInfo );
 
 				}
 
@@ -683,36 +706,21 @@ public:
 
 	// Internal functions
 
-#ifndef THREE_GLES
-
-	static unsigned glCreateBuffer() {
-		unsigned buffer = 0;
-		glGenBuffers( 1, &buffer );
-		return buffer;
-	}
-
-	static unsigned glDeleteBuffer( unsigned buffer ) {
-		glDeleteBuffers( 1, &buffer );
-	}
-
-#endif
-
 	// Buffer allocation
 
 	THREE_DECL void createParticleBuffers ( Geometry& geometry ) {
 
-		geometry.__webglVertexBuffer = glCreateBuffer();
-		geometry.__webglColorBuffer = glCreateBuffer();
+		geometry.buffer.__glVertexBuffer = glCreateBuffer();
+		geometry.buffer.__glColorBuffer = glCreateBuffer();
 
-		// BUGBUG _info.geometries ++;
 		_info.memory.geometries ++;
 
 	}
 
 	THREE_DECL void createLineBuffers ( Geometry& geometry ) {
 
-		geometry.__webglVertexBuffer = glCreateBuffer();
-		geometry.__webglColorBuffer = glCreateBuffer();
+		geometry.buffer.__glVertexBuffer = glCreateBuffer();
+		geometry.buffer.__glColorBuffer  = glCreateBuffer();
 
 		_info.memory.geometries ++;
 
@@ -720,52 +728,49 @@ public:
 
 	THREE_DECL void createRibbonBuffers ( Geometry& geometry ) {
 
-		geometry.__webglVertexBuffer = glCreateBuffer();
-		geometry.__webglColorBuffer = glCreateBuffer();
+		geometry.buffer.__glVertexBuffer = glCreateBuffer();
+		geometry.buffer.__glColorBuffer  = glCreateBuffer();
 
 		_info.memory.geometries ++;
 
 	}
 
-#if 0
 	THREE_DECL void createMeshBuffers ( GeometryGroup& geometryGroup ) {
 
-		geometryGroup.__webglVertexBuffer = glCreateBuffer();
-		geometryGroup.__webglNormalBuffer = glCreateBuffer();
-		geometryGroup.__webglTangentBuffer = glCreateBuffer();
-		geometryGroup.__webglColorBuffer = glCreateBuffer();
-		geometryGroup.__webglUVBuffer = glCreateBuffer();
-		geometryGroup.__webglUV2Buffer = glCreateBuffer();
+		geometryGroup.buffer.__glVertexBuffer  = glCreateBuffer();
+		geometryGroup.buffer.__glNormalBuffer  = glCreateBuffer();
+		geometryGroup.buffer.__glTangentBuffer = glCreateBuffer();
+		geometryGroup.buffer.__glColorBuffer   = glCreateBuffer();
+		geometryGroup.buffer.__glUVBuffer      = glCreateBuffer();
+		geometryGroup.buffer.__glUV2Buffer     = glCreateBuffer();
 
-		geometryGroup.__webglSkinVertexABuffer = glCreateBuffer();
-		geometryGroup.__webglSkinVertexBBuffer = glCreateBuffer();
-		geometryGroup.__webglSkinIndicesBuffer = glCreateBuffer();
-		geometryGroup.__webglSkinWeightsBuffer = glCreateBuffer();
+		geometryGroup.buffer.__glSkinVertexABuffer = glCreateBuffer();
+		geometryGroup.buffer.__glSkinVertexBBuffer = glCreateBuffer();
+		geometryGroup.buffer.__glSkinIndicesBuffer = glCreateBuffer();
+		geometryGroup.buffer.__glSkinWeightsBuffer = glCreateBuffer();
 
-		geometryGroup.__webglFaceBuffer = glCreateBuffer();
-		geometryGroup.__webglLineBuffer = glCreateBuffer();
+		geometryGroup.buffer.__glFaceBuffer = glCreateBuffer();
+		geometryGroup.buffer.__glLineBuffer = glCreateBuffer();
 
-		var m, ml;
+		if ( geometryGroup.buffer.numMorphTargets > 0 ) {
 
-		if ( geometryGroup.numMorphTargets ) {
+			geometryGroup.buffer.__glMorphTargetsBuffers.clear();
 
-			geometryGroup.__webglMorphTargetsBuffers = [];
+			for ( int m = 0, ml = geometryGroup.buffer.numMorphTargets; m < ml; m ++ ) {
 
-			for ( m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-
-				geometryGroup.__webglMorphTargetsBuffers.push( GL_createBuffer() );
+				geometryGroup.buffer.__glMorphTargetsBuffers.push_back( glCreateBuffer() );
 
 			}
 
 		}
 
-		if ( geometryGroup.numMorphNormals ) {
+		if ( geometryGroup.buffer.numMorphNormals > 0 ) {
 
-			geometryGroup.__webglMorphNormalsBuffers = [];
+			geometryGroup.buffer.__glMorphNormalsBuffers.clear();
 
-			for ( m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+			for ( int m = 0, ml = geometryGroup.buffer.numMorphNormals; m < ml; m ++ ) {
 
-				geometryGroup.__webglMorphNormalsBuffers.push( GL_createBuffer() );
+				geometryGroup.buffer.__glMorphNormalsBuffers.push_back( glCreateBuffer() );
 
 			}
 
@@ -774,14 +779,13 @@ public:
 		_info.memory.geometries ++;
 
 	}
-#endif
 
 	// Buffer deallocation
 
 	THREE_DECL void deleteParticleBuffers ( Geometry& geometry ) {
 
-		glDeleteBuffer( geometry.__webglVertexBuffer );
-		glDeleteBuffer( geometry.__webglColorBuffer );
+		glDeleteBuffer( geometry.buffer.__glVertexBuffer );
+		glDeleteBuffer( geometry.buffer.__glColorBuffer );
 
 		_info.memory.geometries --;
 
@@ -789,8 +793,8 @@ public:
 
 	THREE_DECL void deleteLineBuffers ( Geometry& geometry ) {
 
-		glDeleteBuffer( geometry.__webglVertexBuffer );
-		glDeleteBuffer( geometry.__webglColorBuffer );
+		glDeleteBuffer( geometry.buffer.__glVertexBuffer );
+		glDeleteBuffer( geometry.buffer.__glColorBuffer );
 
 		_info.memory.geometries --;
 
@@ -798,96 +802,96 @@ public:
 
 	THREE_DECL void deleteRibbonBuffers ( Geometry& geometry ) {
 
-		glDeleteBuffer( geometry.__webglVertexBuffer );
-		glDeleteBuffer( geometry.__webglColorBuffer );
+		glDeleteBuffer( geometry.buffer.__glVertexBuffer );
+		glDeleteBuffer( geometry.buffer.__glColorBuffer );
 
 		_info.memory.geometries --;
 
 	}
 
-#if 0
 	THREE_DECL void deleteMeshBuffers ( GeometryGroup& geometryGroup ) {
 
-		glDeleteBuffer( geometryGroup.__webglVertexBuffer );
-		glDeleteBuffer( geometryGroup.__webglNormalBuffer );
-		glDeleteBuffer( geometryGroup.__webglTangentBuffer );
-		glDeleteBuffer( geometryGroup.__webglColorBuffer );
-		glDeleteBuffer( geometryGroup.__webglUVBuffer );
-		glDeleteBuffer( geometryGroup.__webglUV2Buffer );
+		glDeleteBuffer( geometryGroup.buffer.__glVertexBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glNormalBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glTangentBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glColorBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glUVBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glUV2Buffer );
 
-		glDeleteBuffer( geometryGroup.__webglSkinVertexABuffer );
-		glDeleteBuffer( geometryGroup.__webglSkinVertexBBuffer );
-		glDeleteBuffer( geometryGroup.__webglSkinIndicesBuffer );
-		glDeleteBuffer( geometryGroup.__webglSkinWeightsBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glSkinVertexABuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glSkinVertexBBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glSkinIndicesBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glSkinWeightsBuffer );
 
-		glDeleteBuffer( geometryGroup.__webglFaceBuffer );
-		glDeleteBuffer( geometryGroup.__webglLineBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glFaceBuffer );
+		glDeleteBuffer( geometryGroup.buffer.__glLineBuffer );
 
-		var m, ml;
+		if ( geometryGroup.buffer.numMorphTargets > 0 ) {
 
-		if ( geometryGroup.numMorphTargets ) {
+			for ( int m = 0, ml = geometryGroup.buffer.numMorphTargets; m < ml; m ++ ) {
 
-			for ( m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-
-				glDeleteBuffer( geometryGroup.__webglMorphTargetsBuffers[ m ] );
+				glDeleteBuffer( geometryGroup.buffer.__glMorphTargetsBuffers[ m ] );
 
 			}
 
 		}
 
-		if ( geometryGroup.numMorphNormals ) {
+		if ( geometryGroup.buffer.numMorphNormals > 0 ) {
 
-			for ( m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+			for ( int m = 0, ml = geometryGroup.buffer.numMorphNormals; m < ml; m ++ ) {
 
-				glDeleteBuffer( geometryGroup.__webglMorphNormalsBuffers[ m ] );
+				glDeleteBuffer( geometryGroup.buffer.__glMorphNormalsBuffers[ m ] );
 
 			}
 
 		}
 
 
-		if ( geometryGroup.__webglCustomAttributesList ) {
+#ifdef TODO_CUSTOM_ATTRIBUTE_LIST
+		if ( geometryGroup.buffer.__glCustomAttributesList ) {
 
-			for ( var id in geometryGroup.__webglCustomAttributesList ) {
+			for ( auto id in geometryGroup.buffer.__glCustomAttributesList ) {
 
-				glDeleteBuffer( geometryGroup.__webglCustomAttributesList[ id ].buffer );
+				glDeleteBuffer( geometryGroup.buffer.__glCustomAttributesList[ id ].buffer );
 
 			}
 
 		}
 
 		_info.memory.geometries --;
+#endif // TODO_CUSTOM_ATTRIBUTE_LIST
 
 	}
-#endif
 
-#if 0
+
+
 
 	// Buffer initialization
 
-	function initCustomAttributes ( geometry, object ) {
+	THREE_DECL void initCustomAttributes ( Geometry& geometry, Object3D& object ) {
 
-		var nvertices = geometry.vertices.length;
+	#ifdef TODO_CUSTOM_ATTRIBUTE_LIST
+		auto nvertices = geometry.vertices.size();
 
-		var material = object.material;
+		auto material = object.material;
 
 		if ( material.attributes ) {
 
-			if ( geometry.__webglCustomAttributesList == undefined ) {
+			if ( geometry.buffer.__glCustomAttributesList == undefined ) {
 
-				geometry.__webglCustomAttributesList = [];
+				geometry.buffer.__glCustomAttributesList = [];
 
 			}
 
-			for ( var a in material.attributes ) {
+			for ( auto a in material.attributes ) {
 
-				var attribute = material.attributes[ a ];
+				auto attribute = material.attributes[ a ];
 
-				if( !attribute.__webglInitialized || attribute.createUniqueBuffers ) {
+				if( !attribute.__glInitialized || attribute.createUniqueBuffers ) {
 
-					attribute.__webglInitialized = true;
+					attribute.__glInitialized = true;
 
-					var size = 1;		// "f" and "i"
+					auto size = 1;		// "f" and "i"
 
 					if ( attribute.type == "v2" ) size = 2;
 					else if ( attribute.type == "v3" ) size = 3;
@@ -896,7 +900,7 @@ public:
 
 					attribute.size = size;
 
-					attribute.array = new Float32Array( nvertices * size );
+					attribute.array.resize( nvertices * size );
 
 					attribute.buffer = glCreateBuffer();
 					attribute.buffer.belongsToAttribute = a;
@@ -905,179 +909,181 @@ public:
 
 				}
 
-				geometry.__webglCustomAttributesList.push( attribute );
+				geometry.buffer.__glCustomAttributesList.push_back( attribute );
 
 			}
 
 		}
 
-	};
+#endif //TODO_CUSTOM_ATTRIBUTE_LIST
 
-	function initParticleBuffers ( geometry, object ) {
+	}
 
-		var nvertices = geometry.vertices.length;
+	THREE_DECL void initParticleBuffers ( Geometry& geometry, Object3D& object ) {
 
-		geometry.__vertexArray = new Float32Array( nvertices * 3 );
-		geometry.__colorArray = new Float32Array( nvertices * 3 );
+		auto nvertices = geometry.vertices.size();
 
-		geometry.__sortArray = [];
+		geometry.buffer.__vertexArray.resize( nvertices * 3 );
+		geometry.buffer.__colorArray.resize( nvertices * 3 );
 
-		geometry.__webglParticleCount = nvertices;
+		geometry.buffer.__sortArray.clear();
 
-		initCustomAttributes ( geometry, object );
-
-	};
-
-	function initLineBuffers ( geometry, object ) {
-
-		var nvertices = geometry.vertices.length;
-
-		geometry.__vertexArray = new Float32Array( nvertices * 3 );
-		geometry.__colorArray = new Float32Array( nvertices * 3 );
-
-		geometry.__webglLineCount = nvertices;
+		geometry.buffer.__glParticleCount = nvertices;
 
 		initCustomAttributes ( geometry, object );
 
 	};
 
-	function initRibbonBuffers ( geometry ) {
+	THREE_DECL void initLineBuffers ( Geometry& geometry, Object3D& object ) {
 
-		var nvertices = geometry.vertices.length;
+		auto nvertices = geometry.vertices.size();
 
-		geometry.__vertexArray = new Float32Array( nvertices * 3 );
-		geometry.__colorArray = new Float32Array( nvertices * 3 );
+		geometry.buffer.__vertexArray.resize( nvertices * 3 );
+		geometry.buffer.__colorArray.resize( nvertices * 3 );
 
-		geometry.__webglVertexCount = nvertices;
+		geometry.buffer.__glLineCount = nvertices;
 
-	};
+		initCustomAttributes ( geometry, object );
 
-	function initMeshBuffers ( geometryGroup, object ) {
+	}
 
-		var geometry = object.geometry,
-			faces3 = geometryGroup.faces3,
-			faces4 = geometryGroup.faces4,
+	THREE_DECL void initRibbonBuffers ( Geometry& geometry ) {
 
-			nvertices = faces3.length * 3 + faces4.length * 4,
-			ntris     = faces3.length * 1 + faces4.length * 2,
-			nlines    = faces3.length * 3 + faces4.length * 4,
+		auto nvertices = geometry.vertices.size();
 
-			material = getBufferMaterial( object, geometryGroup ),
+		geometry.buffer.__vertexArray.resize( nvertices * 3 );
+		geometry.buffer.__colorArray.resize( nvertices * 3 );
 
-			uvType = bufferGuessUVType( material ),
-			normalType = bufferGuessNormalType( material ),
-			vertexColorType = bufferGuessVertexColorType( material );
+		geometry.buffer.__glVertexCount = nvertices;
+
+	}
+
+	THREE_DECL void initMeshBuffers ( GeometryGroup& geometryGroup, Mesh& object ) {
+
+		auto& geometry = *object.geometry;
+		auto& faces3 = geometryGroup.faces3;
+		auto& faces4 = geometryGroup.faces4;
+
+		auto nvertices = faces3.size() * 3 + faces4.size() * 4;
+		auto ntris     = faces3.size() * 1 + faces4.size() * 2;
+		auto nlines    = faces3.size() * 3 + faces4.size() * 4;
+
+		auto material = getBufferMaterial( object, geometryGroup );
+
+		auto uvType = bufferGuessUVType( material );
+		auto normalType = bufferGuessNormalType( material );
+		auto vertexColorType = bufferGuessVertexColorType( material );
 
 		//console.log( "uvType", uvType, "normalType", normalType, "vertexColorType", vertexColorType, object, geometryGroup, material );
 
-		geometryGroup.__vertexArray = new Float32Array( nvertices * 3 );
+		geometryGroup.buffer.__vertexArray.resize( nvertices * 3 );
 
 		if ( normalType ) {
 
-			geometryGroup.__normalArray = new Float32Array( nvertices * 3 );
+			geometryGroup.buffer.__normalArray.resize( nvertices * 3 );
 
 		}
 
 		if ( geometry.hasTangents ) {
 
-			geometryGroup.__tangentArray = new Float32Array( nvertices * 4 );
+			geometryGroup.buffer.__tangentArray.resize( nvertices * 4 );
 
 		}
 
 		if ( vertexColorType ) {
 
-			geometryGroup.__colorArray = new Float32Array( nvertices * 3 );
+			geometryGroup.buffer.__colorArray.resize( nvertices * 3 );
 
 		}
 
 		if ( uvType ) {
 
-			if ( geometry.faceUvs.length > 0 || geometry.faceVertexUvs.length > 0 ) {
+			if ( geometry.faceUvs.size() > 0 || geometry.faceVertexUvs.size() > 0 ) {
 
-				geometryGroup.__uvArray = new Float32Array( nvertices * 2 );
-
-			}
-
-			if ( geometry.faceUvs.length > 1 || geometry.faceVertexUvs.length > 1 ) {
-
-				geometryGroup.__uv2Array = new Float32Array( nvertices * 2 );
+				geometryGroup.buffer.__uvArray.resize( nvertices * 2 );
 
 			}
 
-		}
+			if ( geometry.faceUvs.size() > 1 || geometry.faceVertexUvs.size() > 1 ) {
 
-		if ( object.geometry.skinWeights.length && object.geometry.skinIndices.length ) {
-
-			geometryGroup.__skinVertexAArray = new Float32Array( nvertices * 4 );
-			geometryGroup.__skinVertexBArray = new Float32Array( nvertices * 4 );
-			geometryGroup.__skinIndexArray = new Float32Array( nvertices * 4 );
-			geometryGroup.__skinWeightArray = new Float32Array( nvertices * 4 );
-
-		}
-
-		geometryGroup.__faceArray = new Uint16Array( ntris * 3 );
-		geometryGroup.__lineArray = new Uint16Array( nlines * 2 );
-
-		var m, ml;
-
-		if ( geometryGroup.numMorphTargets ) {
-
-			geometryGroup.__morphTargetsArrays = [];
-
-			for ( m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-
-				geometryGroup.__morphTargetsArrays.push( new Float32Array( nvertices * 3 ) );
+				geometryGroup.buffer.__uv2Array.resize( nvertices * 2 );
 
 			}
 
 		}
 
-		if ( geometryGroup.numMorphNormals ) {
+		if ( geometry.skinWeights.size() && geometry.skinIndices.size() ) {
 
-			geometryGroup.__morphNormalsArrays = [];
+			geometryGroup.buffer.__skinVertexAArray.resize( nvertices * 4 );
+			geometryGroup.buffer.__skinVertexBArray.resize( nvertices * 4 );
+			geometryGroup.buffer.__skinIndexArray.resize( nvertices * 4 );
+			geometryGroup.buffer.__skinWeightArray.resize( nvertices * 4 );
 
-			for ( m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+		}
 
-				geometryGroup.__morphNormalsArrays.push( new Float32Array( nvertices * 3 ) );
+		geometryGroup.buffer.__faceArray.resize( ntris * 3 );
+		geometryGroup.buffer.__lineArray.resize( nlines * 2 );
+
+		if ( geometryGroup.buffer.numMorphTargets ) {
+
+			geometryGroup.__morphTargetsArrays.clear();
+
+			for ( int m = 0, ml = geometryGroup.buffer.numMorphTargets; m < ml; m ++ ) {
+
+				geometryGroup.__morphTargetsArrays.push_back( std::vector<float>( nvertices * 3 ) );
 
 			}
 
 		}
 
-		geometryGroup.__webglFaceCount = ntris * 3;
-		geometryGroup.__webglLineCount = nlines * 2;
+		if ( geometryGroup.buffer.numMorphNormals ) {
 
+			geometryGroup.__morphNormalsArrays.clear();
+
+			for ( int m = 0, ml = geometryGroup.buffer.numMorphNormals; m < ml; m ++ ) {
+
+				geometryGroup.__morphNormalsArrays.push_back( std::vector<float>( nvertices * 3 ) );
+
+			}
+
+		}
+
+		geometryGroup.buffer.__glFaceCount = ntris * 3;
+		geometryGroup.buffer.__glLineCount = nlines * 2;
+
+
+#ifdef TODO_CUSTOM_ATTRIBUTE_LIST
 
 		// custom attributes
 
 		if ( material.attributes ) {
 
-			if ( geometryGroup.__webglCustomAttributesList == undefined ) {
+			if ( geometryGroup.buffer.__glCustomAttributesList == undefined ) {
 
-				geometryGroup.__webglCustomAttributesList = [];
+				geometryGroup.buffer.__glCustomAttributesList = [];
 
 			}
 
-			for ( var a in material.attributes ) {
+			for ( auto a in material.attributes ) {
 
 				// Do a shallow copy of the attribute object so different geometryGroup chunks use different
 				// attribute buffers which are correctly indexed in the setMeshBuffers function
 
-				var originalAttribute = material.attributes[ a ];
+				auto originalAttribute = material.attributes[ a ];
 
-				var attribute = {};
+				auto attribute = {};
 
-				for ( var property in originalAttribute ) {
+				for ( auto property in originalAttribute ) {
 
 					attribute[ property ] = originalAttribute[ property ];
 
 				}
 
-				if( !attribute.__webglInitialized || attribute.createUniqueBuffers ) {
+				if( !attribute.__glInitialized || attribute.createUniqueBuffers ) {
 
-					attribute.__webglInitialized = true;
+					attribute.__glInitialized = true;
 
-					var size = 1;		// "f" and "i"
+					auto size = 1;		// "f" and "i"
 
 					if( attribute.type == "v2" ) size = 2;
 					else if( attribute.type == "v3" ) size = 3;
@@ -1086,7 +1092,7 @@ public:
 
 					attribute.size = size;
 
-					attribute.array = new Float32Array( nvertices * size );
+					attribute.array.resize( nvertices * size );
 
 					attribute.buffer = glCreateBuffer();
 					attribute.buffer.belongsToAttribute = a;
@@ -1096,75 +1102,88 @@ public:
 
 				}
 
-				geometryGroup.__webglCustomAttributesList.push( attribute );
+				geometryGroup.buffer.__glCustomAttributesList.push_back( attribute );
 
 			}
 
 		}
 
-		geometryGroup.__inittedArrays = true;
+		#endif
 
-	};
+		geometryGroup.buffer.__inittedArrays = true;
 
-	function getBufferMaterial( object, geometryGroup ) {
+	}
 
-		if ( object.material && ! ( object.material instanceof THREE.MeshFaceMaterial ) ) {
+	THREE_DECL Material* getBufferMaterial( Object3D& object, GeometryGroup& geometryGroup ) {
 
-			return object.material;
+		ExtractMaterialAndGeometry extract;
 
-		} else if ( geometryGroup.materialIndex >= 0 ) {
+		object.visit ( extract );
 
-			return object.geometry.materials[ geometryGroup.materialIndex ];
+		Material* material = extract.material;
+		Geometry* geometry = extract.geometry;
+
+		if ( material && ! ( material->type() == THREE::MeshFaceMaterial ) ) {
+
+			return material;
+
+		} else if ( geometry && geometryGroup.materialIndex >= 0 ) {
+
+			return geometry->materials[ geometryGroup.materialIndex ].get();
 
 		}
 
-	};
+		return nullptr;
 
-	function materialNeedsSmoothNormals ( material ) {
+	}
 
-		return material && material.shading !== undefined && material.shading == THREE.SmoothShading;
+	THREE_DECL bool materialNeedsSmoothNormals ( const Material* material ) {
 
-	};
+		return material && material->shading == THREE::SmoothShading;
 
-	function bufferGuessNormalType ( material ) {
+	}
+
+	THREE_DECL THREE::Shading bufferGuessNormalType ( const Material* material ) {
 
 		// only MeshBasicMaterial and MeshDepthMaterial don't need normals
 
-		if ( ( material instanceof THREE.MeshBasicMaterial && !material.envMap ) || material instanceof THREE.MeshDepthMaterial ) {
+		//if ( material && ( material->type() == THREE::MeshBasicMaterial && !material->envMap ) || material->type() == THREE::MeshDepthMaterial ) {
+		if ( material && ( ( material->type() == THREE::MeshBasicMaterial ) || material->type() == THREE::MeshDepthMaterial ) ) {
 
-			return false;
+			return THREE::NoShading;
 
 		}
 
 		if ( materialNeedsSmoothNormals( material ) ) {
 
-			return THREE.SmoothShading;
+			return THREE::SmoothShading;
 
 		} else {
 
-			return THREE.FlatShading;
+			return THREE::FlatShading;
 
 		}
 
-	};
+	}
 
-	function bufferGuessVertexColorType ( material ) {
+	THREE_DECL THREE::Colors bufferGuessVertexColorType ( const Material* material ) {
 
-		if ( material.vertexColors ) {
+		if ( material ) {
 
-			return material.vertexColors;
+			return material->vertexColors;
 
 		}
 
-		return false;
+		return THREE::NoColors;
 
-	};
+	}
 
-	function bufferGuessUVType ( material ) {
+	THREE_DECL bool bufferGuessUVType ( const Material* material ) {
 
 		// material must use some texture to require uvs
 
-		if ( material.map || material.lightMap || material.bumpMap || material.specularMap || material instanceof THREE.ShaderMaterial ) {
+		//if ( material && ( material->map || material->lightMap || material->bumpMap || material->specularMap || material->type() == THREE::ShaderMaterial ) ) {
+		if ( material && material->type() == THREE::ShaderMaterial ) {
 
 			return true;
 
@@ -1172,13 +1191,14 @@ public:
 
 		return false;
 
-	};
+	}
 
 	//
+#ifdef TODO_ATTRIBUTES
 
-	function initDirectBuffers( geometry ) {
+	void initDirectBuffers( Geometry& geometry ) {
 
-		var a, attribute, type;
+		auto a, attribute, type;
 
 		for ( a in geometry.attributes ) {
 
@@ -1196,8 +1216,8 @@ public:
 
 			attribute.buffer = glCreateBuffer();
 
-			glbindBuffer( type, attribute.buffer );
-			glbufferData( type, attribute.array, _gl.STATIC_DRAW );
+			glBindBuffer( type, attribute.buffer );
+			glBufferData( type, attribute.array, _gl.STATIC_DRAW );
 
 		}
 
@@ -1207,24 +1227,24 @@ public:
 
 	function setParticleBuffers ( geometry, hint, object ) {
 
-		var v, c, vertex, offset, index, color,
+		auto v, c, vertex, offset, index, color,
 
 		vertices = geometry.vertices,
-		vl = vertices.length,
+		vl = vertices.size(),
 
 		colors = geometry.colors,
-		cl = colors.length,
+		cl = colors.size(),
 
-		vertexArray = geometry.__vertexArray,
-		colorArray = geometry.__colorArray,
+		vertexArray = geometry.buffer.__vertexArray,
+		colorArray = geometry.buffer.__colorArray,
 
-		sortArray = geometry.__sortArray,
+		auto& sortArray = geometry.buffer.__sortArray,
 
 		dirtyVertices = geometry.verticesNeedUpdate,
 		dirtyElements = geometry.elementsNeedUpdate,
 		dirtyColors = geometry.colorsNeedUpdate,
 
-		customAttributes = geometry.__webglCustomAttributesList,
+		customAttributes = geometry.buffer.__glCustomAttributesList,
 		i, il,
 		a, ca, cal, value,
 		customAttribute;
@@ -1273,7 +1293,7 @@ public:
 
 			if ( customAttributes ) {
 
-				for ( i = 0, il = customAttributes.length; i < il; i ++ ) {
+				for ( i = 0, il = customAttributes.size(); i < il; i ++ ) {
 
 					customAttribute = customAttributes[ i ];
 
@@ -1281,7 +1301,7 @@ public:
 
 					offset = 0;
 
-					cal = customAttribute.value.length;
+					cal = customAttribute.value.size();
 
 					if ( customAttribute.size == 1 ) {
 
@@ -1403,7 +1423,7 @@ public:
 
 			if ( customAttributes ) {
 
-				for ( i = 0, il = customAttributes.length; i < il; i ++ ) {
+				for ( i = 0, il = customAttributes.size(); i < il; i ++ ) {
 
 					customAttribute = customAttributes[ i ];
 
@@ -1411,7 +1431,7 @@ public:
 						 ( customAttribute.boundTo == undefined ||
 						   customAttribute.boundTo == "vertices") ) {
 
-						cal = customAttribute.value.length;
+						cal = customAttribute.value.size();
 
 						offset = 0;
 
@@ -1495,28 +1515,28 @@ public:
 
 		if ( dirtyVertices || object.sortParticles ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
-			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glVertexBuffer );
+			glBufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
 		if ( dirtyColors || object.sortParticles ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
-			glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glColorBuffer );
+			glBufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 		}
 
 		if ( customAttributes ) {
 
-			for ( i = 0, il = customAttributes.length; i < il; i ++ ) {
+			for ( i = 0, il = customAttributes.size(); i < il; i ++ ) {
 
 				customAttribute = customAttributes[ i ];
 
 				if ( customAttribute.needsUpdate || object.sortParticles ) {
 
-					glbindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
-					glbufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
+					glBindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
+					glBufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
 
 				}
 
@@ -1529,20 +1549,20 @@ public:
 
 	function setLineBuffers ( geometry, hint ) {
 
-		var v, c, vertex, offset, color,
+		auto v, c, vertex, offset, color,
 
 		vertices = geometry.vertices,
 		colors = geometry.colors,
-		vl = vertices.length,
-		cl = colors.length,
+		vl = vertices.size(),
+		cl = colors.size(),
 
-		vertexArray = geometry.__vertexArray,
-		colorArray = geometry.__colorArray,
+		vertexArray = geometry.buffer.__vertexArray,
+		colorArray = geometry.buffer.__colorArray,
 
 		dirtyVertices = geometry.verticesNeedUpdate,
 		dirtyColors = geometry.colorsNeedUpdate,
 
-		customAttributes = geometry.__webglCustomAttributesList,
+		customAttributes = geometry.buffer.__glCustomAttributesList,
 
 		i, il,
 		a, ca, cal, value,
@@ -1562,8 +1582,8 @@ public:
 
 			}
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
-			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glVertexBuffer );
+			glBufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
@@ -1581,14 +1601,14 @@ public:
 
 			}
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
-			glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glColorBuffer );
+			glBufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 		}
 
 		if ( customAttributes ) {
 
-			for ( i = 0, il = customAttributes.length; i < il; i ++ ) {
+			for ( i = 0, il = customAttributes.size(); i < il; i ++ ) {
 
 				customAttribute = customAttributes[ i ];
 
@@ -1598,7 +1618,7 @@ public:
 
 					offset = 0;
 
-					cal = customAttribute.value.length;
+					cal = customAttribute.value.size();
 
 					if ( customAttribute.size == 1 ) {
 
@@ -1670,8 +1690,8 @@ public:
 
 					}
 
-					glbindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
-					glbufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
+					glBindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
+					glBufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
 
 				}
 
@@ -1679,19 +1699,20 @@ public:
 
 		}
 
-	};
+	}
+
 
 	function setRibbonBuffers ( geometry, hint ) {
 
-		var v, c, vertex, offset, color,
+		auto v, c, vertex, offset, color,
 
 		vertices = geometry.vertices,
 		colors = geometry.colors,
-		vl = vertices.length,
-		cl = colors.length,
+		vl = vertices.size(),
+		cl = colors.size(),
 
-		vertexArray = geometry.__vertexArray,
-		colorArray = geometry.__colorArray,
+		vertexArray = geometry.buffer.__vertexArray,
+		colorArray = geometry.buffer.__colorArray,
 
 		dirtyVertices = geometry.verticesNeedUpdate,
 		dirtyColors = geometry.colorsNeedUpdate;
@@ -1710,8 +1731,8 @@ public:
 
 			}
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglVertexBuffer );
-			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glVertexBuffer );
+			glBufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
@@ -1729,8 +1750,8 @@ public:
 
 			}
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometry.__webglColorBuffer );
-			glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glColorBuffer );
+			glBufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 		}
 
@@ -1738,20 +1759,20 @@ public:
 
 	function setMeshBuffers( geometryGroup, object, hint, dispose, material ) {
 
-		if ( ! geometryGroup.__inittedArrays ) {
+		if ( ! geometryGroup.buffer.__inittedArrays ) {
 
 			// console.log( object );
 			return;
 
 		}
 
-		var normalType = bufferGuessNormalType( material ),
+		auto normalType = bufferGuessNormalType( material ),
 		vertexColorType = bufferGuessVertexColorType( material ),
 		uvType = bufferGuessUVType( material ),
 
-		needsSmoothNormals = ( normalType == THREE.SmoothShading );
+		needsSmoothNormals = ( normalType == THREE::SmoothShading );
 
-		var f, fl, fi, face,
+		auto f, fl, fi, face,
 		vertexNormals, faceNormal, normal,
 		vertexColors, faceColor,
 		vertexTangents,
@@ -1784,26 +1805,26 @@ public:
 
 		value,
 
-		vertexArray = geometryGroup.__vertexArray,
-		uvArray = geometryGroup.__uvArray,
-		uv2Array = geometryGroup.__uv2Array,
-		normalArray = geometryGroup.__normalArray,
-		tangentArray = geometryGroup.__tangentArray,
-		colorArray = geometryGroup.__colorArray,
+		vertexArray = geometryGroup.buffer.__vertexArray,
+		uvArray = geometryGroup.buffer.__uvArray,
+		uv2Array = geometryGroup.buffer.__uv2Array,
+		normalArray = geometryGroup.buffer.__normalArray,
+		tangentArray = geometryGroup.buffer.__tangentArray,
+		colorArray = geometryGroup.buffer.__colorArray,
 
-		skinVertexAArray = geometryGroup.__skinVertexAArray,
-		skinVertexBArray = geometryGroup.__skinVertexBArray,
-		skinIndexArray = geometryGroup.__skinIndexArray,
-		skinWeightArray = geometryGroup.__skinWeightArray,
+		skinVertexAArray = geometryGroup.buffer.__skinVertexAArray,
+		skinVertexBArray = geometryGroup.buffer.__skinVertexBArray,
+		skinIndexArray = geometryGroup.buffer.__skinIndexArray,
+		skinWeightArray = geometryGroup.buffer.__skinWeightArray,
 
 		morphTargetsArrays = geometryGroup.__morphTargetsArrays,
 		morphNormalsArrays = geometryGroup.__morphNormalsArrays,
 
-		customAttributes = geometryGroup.__webglCustomAttributesList,
+		customAttributes = geometryGroup.buffer.__glCustomAttributesList,
 		customAttribute,
 
-		faceArray = geometryGroup.__faceArray,
-		lineArray = geometryGroup.__lineArray,
+		faceArray = geometryGroup.buffer.__faceArray,
+		lineArray = geometryGroup.buffer.__lineArray,
 
 		geometry = object.geometry, // this is shared for all chunks
 
@@ -1835,7 +1856,7 @@ public:
 
 		if ( dirtyVertices ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces3[ f ] ];
 
@@ -1859,7 +1880,7 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -1888,18 +1909,18 @@ public:
 
 			}
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
-			glbufferData( GL_ARRAY_BUFFER, vertexArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glVertexBuffer );
+			glBufferData( GL_ARRAY_BUFFER, vertexArray, hint );
 
 		}
 
 		if ( dirtyMorphTargets ) {
 
-			for ( vk = 0, vkl = morphTargets.length; vk < vkl; vk ++ ) {
+			for ( vk = 0, vkl = morphTargets.size(); vk < vkl; vk ++ ) {
 
 				offset_morphTarget = 0;
 
-				for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+				for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 					chf = chunk_faces3[ f ];
 					face = obj_faces[ chf ];
@@ -1966,7 +1987,7 @@ public:
 
 				}
 
-				for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+				for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 					chf = chunk_faces4[ f ];
 					face = obj_faces[ chf ];
@@ -2044,13 +2065,13 @@ public:
 
 				}
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ vk ] );
-				glbufferData( GL_ARRAY_BUFFER, morphTargetsArrays[ vk ], hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphTargetsBuffers[ vk ] );
+				glBufferData( GL_ARRAY_BUFFER, morphTargetsArrays[ vk ], hint );
 
 				if ( material.morphNormals ) {
 
-					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ vk ] );
-					glbufferData( GL_ARRAY_BUFFER, morphNormalsArrays[ vk ], hint );
+					glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphNormalsBuffers[ vk ] );
+					glBufferData( GL_ARRAY_BUFFER, morphNormalsArrays[ vk ], hint );
 
 				}
 
@@ -2058,9 +2079,9 @@ public:
 
 		}
 
-		if ( obj_skinWeights.length ) {
+		if ( obj_skinWeights.size() ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces3[ f ]	];
 
@@ -2152,7 +2173,7 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -2270,17 +2291,17 @@ public:
 
 			if ( offset_skin > 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexABuffer );
-				glbufferData( GL_ARRAY_BUFFER, skinVertexAArray, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexABuffer );
+				glBufferData( GL_ARRAY_BUFFER, skinVertexAArray, hint );
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexBBuffer );
-				glbufferData( GL_ARRAY_BUFFER, skinVertexBArray, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexBBuffer );
+				glBufferData( GL_ARRAY_BUFFER, skinVertexBArray, hint );
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinIndicesBuffer );
-				glbufferData( GL_ARRAY_BUFFER, skinIndexArray, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinIndicesBuffer );
+				glBufferData( GL_ARRAY_BUFFER, skinIndexArray, hint );
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinWeightsBuffer );
-				glbufferData( GL_ARRAY_BUFFER, skinWeightArray, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinWeightsBuffer );
+				glBufferData( GL_ARRAY_BUFFER, skinWeightArray, hint );
 
 			}
 
@@ -2288,14 +2309,14 @@ public:
 
 		if ( dirtyColors && vertexColorType ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces3[ f ]	];
 
 				vertexColors = face.vertexColors;
 				faceColor = face.color;
 
-				if ( vertexColors.length == 3 && vertexColorType == THREE.VertexColors ) {
+				if ( vertexColors.size() == 3 && vertexColorType == THREE::VertexColors ) {
 
 					c1 = vertexColors[ 0 ];
 					c2 = vertexColors[ 1 ];
@@ -2325,14 +2346,14 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces4[ f ] ];
 
 				vertexColors = face.vertexColors;
 				faceColor = face.color;
 
-				if ( vertexColors.length == 4 && vertexColorType == THREE.VertexColors ) {
+				if ( vertexColors.size() == 4 && vertexColorType == THREE::VertexColors ) {
 
 					c1 = vertexColors[ 0 ];
 					c2 = vertexColors[ 1 ];
@@ -2370,8 +2391,8 @@ public:
 
 			if ( offset_color > 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglColorBuffer );
-				glbufferData( GL_ARRAY_BUFFER, colorArray, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glColorBuffer );
+				glBufferData( GL_ARRAY_BUFFER, colorArray, hint );
 
 			}
 
@@ -2379,7 +2400,7 @@ public:
 
 		if ( dirtyTangents && geometry.hasTangents ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces3[ f ]	];
 
@@ -2408,7 +2429,7 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -2443,21 +2464,21 @@ public:
 
 			}
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglTangentBuffer );
-			glbufferData( GL_ARRAY_BUFFER, tangentArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glTangentBuffer );
+			glBufferData( GL_ARRAY_BUFFER, tangentArray, hint );
 
 		}
 
 		if ( dirtyNormals && normalType ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces3[ f ]	];
 
 				vertexNormals = face.vertexNormals;
 				faceNormal = face.normal;
 
-				if ( vertexNormals.length == 3 && needsSmoothNormals ) {
+				if ( vertexNormals.size() == 3 && needsSmoothNormals ) {
 
 					for ( i = 0; i < 3; i ++ ) {
 
@@ -2487,14 +2508,14 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces4[ f ] ];
 
 				vertexNormals = face.vertexNormals;
 				faceNormal = face.normal;
 
-				if ( vertexNormals.length == 4 && needsSmoothNormals ) {
+				if ( vertexNormals.size() == 4 && needsSmoothNormals ) {
 
 					for ( i = 0; i < 4; i ++ ) {
 
@@ -2524,14 +2545,14 @@ public:
 
 			}
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglNormalBuffer );
-			glbufferData( GL_ARRAY_BUFFER, normalArray, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glNormalBuffer );
+			glBufferData( GL_ARRAY_BUFFER, normalArray, hint );
 
 		}
 
 		if ( dirtyUvs && obj_uvs && uvType ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				fi = chunk_faces3[ f ];
 
@@ -2553,7 +2574,7 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				fi = chunk_faces4[ f ];
 
@@ -2577,8 +2598,8 @@ public:
 
 			if ( offset_uv > 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUVBuffer );
-				glbufferData( GL_ARRAY_BUFFER, uvArray, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUVBuffer );
+				glBufferData( GL_ARRAY_BUFFER, uvArray, hint );
 
 			}
 
@@ -2586,7 +2607,7 @@ public:
 
 		if ( dirtyUvs && obj_uvs2 && uvType ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				fi = chunk_faces3[ f ];
 
@@ -2608,7 +2629,7 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				fi = chunk_faces4[ f ];
 
@@ -2632,8 +2653,8 @@ public:
 
 			if ( offset_uv2 > 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUV2Buffer );
-				glbufferData( GL_ARRAY_BUFFER, uv2Array, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUV2Buffer );
+				glBufferData( GL_ARRAY_BUFFER, uv2Array, hint );
 
 			}
 
@@ -2641,7 +2662,7 @@ public:
 
 		if ( dirtyElements ) {
 
-			for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces3[ f ]	];
 
@@ -2666,7 +2687,7 @@ public:
 
 			}
 
-			for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+			for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 				face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -2698,17 +2719,17 @@ public:
 
 			}
 
-			glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglFaceBuffer );
-			glbufferData( GL_ELEMENT_ARRAY_BUFFER, faceArray, hint );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glFaceBuffer );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, faceArray, hint );
 
-			glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglLineBuffer );
-			glbufferData( GL_ELEMENT_ARRAY_BUFFER, lineArray, hint );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glLineBuffer );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, lineArray, hint );
 
 		}
 
 		if ( customAttributes ) {
 
-			for ( i = 0, il = customAttributes.length; i < il; i ++ ) {
+			for ( i = 0, il = customAttributes.size(); i < il; i ++ ) {
 
 				customAttribute = customAttributes[ i ];
 
@@ -2721,7 +2742,7 @@ public:
 
 					if ( customAttribute.boundTo == undefined || customAttribute.boundTo == "vertices" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces3[ f ]	];
 
@@ -2733,7 +2754,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -2748,7 +2769,7 @@ public:
 
 					} else if ( customAttribute.boundTo == "faces" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces3[ f ] ];
 
@@ -2760,7 +2781,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces4[ f ] ];
 
@@ -2779,7 +2800,7 @@ public:
 
 					if ( customAttribute.boundTo == undefined || customAttribute.boundTo == "vertices" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces3[ f ]	];
 
@@ -2800,7 +2821,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -2827,7 +2848,7 @@ public:
 
 					} else if ( customAttribute.boundTo == "faces" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces3[ f ] ];
 
@@ -2848,7 +2869,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces4[ f ] ];
 
@@ -2877,7 +2898,7 @@ public:
 
 				} else if ( customAttribute.size == 3 ) {
 
-					var pp;
+					auto pp;
 
 					if ( customAttribute.type == "c" ) {
 
@@ -2891,7 +2912,7 @@ public:
 
 					if ( customAttribute.boundTo == undefined || customAttribute.boundTo == "vertices" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces3[ f ]	];
 
@@ -2915,7 +2936,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -2946,7 +2967,7 @@ public:
 
 					} else if ( customAttribute.boundTo == "faces" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces3[ f ] ];
 
@@ -2970,7 +2991,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces4[ f ] ];
 
@@ -3001,7 +3022,7 @@ public:
 
 					} else if ( customAttribute.boundTo == "faceVertices" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces3[ f ] ];
 
@@ -3025,7 +3046,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces4[ f ] ];
 
@@ -3060,7 +3081,7 @@ public:
 
 					if ( customAttribute.boundTo == undefined || customAttribute.boundTo == "vertices" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces3[ f ]	];
 
@@ -3087,7 +3108,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							face = obj_faces[ chunk_faces4[ f ] ];
 
@@ -3122,7 +3143,7 @@ public:
 
 					} else if ( customAttribute.boundTo == "faces" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces3[ f ] ];
 
@@ -3149,7 +3170,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces4[ f ] ];
 
@@ -3184,7 +3205,7 @@ public:
 
 					} else if ( customAttribute.boundTo == "faceVertices" ) {
 
-						for ( f = 0, fl = chunk_faces3.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces3[ f ] ];
 
@@ -3211,7 +3232,7 @@ public:
 
 						}
 
-						for ( f = 0, fl = chunk_faces4.length; f < fl; f ++ ) {
+						for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
 
 							value = customAttribute.value[ chunk_faces4[ f ] ];
 
@@ -3248,8 +3269,8 @@ public:
 
 				}
 
-				glbindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
-				glbufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
+				glBindBuffer( GL_ARRAY_BUFFER, customAttribute.buffer );
+				glBufferData( GL_ARRAY_BUFFER, customAttribute.array, hint );
 
 			}
 
@@ -3257,19 +3278,19 @@ public:
 
 		if ( dispose ) {
 
-			delete geometryGroup.__inittedArrays;
-			delete geometryGroup.__colorArray;
-			delete geometryGroup.__normalArray;
-			delete geometryGroup.__tangentArray;
-			delete geometryGroup.__uvArray;
-			delete geometryGroup.__uv2Array;
-			delete geometryGroup.__faceArray;
-			delete geometryGroup.__vertexArray;
-			delete geometryGroup.__lineArray;
-			delete geometryGroup.__skinVertexAArray;
-			delete geometryGroup.__skinVertexBArray;
-			delete geometryGroup.__skinIndexArray;
-			delete geometryGroup.__skinWeightArray;
+			delete geometryGroup.buffer.__inittedArrays;
+			delete geometryGroup.buffer.__colorArray;
+			delete geometryGroup.buffer.__normalArray;
+			delete geometryGroup.buffer.__tangentArray;
+			delete geometryGroup.buffer.__uvArray;
+			delete geometryGroup.buffer.__uv2Array;
+			delete geometryGroup.buffer.__faceArray;
+			delete geometryGroup.buffer.__vertexArray;
+			delete geometryGroup.buffer.__lineArray;
+			delete geometryGroup.buffer.__skinVertexAArray;
+			delete geometryGroup.buffer.__skinVertexBArray;
+			delete geometryGroup.buffer.__skinIndexArray;
+			delete geometryGroup.buffer.__skinWeightArray;
 
 		}
 
@@ -3277,60 +3298,60 @@ public:
 
 	function setDirectBuffers ( geometry, hint, dispose ) {
 
-		var attributes = geometry.attributes;
+		auto attributes = geometry.attributes;
 
-		var index = attributes[ "index" ];
-		var position = attributes[ "position" ];
-		var normal = attributes[ "normal" ];
-		var uv = attributes[ "uv" ];
-		var color = attributes[ "color" ];
-		var tangent = attributes[ "tangent" ];
+		auto index = attributes[ "index" ];
+		auto position = attributes[ "position" ];
+		auto normal = attributes[ "normal" ];
+		auto uv = attributes[ "uv" ];
+		auto color = attributes[ "color" ];
+		auto tangent = attributes[ "tangent" ];
 
 		if ( geometry.elementsNeedUpdate && index !== undefined ) {
 
-			glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
-			glbufferData( GL_ELEMENT_ARRAY_BUFFER, index.array, hint );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, index.array, hint );
 
 		}
 
 		if ( geometry.verticesNeedUpdate && position !== undefined ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, position.buffer );
-			glbufferData( GL_ARRAY_BUFFER, position.array, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
+			glBufferData( GL_ARRAY_BUFFER, position.array, hint );
 
 		}
 
 		if ( geometry.normalsNeedUpdate && normal !== undefined ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, normal.buffer );
-			glbufferData( GL_ARRAY_BUFFER, normal.array, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
+			glBufferData( GL_ARRAY_BUFFER, normal.array, hint );
 
 		}
 
 		if ( geometry.uvsNeedUpdate && uv !== undefined ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, uv.buffer );
-			glbufferData( GL_ARRAY_BUFFER, uv.array, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
+			glBufferData( GL_ARRAY_BUFFER, uv.array, hint );
 
 		}
 
 		if ( geometry.colorsNeedUpdate && color !== undefined ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, color.buffer );
-			glbufferData( GL_ARRAY_BUFFER, color.array, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
+			glBufferData( GL_ARRAY_BUFFER, color.array, hint );
 
 		}
 
 		if ( geometry.tangentsNeedUpdate && tangent !== undefined ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
-			glbufferData( GL_ARRAY_BUFFER, tangent.array, hint );
+			glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
+			glBufferData( GL_ARRAY_BUFFER, tangent.array, hint );
 
 		}
 
 		if ( dispose ) {
 
-			for ( var i in geometry.attributes ) {
+			for ( auto i in geometry.attributes ) {
 
 				delete geometry.attributes[ i ].array;
 
@@ -3344,15 +3365,15 @@ public:
 
 	renderBufferImmediate = function ( object, program, material ) {
 
-		if ( object.hasPositions && ! object.__webglVertexBuffer ) object.__webglVertexBuffer = glCreateBuffer();
-		if ( object.hasNormals && ! object.__webglNormalBuffer ) object.__webglNormalBuffer = glCreateBuffer();
-		if ( object.hasUvs && ! object.__webglUvBuffer ) object.__webglUvBuffer = glCreateBuffer();
-		if ( object.hasColors && ! object.__webglColorBuffer ) object.__webglColorBuffer = glCreateBuffer();
+		if ( object.hasPositions && ! object.__glVertexBuffer ) object.__glVertexBuffer = glCreateBuffer();
+		if ( object.hasNormals && ! object.__glNormalBuffer ) object.__glNormalBuffer = glCreateBuffer();
+		if ( object.hasUvs && ! object.__glUvBuffer ) object.__glUvBuffer = glCreateBuffer();
+		if ( object.hasColors && ! object.__glColorBuffer ) object.__glColorBuffer = glCreateBuffer();
 
 		if ( object.hasPositions ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, object.__webglVertexBuffer );
-			glbufferData( GL_ARRAY_BUFFER, object.positionArray, _gl.DYNAMIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, object.__glVertexBuffer );
+			glBufferData( GL_ARRAY_BUFFER, object.positionArray, _gl.DYNAMIC_DRAW );
 			glEnableVertexAttribArray( program.attributes.position );
 			glvertexAttribPointer( program.attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
@@ -3360,11 +3381,11 @@ public:
 
 		if ( object.hasNormals ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, object.__webglNormalBuffer );
+			glBindBuffer( GL_ARRAY_BUFFER, object.__glNormalBuffer );
 
-			if ( material.shading == THREE.FlatShading ) {
+			if ( material.shading == THREE::FlatShading ) {
 
-				var nx, ny, nz,
+				auto nx, ny, nz,
 					nax, nbx, ncx, nay, nby, ncy, naz, nbz, ncz,
 					normalArray,
 					i, il = object.count * 3;
@@ -3405,7 +3426,7 @@ public:
 
 			}
 
-			glbufferData( GL_ARRAY_BUFFER, object.normalArray, _gl.DYNAMIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, object.normalArray, _gl.DYNAMIC_DRAW );
 			glEnableVertexAttribArray( program.attributes.normal );
 			glvertexAttribPointer( program.attributes.normal, 3, _gl.FLOAT, false, 0, 0 );
 
@@ -3413,17 +3434,17 @@ public:
 
 		if ( object.hasUvs && material.map ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, object.__webglUvBuffer );
-			glbufferData( GL_ARRAY_BUFFER, object.uvArray, _gl.DYNAMIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, object.__glUvBuffer );
+			glBufferData( GL_ARRAY_BUFFER, object.uvArray, _gl.DYNAMIC_DRAW );
 			glEnableVertexAttribArray( program.attributes.uv );
 			glvertexAttribPointer( program.attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
 
 		}
 
-		if ( object.hasColors && material.vertexColors !== THREE.NoColors ) {
+		if ( object.hasColors && material.vertexColors !== THREE::NoColors ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, object.__webglColorBuffer );
-			glbufferData( GL_ARRAY_BUFFER, object.colorArray, _gl.DYNAMIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, object.__glColorBuffer );
+			glBufferData( GL_ARRAY_BUFFER, object.colorArray, _gl.DYNAMIC_DRAW );
 			glEnableVertexAttribArray( program.attributes.color );
 			glvertexAttribPointer( program.attributes.color, 3, _gl.FLOAT, false, 0, 0 );
 
@@ -3439,15 +3460,15 @@ public:
 
 		if ( material.visible == false ) return;
 
-		var program, attributes, linewidth, primitives, a, attribute;
+		auto program, attributes, linewidth, primitives, a, attribute;
 
 		program = setProgram( camera, lights, fog, material, object );
 
 		attributes = program.attributes;
 
-		var updateBuffers = false,
-			wireframeBit = material.wireframe ? 1 : 0,
-			geometryHash = ( geometry.id * 0xffffff ) + ( program.id * 2 ) + wireframeBit;
+		auto updateBuffers = false;
+		auto wireframeBit = material.wireframe ? 1 : 0;
+		auto geometryHash = ( geometry.id * 0xffffff ) + ( program.id * 2 ) + wireframeBit;
 
 		if ( geometryHash !== _currentGeometryGroupHash ) {
 
@@ -3458,54 +3479,54 @@ public:
 
 		// render mesh
 
-		if ( object instanceof THREE.Mesh ) {
+		if ( object instanceof THREE::Mesh ) {
 
-			var offsets = geometry.offsets;
+			auto offsets = geometry.offsets;
 
 			// if there is more than 1 chunk
 			// must set attribute pointers to use new offsets for each chunk
 			// even if geometry and materials didn't change
 
-			if ( offsets.length > 1 ) updateBuffers = true;
+			if ( offsets.size() > 1 ) updateBuffers = true;
 
-			for ( var i = 0, il = offsets.length; i < il; ++ i ) {
+			for ( auto i = 0, il = offsets.size(); i < il; ++ i ) {
 
-				var startIndex = offsets[ i ].index;
+				auto startIndex = offsets[ i ].index;
 
 				if ( updateBuffers ) {
 
 					// vertices
 
-					var position = geometry.attributes[ "position" ];
-					var positionSize = position.itemSize;
+					auto position = geometry.attributes[ "position" ];
+					auto positionSize = position.itemSize;
 
-					glbindBuffer( GL_ARRAY_BUFFER, position.buffer );
+					glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
 					glvertexAttribPointer( attributes.position, positionSize, _gl.FLOAT, false, 0, startIndex * positionSize * 4 ); // 4 bytes per Float32
 
 					// normals
 
-					var normal = geometry.attributes[ "normal" ];
+					auto normal = geometry.attributes[ "normal" ];
 
 					if ( attributes.normal >= 0 && normal ) {
 
-						var normalSize = normal.itemSize;
+						auto normalSize = normal.itemSize;
 
-						glbindBuffer( GL_ARRAY_BUFFER, normal.buffer );
+						glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
 						glvertexAttribPointer( attributes.normal, normalSize, _gl.FLOAT, false, 0, startIndex * normalSize * 4 );
 
 					}
 
 					// uvs
 
-					var uv = geometry.attributes[ "uv" ];
+					auto uv = geometry.attributes[ "uv" ];
 
 					if ( attributes.uv >= 0 && uv ) {
 
 						if ( uv.buffer ) {
 
-							var uvSize = uv.itemSize;
+							auto uvSize = uv.itemSize;
 
-							glbindBuffer( GL_ARRAY_BUFFER, uv.buffer );
+							glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
 							glvertexAttribPointer( attributes.uv, uvSize, _gl.FLOAT, false, 0, startIndex * uvSize * 4 );
 
 							glEnableVertexAttribArray( attributes.uv );
@@ -3520,35 +3541,35 @@ public:
 
 					// colors
 
-					var color = geometry.attributes[ "color" ];
+					auto color = geometry.attributes[ "color" ];
 
 					if ( attributes.color >= 0 && color ) {
 
-						var colorSize = color.itemSize;
+						auto colorSize = color.itemSize;
 
-						glbindBuffer( GL_ARRAY_BUFFER, color.buffer );
+						glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
 						glvertexAttribPointer( attributes.color, colorSize, _gl.FLOAT, false, 0, startIndex * colorSize * 4 );
 
 					}
 
 					// tangents
 
-					var tangent = geometry.attributes[ "tangent" ];
+					auto tangent = geometry.attributes[ "tangent" ];
 
 					if ( attributes.tangent >= 0 && tangent ) {
 
-						var tangentSize = tangent.itemSize;
+						auto tangentSize = tangent.itemSize;
 
-						glbindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
+						glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
 						glvertexAttribPointer( attributes.tangent, tangentSize, _gl.FLOAT, false, 0, startIndex * tangentSize * 4 );
 
 					}
 
 					// indices
 
-					var index = geometry.attributes[ "index" ];
+					auto index = geometry.attributes[ "index" ];
 
-					glbindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
+					glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
 
 				}
 
@@ -3570,13 +3591,13 @@ public:
 
 		if ( material.visible == false ) return;
 
-		var program, attributes, linewidth, primitives, a, attribute, i, il;
+		auto program, attributes, linewidth, primitives, a, attribute, i, il;
 
 		program = setProgram( camera, lights, fog, material, object );
 
 		attributes = program.attributes;
 
-		var updateBuffers = false,
+		auto updateBuffers = false,
 			wireframeBit = material.wireframe ? 1 : 0,
 			geometryGroupHash = ( geometryGroup.id * 0xffffff ) + ( program.id * 2 ) + wireframeBit;
 
@@ -3593,7 +3614,7 @@ public:
 
 			if ( updateBuffers ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glVertexBuffer );
 				glvertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 			}
@@ -3615,15 +3636,15 @@ public:
 
 			// Use the per-geometryGroup custom attribute arrays which are setup in initMeshBuffers
 
-			if ( geometryGroup.__webglCustomAttributesList ) {
+			if ( geometryGroup.buffer.__glCustomAttributesList ) {
 
-				for ( i = 0, il = geometryGroup.__webglCustomAttributesList.length; i < il; i ++ ) {
+				for ( i = 0, il = geometryGroup.buffer.__glCustomAttributesList.size(); i < il; i ++ ) {
 
-					attribute = geometryGroup.__webglCustomAttributesList[ i ];
+					attribute = geometryGroup.buffer.__glCustomAttributesList[ i ];
 
 					if( attributes[ attribute.buffer.belongsToAttribute ] >= 0 ) {
 
-						glbindBuffer( GL_ARRAY_BUFFER, attribute.buffer );
+						glBindBuffer( GL_ARRAY_BUFFER, attribute.buffer );
 						glvertexAttribPointer( attributes[ attribute.buffer.belongsToAttribute ], attribute.size, _gl.FLOAT, false, 0, 0 );
 
 					}
@@ -3637,7 +3658,7 @@ public:
 
 			if ( attributes.color >= 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglColorBuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glColorBuffer );
 				glvertexAttribPointer( attributes.color, 3, _gl.FLOAT, false, 0, 0 );
 
 			}
@@ -3646,7 +3667,7 @@ public:
 
 			if ( attributes.normal >= 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglNormalBuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glNormalBuffer );
 				glvertexAttribPointer( attributes.normal, 3, _gl.FLOAT, false, 0, 0 );
 
 			}
@@ -3655,7 +3676,7 @@ public:
 
 			if ( attributes.tangent >= 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglTangentBuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glTangentBuffer );
 				glvertexAttribPointer( attributes.tangent, 4, _gl.FLOAT, false, 0, 0 );
 
 			}
@@ -3664,9 +3685,9 @@ public:
 
 			if ( attributes.uv >= 0 ) {
 
-				if ( geometryGroup.__webglUVBuffer ) {
+				if ( geometryGroup.buffer.__glUVBuffer ) {
 
-					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUVBuffer );
+					glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUVBuffer );
 					glvertexAttribPointer( attributes.uv, 2, _gl.FLOAT, false, 0, 0 );
 
 					glEnableVertexAttribArray( attributes.uv );
@@ -3681,9 +3702,9 @@ public:
 
 			if ( attributes.uv2 >= 0 ) {
 
-				if ( geometryGroup.__webglUV2Buffer ) {
+				if ( geometryGroup.buffer.__glUV2Buffer ) {
 
-					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglUV2Buffer );
+					glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUV2Buffer );
 					glvertexAttribPointer( attributes.uv2, 2, _gl.FLOAT, false, 0, 0 );
 
 					glEnableVertexAttribArray( attributes.uv2 );
@@ -3700,16 +3721,16 @@ public:
 				 attributes.skinVertexA >= 0 && attributes.skinVertexB >= 0 &&
 				 attributes.skinIndex >= 0 && attributes.skinWeight >= 0 ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexABuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexABuffer );
 				glvertexAttribPointer( attributes.skinVertexA, 4, _gl.FLOAT, false, 0, 0 );
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinVertexBBuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexBBuffer );
 				glvertexAttribPointer( attributes.skinVertexB, 4, _gl.FLOAT, false, 0, 0 );
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinIndicesBuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinIndicesBuffer );
 				glvertexAttribPointer( attributes.skinIndex, 4, _gl.FLOAT, false, 0, 0 );
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglSkinWeightsBuffer );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinWeightsBuffer );
 				glvertexAttribPointer( attributes.skinWeight, 4, _gl.FLOAT, false, 0, 0 );
 
 			}
@@ -3718,7 +3739,7 @@ public:
 
 		// render mesh
 
-		if ( object instanceof THREE.Mesh ) {
+		if ( object instanceof THREE::Mesh ) {
 
 			// wireframe
 
@@ -3726,48 +3747,48 @@ public:
 
 				setLineWidth( material.wireframeLinewidth );
 
-				if ( updateBuffers ) _gl.bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglLineBuffer );
-				gldrawElements( GL_LINES, geometryGroup.__webglLineCount, _gl.UNSIGNED_SHORT, 0 );
+				if ( updateBuffers ) _gl.bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glLineBuffer );
+				gldrawElements( GL_LINES, geometryGroup.buffer.__glLineCount, _gl.UNSIGNED_SHORT, 0 );
 
 			// triangles
 
 			} else {
 
-				if ( updateBuffers ) _gl.bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__webglFaceBuffer );
-				gldrawElements( GL_TRIANGLES, geometryGroup.__webglFaceCount, _gl.UNSIGNED_SHORT, 0 );
+				if ( updateBuffers ) _gl.bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glFaceBuffer );
+				gldrawElements( GL_TRIANGLES, geometryGroup.buffer.__glFaceCount, _gl.UNSIGNED_SHORT, 0 );
 
 			}
 
 			_info.render.calls ++;
-			_info.render.vertices += geometryGroup.__webglFaceCount;
-			_info.render.faces += geometryGroup.__webglFaceCount / 3;
+			_info.render.vertices += geometryGroup.buffer.__glFaceCount;
+			_info.render.faces += geometryGroup.buffer.__glFaceCount / 3;
 
 		// render lines
 
-		} else if ( object instanceof THREE.Line ) {
+		} else if ( object instanceof THREE::Line ) {
 
-			primitives = ( object.type == THREE.LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
+			primitives = ( object.type == THREE::LineStrip ) ? _gl.LINE_STRIP : _gl.LINES;
 
 			setLineWidth( material.linewidth );
 
-			gldrawArrays( primitives, 0, geometryGroup.__webglLineCount );
+			gldrawArrays( primitives, 0, geometryGroup.buffer.__glLineCount );
 
 			_info.render.calls ++;
 
 		// render particles
 
-		} else if ( object instanceof THREE.ParticleSystem ) {
+		} else if ( object instanceof THREE::ParticleSystem ) {
 
-			gldrawArrays( GL_POINTS, 0, geometryGroup.__webglParticleCount );
+			gldrawArrays( GL_POINTS, 0, geometryGroup.buffer.__glParticleCount );
 
 			_info.render.calls ++;
-			_info.render.points += geometryGroup.__webglParticleCount;
+			_info.render.points += geometryGroup.buffer.__glParticleCount;
 
 		// render ribbon
 
-		} else if ( object instanceof THREE.Ribbon ) {
+		} else if ( object instanceof THREE::Ribbon ) {
 
-			gldrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.__webglVertexCount );
+			gldrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.buffer.__glVertexCount );
 
 			_info.render.calls ++;
 
@@ -3779,41 +3800,41 @@ public:
 
 		// set base
 
-		var attributes = material.program.attributes;
+		auto attributes = material.program.attributes;
 
 		if ( object.morphTargetBase !== -1 ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ object.morphTargetBase ] );
+			glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphTargetsBuffers[ object.morphTargetBase ] );
 			glvertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 		} else if ( attributes.position >= 0 ) {
 
-			glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglVertexBuffer );
+			glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glVertexBuffer );
 			glvertexAttribPointer( attributes.position, 3, _gl.FLOAT, false, 0, 0 );
 
 		}
 
-		if ( object.morphTargetForcedOrder.length ) {
+		if ( object.morphTargetForcedOrder.size() ) {
 
 			// set forced order
 
-			var m = 0;
-			var order = object.morphTargetForcedOrder;
-			var influences = object.morphTargetInfluences;
+			auto m = 0;
+			auto order = object.morphTargetForcedOrder;
+			auto influences = object.morphTargetInfluences;
 
-			while ( m < material.numSupportedMorphTargets && m < order.length ) {
+			while ( m < material.numSupportedMorphTargets && m < order.size() ) {
 
-				glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ order[ m ] ] );
+				glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphTargetsBuffers[ order[ m ] ] );
 				glvertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 				if ( material.morphNormals ) {
 
-					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ order[ m ] ] );
+					glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphNormalsBuffers[ order[ m ] ] );
 					glvertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 				}
 
-				object.__webglMorphTargetInfluences[ m ] = influences[ order[ m ] ];
+				object.__glMorphTargetInfluences[ m ] = influences[ order[ m ] ];
 
 				m ++;
 			}
@@ -3822,9 +3843,9 @@ public:
 
 			// find the most influencing
 
-			var influence, activeInfluenceIndices = [];
-			var influences = object.morphTargetInfluences;
-			var i, il = influences.length;
+			auto influence, activeInfluenceIndices = [];
+			auto influences = object.morphTargetInfluences;
+			auto i, il = influences.size();
 
 			for ( i = 0; i < il; i ++ ) {
 
@@ -3832,28 +3853,28 @@ public:
 
 				if ( influence > 0 ) {
 
-					activeInfluenceIndices.push( [ i, influence ] );
+					activeInfluenceIndices.push_back( [ i, influence ] );
 
 				}
 
 			}
 
-			if ( activeInfluenceIndices.length > material.numSupportedMorphTargets ) {
+			if ( activeInfluenceIndices.size() > material.numSupportedMorphTargets ) {
 
 				activeInfluenceIndices.sort( numericalSort );
-				activeInfluenceIndices.length = material.numSupportedMorphTargets;
+				activeInfluenceIndices.size() = material.numSupportedMorphTargets;
 
-			} else if ( activeInfluenceIndices.length > material.numSupportedMorphNormals ) {
+			} else if ( activeInfluenceIndices.size() > material.numSupportedMorphNormals ) {
 
 				activeInfluenceIndices.sort( numericalSort );
 
-			} else if ( activeInfluenceIndices.length == 0 ) {
+			} else if ( activeInfluenceIndices.size() == 0 ) {
 
-				activeInfluenceIndices.push( [ 0, 0 ] );
+				activeInfluenceIndices.push_back( [ 0, 0 ] );
 
 			};
 
-			var influenceIndex, m = 0;
+			auto influenceIndex, m = 0;
 
 			while ( m < material.numSupportedMorphTargets ) {
 
@@ -3861,18 +3882,18 @@ public:
 
 					influenceIndex = activeInfluenceIndices[ m ][ 0 ];
 
-					glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphTargetsBuffers[ influenceIndex ] );
+					glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphTargetsBuffers[ influenceIndex ] );
 
 					glvertexAttribPointer( attributes[ "morphTarget" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 					if ( material.morphNormals ) {
 
-						glbindBuffer( GL_ARRAY_BUFFER, geometryGroup.__webglMorphNormalsBuffers[ influenceIndex ] );
+						glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphNormalsBuffers[ influenceIndex ] );
 						glvertexAttribPointer( attributes[ "morphNormal" + m ], 3, _gl.FLOAT, false, 0, 0 );
 
 					}
 
-					object.__webglMorphTargetInfluences[ m ] = influences[ influenceIndex ];
+					object.__glMorphTargetInfluences[ m ] = influences[ influenceIndex ];
 
 				} else {
 
@@ -3884,7 +3905,7 @@ public:
 
 					}
 
-					object.__webglMorphTargetInfluences[ m ] = 0;
+					object.__glMorphTargetInfluences[ m ] = 0;
 
 				}
 
@@ -3898,7 +3919,7 @@ public:
 
 		if ( material.program.uniforms.morphTargetInfluences !== null ) {
 
-			gluniform1fv( material.program.uniforms.morphTargetInfluences, object.__webglMorphTargetInfluences );
+			gluniform1fv( material.program.uniforms.morphTargetInfluences, object.__glMorphTargetInfluences );
 
 		}
 
@@ -3923,14 +3944,14 @@ public:
 
 	render = function ( scene, camera, renderTarget, forceClear ) {
 
-		if ( camera instanceof THREE.Camera == false ) {
+		if ( camera instanceof THREE::Camera == false ) {
 
-			console.error( 'THREE.WebGLRenderer.render: camera is not an instance of THREE.Camera.' );
+			console.error( 'THREE::WebGLRenderer.render: camera is not an instance of THREE::Camera.' );
 			return;
 
 		}
 
-		var i, il,
+		auto i, il,
 
 		webglObject, object,
 		renderList,
@@ -3951,8 +3972,8 @@ public:
 
 		if ( camera.parent == undefined ) camera.updateMatrixWorld();
 
-		if ( ! camera._viewMatrixArray ) camera._viewMatrixArray = new Float32Array( 16 );
-		if ( ! camera._projectionMatrixArray ) camera._projectionMatrixArray = new Float32Array( 16 );
+		if ( ! camera._viewMatrixArray ) camera._viewMatrixArray.resize( 16 );
+		if ( ! camera._projectionMatrixArray ) camera._projectionMatrixArray.resize( 16 );
 
 		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
@@ -3987,9 +4008,9 @@ public:
 
 		// set matrices for regular objects (frustum culled)
 
-		renderList = scene.__webglObjects;
+		renderList = scene.__glObjects;
 
-		for ( i = 0, il = renderList.length; i < il; i ++ ) {
+		for ( i = 0, il = renderList.size(); i < il; i ++ ) {
 
 			webglObject = renderList[ i ];
 			object = webglObject.object;
@@ -3998,7 +4019,7 @@ public:
 
 			if ( object.visible ) {
 
-				if ( ! ( object instanceof THREE.Mesh || object instanceof THREE.ParticleSystem ) || ! ( object.frustumCulled ) || _frustum.contains( object ) ) {
+				if ( ! ( object instanceof THREE::Mesh || object instanceof THREE::ParticleSystem ) || ! ( object.frustumCulled ) || _frustum.contains( object ) ) {
 
 					//object.matrixWorld.flattenToArray( object._modelMatrixArray );
 
@@ -4039,9 +4060,9 @@ public:
 
 		// set matrices for immediate objects
 
-		renderList = scene.__webglObjectsImmediate;
+		renderList = scene.__glObjectsImmediate;
 
-		for ( i = 0, il = renderList.length; i < il; i ++ ) {
+		for ( i = 0, il = renderList.size(); i < il; i ++ ) {
 
 			webglObject = renderList[ i ];
 			object = webglObject.object;
@@ -4066,29 +4087,29 @@ public:
 
 		if ( scene.overrideMaterial ) {
 
-			var material = scene.overrideMaterial;
+			auto material = scene.overrideMaterial;
 
 			setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst );
 			setDepthTest( material.depthTest );
 			setDepthWrite( material.depthWrite );
 			setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
 
-			renderObjects( scene.__webglObjects, false, "", camera, lights, fog, true, material );
-			renderObjectsImmediate( scene.__webglObjectsImmediate, "", camera, lights, fog, false, material );
+			renderObjects( scene.__glObjects, false, "", camera, lights, fog, true, material );
+			renderObjectsImmediate( scene.__glObjectsImmediate, "", camera, lights, fog, false, material );
 
 		} else {
 
 			// opaque pass (front-to-back order)
 
-			setBlending( THREE.NormalBlending );
+			setBlending( THREE::NormalBlending );
 
-			renderObjects( scene.__webglObjects, true, "opaque", camera, lights, fog, false );
-			renderObjectsImmediate( scene.__webglObjectsImmediate, "opaque", camera, lights, fog, false );
+			renderObjects( scene.__glObjects, true, "opaque", camera, lights, fog, false );
+			renderObjectsImmediate( scene.__glObjectsImmediate, "opaque", camera, lights, fog, false );
 
 			// transparent pass (back-to-front order)
 
-			renderObjects( scene.__webglObjects, false, "transparent", camera, lights, fog, true );
-			renderObjectsImmediate( scene.__webglObjectsImmediate, "transparent", camera, lights, fog, true );
+			renderObjects( scene.__glObjects, false, "transparent", camera, lights, fog, true );
+			renderObjectsImmediate( scene.__glObjectsImmediate, "transparent", camera, lights, fog, true );
 
 		}
 
@@ -4099,7 +4120,7 @@ public:
 
 		// Generate mipmap if we're using any kind of mipmap filtering
 
-		if ( renderTarget && renderTarget.generateMipmaps && renderTarget.minFilter !== THREE.NearestFilter && renderTarget.minFilter !== THREE.LinearFilter ) {
+		if ( renderTarget && renderTarget.generateMipmaps && renderTarget.minFilter !== THREE::NearestFilter && renderTarget.minFilter !== THREE::LinearFilter ) {
 
 			updateRenderTargetMipmap( renderTarget );
 
@@ -4116,9 +4137,9 @@ public:
 
 	function renderPlugins( plugins, scene, camera ) {
 
-		if ( ! plugins.length ) return;
+		if ( ! plugins.size() ) return;
 
-		for ( var i = 0, il = plugins.length; i < il; i ++ ) {
+		for ( auto i = 0, il = plugins.size(); i < il; i ++ ) {
 
 			// reset state for plugin (to start from clean slate)
 
@@ -4158,22 +4179,22 @@ public:
 
 	function renderObjects ( renderList, reverse, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
 
-		var webglObject, object, buffer, material, start, end, delta;
+		auto webglObject, object, buffer, material, start, end, delta;
 
 		if ( reverse ) {
 
-			start = renderList.length - 1;
+			start = renderList.size() - 1;
 			end = -1;
 			delta = -1;
 
 		} else {
 
 			start = 0;
-			end = renderList.length;
+			end = renderList.size();
 			delta = 1;
 		}
 
-		for ( var i = start; i !== end; i += delta ) {
+		for ( auto i = start; i !== end; i += delta ) {
 
 			webglObject = renderList[ i ];
 
@@ -4202,7 +4223,7 @@ public:
 
 				_setMaterialFaces( material );
 
-				if ( buffer instanceof THREE.BufferGeometry ) {
+				if ( buffer instanceof THREE::BufferGeometry ) {
 
 					_renderBufferDirect( camera, lights, fog, material, buffer, object );
 
@@ -4220,9 +4241,9 @@ public:
 
 	function renderObjectsImmediate ( renderList, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
 
-		var webglObject, object, material, program;
+		auto webglObject, object, material, program;
 
-		for ( var i = 0, il = renderList.length; i < il; i ++ ) {
+		for ( auto i = 0, il = renderList.size(); i < il; i ++ ) {
 
 			webglObject = renderList[ i ];
 			object = webglObject.object;
@@ -4257,7 +4278,7 @@ public:
 
 	renderImmediateObject = function ( camera, lights, fog, material, object ) {
 
-		var program = setProgram( camera, lights, fog, material, object );
+		auto program = setProgram( camera, lights, fog, material, object );
 
 		_currentGeometryGroupHash = -1;
 
@@ -4277,7 +4298,7 @@ public:
 
 	function unrollImmediateBufferMaterial ( globject ) {
 
-		var object = globject.object,
+		auto object = globject.object,
 			material = object.material;
 
 		if ( material.transparent ) {
@@ -4296,13 +4317,13 @@ public:
 
 	function unrollBufferMaterial ( globject ) {
 
-		var object = globject.object,
+		auto object = globject.object,
 			buffer = globject.buffer,
 			material, materialIndex, meshMaterial;
 
 		meshMaterial = object.material;
 
-		if ( meshMaterial instanceof THREE.MeshFaceMaterial ) {
+		if ( meshMaterial instanceof THREE::MeshFaceMaterial ) {
 
 			materialIndex = buffer.materialIndex;
 
@@ -4352,16 +4373,16 @@ public:
 
 	function sortFacesByMaterial ( geometry ) {
 
-		var f, fl, face, materialIndex, vertices,
+		auto f, fl, face, materialIndex, vertices,
 			materialHash, groupHash,
 			hash_map = {};
 
-		var numMorphTargets = geometry.morphTargets.length;
-		var numMorphNormals = geometry.morphNormals.length;
+		auto numMorphTargets = geometry.morphTargets.size();
+		auto numMorphNormals = geometry.morphNormals.size();
 
 		geometry.geometryGroups = {};
 
-		for ( f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
+		for ( f = 0, fl = geometry.faces.size(); f < fl; f ++ ) {
 
 			face = geometry.faces[ f ];
 			materialIndex = face.materialIndex;
@@ -4382,7 +4403,7 @@ public:
 
 			}
 
-			vertices = face instanceof THREE.Face3 ? 3 : 4;
+			vertices = face instanceof THREE::Face3 ? 3 : 4;
 
 			if ( geometry.geometryGroups[ groupHash ].vertices + vertices > 65535 ) {
 
@@ -4397,13 +4418,13 @@ public:
 
 			}
 
-			if ( face instanceof THREE.Face3 ) {
+			if ( face instanceof THREE::Face3 ) {
 
-				geometry.geometryGroups[ groupHash ].faces3.push( f );
+				geometry.geometryGroups[ groupHash ].faces3.push_back( f );
 
 			} else {
 
-				geometry.geometryGroups[ groupHash ].faces4.push( f );
+				geometry.geometryGroups[ groupHash ].faces4.push_back( f );
 
 			}
 
@@ -4413,11 +4434,11 @@ public:
 
 		geometry.geometryGroupsList = [];
 
-		for ( var g in geometry.geometryGroups ) {
+		for ( auto g in geometry.geometryGroups ) {
 
 			geometry.geometryGroups[ g ].id = _geometryGroupCounter ++;
 
-			geometry.geometryGroupsList.push( geometry.geometryGroups[ g ] );
+			geometry.geometryGroupsList.push_back( geometry.geometryGroups[ g ] );
 
 		}
 
@@ -4427,23 +4448,23 @@ public:
 
 	initWebGLObjects = function ( scene ) {
 
-		if ( !scene.__webglObjects ) {
+		if ( !scene.__glObjects ) {
 
-			scene.__webglObjects = [];
-			scene.__webglObjectsImmediate = [];
-			scene.__webglSprites = [];
-			scene.__webglFlares = [];
+			scene.__glObjects = [];
+			scene.__glObjectsImmediate = [];
+			scene.__glSprites = [];
+			scene.__glFlares = [];
 
 		}
 
-		while ( scene.__objectsAdded.length ) {
+		while ( scene.__objectsAdded.size() ) {
 
 			addObject( scene.__objectsAdded[ 0 ], scene );
 			scene.__objectsAdded.splice( 0, 1 );
 
 		}
 
-		while ( scene.__objectsRemoved.length ) {
+		while ( scene.__objectsRemoved.size() ) {
 
 			removeObject( scene.__objectsRemoved[ 0 ], scene );
 			scene.__objectsRemoved.splice( 0, 1 );
@@ -4452,9 +4473,9 @@ public:
 
 		// update must be called after objects adding / removal
 
-		for ( var o = 0, ol = scene.__webglObjects.length; o < ol; o ++ ) {
+		for ( auto o = 0, ol = scene.__glObjects.size(); o < ol; o ++ ) {
 
-			updateObject( scene.__webglObjects[ o ].object );
+			updateObject( scene.__glObjects[ o ].object );
 
 		}
 
@@ -4464,20 +4485,20 @@ public:
 
 	function addObject ( object, scene ) {
 
-		var g, geometry, geometryGroup;
+		auto g, geometry, geometryGroup;
 
-		if ( ! object.__webglInit ) {
+		if ( ! object.__glInit ) {
 
-			object.__webglInit = true;
+			object.__glInit = true;
 
-			object._modelViewMatrix = new THREE.Matrix4();
-			object._normalMatrix = new THREE.Matrix3();
+			object._modelViewMatrix = new THREE::Matrix4();
+			object._normalMatrix = new THREE::Matrix3();
 
-			if ( object instanceof THREE.Mesh ) {
+			if ( object instanceof THREE::Mesh ) {
 
 				geometry = object.geometry;
 
-				if ( geometry instanceof THREE.Geometry ) {
+				if ( geometry instanceof THREE::Geometry ) {
 
 					if ( geometry.geometryGroups == undefined ) {
 
@@ -4493,7 +4514,7 @@ public:
 
 						// initialise VBO on the first access
 
-						if ( ! geometryGroup.__webglVertexBuffer ) {
+						if ( ! geometryGroup.buffer.__glVertexBuffer ) {
 
 							createMeshBuffers( geometryGroup );
 							initMeshBuffers( geometryGroup, object );
@@ -4510,17 +4531,17 @@ public:
 
 					}
 
-				} else if ( geometry instanceof THREE.BufferGeometry ) {
+				} else if ( geometry instanceof THREE::BufferGeometry ) {
 
 					initDirectBuffers( geometry );
 
 				}
 
-			} else if ( object instanceof THREE.Ribbon ) {
+			} else if ( object instanceof THREE::Ribbon ) {
 
 				geometry = object.geometry;
 
-				if( ! geometry.__webglVertexBuffer ) {
+				if( ! geometry.buffer.__glVertexBuffer ) {
 
 					createRibbonBuffers( geometry );
 					initRibbonBuffers( geometry );
@@ -4530,11 +4551,11 @@ public:
 
 				}
 
-			} else if ( object instanceof THREE.Line ) {
+			} else if ( object instanceof THREE::Line ) {
 
 				geometry = object.geometry;
 
-				if( ! geometry.__webglVertexBuffer ) {
+				if( ! geometry.buffer.__glVertexBuffer ) {
 
 					createLineBuffers( geometry );
 					initLineBuffers( geometry, object );
@@ -4544,11 +4565,11 @@ public:
 
 				}
 
-			} else if ( object instanceof THREE.ParticleSystem ) {
+			} else if ( object instanceof THREE::ParticleSystem ) {
 
 				geometry = object.geometry;
 
-				if ( ! geometry.__webglVertexBuffer ) {
+				if ( ! geometry.buffer.__glVertexBuffer ) {
 
 					createParticleBuffers( geometry );
 					initParticleBuffers( geometry, object );
@@ -4562,15 +4583,15 @@ public:
 
 		}
 
-		if ( ! object.__webglActive ) {
+		if ( ! object.__glActive ) {
 
-			if ( object instanceof THREE.Mesh ) {
+			if ( object instanceof THREE::Mesh ) {
 
 				geometry = object.geometry;
 
-				if ( geometry instanceof THREE.BufferGeometry ) {
+				if ( geometry instanceof THREE::BufferGeometry ) {
 
-					addBuffer( scene.__webglObjects, geometry, object );
+					addBuffer( scene.__glObjects, geometry, object );
 
 				} else {
 
@@ -4578,34 +4599,34 @@ public:
 
 						geometryGroup = geometry.geometryGroups[ g ];
 
-						addBuffer( scene.__webglObjects, geometryGroup, object );
+						addBuffer( scene.__glObjects, geometryGroup, object );
 
 					}
 
 				}
 
-			} else if ( object instanceof THREE.Ribbon ||
-						object instanceof THREE.Line ||
-						object instanceof THREE.ParticleSystem ) {
+			} else if ( object instanceof THREE::Ribbon ||
+						object instanceof THREE::Line ||
+						object instanceof THREE::ParticleSystem ) {
 
 				geometry = object.geometry;
-				addBuffer( scene.__webglObjects, geometry, object );
+				addBuffer( scene.__glObjects, geometry, object );
 
-			} else if ( object instanceof THREE.ImmediateRenderObject || object.immediateRenderCallback ) {
+			} else if ( object instanceof THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
 
-				addBufferImmediate( scene.__webglObjectsImmediate, object );
+				addBufferImmediate( scene.__glObjectsImmediate, object );
 
-			} else if ( object instanceof THREE.Sprite ) {
+			} else if ( object instanceof THREE::Sprite ) {
 
-				scene.__webglSprites.push( object );
+				scene.__glSprites.push_back( object );
 
-			} else if ( object instanceof THREE.LensFlare ) {
+			} else if ( object instanceof THREE::LensFlare ) {
 
-				scene.__webglFlares.push( object );
+				scene.__glFlares.push_back( object );
 
 			}
 
-			object.__webglActive = true;
+			object.__glActive = true;
 
 		}
 
@@ -4613,7 +4634,7 @@ public:
 
 	function addBuffer ( objlist, buffer, object ) {
 
-		objlist.push(
+		objlist.push_back(
 			{
 				buffer: buffer,
 				object: object,
@@ -4626,7 +4647,7 @@ public:
 
 	function addBufferImmediate ( objlist, object ) {
 
-		objlist.push(
+		objlist.push_back(
 			{
 				object: object,
 				opaque: null,
@@ -4640,12 +4661,12 @@ public:
 
 	function updateObject ( object ) {
 
-		var geometry = object.geometry,
+		auto geometry = object.geometry,
 			geometryGroup, customAttributesDirty, material;
 
-		if ( object instanceof THREE.Mesh ) {
+		if ( object instanceof THREE::Mesh ) {
 
-			if ( geometry instanceof THREE.BufferGeometry ) {
+			if ( geometry instanceof THREE::BufferGeometry ) {
 
 				if ( geometry.verticesNeedUpdate || geometry.elementsNeedUpdate ||
 					 geometry.uvsNeedUpdate || geometry.normalsNeedUpdate ||
@@ -4666,7 +4687,7 @@ public:
 
 				// check all geometry groups
 
-				for( var i = 0, il = geometry.geometryGroupsList.length; i < il; i ++ ) {
+				for( auto i = 0, il = geometry.geometryGroupsList.size(); i < il; i ++ ) {
 
 					geometryGroup = geometry.geometryGroupsList[ i ];
 
@@ -4696,7 +4717,7 @@ public:
 
 			}
 
-		} else if ( object instanceof THREE.Ribbon ) {
+		} else if ( object instanceof THREE::Ribbon ) {
 
 			if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate ) {
 
@@ -4707,7 +4728,7 @@ public:
 			geometry.verticesNeedUpdate = false;
 			geometry.colorsNeedUpdate = false;
 
-		} else if ( object instanceof THREE.Line ) {
+		} else if ( object instanceof THREE::Line ) {
 
 			material = getBufferMaterial( object, geometryGroup );
 
@@ -4724,7 +4745,7 @@ public:
 
 			material.attributes && clearCustomAttributes( material );
 
-		} else if ( object instanceof THREE.ParticleSystem ) {
+		} else if ( object instanceof THREE::ParticleSystem ) {
 
 			material = getBufferMaterial( object, geometryGroup );
 
@@ -4749,7 +4770,7 @@ public:
 
 	function areCustomAttributesDirty ( material ) {
 
-		for ( var a in material.attributes ) {
+		for ( auto a in material.attributes ) {
 
 			if ( material.attributes[ a ].needsUpdate ) return true;
 
@@ -4761,7 +4782,7 @@ public:
 
 	function clearCustomAttributes ( material ) {
 
-		for ( var a in material.attributes ) {
+		for ( auto a in material.attributes ) {
 
 			material.attributes[ a ].needsUpdate = false;
 
@@ -4773,34 +4794,34 @@ public:
 
 	function removeObject ( object, scene ) {
 
-		if ( object instanceof THREE.Mesh  ||
-			 object instanceof THREE.ParticleSystem ||
-			 object instanceof THREE.Ribbon ||
-			 object instanceof THREE.Line ) {
+		if ( object instanceof THREE::Mesh  ||
+			 object instanceof THREE::ParticleSystem ||
+			 object instanceof THREE::Ribbon ||
+			 object instanceof THREE::Line ) {
 
-			removeInstances( scene.__webglObjects, object );
+			removeInstances( scene.__glObjects, object );
 
-		} else if ( object instanceof THREE.Sprite ) {
+		} else if ( object instanceof THREE::Sprite ) {
 
-			removeInstancesDirect( scene.__webglSprites, object );
+			removeInstancesDirect( scene.__glSprites, object );
 
-		} else if ( object instanceof THREE.LensFlare ) {
+		} else if ( object instanceof THREE::LensFlare ) {
 
-			removeInstancesDirect( scene.__webglFlares, object );
+			removeInstancesDirect( scene.__glFlares, object );
 
-		} else if ( object instanceof THREE.ImmediateRenderObject || object.immediateRenderCallback ) {
+		} else if ( object instanceof THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
 
-			removeInstances( scene.__webglObjectsImmediate, object );
+			removeInstances( scene.__glObjectsImmediate, object );
 
 		}
 
-		object.__webglActive = false;
+		object.__glActive = false;
 
 	};
 
 	function removeInstances ( objlist, object ) {
 
-		for ( var o = objlist.length - 1; o >= 0; o -- ) {
+		for ( auto o = objlist.size() - 1; o >= 0; o -- ) {
 
 			if ( objlist[ o ].object == object ) {
 
@@ -4814,7 +4835,7 @@ public:
 
 	function removeInstancesDirect ( objlist, object ) {
 
-		for ( var o = objlist.length - 1; o >= 0; o -- ) {
+		for ( auto o = objlist.size() - 1; o >= 0; o -- ) {
 
 			if ( objlist[ o ] == object ) {
 
@@ -4830,33 +4851,33 @@ public:
 
 	initMaterial = function ( material, lights, fog, object ) {
 
-		var u, a, identifiers, i, parameters, maxLightCount, maxBones, maxShadows, shaderID;
+		auto u, a, identifiers, i, parameters, maxLightCount, maxBones, maxShadows, shaderID;
 
-		if ( material instanceof THREE.MeshDepthMaterial ) {
+		if ( material instanceof THREE::MeshDepthMaterial ) {
 
 			shaderID = 'depth';
 
-		} else if ( material instanceof THREE.MeshNormalMaterial ) {
+		} else if ( material instanceof THREE::MeshNormalMaterial ) {
 
 			shaderID = 'normal';
 
-		} else if ( material instanceof THREE.MeshBasicMaterial ) {
+		} else if ( material instanceof THREE::MeshBasicMaterial ) {
 
 			shaderID = 'basic';
 
-		} else if ( material instanceof THREE.MeshLambertMaterial ) {
+		} else if ( material instanceof THREE::MeshLambertMaterial ) {
 
 			shaderID = 'lambert';
 
-		} else if ( material instanceof THREE.MeshPhongMaterial ) {
+		} else if ( material instanceof THREE::MeshPhongMaterial ) {
 
 			shaderID = 'phong';
 
-		} else if ( material instanceof THREE.LineBasicMaterial ) {
+		} else if ( material instanceof THREE::LineBasicMaterial ) {
 
 			shaderID = 'basic';
 
-		} else if ( material instanceof THREE.ParticleBasicMaterial ) {
+		} else if ( material instanceof THREE::ParticleBasicMaterial ) {
 
 			shaderID = 'particle_basic';
 
@@ -4864,7 +4885,7 @@ public:
 
 		if ( shaderID ) {
 
-			setMaterialShaders( material, THREE.ShaderLib[ shaderID ] );
+			setMaterialShaders( material, THREE::ShaderLib[ shaderID ] );
 
 		}
 
@@ -4917,13 +4938,13 @@ public:
 			metal: material.metal,
 			perPixel: material.perPixel,
 			wrapAround: material.wrapAround,
-			doubleSided: material.side == THREE.DoubleSide
+			doubleSided: material.side == THREE::DoubleSide
 
 		};
 
 		material.program = buildProgram( shaderID, material.fragmentShader, material.vertexShader, material.uniforms, material.attributes, parameters );
 
-		var attributes = material.program.attributes;
+		auto attributes = material.program.attributes;
 
 		if ( attributes.position >= 0 ) _gl.enableVertexAttribArray( attributes.position );
 		if ( attributes.color >= 0 ) _gl.enableVertexAttribArray( attributes.color );
@@ -4955,7 +4976,7 @@ public:
 
 			material.numSupportedMorphTargets = 0;
 
-			var id, base = "morphTarget";
+			auto id, base = "morphTarget";
 
 			for ( i = 0; i < maxMorphTargets; i ++ ) {
 
@@ -4976,7 +4997,7 @@ public:
 
 			material.numSupportedMorphNormals = 0;
 
-			var id, base = "morphNormal";
+			auto id, base = "morphNormal";
 
 			for ( i = 0; i < maxMorphNormals; i ++ ) {
 
@@ -4997,7 +5018,7 @@ public:
 
 		for ( u in material.uniforms ) {
 
-			material.uniformsList.push( [ material.uniforms[ u ], u ] );
+			material.uniformsList.push_back( [ material.uniforms[ u ], u ] );
 
 		}
 
@@ -5005,7 +5026,7 @@ public:
 
 	function setMaterialShaders( material, shaders ) {
 
-		material.uniforms = THREE.UniformsUtils.clone( shaders.uniforms );
+		material.uniforms = THREE::UniformsUtils.clone( shaders.uniforms );
 		material.vertexShader = shaders.vertexShader;
 		material.fragmentShader = shaders.fragmentShader;
 
@@ -5024,17 +5045,17 @@ public:
 
 		if ( material.morphTargets ) {
 
-			if ( ! object.__webglMorphTargetInfluences ) {
+			if ( ! object.__glMorphTargetInfluences ) {
 
-				object.__webglMorphTargetInfluences = new Float32Array( _maxMorphTargets );
+				object.__glMorphTargetInfluences.resize( _maxMorphTargets );
 
 			}
 
 		}
 
-		var refreshMaterial = false;
+		auto refreshMaterial = false;
 
-		var program = material.program,
+		auto program = material.program,
 			p_uniforms = program.uniforms,
 			m_uniforms = material.uniforms;
 
@@ -5072,8 +5093,8 @@ public:
 
 			}
 
-			if ( material instanceof THREE.MeshPhongMaterial ||
-				 material instanceof THREE.MeshLambertMaterial ||
+			if ( material instanceof THREE::MeshPhongMaterial ||
+				 material instanceof THREE::MeshLambertMaterial ||
 				 material.lights ) {
 
 				if ( _lightsNeedUpdate ) {
@@ -5087,9 +5108,9 @@ public:
 
 			}
 
-			if ( material instanceof THREE.MeshBasicMaterial ||
-				 material instanceof THREE.MeshLambertMaterial ||
-				 material instanceof THREE.MeshPhongMaterial ) {
+			if ( material instanceof THREE::MeshBasicMaterial ||
+				 material instanceof THREE::MeshLambertMaterial ||
+				 material instanceof THREE::MeshPhongMaterial ) {
 
 				refreshUniformsCommon( m_uniforms, material );
 
@@ -5097,29 +5118,29 @@ public:
 
 			// refresh single material specific uniforms
 
-			if ( material instanceof THREE.LineBasicMaterial ) {
+			if ( material instanceof THREE::LineBasicMaterial ) {
 
 				refreshUniformsLine( m_uniforms, material );
 
-			} else if ( material instanceof THREE.ParticleBasicMaterial ) {
+			} else if ( material instanceof THREE::ParticleBasicMaterial ) {
 
 				refreshUniformsParticle( m_uniforms, material );
 
-			} else if ( material instanceof THREE.MeshPhongMaterial ) {
+			} else if ( material instanceof THREE::MeshPhongMaterial ) {
 
 				refreshUniformsPhong( m_uniforms, material );
 
-			} else if ( material instanceof THREE.MeshLambertMaterial ) {
+			} else if ( material instanceof THREE::MeshLambertMaterial ) {
 
 				refreshUniformsLambert( m_uniforms, material );
 
-			} else if ( material instanceof THREE.MeshDepthMaterial ) {
+			} else if ( material instanceof THREE::MeshDepthMaterial ) {
 
 				m_uniforms.mNear.value = camera.near;
 				m_uniforms.mFar.value = camera.far;
 				m_uniforms.opacity.value = material.opacity;
 
-			} else if ( material instanceof THREE.MeshNormalMaterial ) {
+			} else if ( material instanceof THREE::MeshNormalMaterial ) {
 
 				m_uniforms.opacity.value = material.opacity;
 
@@ -5138,22 +5159,22 @@ public:
 			// load material specific uniforms
 			// (shader material also gets them for the sake of genericity)
 
-			if ( material instanceof THREE.ShaderMaterial ||
-				 material instanceof THREE.MeshPhongMaterial ||
+			if ( material instanceof THREE::ShaderMaterial ||
+				 material instanceof THREE::MeshPhongMaterial ||
 				 material.envMap ) {
 
 				if ( p_uniforms.cameraPosition !== null ) {
 
-					var position = camera.matrixWorld.getPosition();
+					auto position = camera.matrixWorld.getPosition();
 					gluniform3f( p_uniforms.cameraPosition, position.x, position.y, position.z );
 
 				}
 
 			}
 
-			if ( material instanceof THREE.MeshPhongMaterial ||
-				 material instanceof THREE.MeshLambertMaterial ||
-				 material instanceof THREE.ShaderMaterial ||
+			if ( material instanceof THREE::MeshPhongMaterial ||
+				 material instanceof THREE::MeshLambertMaterial ||
+				 material instanceof THREE::ShaderMaterial ||
 				 material.skinning ) {
 
 				if ( p_uniforms.viewMatrix !== null ) {
@@ -5175,7 +5196,7 @@ public:
 					// shadowMap texture array starts from 6
 					// texture unit 12 should leave space for 6 shadowmaps
 
-					var textureUnit = 12;
+					auto textureUnit = 12;
 
 					gluniform1i( p_uniforms.boneTexture, textureUnit );
 					_setTexture( object.boneTexture, textureUnit );
@@ -5238,7 +5259,7 @@ public:
 		//	2. specular map
 		//	3. bump map
 
-		var uvScaleMap;
+		auto uvScaleMap;
 
 		if ( material.map ) {
 
@@ -5256,15 +5277,15 @@ public:
 
 		if ( uvScaleMap !== undefined ) {
 
-			var offset = uvScaleMap.offset;
-			var repeat = uvScaleMap.repeat;
+			auto offset = uvScaleMap.offset;
+			auto repeat = uvScaleMap.repeat;
 
 			uniforms.offsetRepeat.value.set( offset.x, offset.y, repeat.x, repeat.y );
 
 		}
 
 		uniforms.envMap.texture = material.envMap;
-		uniforms.flipEnvMap.value = ( material.envMap instanceof THREE.WebGLRenderTargetCube ) ? 1 : -1;
+		uniforms.flipEnvMap.value = ( material.envMap instanceof THREE::WebGLRenderTargetCube ) ? 1 : -1;
 
 		if ( _gammaInput ) {
 
@@ -5279,7 +5300,7 @@ public:
 
 		uniforms.refractionRatio.value = material.refractionRatio;
 		uniforms.combine.value = material.combine;
-		uniforms.useRefract.value = material.envMap && material.envMap.mapping instanceof THREE.CubeRefractionMapping;
+		uniforms.useRefract.value = material.envMap && material.envMap.mapping instanceof THREE::CubeRefractionMapping;
 
 	};
 
@@ -5305,12 +5326,12 @@ public:
 
 		uniforms.fogColor.value = fog.color;
 
-		if ( fog instanceof THREE.Fog ) {
+		if ( fog instanceof THREE::Fog ) {
 
 			uniforms.fogNear.value = fog.near;
 			uniforms.fogFar.value = fog.far;
 
-		} else if ( fog instanceof THREE.FogExp2 ) {
+		} else if ( fog instanceof THREE::FogExp2 ) {
 
 			uniforms.fogDensity.value = fog.density;
 
@@ -5390,15 +5411,15 @@ public:
 
 		if ( uniforms.shadowMatrix ) {
 
-			var j = 0;
+			auto j = 0;
 
-			for ( var i = 0, il = lights.length; i < il; i ++ ) {
+			for ( auto i = 0, il = lights.size(); i < il; i ++ ) {
 
-				var light = lights[ i ];
+				auto light = lights[ i ];
 
 				if ( ! light.castShadow ) continue;
 
-				if ( light instanceof THREE.SpotLight || ( light instanceof THREE.DirectionalLight && ! light.shadowCascade ) ) {
+				if ( light instanceof THREE::SpotLight || ( light instanceof THREE::DirectionalLight && ! light.shadowCascade ) ) {
 
 					uniforms.shadowMap.texture[ j ] = light.shadowMap;
 					uniforms.shadowMapSize.value[ j ] = light.shadowMapSize;
@@ -5434,9 +5455,9 @@ public:
 
 	function loadUniformsGeneric ( program, uniforms ) {
 
-		var uniform, value, type, location, texture, i, il, j, jl, offset;
+		auto uniform, value, type, location, texture, i, il, j, jl, offset;
 
-		for ( j = 0, jl = uniforms.length; j < jl; j ++ ) {
+		for ( j = 0, jl = uniforms.size(); j < jl; j ++ ) {
 
 			location = program.uniforms[ uniforms[ j ][ 1 ] ];
 			if ( !location ) continue;
@@ -5454,19 +5475,19 @@ public:
 
 				gluniform1f( location, value );
 
-			} else if ( type == "v2" ) { // single THREE.Vector2
+			} else if ( type == "v2" ) { // single THREE::Vector2
 
 				gluniform2f( location, value.x, value.y );
 
-			} else if ( type == "v3" ) { // single THREE.Vector3
+			} else if ( type == "v3" ) { // single THREE::Vector3
 
 				gluniform3f( location, value.x, value.y, value.z );
 
-			} else if ( type == "v4" ) { // single THREE.Vector4
+			} else if ( type == "v4" ) { // single THREE::Vector4
 
 				gluniform4f( location, value.x, value.y, value.z, value.w );
 
-			} else if ( type == "c" ) { // single THREE.Color
+			} else if ( type == "c" ) { // single THREE::Color
 
 				gluniform3f( location, value.r, value.g, value.b );
 
@@ -5486,15 +5507,15 @@ public:
 
 				gluniform3fv( location, value );
 
-			} else if ( type == "v2v" ) { // array of THREE.Vector2
+			} else if ( type == "v2v" ) { // array of THREE::Vector2
 
 				if ( uniform._array == undefined ) {
 
-					uniform._array = new Float32Array( 2 * value.length );
+					uniform._array.resize( 2 * value.size() );
 
 				}
 
-				for ( i = 0, il = value.length; i < il; i ++ ) {
+				for ( i = 0, il = value.size(); i < il; i ++ ) {
 
 					offset = i * 2;
 
@@ -5505,15 +5526,15 @@ public:
 
 				gluniform2fv( location, uniform._array );
 
-			} else if ( type == "v3v" ) { // array of THREE.Vector3
+			} else if ( type == "v3v" ) { // array of THREE::Vector3
 
 				if ( uniform._array == undefined ) {
 
-					uniform._array = new Float32Array( 3 * value.length );
+					uniform._array.resize( 3 * value.size() );
 
 				}
 
-				for ( i = 0, il = value.length; i < il; i ++ ) {
+				for ( i = 0, il = value.size(); i < il; i ++ ) {
 
 					offset = i * 3;
 
@@ -5525,15 +5546,15 @@ public:
 
 				gluniform3fv( location, uniform._array );
 
-			} else if ( type == "v4v" ) { // array of THREE.Vector4
+			} else if ( type == "v4v" ) { // array of THREE::Vector4
 
 				if ( uniform._array == undefined ) {
 
-					uniform._array = new Float32Array( 4 * value.length );
+					uniform._array.resize( 4 * value.size() );
 
 				}
 
-				for ( i = 0, il = value.length; i < il; i ++ ) {
+				for ( i = 0, il = value.size(); i < il; i ++ ) {
 
 					offset = i * 4;
 
@@ -5546,26 +5567,26 @@ public:
 
 				gluniform4fv( location, uniform._array );
 
-			} else if ( type == "m4") { // single THREE.Matrix4
+			} else if ( type == "m4") { // single THREE::Matrix4
 
 				if ( uniform._array == undefined ) {
 
-					uniform._array = new Float32Array( 16 );
+					uniform._array.resize( 16 );
 
 				}
 
 				value.flattenToArray( uniform._array );
 				gluniformMatrix4fv( location, false, uniform._array );
 
-			} else if ( type == "m4v" ) { // array of THREE.Matrix4
+			} else if ( type == "m4v" ) { // array of THREE::Matrix4
 
 				if ( uniform._array == undefined ) {
 
-					uniform._array = new Float32Array( 16 * value.length );
+					uniform._array.resize( 16 * value.size() );
 
 				}
 
-				for ( i = 0, il = value.length; i < il; i ++ ) {
+				for ( i = 0, il = value.size(); i < il; i ++ ) {
 
 					value[ i ].flattenToArrayOffset( uniform._array, i * 16 );
 
@@ -5573,7 +5594,7 @@ public:
 
 				gluniformMatrix4fv( location, false, uniform._array );
 
-			} else if ( type == "t" ) { // single THREE.Texture (2d or cube)
+			} else if ( type == "t" ) { // single THREE::Texture (2d or cube)
 
 				gluniform1i( location, value );
 
@@ -5581,11 +5602,11 @@ public:
 
 				if ( !texture ) continue;
 
-				if ( texture.image instanceof Array && texture.image.length == 6 ) {
+				if ( texture.image instanceof Array && texture.image.size() == 6 ) {
 
 					setCubeTexture( texture, value );
 
-				} else if ( texture instanceof THREE.WebGLRenderTargetCube ) {
+				} else if ( texture instanceof THREE::WebGLRenderTargetCube ) {
 
 					setCubeTextureDynamic( texture, value );
 
@@ -5595,13 +5616,13 @@ public:
 
 				}
 
-			} else if ( type == "tv" ) { // array of THREE.Texture (2d)
+			} else if ( type == "tv" ) { // array of THREE::Texture (2d)
 
 				if ( uniform._array == undefined ) {
 
 					uniform._array = [];
 
-					for( i = 0, il = uniform.texture.length; i < il; i ++ ) {
+					for( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
 
 						uniform._array[ i ] = value + i;
 
@@ -5611,7 +5632,7 @@ public:
 
 				gluniform1iv( location, uniform._array );
 
-				for( i = 0, il = uniform.texture.length; i < il; i ++ ) {
+				for( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
 
 					texture = uniform.texture[ i ];
 
@@ -5638,7 +5659,7 @@ public:
 
 	function setupLights ( program, lights ) {
 
-		var l, ll, light, n,
+		auto l, ll, light, n,
 		r = 0, g = 0, b = 0,
 		color, position, intensity, distance,
 
@@ -5666,7 +5687,7 @@ public:
 		poffset = 0,
 		soffset = 0;
 
-		for ( l = 0, ll = lights.length; l < ll; l ++ ) {
+		for ( l = 0, ll = lights.size(); l < ll; l ++ ) {
 
 			light = lights[ l ];
 
@@ -5676,7 +5697,7 @@ public:
 			intensity = light.intensity;
 			distance = light.distance;
 
-			if ( light instanceof THREE.AmbientLight ) {
+			if ( light instanceof THREE::AmbientLight ) {
 
 				if ( _gammaInput ) {
 
@@ -5692,7 +5713,7 @@ public:
 
 				}
 
-			} else if ( light instanceof THREE.DirectionalLight ) {
+			} else if ( light instanceof THREE::DirectionalLight ) {
 
 				doffset = dlength * 3;
 
@@ -5720,7 +5741,7 @@ public:
 
 				dlength += 1;
 
-			} else if( light instanceof THREE.PointLight ) {
+			} else if( light instanceof THREE::PointLight ) {
 
 				poffset = plength * 3;
 
@@ -5748,7 +5769,7 @@ public:
 
 				plength += 1;
 
-			} else if( light instanceof THREE.SpotLight ) {
+			} else if( light instanceof THREE::SpotLight ) {
 
 				soffset = slength * 3;
 
@@ -5794,13 +5815,13 @@ public:
 		// null eventual remains from removed lights
 		// (this is to avoid if in shader)
 
-		for ( l = dlength * 3, ll = dcolors.length; l < ll; l ++ ) dcolors[ l ] = 0.0;
-		for ( l = plength * 3, ll = pcolors.length; l < ll; l ++ ) pcolors[ l ] = 0.0;
-		for ( l = slength * 3, ll = scolors.length; l < ll; l ++ ) scolors[ l ] = 0.0;
+		for ( l = dlength * 3, ll = dcolors.size(); l < ll; l ++ ) dcolors[ l ] = 0.0;
+		for ( l = plength * 3, ll = pcolors.size(); l < ll; l ++ ) pcolors[ l ] = 0.0;
+		for ( l = slength * 3, ll = scolors.size(); l < ll; l ++ ) scolors[ l ] = 0.0;
 
-		zlights.directional.length = dlength;
-		zlights.point.length = plength;
-		zlights.spot.length = slength;
+		zlights.directional.size() = dlength;
+		zlights.point.size() = plength;
+		zlights.spot.size() = slength;
 
 		zlights.ambient[ 0 ] = r;
 		zlights.ambient[ 1 ] = g;
@@ -5850,8 +5871,8 @@ public:
 
 	setMaterialFaces = function ( material ) {
 
-		var doubleSided = material.side == THREE.DoubleSide;
-		var flipSided = material.side == THREE.BackSide;
+		auto doubleSided = material.side == THREE::DoubleSide;
+		auto flipSided = material.side == THREE::BackSide;
 
 		if ( _oldDoubleSided !== doubleSided ) {
 
@@ -5963,31 +5984,31 @@ public:
 
 		if ( blending !== _oldBlending ) {
 
-			if ( blending == THREE.NoBlending ) {
+			if ( blending == THREE::NoBlending ) {
 
 				glDisable( GL_BLEND );
 
-			} else if ( blending == THREE.AdditiveBlending ) {
+			} else if ( blending == THREE::AdditiveBlending ) {
 
 				glEnable( GL_BLEND );
 				glBlendEquation( GL_FUNC_ADD );
 				glBlendFunc( GL_SRC_ALPHA, _gl.ONE );
 
-			} else if ( blending == THREE.SubtractiveBlending ) {
+			} else if ( blending == THREE::SubtractiveBlending ) {
 
 				// TODO: Find blendFuncSeparate() combination
 				glEnable( GL_BLEND );
 				glBlendEquation( GL_FUNC_ADD );
 				glBlendFunc( GL_ZERO, _gl.ONE_MINUS_SRC_COLOR );
 
-			} else if ( blending == THREE.MultiplyBlending ) {
+			} else if ( blending == THREE::MultiplyBlending ) {
 
 				// TODO: Find blendFuncSeparate() combination
 				glEnable( GL_BLEND );
 				glBlendEquation( GL_FUNC_ADD );
 				glBlendFunc( GL_ZERO, _gl.SRC_COLOR );
 
-			} else if ( blending == THREE.CustomBlending ) {
+			} else if ( blending == THREE::CustomBlending ) {
 
 				glEnable( GL_BLEND );
 
@@ -6003,7 +6024,7 @@ public:
 
 		}
 
-		if ( blending == THREE.CustomBlending ) {
+		if ( blending == THREE::CustomBlending ) {
 
 			if ( blendEquation !== _oldBlendEquation ) {
 
@@ -6036,26 +6057,26 @@ public:
 
 	function buildProgram ( shaderID, fragmentShader, vertexShader, uniforms, attributes, parameters ) {
 
-		var p, pl, program, code;
-		var chunks = [];
+		auto p, pl, program, code;
+		auto chunks = [];
 
 		// Generate code
 
 		if ( shaderID ) {
 
-			chunks.push( shaderID );
+			chunks.push_back( shaderID );
 
 		} else {
 
-			chunks.push( fragmentShader );
-			chunks.push( vertexShader );
+			chunks.push_back( fragmentShader );
+			chunks.push_back( vertexShader );
 
 		}
 
 		for ( p in parameters ) {
 
-			chunks.push( p );
-			chunks.push( parameters[ p ] );
+			chunks.push_back( p );
+			chunks.push_back( parameters[ p ] );
 
 		}
 
@@ -6063,9 +6084,9 @@ public:
 
 		// Check if code has been already compiled
 
-		for ( p = 0, pl = _programs.length; p < pl; p ++ ) {
+		for ( p = 0, pl = _programs.size(); p < pl; p ++ ) {
 
-			var programInfo = _programs[ p ];
+			auto programInfo = _programs[ p ];
 
 			if ( programInfo.code == code ) {
 
@@ -6085,7 +6106,7 @@ public:
 
 		program = glCreateProgram();
 
-		var prefix_vertex = [
+		auto prefix_vertex = [
 
 			"precision " + _precision + " float;",
 
@@ -6184,7 +6205,7 @@ public:
 
 		].join("\n");
 
-		var prefix_fragment = [
+		auto prefix_fragment = [
 
 			"precision " + _precision + " float;",
 
@@ -6203,7 +6224,7 @@ public:
 			_physicallyBasedShading ? "#define PHYSICALLY_BASED_SHADING" : "",
 
 			( parameters.useFog && parameters.fog ) ? "#define USE_FOG" : "",
-			( parameters.useFog && parameters.fog instanceof THREE.FogExp2 ) ? "#define FOG_EXP2" : "",
+			( parameters.useFog && parameters.fog instanceof THREE::FogExp2 ) ? "#define FOG_EXP2" : "",
 
 			parameters.map ? "#define USE_MAP" : "",
 			parameters.envMap ? "#define USE_ENVMAP" : "",
@@ -6228,8 +6249,8 @@ public:
 
 		].join("\n");
 
-		var glFragmentShader = getShader( "fragment", prefix_fragment + fragmentShader );
-		var glVertexShader = getShader( "vertex", prefix_vertex + vertexShader );
+		auto glFragmentShader = getShader( "fragment", prefix_fragment + fragmentShader );
+		auto glVertexShader = getShader( "vertex", prefix_vertex + vertexShader );
 
 		glattachShader( program, glVertexShader );
 		glattachShader( program, glFragmentShader );
@@ -6253,7 +6274,7 @@ public:
 		program.uniforms = {};
 		program.attributes = {};
 
-		var identifiers, u, a, i;
+		auto identifiers, u, a, i;
 
 		// cache uniform locations
 
@@ -6266,17 +6287,17 @@ public:
 
 		if ( parameters.useVertexTexture ) {
 
-			identifiers.push( 'boneTexture' );
+			identifiers.push_back( 'boneTexture' );
 
 		} else {
 
-			identifiers.push( 'boneGlobalMatrices' );
+			identifiers.push_back( 'boneGlobalMatrices' );
 
 		}
 
 		for ( u in uniforms ) {
 
-			identifiers.push( u );
+			identifiers.push_back( u );
 
 		}
 
@@ -6293,19 +6314,19 @@ public:
 
 		for ( i = 0; i < parameters.maxMorphTargets; i ++ ) {
 
-			identifiers.push( "morphTarget" + i );
+			identifiers.push_back( "morphTarget" + i );
 
 		}
 
 		for ( i = 0; i < parameters.maxMorphNormals; i ++ ) {
 
-			identifiers.push( "morphNormal" + i );
+			identifiers.push_back( "morphNormal" + i );
 
 		}
 
 		for ( a in attributes ) {
 
-			identifiers.push( a );
+			identifiers.push_back( a );
 
 		}
 
@@ -6313,9 +6334,9 @@ public:
 
 		program.id = _programs_counter ++;
 
-		_programs.push( { program: program, code: code, usedTimes: 1 } );
+		_programs.push_back( { program: program, code: code, usedTimes: 1 } );
 
-		_info.memory.programs = _programs.length;
+		_info.memory.programs = _programs.size();
 
 		return program;
 
@@ -6325,9 +6346,9 @@ public:
 
 	function cacheUniformLocations ( program, identifiers ) {
 
-		var i, l, id;
+		auto i, l, id;
 
-		for( i = 0, l = identifiers.length; i < l; i ++ ) {
+		for( i = 0, l = identifiers.size(); i < l; i ++ ) {
 
 			id = identifiers[ i ];
 			program.uniforms[ id ] = _gl.getUniformLocation( program, id );
@@ -6338,9 +6359,9 @@ public:
 
 	function cacheAttributeLocations ( program, identifiers ) {
 
-		var i, l, id;
+		auto i, l, id;
 
-		for( i = 0, l = identifiers.length; i < l; i ++ ) {
+		for( i = 0, l = identifiers.size(); i < l; i ++ ) {
 
 			id = identifiers[ i ];
 			program.attributes[ id ] = _gl.getAttribLocation( program, id );
@@ -6351,9 +6372,9 @@ public:
 
 	function addLineNumbers ( string ) {
 
-		var chunks = string.split( "\n" );
+		auto chunks = string.split( "\n" );
 
-		for ( var i = 0, il = chunks.length; i < il; i ++ ) {
+		for ( auto i = 0, il = chunks.size(); i < il; i ++ ) {
 
 			// Chrome reports shader errors on lines
 			// starting counting from 1
@@ -6368,7 +6389,7 @@ public:
 
 	function getShader ( type, string ) {
 
-		var shader;
+		auto shader;
 
 		if ( type == "fragment" ) {
 
@@ -6424,7 +6445,7 @@ public:
 
 		}
 
-		if ( _glExtensionTextureFilterAnisotropic && texture.type !== THREE.FloatType ) {
+		if ( _glExtensionTextureFilterAnisotropic && texture.type !== THREE::FloatType ) {
 
 			if ( texture.anisotropy > 1 || texture.__oldAnisotropy ) {
 
@@ -6441,29 +6462,29 @@ public:
 
 		if ( texture.needsUpdate ) {
 
-			if ( ! texture.__webglInit ) {
+			if ( ! texture.__glInit ) {
 
-				texture.__webglInit = true;
-				texture.__webglTexture = glCreateTexture();
+				texture.__glInit = true;
+				texture.__glTexture = glCreateTexture();
 
 				_info.memory.textures ++;
 
 			}
 
 			glactiveTexture( GL_TEXTURE0 + slot );
-			glbindTexture( GL_TEXTURE_2D, texture.__webglTexture );
+			glBindTexture( GL_TEXTURE_2D, texture.__glTexture );
 
 			glpixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
 			glpixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
 
-			var image = texture.image,
+			auto image = texture.image,
 			isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height ),
 			glFormat = paramThreeToGL( texture.format ),
 			glType = paramThreeToGL( texture.type );
 
 			setTextureParameters( GL_TEXTURE_2D, texture, isImagePowerOfTwo );
 
-			if ( texture instanceof THREE.DataTexture ) {
+			if ( texture instanceof THREE::DataTexture ) {
 
 				gltexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data );
 
@@ -6482,7 +6503,7 @@ public:
 		} else {
 
 			glactiveTexture( GL_TEXTURE0 + slot );
-			glbindTexture( GL_TEXTURE_2D, texture.__webglTexture );
+			glBindTexture( GL_TEXTURE_2D, texture.__glTexture );
 
 		}
 
@@ -6499,15 +6520,15 @@ public:
 		// Warning: Scaling through the canvas will only work with images that use
 		// premultiplied alpha.
 
-		var maxDimension = Math::max( image.width, image.height );
-		var newWidth = Math::floor( image.width * maxSize / maxDimension );
-		var newHeight = Math::floor( image.height * maxSize / maxDimension );
+		auto maxDimension = Math::max( image.width, image.height );
+		auto newWidth = Math::floor( image.width * maxSize / maxDimension );
+		auto newHeight = Math::floor( image.height * maxSize / maxDimension );
 
-		var canvas = document.createElement( 'canvas' );
+		auto canvas = document.createElement( 'canvas' );
 		canvas.width = newWidth;
 		canvas.height = newHeight;
 
-		var ctx = canvas.getContext( "2d" );
+		auto ctx = canvas.getContext( "2d" );
 		ctx.drawImage( image, 0, 0, image.width, image.height, 0, 0, newWidth, newHeight );
 
 		return canvas;
@@ -6516,24 +6537,24 @@ public:
 
 	function setCubeTexture ( texture, slot ) {
 
-		if ( texture.image.length == 6 ) {
+		if ( texture.image.size() == 6 ) {
 
 			if ( texture.needsUpdate ) {
 
-				if ( ! texture.image.__webglTextureCube ) {
+				if ( ! texture.image.__glTextureCube ) {
 
-					texture.image.__webglTextureCube = glCreateTexture();
+					texture.image.__glTextureCube = glCreateTexture();
 
 				}
 
 				glactiveTexture( GL_TEXTURE0 + slot );
-				glbindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__webglTextureCube );
+				glBindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__glTextureCube );
 
 				glpixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
 
-				var cubeImage = [];
+				auto cubeImage = [];
 
-				for ( var i = 0; i < 6; i ++ ) {
+				for ( auto i = 0; i < 6; i ++ ) {
 
 					if ( _autoScaleCubemaps ) {
 
@@ -6547,14 +6568,14 @@ public:
 
 				}
 
-				var image = cubeImage[ 0 ],
+				auto image = cubeImage[ 0 ],
 				isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height ),
 				glFormat = paramThreeToGL( texture.format ),
 				glType = paramThreeToGL( texture.type );
 
 				setTextureParameters( GL_TEXTURE_CUBE_MAP, texture, isImagePowerOfTwo );
 
-				for ( var i = 0; i < 6; i ++ ) {
+				for ( auto i = 0; i < 6; i ++ ) {
 
 					gltexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
 
@@ -6573,7 +6594,7 @@ public:
 			} else {
 
 				glactiveTexture( GL_TEXTURE0 + slot );
-				glbindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__webglTextureCube );
+				glBindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__glTextureCube );
 
 			}
 
@@ -6584,7 +6605,7 @@ public:
 	function setCubeTextureDynamic ( texture, slot ) {
 
 		glactiveTexture( GL_TEXTURE0 + slot );
-		glbindTexture( GL_TEXTURE_CUBE_MAP, texture.__webglTexture );
+		glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTexture );
 
 	};
 
@@ -6592,14 +6613,14 @@ public:
 
 	function setupFrameBuffer ( framebuffer, renderTarget, textureTarget ) {
 
-		glbindFramebuffer( GL_FRAMEBUFFER, framebuffer );
-		glframebufferTexture2D( GL_FRAMEBUFFER, _gl.COLOR_ATTACHMENT0, textureTarget, renderTarget.__webglTexture, 0 );
+		glBindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+		glframebufferTexture2D( GL_FRAMEBUFFER, _gl.COLOR_ATTACHMENT0, textureTarget, renderTarget.__glTexture, 0 );
 
 	};
 
 	function setupRenderBuffer ( renderbuffer, renderTarget  ) {
 
-		glbindRenderbuffer( GL_RENDERBUFFER, renderbuffer );
+		glBindRenderbuffer( GL_RENDERBUFFER, renderbuffer );
 
 		if ( renderTarget.depthBuffer && ! renderTarget.stencilBuffer ) {
 
@@ -6627,38 +6648,38 @@ public:
 
 	setRenderTarget = function ( GLRenderTarget& renderTarget ) {
 
-		var isCube = ( renderTarget instanceof THREE.WebGLRenderTargetCube );
+		auto isCube = ( renderTarget instanceof THREE::WebGLRenderTargetCube );
 
-		if ( renderTarget && ! renderTarget.__webglFramebuffer ) {
+		if ( renderTarget && ! renderTarget.__glFramebuffer ) {
 
 			if ( renderTarget.depthBuffer == undefined ) renderTarget.depthBuffer = true;
 			if ( renderTarget.stencilBuffer == undefined ) renderTarget.stencilBuffer = true;
 
-			renderTarget.__webglTexture = glCreateTexture();
+			renderTarget.__glTexture = glCreateTexture();
 
 			// Setup texture, create render and frame buffers
 
-			var isTargetPowerOfTwo = isPowerOfTwo( renderTarget.width ) && isPowerOfTwo( renderTarget.height ),
+			auto isTargetPowerOfTwo = isPowerOfTwo( renderTarget.width ) && isPowerOfTwo( renderTarget.height ),
 				glFormat = paramThreeToGL( renderTarget.format ),
 				glType = paramThreeToGL( renderTarget.type );
 
 			if ( isCube ) {
 
-				renderTarget.__webglFramebuffer = [];
-				renderTarget.__webglRenderbuffer = [];
+				renderTarget.__glFramebuffer = [];
+				renderTarget.__glRenderbuffer = [];
 
-				glbindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__webglTexture );
+				glBindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__glTexture );
 				setTextureParameters( GL_TEXTURE_CUBE_MAP, renderTarget, isTargetPowerOfTwo );
 
-				for ( var i = 0; i < 6; i ++ ) {
+				for ( auto i = 0; i < 6; i ++ ) {
 
-					renderTarget.__webglFramebuffer[ i ] = glCreateFramebuffer();
-					renderTarget.__webglRenderbuffer[ i ] = glCreateRenderbuffer();
+					renderTarget.__glFramebuffer[ i ] = glCreateFramebuffer();
+					renderTarget.__glRenderbuffer[ i ] = glCreateRenderbuffer();
 
 					gltexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
 
-					setupFrameBuffer( renderTarget.__webglFramebuffer[ i ], renderTarget, _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i );
-					setupRenderBuffer( renderTarget.__webglRenderbuffer[ i ], renderTarget );
+					setupFrameBuffer( renderTarget.__glFramebuffer[ i ], renderTarget, _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i );
+					setupRenderBuffer( renderTarget.__glRenderbuffer[ i ], renderTarget );
 
 				}
 
@@ -6666,16 +6687,16 @@ public:
 
 			} else {
 
-				renderTarget.__webglFramebuffer = glCreateFramebuffer();
-				renderTarget.__webglRenderbuffer = glCreateRenderbuffer();
+				renderTarget.__glFramebuffer = glCreateFramebuffer();
+				renderTarget.__glRenderbuffer = glCreateRenderbuffer();
 
-				glbindTexture( GL_TEXTURE_2D, renderTarget.__webglTexture );
+				glBindTexture( GL_TEXTURE_2D, renderTarget.__glTexture );
 				setTextureParameters( GL_TEXTURE_2D, renderTarget, isTargetPowerOfTwo );
 
 				gltexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
 
-				setupFrameBuffer( renderTarget.__webglFramebuffer, renderTarget, _gl.TEXTURE_2D );
-				setupRenderBuffer( renderTarget.__webglRenderbuffer, renderTarget );
+				setupFrameBuffer( renderTarget.__glFramebuffer, renderTarget, _gl.TEXTURE_2D );
+				setupRenderBuffer( renderTarget.__glRenderbuffer, renderTarget );
 
 				if ( isTargetPowerOfTwo ) _gl.generateMipmap( GL_TEXTURE_2D );
 
@@ -6685,30 +6706,30 @@ public:
 
 			if ( isCube ) {
 
-				glbindTexture( GL_TEXTURE_CUBE_MAP, null );
+				glBindTexture( GL_TEXTURE_CUBE_MAP, null );
 
 			} else {
 
-				glbindTexture( GL_TEXTURE_2D, null );
+				glBindTexture( GL_TEXTURE_2D, null );
 
 			}
 
-			glbindRenderbuffer( GL_RENDERBUFFER, null );
-			glbindFramebuffer( GL_FRAMEBUFFER, null);
+			glBindRenderbuffer( GL_RENDERBUFFER, null );
+			glBindFramebuffer( GL_FRAMEBUFFER, null);
 
 		}
 
-		var framebuffer, width, height, vx, vy;
+		auto framebuffer, width, height, vx, vy;
 
 		if ( renderTarget ) {
 
 			if ( isCube ) {
 
-				framebuffer = renderTarget.__webglFramebuffer[ renderTarget.activeCubeFace ];
+				framebuffer = renderTarget.__glFramebuffer[ renderTarget.activeCubeFace ];
 
 			} else {
 
-				framebuffer = renderTarget.__webglFramebuffer;
+				framebuffer = renderTarget.__glFramebuffer;
 
 			}
 
@@ -6732,7 +6753,7 @@ public:
 
 		if ( framebuffer !== _currentFramebuffer ) {
 
-			glbindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+			glBindFramebuffer( GL_FRAMEBUFFER, framebuffer );
 			glViewport( vx, vy, width, height );
 
 			_currentFramebuffer = framebuffer;
@@ -6746,17 +6767,17 @@ public:
 
 	function updateRenderTargetMipmap ( renderTarget ) {
 
-		if ( renderTarget instanceof THREE.WebGLRenderTargetCube ) {
+		if ( renderTarget instanceof THREE::WebGLRenderTargetCube ) {
 
-			glbindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__webglTexture );
+			glBindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__glTexture );
 			glgenerateMipmap( GL_TEXTURE_CUBE_MAP );
-			glbindTexture( GL_TEXTURE_CUBE_MAP, null );
+			glBindTexture( GL_TEXTURE_CUBE_MAP, null );
 
 		} else {
 
-			glbindTexture( GL_TEXTURE_2D, renderTarget.__webglTexture );
+			glBindTexture( GL_TEXTURE_2D, renderTarget.__glTexture );
 			glgenerateMipmap( GL_TEXTURE_2D );
-			glbindTexture( GL_TEXTURE_2D, null );
+			glBindTexture( GL_TEXTURE_2D, null );
 
 		}
 
@@ -6766,7 +6787,7 @@ public:
 
 	int filterFallback ( int f ) {
 
-		if ( f == THREE.NearestFilter || f == THREE.NearestMipMapNearestFilter || f == THREE.NearestMipMapLinearFilter ) {
+		if ( f == THREE::NearestFilter || f == THREE::NearestMipMapNearestFilter || f == THREE::NearestMipMapLinearFilter ) {
 
 			return _gl.NEAREST;
 
@@ -6776,58 +6797,58 @@ public:
 
 	};
 
-	// Map three.cpp constants to WebGL constants
+	// Map THREE::cpp constants to WebGL constants
 
 	int paramThreeToGL ( int p ) {
 
 		switch ( p ) {
 
-			case THREE.RepeatWrapping: return GL_REPEAT;
-			case THREE.ClampToEdgeWrapping: return GL_CLAMP_TO_EDGE;
-			case THREE.MirroredRepeatWrapping: return GL_MIRRORED_REPEAT;
+			case THREE::RepeatWrapping: return GL_REPEAT;
+			case THREE::ClampToEdgeWrapping: return GL_CLAMP_TO_EDGE;
+			case THREE::MirroredRepeatWrapping: return GL_MIRRORED_REPEAT;
 
-			case THREE.NearestFilter: return GL_NEAREST;
-			case THREE.NearestMipMapNearestFilter: return GL_NEAREST_MIPMAP_NEAREST;
-			case THREE.NearestMipMapLinearFilter: return GL_NEAREST_MIPMAP_LINEAR;
+			case THREE::NearestFilter: return GL_NEAREST;
+			case THREE::NearestMipMapNearestFilter: return GL_NEAREST_MIPMAP_NEAREST;
+			case THREE::NearestMipMapLinearFilter: return GL_NEAREST_MIPMAP_LINEAR;
 
-			case THREE.LinearFilter: return GL_LINEAR;
-			case THREE.LinearMipMapNearestFilter: return GL_LINEAR_MIPMAP_NEAREST;
-			case THREE.LinearMipMapLinearFilter: return GL_LINEAR_MIPMAP_LINEAR;
+			case THREE::LinearFilter: return GL_LINEAR;
+			case THREE::LinearMipMapNearestFilter: return GL_LINEAR_MIPMAP_NEAREST;
+			case THREE::LinearMipMapLinearFilter: return GL_LINEAR_MIPMAP_LINEAR;
 
-			case THREE.UnsignedByteType: return GL_UNSIGNED_BYTE;
-			case THREE.UnsignedShort4444Type: return GL_UNSIGNED_SHORT_4_4_4_4;
-			case THREE.UnsignedShort5551Type: return GL_UNSIGNED_SHORT_5_5_5_1;
-			case THREE.UnsignedShort565Type: return GL_UNSIGNED_SHORT_5_6_5;
+			case THREE::UnsignedByteType: return GL_UNSIGNED_BYTE;
+			case THREE::UnsignedShort4444Type: return GL_UNSIGNED_SHORT_4_4_4_4;
+			case THREE::UnsignedShort5551Type: return GL_UNSIGNED_SHORT_5_5_5_1;
+			case THREE::UnsignedShort565Type: return GL_UNSIGNED_SHORT_5_6_5;
 
-			case THREE.ByteType: return GL_BYTE;
-			case THREE.ShortType: return GL_SHORT;
-			case THREE.UnsignedShortType: return GL_UNSIGNED_SHORT;
-			case THREE.IntType: return GL_INT;
-			case THREE.UnsignedIntType: return GL_UNSIGNED_INT;
-			case THREE.FloatType: return GL_FLOAT;
+			case THREE::ByteType: return GL_BYTE;
+			case THREE::ShortType: return GL_SHORT;
+			case THREE::UnsignedShortType: return GL_UNSIGNED_SHORT;
+			case THREE::IntType: return GL_INT;
+			case THREE::UnsignedIntType: return GL_UNSIGNED_INT;
+			case THREE::FloatType: return GL_FLOAT;
 
-			case THREE.AlphaFormat: return GL_ALPHA;
-			case THREE.RGBFormat: return GL_RGB;
-			case THREE.RGBAFormat: return GL_RGBA;
-			case THREE.LuminanceFormat: return GL_LUMINANCE;
-			case THREE.LuminanceAlphaFormat: return GL_LUMINANCE_ALPHA;
+			case THREE::AlphaFormat: return GL_ALPHA;
+			case THREE::RGBFormat: return GL_RGB;
+			case THREE::RGBAFormat: return GL_RGBA;
+			case THREE::LuminanceFormat: return GL_LUMINANCE;
+			case THREE::LuminanceAlphaFormat: return GL_LUMINANCE_ALPHA;
 
-			case THREE.AddEquation: return GL_FUNC_ADD;
-			case THREE.SubtractEquation: return GL_FUNC_SUBTRACT;
-			case THREE.ReverseSubtractEquation: return GL_FUNC_REVERSE_SUBTRACT;
+			case THREE::AddEquation: return GL_FUNC_ADD;
+			case THREE::SubtractEquation: return GL_FUNC_SUBTRACT;
+			case THREE::ReverseSubtractEquation: return GL_FUNC_REVERSE_SUBTRACT;
 
-			case THREE.ZeroFactor: return GL_ZERO;
-			case THREE.OneFactor: return GL_ONE;
-			case THREE.SrcColorFactor: return GL_SRC_COLOR;
-			case THREE.OneMinusSrcColorFactor: return GL_ONE_MINUS_SRC_COLOR;
-			case THREE.SrcAlphaFactor: return GL_SRC_ALPHA;
-			case THREE.OneMinusSrcAlphaFactor: return GL_ONE_MINUS_SRC_ALPHA;
-			case THREE.DstAlphaFactor: return GL_DST_ALPHA;
-			case THREE.OneMinusDstAlphaFactor: return GL_ONE_MINUS_DST_ALPHA;
+			case THREE::ZeroFactor: return GL_ZERO;
+			case THREE::OneFactor: return GL_ONE;
+			case THREE::SrcColorFactor: return GL_SRC_COLOR;
+			case THREE::OneMinusSrcColorFactor: return GL_ONE_MINUS_SRC_COLOR;
+			case THREE::SrcAlphaFactor: return GL_SRC_ALPHA;
+			case THREE::OneMinusSrcAlphaFactor: return GL_ONE_MINUS_SRC_ALPHA;
+			case THREE::DstAlphaFactor: return GL_DST_ALPHA;
+			case THREE::OneMinusDstAlphaFactor: return GL_ONE_MINUS_DST_ALPHA;
 
-			case THREE.DstColorFactor: return GL_DST_COLOR;
-			case THREE.OneMinusDstColorFactor: return GL_ONE_MINUS_DST_COLOR;
-			case THREE.SrcAlphaSaturateFactor: return GL_SRC_ALPHA_SATURATE;
+			case THREE::DstColorFactor: return GL_DST_COLOR;
+			case THREE::OneMinusDstColorFactor: return GL_ONE_MINUS_DST_COLOR;
+			case THREE::SrcAlphaSaturateFactor: return GL_SRC_ALPHA_SATURATE;
 
 			default: return 0;
 
@@ -6857,13 +6878,13 @@ public:
 
 			auto maxBones = nVertexMatrices;
 
-			if ( object && object.type() == THREE.SkinnedMesh ) {
+			if ( object && object.type() == THREE::SkinnedMesh ) {
 
-				maxBones = Math::min( object.bones.length, maxBones );
+				maxBones = Math::min( object.bones.size(), maxBones );
 
-				if ( maxBones < object.bones.length ) {
+				if ( maxBones < object.bones.size() ) {
 
-					console.warn( "WebGLRenderer: too many bones - " + object.bones.length + ", this GPU supports just " + maxBones + " (try OpenGL instead of ANGLE)" );
+					console.warn( "WebGLRenderer: too many bones - " + object.bones.size() + ", this GPU supports just " + maxBones + " (try OpenGL instead of ANGLE)" );
 
 				}
 
@@ -6877,19 +6898,19 @@ public:
 
 	THREE_DECL void allocateLights ( std::vector<Light::Ptr> lights ) {
 
-		var l, ll, light, dirLights, pointLights, spotLights, maxDirLights, maxPointLights, maxSpotLights;
+		auto l, ll, light, dirLights, pointLights, spotLights, maxDirLights, maxPointLights, maxSpotLights;
 
 		dirLights = pointLights = spotLights = maxDirLights = maxPointLights = maxSpotLights = 0;
 
-		for ( l = 0, ll = lights.length; l < ll; l ++ ) {
+		for ( l = 0, ll = lights.size(); l < ll; l ++ ) {
 
 			light = lights[ l ];
 
 			if ( light.onlyShadow ) continue;
 
-			if ( light instanceof THREE.DirectionalLight ) dirLights ++;
-			if ( light instanceof THREE.PointLight ) pointLights ++;
-			if ( light instanceof THREE.SpotLight ) spotLights ++;
+			if ( light instanceof THREE::DirectionalLight ) dirLights ++;
+			if ( light instanceof THREE::PointLight ) pointLights ++;
+			if ( light instanceof THREE::SpotLight ) spotLights ++;
 
 		}
 
@@ -6919,8 +6940,8 @@ public:
 
 			if ( ! light.castShadow ) continue;
 
-			if ( light instanceof THREE.SpotLight ) maxShadows ++;
-			if ( light instanceof THREE.DirectionalLight && ! light.shadowCascade ) maxShadows ++;
+			if ( light instanceof THREE::SpotLight ) maxShadows ++;
+			if ( light instanceof THREE::DirectionalLight && ! light.shadowCascade ) maxShadows ++;
 
 		}
 
