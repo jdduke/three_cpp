@@ -4,6 +4,7 @@
 #include <SDL_opengl.h>
 
 #include <thread>
+#include <fstream>
 
 using namespace three;
 
@@ -42,15 +43,19 @@ bool initGLEW( GLRenderer::Parameters& parameters ) {
     return true;
 }
 
-int quit() {
-    SDL_Quit();
-    exit( 0 );
-    return 0;
-}
 
 int main ( int argc, char* argv[] ) {
 
-	GLRenderer::Parameters parameters;
+    /*std::ofstream ctt("CON");
+    freopen( "CON", "w", stdout );
+    freopen( "CON", "w", stderr );*/
+
+    GLRenderer::Parameters parameters;
+
+    auto quit = [&]() {
+        SDL_Quit();
+        exit( 0 );
+    };
 
     if ( !initSDL( parameters ) || !initGLEW( parameters ) ) {
         quit();
@@ -61,21 +66,33 @@ int main ( int argc, char* argv[] ) {
         quit();
     }
 
+    const auto frameTime = .016f;
+
     Clock clock;
+    auto lastTime = clock.getElapsedTime();
+    typedef std::function<void(void)> Callback;
+    auto requestAnimFrame = [&]( Callback callback ) {
+
+        auto time = clock.getElapsedTime();
+        auto deltaTime = ( time - lastTime );
+        auto sleepTime = frameTime - deltaTime;
+
+        std::this_thread::sleep_for( Clock::Duration(sleepTime) );
+
+        lastTime = time;
+
+        callback();
+
+    };
+
     bool done = false;
 
-    while ( !done && clock.getElapsedTime() < 10 ) {
-
+    auto update = [&]() {
         SDL_Event event;
-        while ( SDL_PollEvent( &event ) )
-        {
-            switch( event.type )
-            {
-            case SDL_ACTIVEEVENT:
-                break;
-            case SDL_VIDEORESIZE:
-                break;
+        while ( SDL_PollEvent( &event ) ) {
+            switch( event.type ) {
             case SDL_KEYDOWN:
+                done = true;
                 //handleKeyPress( &event.key.keysym );
                 break;
             case SDL_QUIT:
@@ -83,17 +100,26 @@ int main ( int argc, char* argv[] ) {
                 break;
             default:
                 break;
-            }
+            };
         }
+    };
 
-        //renderer->render
-
+    auto render = [&]() {
         SDL_GL_SwapBuffers( );
+        //renderer->render();
+    };
 
-        // TODO: Automate
-        std::this_thread::sleep_for( std::chrono::milliseconds(16) );
+    while ( !done && clock.getElapsedTime() < 10 ) {
+
+        requestAnimFrame( [&] {
+
+            update();
+
+            render();
+
+        } );
 
     }
 
-	return quit();
+    quit();
 }
