@@ -11,18 +11,18 @@ using namespace three;
 bool initSDL( GLRenderer::Parameters& parameters ) {
 
     if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
-        console().serror() << "Error initializing sdl: " << SDL_GetError();
+        console().error() << "Error initializing SDL: " << SDL_GetError();
         return false;
     }
 
-    console().slog() << "SDL Initialized";
+    console().log() << "SDL initialized";
 
     if ( SDL_SetVideoMode( parameters.width, parameters.height, parameters.precision, SDL_OPENGL ) == NULL ) {
-        console().serror() << "Error setting video mode: " << SDL_GetError();
+        console().error() << "Error setting SDL video mode: " << SDL_GetError();
         return false;
     }
 
-    console().slog() << "SDL Video Initialized";
+    console().log() << "SDL video initialized";
 
     SDL_WM_SetCaption( "Three.cpp", NULL );
 
@@ -34,11 +34,11 @@ bool initGLEW( GLRenderer::Parameters& parameters ) {
     auto err = glewInit();
 
     if ( GLEW_OK != err  ) {
-        console().serror() << "Error initializing glew: " << glewGetErrorString( err );
+        console().error() << "Error initializing glew: " << glewGetErrorString( err );
         return false;
     }
 
-    console().slog() << "GLEW Initialized";
+    console().log() << "GLEW initialized";
 
     return true;
 }

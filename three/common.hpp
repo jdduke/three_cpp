@@ -196,9 +196,35 @@ struct ConstVisitor {
 /////////////////////////////////////////////////////////////////////////
 
 class Console {
+private:
+	class LogProxy;
+
 public:
 
 	typedef void(*LogP)(const char*);
+
+	static Console& instance() {
+		static Console sConsole;
+		return sConsole;
+	}
+
+	void info(  const char* msg ) const { info()  << msg; }
+	void log(   const char* msg ) const { log()   << msg; }
+	void debug( const char* msg ) const { debug() << msg; }
+	void warn(  const char* msg ) const { warn()  << msg; }
+	void error( const char* msg ) const { error() << msg; }
+
+	LogProxy info()  const { return LogProxy( output, "INFO:  " ); }
+	LogProxy log()   const { return LogProxy( output, "LOG:   " ); }
+	LogProxy debug() const { return LogProxy( output, "DEBUG: " ); }
+	LogProxy warn()  const { return LogProxy( output, "WARN:  " ); }
+	LogProxy error() const { return LogProxy( output, "ERROR: " ); }
+
+	void setLog( LogP log ) { output = log; }
+
+private:
+
+	LogP output;
 
 	class LogProxy {
 	public:
@@ -226,40 +252,22 @@ public:
 
 		friend class Console;
 
-		LogProxy( LogP log )
-		 : stream ( new std::stringstream() ), log( log ) {}
+		LogProxy( LogP log, const char* msg = nullptr )
+		 : stream ( new std::stringstream() ), log( log ) {
+		 	if ( msg ) {
+		 		(*this) << msg;
+		 	}
+		 }
 
 		std::unique_ptr<std::stringstream> stream;
 		LogP log;
 	};
 
-	static Console& instance() {
-		static Console sConsole;
-		return sConsole;
-	}
-
-	LogP info;
-	LogP log;
-	LogP debug;
-	LogP warn;
-	LogP error;
-
-	LogProxy sinfo()  const { return LogProxy( info ); }
-	LogProxy slog()   const { return LogProxy( log ); }
-	LogProxy sdebug() const { return LogProxy( debug ); }
-	LogProxy swarn()  const { return LogProxy( warn ); }
-	LogProxy serror() const { return LogProxy( error ); }
-
 private:
 
-	Console()
-	: info ( dummy ),
-	log    ( dummy ),
-	debug  ( dummy ),
-	warn   ( dummy ),
-	error  ( dummy ) { }
+	Console() : output ( stdcout ) { }
 
-	static void dummy( const char* msg ) { std::cout << msg << std::endl; }
+	static void stdcout( const char* msg ) { std::cout << msg << std::endl; }
 };
 
 static Console& console() {

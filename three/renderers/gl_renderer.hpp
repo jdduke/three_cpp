@@ -64,7 +64,11 @@ public:
 
 	static Ptr create( const Parameters& parameters = Parameters() ) {
 
-		return make_shared<GLRenderer>( parameters );
+		auto renderer = make_shared<GLRenderer>( parameters );
+
+		renderer->initialize();
+
+		return renderer;
 
 	}
 
@@ -131,7 +135,7 @@ protected:
 	_lightsNeedUpdate ( true )
 
 	{
-		console().log( "THREE::GLRenderer" );
+		console().log() << "THREE::GLRenderer created";
 	}
 
 	int _width, _height;
@@ -345,7 +349,7 @@ private:
 
 	THREE_DECL void initialize() {
 
-		console().log( "THREE::GLRenderer.Initialize" );
+		console().log() << "THREE::GLRenderer initializing";
 
 		//auto _gl;
 
@@ -364,6 +368,8 @@ private:
 		_maxAnisotropy = 1;//glExtensionTextureFilterAnisotropic ? _gl.getParameter( _glExtensionTextureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT ) : 0;
 		_supportsVertexTextures = ( _maxVertexTextures > 0 );
 		_supportsBoneTextures = false;//_supportsVertexTextures && _glExtensionTextureFloat;
+
+		console().log() << "THREE::GLRenderer initialized";
 
 	}
 
