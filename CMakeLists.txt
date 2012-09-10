@@ -117,6 +117,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 
 #############
 
+set(EXTERNALS_DIR ${CMAKE_HOME_DIRECTORY}/externals)
+
 include_directories(.)
 
 file(GLOB THREE_HEADERS three/*.hpp)

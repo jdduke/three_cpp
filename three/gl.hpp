@@ -24,9 +24,9 @@
 #  include <GL/gl.h>
 #endif
 
-#if defined(THREE_SDL)
-#include <SDL_opengl.h>
-#endif
+//#if defined(THREE_SDL)
+//#include <SDL_opengl.h>
+//#endif
 
 namespace three {
 

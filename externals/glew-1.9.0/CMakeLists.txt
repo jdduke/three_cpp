@@ -68,11 +68,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 
 #############
 
-FIND_PATH(GLEW_INCLUDE_PATH NAMES GL/glew.h
-                            PATHS include)
-MARK_AS_ADVANCED(GLEW_INCLUDE_PATH)
+find_path(GLEW_INCLUDE_DIR NAMES GL/glew.h
+                           PATHS include)
+mark_as_advanced(GLEW_INCLUDE_DIR)
 
-include_directories(${GLEW_INCLUDE_PATH})
+include_directories(${GLEW_INCLUDE_DIR})
 
 set(GLEW_SRC src/glew.c)
 set(GLEW_HDR include/GL/glew.h)

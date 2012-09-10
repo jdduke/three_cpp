@@ -154,9 +154,9 @@ public:
 	};
 
 	enum PrecisionType {
-		PrecisionHigh = 0,
-		PrecisionMedium,
-		PrecisionLow
+		PrecisionHigh = 32,
+		PrecisionMedium = 24,
+		PrecisionLow = 8
 	};
 
 };
