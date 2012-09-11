@@ -38,7 +38,7 @@ inline GLuint glCreateBuffer() {
 	return buffer;
 }
 
-inline GLuint glDeleteBuffer( GLuint& buffer ) {
+inline void glDeleteBuffer( GLuint& buffer ) {
 	glDeleteBuffers( 1, &buffer );
 	buffer = 0;
 }

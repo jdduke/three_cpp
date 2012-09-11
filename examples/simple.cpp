@@ -92,11 +92,8 @@ int main ( int argc, char* argv[] ) {
         while ( SDL_PollEvent( &event ) ) {
             switch( event.type ) {
             case SDL_KEYDOWN:
-                done = true;
-                //handleKeyPress( &event.key.keysym );
-                break;
             case SDL_QUIT:
-                done = TRUE;
+                done = true;
                 break;
             default:
                 break;
@@ -122,4 +119,6 @@ int main ( int argc, char* argv[] ) {
     }
 
     quit();
+
+    return 0;
 }

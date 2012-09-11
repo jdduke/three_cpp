@@ -20,13 +20,13 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLA
     set(COMMON_FLAGS "${COMMON_FLAGS} -g")
   endif()
 
-  if (MINGW)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -static-libstdc++ -static-libgcc -static")
-  endif()
+  #if (MINGW)
+  #  set(COMMON_FLAGS "${COMMON_FLAGS} -static-libstdc++ -static-libgcc -static")
+  #endif()
 
-  if (CMAKE_COMPILER_IS_CLANGXX)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -stdlib=libc++")
-  endif()
+  #if (CMAKE_COMPILER_IS_CLANGXX)
+  #  set(COMMON_FLAGS "${COMMON_FLAGS} -stdlib=libc++")
+  #endif()
 
   set(CMAKE_C_FLAGS             "${CMAKE_C_FLAGS}             ${COMMON_FLAGS}")
   set(CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS}           ${COMMON_FLAGS}")

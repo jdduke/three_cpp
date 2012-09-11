@@ -3,6 +3,8 @@ project(three)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 # Treat warnings as errors cmake option
 set(TREAT_WARNINGS_AS_ERRORS  TRUE  CACHE BOOL "Treat warnings as errors")
 set(BUILD_THREE_EXAMPLES TRUE  CACHE BOOL "Build three.cpp examples")
@@ -25,7 +27,7 @@ if (CMAKE_CXX_COMPILER MATCHES ".*clang")
 endif ()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
-  set(BUILD_64_BIT FALSE CACHE BOOL "Enable 64-bit build")
+  set(BUILD_64_BIT TRUE CACHE BOOL "Enable 64-bit build" FORCE)
   if (BUILD_64_BIT)
     set(COMMON_FLAGS "-m64")
     set(THREE_SIZE_TYPE x64)
@@ -53,8 +55,8 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
   endif()
 
   if (CMAKE_COMPILER_IS_CLANGXX)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -stdlib=libc++")
-    add_definitions("-std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++0x")
+    #add_definitions("-std=c++0x")
     add_definitions("-DGTEST_USE_OWN_TR1_TUPLE=1")
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -125,7 +127,9 @@ file(GLOB THREE_HEADERS three/*.hpp)
 source_group(three FILES ${THREE_HEADERS})
 
 if(BUILD_THREE_EXAMPLES)
-  add_subdirectory(externals/glew-1.9.0)
+  if(WIN32)
+    add_subdirectory(externals/glew-1.9.0)
+  endif()
   add_subdirectory(examples)
 endif()
 

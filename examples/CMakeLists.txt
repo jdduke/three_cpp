@@ -11,6 +11,10 @@ elseif(MINGW)
 endif()
 
 find_package(SDL REQUIRED)
+find_package(OpenGL REQUIRED)
+if (NOT WIN32)
+  find_package(GLEW REQUIRED)
+endif()
 
 include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${SDL_INCLUDE_DIR})
@@ -19,5 +23,5 @@ add_definitions(-DGLEW_STATIC -DTHREE_SDL -DTHREE_GLEW)
 
 add_executable(simple ${THREE_HEADERS} simple.cpp)
 
-target_link_libraries(simple glews ${SDL_LIBRARY})
+target_link_libraries(simple ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
 

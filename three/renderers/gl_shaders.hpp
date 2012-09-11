@@ -181,23 +181,16 @@ class ShaderChunk {
 
 	const char* lightmap_fragment() {
 		return
-
 		"#ifdef USE_LIGHTMAP"
-
 			"gl_FragColor = gl_FragColor * texture2D( lightMap vUv2 );"
-
 		"#endif";
-
 	}
 
 	const char* lightmap_vertex() {
-
+		return
 		"#ifdef USE_LIGHTMAP"
-
 			"vUv2 = uv2;"
-
 		"#endif";
-
 	}
 
 	// BUMP MAP
@@ -252,13 +245,10 @@ class ShaderChunk {
 	// SPECULAR MAP
 
 	const char* specularmap_pars_fragment() {
-
+		return
 		"#ifdef USE_SPECULARMAP"
-
 			"uniform sampler2D specularMap;"
-
 		"#endif";
-
 	}
 
 	const char* specularmap_fragment() {

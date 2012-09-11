@@ -28,6 +28,8 @@ public:
 			points [ i ].set( a[ i ], a[ i + 1 ], a[ i + 2 ]);
 		}
 
+		return *this;
+
 	}
 
 	Vector3 getPoint ( float k ) const {
