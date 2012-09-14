@@ -14,6 +14,8 @@ find_package(SDL REQUIRED)
 find_package(OpenGL REQUIRED)
 if (NOT WIN32)
   find_package(GLEW REQUIRED)
+else()
+  set(GLEW_LIBRARY glews)
 endif()
 
 include_directories(${GLEW_INCLUDE_DIR})

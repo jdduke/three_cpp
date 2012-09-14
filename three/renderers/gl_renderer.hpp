@@ -3943,12 +3943,6 @@ public:
 
 	// Sorting
 
-	function painterSort ( a, b ) {
-
-		return b.z - a.z;
-
-	};
-
 	function numericalSort ( a, b ) {
 
 		return b[ 1 ] - a[ 1 ];
@@ -4070,7 +4064,7 @@ public:
 
 		if ( sortObjects ) {
 
-			renderList.sort( painterSort );
+			std::sort(renderList.begin(), renderList.end(), PainterSort() );
 
 		}
 

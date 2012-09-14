@@ -118,14 +118,6 @@ public:
 
 	}
 
-	struct PainterSort {
-		bool operator()(const RenderableObject& a, const RenderableObject& b) {
-			return b.z < a.z;
-		}
-		bool operator()(const Renderable* a, const Renderable* b) {
-			return b->z < a->z;
-		}
-	};
 
 	RenderData& projectGraph( Object3D& root, bool sort ) {
 

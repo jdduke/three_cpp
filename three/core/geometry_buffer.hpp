@@ -54,7 +54,6 @@ struct GeometryBuffer {
 
 	bool __inittedArrays;
 
-
 };
 
 }
