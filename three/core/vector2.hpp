@@ -19,6 +19,9 @@ public:
     Vector2 ( float xIn, float yIn ) : x ( xIn ), y ( yIn ) { }
     Vector2 ( const Vector2& v ) : x ( v.x ), y ( v.y ) { }
 
+    float& operator[] (const int i) { return xy[i]; }
+    const float operator[] (const int i) const { return xy[i]; }
+
     Vector2& set ( float xIn, float yIn ) {
         x = xIn;
         y = yIn;

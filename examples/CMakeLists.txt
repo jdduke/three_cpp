@@ -23,7 +23,8 @@ include_directories(${SDL_INCLUDE_DIR})
 
 add_definitions(-DGLEW_STATIC -DTHREE_SDL -DTHREE_GLEW)
 
-add_executable(simple ${THREE_HEADERS} simple.cpp)
+#add_executable(simple ${THREE_HEADERS} simple.cpp)
+add_executable(simple simple.cpp)
 
 target_link_libraries(simple ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
 

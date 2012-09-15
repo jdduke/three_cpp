@@ -22,11 +22,6 @@ public:
     Color ( float r, float g, float b )
         : r ( r ), g ( g ), b ( b ) { }
 
-    Color ( Color&& other )      = default;
-    Color ( const Color& other ) = default;
-    Color& operator=( Color&& other )      = default;
-    Color& operator=( const Color& other ) = default;
-
     Color& copyGammaToLinear ( const Color& color ) {
         r = color.r * color.r;
         g = color.g * color.g;

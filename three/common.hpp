@@ -3,10 +3,8 @@
 
 #include <three/config.hpp>
 #include <three/fwd.hpp>
-
-#include <memory>
-#include <iostream>
-#include <sstream>
+#include <three/console.hpp>
+#include <three/visitor.hpp>
 
 namespace three {
 
@@ -159,121 +157,15 @@ public:
 		PrecisionLow = 8
 	};
 
-};
-
-/////////////////////////////////////////////////////////////////////////
-
-struct Visitor {
-	virtual void operator() (Object3D&) { }
-	virtual void operator() (Bone&)     { }
-	virtual void operator() (Camera&)   { }
-	virtual void operator() (Light&)    { }
-	virtual void operator() (Scene&)    { }
-	virtual void operator() (Particle&) { }
-	virtual void operator() (Sprite&)   { }
-	virtual void operator() (Mesh&)     { }
-	virtual void operator() (Line&)     { }
-	virtual ~Visitor() { }
-	template < typename T >
-	void fallback( T& object ) { (*this)( static_cast<Object3D&>(object) ); }
-};
-
-struct ConstVisitor {
-	virtual void operator() (const Object3D&) { }
-	virtual void operator() (const Bone&)     { }
-	virtual void operator() (const Camera&)   { }
-	virtual void operator() (const Light&)    { }
-	virtual void operator() (const Scene&)    { }
-	virtual void operator() (const Particle&) { }
-	virtual void operator() (const Sprite&)   { }
-	virtual void operator() (const Mesh&)     { }
-	virtual void operator() (const Line&)     { }
-	virtual ~ConstVisitor() { }
-	template < typename T >
-	void fallback( const T& object ) { (*this)( static_cast<const Object3D&>(object) ); }
-};
-
-/////////////////////////////////////////////////////////////////////////
-
-class Console {
-private:
-	class LogProxy;
-
-public:
-
-	typedef void(*LogP)(const char*);
-
-	static Console& instance() {
-		static Console sConsole;
-		return sConsole;
-	}
-
-	void info(  const char* msg ) const { info()  << msg; }
-	void log(   const char* msg ) const { log()   << msg; }
-	void debug( const char* msg ) const { debug() << msg; }
-	void warn(  const char* msg ) const { warn()  << msg; }
-	void error( const char* msg ) const { error() << msg; }
-
-	LogProxy info()  const { return LogProxy( output, "INFO:  " ); }
-	LogProxy log()   const { return LogProxy( output, "LOG:   " ); }
-	LogProxy debug() const { return LogProxy( output, "DEBUG: " ); }
-	LogProxy warn()  const { return LogProxy( output, "WARN:  " ); }
-	LogProxy error() const { return LogProxy( output, "ERROR: " ); }
-
-	void setLog( LogP log ) { output = log; }
-
-private:
-
-	LogP output;
-
-	class LogProxy {
-	public:
-		template <class T>
-		LogProxy& operator<<( const T& rhs ) {
-			*stream << rhs;
-			return *this;
-		}
-
-		~LogProxy() {
-			if ( stream && log ) {
-				log( stream->str().c_str() );
-			}
-		}
-		LogProxy( LogProxy&& other )
-		: log ( nullptr ) {
-			std::swap( log, other.log );
-			std::swap( stream, other.stream );
-		}
-		LogProxy& operator= ( LogProxy other )        = delete;
-		LogProxy( const LogProxy& other )             = delete;
-		LogProxy& operator= ( const LogProxy& other ) = delete;
-
-	private:
-
-		friend class Console;
-
-		LogProxy( LogP log, const char* msg = nullptr )
-		 : stream ( new std::stringstream() ), log( log ) {
-		 	if ( msg ) {
-		 		(*this) << msg;
-		 	}
-		 }
-
-		std::unique_ptr<std::stringstream> stream;
-		LogP log;
+	enum AttributeType {
+		C = 0,
+		F,
+		V2,
+		V3,
+		V4
 	};
 
-private:
-
-	Console() : output ( stdcout ) { }
-
-	static void stdcout( const char* msg ) { std::cout << msg << std::endl; }
 };
-
-static Console& console() {
-	return Console::instance();
-}
-
 
 } // namespace three
 

@@ -14,10 +14,6 @@ public:
 	bool visible;
 
 	RenderableVertex() : visible ( true ) { }
-	RenderableVertex( RenderableVertex&& )      = default;
-	RenderableVertex( const RenderableVertex& ) = default;
-	RenderableVertex& operator=( RenderableVertex&& )      = default;
-	RenderableVertex& operator=( const RenderableVertex& ) = default;
 
 	RenderableVertex& copy ( const RenderableVertex& vertex ) {
 		return (*this) = vertex;

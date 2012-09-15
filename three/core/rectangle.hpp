@@ -10,9 +10,6 @@ public:
 
 	Rectangle () { set ( 0, 0, 0, 0 ); bEmpty = true; }
 
-	Rectangle ( const Rectangle& ) = default;
-	Rectangle& operator= ( const Rectangle& ) = default;
-
 	float getX () const      { return left; }
 	float getY () const      { return top; }
 	float getWidth () const  { return width; }

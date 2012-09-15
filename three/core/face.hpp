@@ -20,11 +20,6 @@ public:
     Face ( int a, int b, int c, int d, const Vector3& normal = Vector3(), const Color& color = Color(), int materialIndex = 0 )
         : a ( a ), b ( b ), c ( c ), d ( d ), normal ( normal ), color ( color ), materialIndex ( materialIndex ), mType ( THREE::Face4 ), mSize ( 4 ) { }
 
-    Face ( const Face& other ) = default;
-    Face ( Face&& )            = default;
-    Face& operator= ( const Face& other ) = default;
-    Face& operator= ( Face&& other )      = default;
-
     THREE::FaceType type() const {
         return mType;
     }
@@ -61,7 +56,7 @@ private:
     THREE::FaceType mType;
     int mSize;
 
-    Face( ) = delete;
+    Face( ) THREE_DECL_DELETE;
 
 };
 

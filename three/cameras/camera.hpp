@@ -24,15 +24,10 @@ public:
 	/////////////////////////////////////////////////////////////////////////
 
 	void lookAt ( const Vector3& vector ) {
-
 		matrix.lookAt( position, vector, up );
-
 		if ( rotationAutoUpdate ) {
-
 			rotation = matrix.getEulerRotation ( eulerOrder );
-
 		}
-
 	}
 
 	/////////////////////////////////////////////////////////////////////////

@@ -15,11 +15,6 @@ public:
 	: Renderable ( 0 ), material ( nullptr ), faceMaterial ( nullptr ),
 	  mType ( type ), mSize ( type == THREE::Face3 ? 3 : 4 ) { }
 
-	RenderableFace( RenderableFace&& )      = default;
-	RenderableFace( const RenderableFace& ) = default;
-	RenderableFace& operator=( RenderableFace&& )      = default;
-	RenderableFace& operator=( const RenderableFace& ) = default;
-
 	/////////////////////////////////////////////////////////////////////////
 
 	RenderableVertex v1, v2, v3, v4;

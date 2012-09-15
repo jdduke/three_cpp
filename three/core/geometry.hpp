@@ -43,9 +43,9 @@ struct MorphTarget {
 };
 
 struct Box {
-    float x[2];
-    float y[2];
-    float z[2];
+    std::array<float, 2> x;
+    std::array<float, 2> y;
+    std::array<float, 2> z;
 
     void bound( const Vertex& vertex ) {
        if ( vertex.position.x < x[ 0 ] ) {
@@ -69,6 +69,7 @@ struct Box {
 };
 
 struct Sphere {
+    Sphere() : radius( 0.0f ) { }
     float radius;
 };
 
@@ -153,7 +154,7 @@ public:
 
             }
 
-            face.centroid.divideScalar( face.size() );
+            face.centroid.divideScalar( (float)face.size() );
 
         }
 
@@ -254,7 +255,7 @@ public:
             const auto t1 = uvB.v - uvA.v;
             const auto t2 = uvC.v - uvA.v;
 
-            const auto r = 1.0 / ( s1 * t2 - s2 * t1 );
+            const auto r = 1.0f / ( s1 * t2 - s2 * t1 );
             Vector3 sdir( ( t2 * x1 - t1 * x2 ) * r,
                       ( t2 * y1 - t1 * y2 ) * r,
                       ( t2 * z1 - t1 * z2 ) * r );
@@ -272,7 +273,7 @@ public:
 
         };
 
-        for ( int f = 0, fl = faces.size(); f < fl; f++ ) {
+        for ( size_t f = 0, fl = faces.size(); f < fl; f++ ) {
 
             auto& face = faces[ f ];
             auto& uv = faceVertexUvs[ 0 ][ f ]; // use UV layer 0 for tangents
@@ -311,7 +312,7 @@ public:
 
                 tmp2.cross( face.vertexNormals[ i ], t );
                 const auto test = tmp2.dot( tan2[ vertexIndex ] );
-                const auto w = (test < 0.0) ? -1.0 : 1.0;
+                const auto w = (test < 0.0f) ? -1.0f : 1.0f;
 
                 face.vertexTangents[ i ] = Vector4( tmp.x, tmp.y, tmp.z, w );
 
@@ -327,15 +328,17 @@ public:
 
         if ( vertices.size() > 0 ) {
 
-            boundingBox = { { vertices[ 0 ].position.x, vertices[ 0 ].position.x },
-                            { vertices[ 0 ].position.y, vertices[ 0 ].position.y },
-                            { vertices[ 0 ].position.z, vertices[ 0 ].position.z } };
+            Box bb = { { vertices[ 0 ].position.x, vertices[ 0 ].position.x },
+                       { vertices[ 0 ].position.y, vertices[ 0 ].position.y },
+                       { vertices[ 0 ].position.z, vertices[ 0 ].position.z } };
 
-            for ( int v = 1, vl = vertices.size(); v < vl; v ++ ) {
+            for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
-                boundingBox.bound ( vertices [ v ] );
+                bb.bound ( vertices [ v ] );
 
             }
+
+            boundingBox = bb;
 
         }
 
@@ -374,7 +377,7 @@ public:
         auto precisionPoints = 4; // number of decimal points, eg. 4 for epsilon of 0.0001
         auto precision = Math::pow( 10.f, precisionPoints );
 
-        for ( int i = 0, il = vertices.size(); i < il; i ++ ) {
+        for ( size_t i = 0, il = vertices.size(); i < il; i ++ ) {
 
             const auto& v = vertices[ i ].position;
             auto key = std::make_tuple( (int)Math::round( v.x * precision ), (int)Math::round( v.y * precision ), (int)Math::round( v.z * precision ) );
@@ -382,9 +385,9 @@ public:
             auto vertexIter = verticesMap.find( key );
             if ( vertexIter == verticesMap.end() ) {
 
-                verticesMap[ key ] = i;
+                verticesMap[ key ] = (int)i;
                 unique.push_back( vertices[ i ] );
-                changes[ i ] = unique.size() - 1;
+                changes[ i ] = (int)unique.size() - 1;
 
             } else {
 
@@ -420,8 +423,6 @@ protected:
 
     Geometry()
     : id ( GeometryCount()++ ),
-    boundingBox ( {{0,0}, {0,0}, {0,0}} ),
-    boundingSphere ( { 0 } ),
     hasTangents ( false ),
     dynamic ( true ) { }
 

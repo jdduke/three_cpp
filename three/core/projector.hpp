@@ -22,6 +22,7 @@
 
 #include <three/scenes/scene.hpp>
 
+#include <functional>
 #include <vector>
 
 namespace three {
@@ -329,7 +330,7 @@ public:
 
 					const auto& uvs = faceVertexUvs[ c ][ f ];
 
-					for ( int u = 0, ul = uvs.size(); u < ul; u ++ ) {
+					for ( size_t u = 0, ul = uvs.size(); u < ul; u ++ ) {
 
 						_face.uvs[ c ][ u ] = uvs[ u ];
 
@@ -360,7 +361,7 @@ public:
 			// Handle LineStrip and LinePieces
 			auto step = object.lineType == THREE::LinePieces ? 2 : 1;
 
-			for ( int v = 1, vl = vertices.size(); v < vl; v ++ ) {
+			for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
 				auto& v1 = p._vertices.next();
 				v1.positionScreen.copy( vertices[ v ].position );

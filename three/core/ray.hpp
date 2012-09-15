@@ -17,7 +17,7 @@ public:
 	float far;
 
 	Ray ( const Vector3& origin = Vector3(), const Vector3& direction = Vector3(), float near = 0, float far = std::numeric_limits<float>::infinity() )
-	: origin ( origin ), direction ( direction ), near ( near ), far ( far ) { }
+	: origin ( origin ), direction ( direction ), near ( near ), far ( far ), precision ( 0.0001f ) { }
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +85,8 @@ public:
 
 			}
 
-			intersects.push_back( Intersection({distance, object.position, nullptr, 0, &object}) );
+			Intersection i = { distance, object.position, nullptr, 0, &object };
+			intersects.push_back( i );
 
 		} else if ( object.type() == THREE::Mesh ) {
 
@@ -129,7 +130,7 @@ public:
 
 			Vector3 vector, normal, intersectPoint;
 
-			for ( int f = 0, fl = geometry.faces.size(); f < fl; f ++ ) {
+			for ( size_t f = 0, fl = geometry.faces.size(); f < fl; f++ ) {
 
 				const auto& face = geometry.faces[ f ];
 
@@ -179,7 +180,8 @@ public:
 
 						if ( pointInFace3( intersectPoint, a, b, c ) ) {
 
-							intersects.push_back( Intersection({distance, intersectPoint, &face, f, &object}) );
+							Intersection i = { distance, intersectPoint, &face, (int)f, &object };
+							intersects.push_back( i );
 
 						}
 
@@ -192,7 +194,8 @@ public:
 
 						if ( pointInFace3( intersectPoint, a, b, d ) || pointInFace3( intersectPoint, b, c, d ) ) {
 
-							intersects.push_back( Intersection({distance, intersectPoint, &face, f, &object}) );
+							Intersection i = { distance, intersectPoint, &face, (int)f, &object };
+							intersects.push_back( i );
 
 						}
 
@@ -245,7 +248,7 @@ private:
 
 	}
 
-	float precision = 0.0001f;
+	float precision;
 
 };
 

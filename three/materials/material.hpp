@@ -5,6 +5,10 @@
 
 #include <three/extras/noncopyable.hpp>
 
+#include <three/renderers/gl_custom_attribute.hpp>
+
+#include <map>
+
 namespace three {
 
 class Material : public NonCopyable {
@@ -21,6 +25,8 @@ public:
 	int id;
 
 	std::string name;
+
+	//std::map<std::string, GLCustomAttribute> attributes;
 
 	THREE::Side side;
 
@@ -57,6 +63,8 @@ public:
 		material.name                = name;
 
 		material.side                = side;
+
+		//material.attributes          = material.attributes;
 
 		material.opacity             = opacity;
 		material.transparent         = transparent;

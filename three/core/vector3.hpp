@@ -17,10 +17,9 @@ public:
 
     Vector3() : x ( 0 ), y ( 0 ), z ( 0 ) { }
     Vector3 ( float xIn, float yIn, float zIn ) : x ( xIn ), y ( yIn ), z ( zIn ) { }
-    Vector3 ( Vector3&& v )      = default;
-    Vector3 ( const Vector3& v ) = default;
-    Vector3& operator= ( Vector3&& v )      = default;
-    Vector3& operator= ( const Vector3& v ) = default;
+
+    float& operator[] (const int i) { return xyz[i]; }
+    const float operator[] (const int i) const { return xyz[i]; }
 
     Vector3& set ( float xIn, float yIn, float zIn ) {
         x = xIn;

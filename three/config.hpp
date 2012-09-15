@@ -38,4 +38,65 @@
 # define THREE_DECL
 #endif // !defined(THREE_DECL)
 
+//////////////////////////////////////////////////////////////////////////
+
+
+// C++11 support
+#if defined(__GNUC__)
+#  define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+#  if GCC_VERSION >= 40300
+#    define THREE_HAS_VARIADIC_TEMPLATES 1
+#    define THREE_HAS_RVALUE_REFERENCES 1
+#  endif
+#  if GCC_VERSION >= 40400
+#    define THREE_HAS_DELETED_FUNCTIONS 1
+#  endif
+#  if GCC_VERSION >= 40600
+#    define THREE_HAS_RANGE_BASED_FOR 1
+#  endif
+#elif defined(__clang__)
+#  define THREE_HAS_VARIADIC_TEMPLATES (__has_feature(cxx_variadic_templates))
+#  define THREE_HAS_DELETED_FUNCTIONS  (__has_feature(cxx_deleted_functions))
+#  define THREE_HAS_RVALUE_REFERENCES  (__has_feature(cxx_rvalue_references))
+#  define THREE_HAS_RANGE_BASED_FOR    (__has_feature(cxx_range_for))
+#elif defined(_MSC_VER)
+// No variadics, no deleted functions, no fun :(
+#  if _MSC_VER > 1500
+#    define THREE_HAS_RVALUE_REFERENCES 1
+#  endif
+#  if _MSC_VER > 1600
+#    define THREE_HAS_RANGE_BASED_FOR 1
+#  endif
+#endif
+
+#if !defined(THREE_HAS_VARIADIC_TEMPLATES)
+#  define THREE_HAS_VARIADIC_TEMPLATES 0
+#endif
+#if !defined(THREE_HAS_DELETED_FUNCTIONS)
+#  define THREE_HAS_DELETED_FUNCTIONS 0
+#endif
+#if !defined(THREE_HAS_RVALUE_REFERENCES)
+#define THREE_HAS_RVALUE_REFERENCES 0
+#endif
+#if !defined(THREE_HAS_RANGE_BASED_FOR)
+# define THREE_HAS_RANGE_BASED_FOR 0
+#endif
+
+#if THREE_HAS_RANGE_BASED_FOR==0
+#  error Range-based for loop support required
+#endif
+#if THREE_HAS_RVALUE_REFERENCES==0
+#  error R-value reference support required
+#endif
+
+#if THREE_HAS_DELETED_FUNCTIONS
+#  define THREE_DECL_DELETE = delete
+#  define THREE_DECL_DEFAULT = default
+#else
+#  define THREE_DECL_DELETE
+#  define THREE_DECL_DEFAULT
+#endif
+
 #endif // THREE_CONFIG_HPP

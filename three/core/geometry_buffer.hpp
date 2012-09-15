@@ -3,13 +3,15 @@
 
 #include <three/core/face.hpp>
 
+#include <three/renderers/gl_custom_attribute.hpp>
+
 namespace three {
 
 struct GeometryBuffer {
 
 	typedef unsigned GLBuffer;
 
-	//std::vector<WebGLCustomAttribute> __glCustomAttributesList;
+	std::vector<GLCustomAttribute> __glCustomAttributesList;
 
 	GLBuffer __glColorBuffer;
 	GLBuffer __glFaceBuffer;

@@ -30,8 +30,8 @@ class RenderableVertex;
 class Spline;
 
 class Geometry;
-class GeometryBuffer;
-class GeometryGroup;
+struct GeometryBuffer;
+struct GeometryGroup;
 class Vertex;
 class Material;
 class Shader;

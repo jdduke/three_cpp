@@ -16,9 +16,6 @@ public:
 	UV ( float u = 0, float v = 0 )
 		: u ( u ), v ( v ) { }
 
-	UV ( const UV& ) = default;
-	UV& operator= ( const UV& ) = default;
-
 	UV& set ( float uIn, float vIn ) {
 
 		u = uIn;

@@ -24,7 +24,11 @@ public:
 	template < typename T > static T sin( T t )   { return std::sin( t ); }
 	template < typename T > static T tan( T t )   { return std::tan( t ); }
 
+#if defined(_MSC_VER)
+	template < typename T > static T round(T n)    { return (n > (T)0) ? std::floor(n + (T)0.5) : std::ceil(n - (T)0.5); }
+#else
 	template < typename T > static T round ( T t ) { return std::round( t ); }
+#endif
 	template < typename T > static T ceil ( T t )  { return std::ceil( t ); }
 	template < typename T > static T floor ( T t ) { return std::floor( t ); }
 
@@ -61,7 +65,7 @@ public:
 
 	// Random integer from <low, high> interval
 	static int randInt ( int low, int high ) {
-		return low + floor( random() * ( high - low + 1 ) );
+		return low + (int)floor( random() * ( high - low + 1 ) );
 	}
 
 	// Random float from <low, high> interval

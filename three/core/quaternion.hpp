@@ -5,7 +5,6 @@
 
 #include <three/core/math.hpp>
 #include <three/core/vector3.hpp>
-//#include <three/core/matrix4.hpp>
 
 namespace three {
 
@@ -257,7 +256,7 @@ public:
             return *this;
         }
 
-        auto ratioA = Math::sin ( ( 1. - t ) * halfTheta ) / sinHalfTheta;
+        auto ratioA = Math::sin ( ( 1.f - t ) * halfTheta ) / sinHalfTheta;
         auto ratioB = Math::sin ( t * halfTheta ) / sinHalfTheta;
 
         w = ( w * ratioA + w * ratioB );

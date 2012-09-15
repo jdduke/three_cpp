@@ -48,9 +48,9 @@ public:
 	THREE::Order eulerOrder;
 	Vector3 scale;
 
-	void* renderDepth = nullptr;
+	void* renderDepth;
 
-	bool rotationAutoUpdate = true;
+	bool rotationAutoUpdate;
 
 	Matrix4 matrix;
 	Matrix4 matrixWorld;

@@ -60,10 +60,9 @@ public:
         auto radius = -extract.geometry->boundingSphere.radius * matrix.getMaxScaleOnAxis();
 
         for ( int i = 0; i < 6; i ++ ) {
-
             distance = planes[ i ].x * me[12] + planes[ i ].y * me[13] + planes[ i ].z * me[14] + planes[ i ].w;
-            if ( distance <= radius ) return false;
-
+            if ( distance <= radius ) 
+                return false;
         }
 
         return true;

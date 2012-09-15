@@ -13,12 +13,14 @@ namespace three {
 class Spline {
 public:
 
-	std::vector<Vector3> points;
-
-	Spline () = default;
-
 	Spline ( std::vector<Vector3> points )
 		: points ( std::move( points ) ) { }
+
+	//////////////////////////////////////////////////////////////////////////
+
+	std::vector<Vector3> points;
+
+	//////////////////////////////////////////////////////////////////////////
 
 	Spline& initFromArray( const float* a, size_t n ) {
 
@@ -34,15 +36,15 @@ public:
 
 	Vector3 getPoint ( float k ) const {
 
-		float point = k * ( points.size() - 1 );
-		int intPoint = std::floor( point );
+		float point = k * ( (int)points.size() - 1 );
+		int intPoint = (int)std::floor( point );
 		float weight = point - intPoint;
 		int c[4];
 
 		c[ 0 ] = intPoint == 0 ? intPoint : intPoint - 1;
 		c[ 1 ] = intPoint;
-		c[ 2 ] = intPoint  > points.size() - 2 ? points.size() - 1 : intPoint + 1;
-		c[ 3 ] = intPoint  > points.size() - 3 ? points.size() - 1 : intPoint + 2;
+		c[ 2 ] = intPoint  > points.size() - 2 ? (int)points.size() - 1 : intPoint + 1;
+		c[ 3 ] = intPoint  > points.size() - 3 ? (int)points.size() - 1 : intPoint + 2;
 
 		const auto& pa = points[ c[ 0 ] ];
 		const auto& pb = points[ c[ 1 ] ];

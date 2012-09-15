@@ -77,7 +77,7 @@ int main ( int argc, char* argv[] ) {
         auto deltaTime = ( time - lastTime );
         auto sleepTime = frameTime - deltaTime;
 
-        std::this_thread::sleep_for( Clock::Duration(sleepTime) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( (int)(sleepTime * 1000) ) );
 
         lastTime = time;
 
