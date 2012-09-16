@@ -14,9 +14,15 @@ class THREE {
 public:
 
 	enum Side {
+		NoSide     = -1,
 		FrontSide  = 0,
 		BackSide   = 1,
 		DoubleSide = 2
+	};
+
+	enum Dir {
+		CW  = 0,
+		CCW = 1
 	};
 
 	enum Shading {

@@ -61,7 +61,7 @@ int main ( int argc, char* argv[] ) {
         quit();
     }
 
-	auto renderer = three::GLRenderer::create( parameters );
+    auto renderer = three::GLRenderer::create( parameters );
     if ( !renderer ) {
         quit();
     }
