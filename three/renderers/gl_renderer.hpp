@@ -508,7 +508,7 @@ public:
 
     // TODO: Implement
 
-#if 0
+#ifdef TODO_PLUGINS
     // Plugins
 
     addPostPlugin = function ( plugin ) {
@@ -524,51 +524,51 @@ public:
         renderPluginsPre.push_back( plugin );
 
     }
-#endif
+#endif // TODO_PLUGINS
 
-    // TODO: Implement
-
-#if 0
     // Deallocation
 
-    THREE_DECL void deallocateObject ( Object3D::Ptr object ) {
+    THREE_DECL void deallocateObject ( Object3D& object ) {
 
-        if ( ! object.__glInit ) return;
+        if ( ! object.glData.__glInit ) return;
 
-        object.__glInit = false;
+        object.glData.clear();
 
-        delete object._modelViewMatrix;
-        delete object._normalMatrix;
+        ExtractMaterialAndGeometry extract;
+        object.visit ( extract );
+        Geometry* geometry = extract.geometry;
 
-        delete object._normalMatrixArray;
-        delete object._modelViewMatrixArray;
-        delete object._modelMatrixArray;
+        if ( !geometry ) {
+            console().warn( "Object3D contains no geometry" );
+        }
 
-        if ( object instanceof THREE::Mesh ) {
+        if ( object.type() == THREE::Mesh ) {
 
-            for ( auto g in object.geometry.geometryGroups ) {
+            for ( auto& geometryGroup : geometry->geometryGroups ) {
 
-                deleteMeshBuffers( object.geometry.geometryGroups[ g ] );
+                deleteMeshBuffers( geometryGroup );
 
             }
 
-        } else if ( object instanceof THREE::Ribbon ) {
+        } else if ( object.type() == THREE::Ribbon ) {
 
-            deleteRibbonBuffers( object.geometry );
+            deleteRibbonBuffers( *geometry );
 
-        } else if ( object instanceof THREE::Line ) {
+        } else if ( object.type() == THREE::Line ) {
 
-            deleteLineBuffers( object.geometry );
+            deleteLineBuffers( *geometry );
 
-        } else if ( object instanceof THREE::ParticleSystem ) {
+        } else if ( object.type() == THREE::ParticleSystem ) {
 
-            deleteParticleBuffers( object.geometry );
+            deleteParticleBuffers( *geometry );
 
         }
 
     }
 
-    THREE_DECL void deallocateTexture ( Texture::Ptr texture ) {
+
+#ifdef TODO_TEXTURE
+    THREE_DECL void deallocateTexture ( Texture& texture ) {
 
         if ( ! texture.__glInit ) return;
 
@@ -578,7 +578,9 @@ public:
         _info.memory.textures --;
 
     }
+#endif
 
+#ifdef TODO_RENDER_TARGET
     THREE_DECL void deallocateRenderTarget ( RenderTarget::Ptr renderTarget ) {
 
         if ( !renderTarget || ! renderTarget.__glTexture ) return;
@@ -602,14 +604,16 @@ public:
         }
 
     }
+#endif
 
-    THREE_DECL void deallocateMaterial ( Material::Ptr material ) {
+#ifdef TODO_MATERIALS
+    THREE_DECL void deallocateMaterial ( Material& material ) {
 
         auto program = material.program;
 
         if ( ! program ) return;
 
-        material.program = undefined;
+        material.program = nullptr;
 
         // only deallocate GL program if this was the last use of shared program
         // assumed there is only single copy of any program in the _programs list
@@ -665,8 +669,7 @@ public:
         }
 
     }
-
-#endif
+#endif // TODO_MATERIALS
 
     // Rendering
 
@@ -823,38 +826,35 @@ public:
 
         }
 
-
-#ifdef TODO_CUSTOM_ATTRIBUTE_LIST
-        if ( geometryGroup.buffer.__glCustomAttributesList ) {
-
-            for ( auto id in geometryGroup.buffer.__glCustomAttributesList ) {
-                glDeleteBuffer( geometryGroup.buffer.__glCustomAttributesList[ id ].buffer );
-            }
-
+        for ( auto& attribute : geometryGroup.buffer.__glCustomAttributesList ) {
+            glDeleteBuffer( attribute.buffer );
         }
 
         _info.memory.geometries --;
-#endif // TODO_CUSTOM_ATTRIBUTE_LIST
 
     }
-
-
 
 
     // Buffer initialization
 
     THREE_DECL void initCustomAttributes ( Geometry& geometry, Object3D& object ) {
 
-    #ifdef TODO_CUSTOM_ATTRIBUTE_LIST
-        auto nvertices = geometry.vertices.size();
+        const auto nvertices = geometry.vertices.size();
 
-        auto material = object.material;
+        ExtractMaterialAndGeometry extract;
+        object.visit ( extract );
+        if ( !extract.material ) return;
 
-        if ( material.attributes ) {
+        auto& material = *extract.material;
+
+        if ( material.attributes.size() > 0 ) {
 
             geometry.buffer.__glCustomAttributesList.clear();
 
-            for ( auto& attribute : material.attributes ) {
+            for ( auto& namedAttribute : material.attributes ) {
+
+                auto& a = namedAttribute.first;
+                auto& attribute = namedAttribute.second;
 
                 if( !attribute.__glInitialized || attribute.createUniqueBuffers ) {
 
@@ -862,17 +862,17 @@ public:
 
                     auto size = 1;      // "f" and "i"
 
-                    if ( attribute.type == "v2" ) size = 2;
-                    else if ( attribute.type == "v3" ) size = 3;
-                    else if ( attribute.type == "v4" ) size = 4;
-                    else if ( attribute.type == "c"  ) size = 3;
+                    if ( attribute.type == THREE::V2 ) size = 2;
+                    else if ( attribute.type == THREE::V3 ) size = 3;
+                    else if ( attribute.type == THREE::V4 ) size = 4;
+                    else if ( attribute.type == THREE::C  ) size = 3;
 
                     attribute.size = size;
 
                     attribute.array.resize( nvertices * size );
 
                     attribute.buffer = glCreateBuffer();
-                    attribute.buffer.belongsToAttribute = a;
+                    attribute.belongsToAttribute = a;
 
                     attribute.needsUpdate = true;
 
@@ -883,8 +883,6 @@ public:
             }
 
         }
-
-#endif //TODO_CUSTOM_ATTRIBUTE_LIST
 
     }
 
@@ -2886,6 +2884,7 @@ public:
                     }
 
                 }
+
 #ifdef TODO_CHUNK_FACE_VERTICES
                 else if ( customAttribute.boundTo == "faceVertices" ) {
 
@@ -3165,54 +3164,53 @@ public:
 
 #ifdef TODO_ATTRIBUTES
 
-    function setDirectBuffers ( geometry, hint, dispose ) {
+    void setDirectBuffers ( Geometry& geometry, int hint, bool dispose ) {
 
         auto& attributes = geometry.attributes;
 
-        auto index    = attributes[ "index" ];
-        auto position = attributes[ "position" ];
-        auto normal   = attributes[ "normal" ];
-        auto uv       = attributes[ "uv" ];
-        auto color    = attributes[ "color" ];
-        auto tangent  = attributes[ "tangent" ];
+        if ( geometry.elementsNeedUpdate && contains( attributes, "index" ) ) {
 
-        if ( geometry.elementsNeedUpdate && index != undefined ) {
-
+            auto& index = attributes[ "index" ];
             glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
             glBufferData( GL_ELEMENT_ARRAY_BUFFER, index.array, hint );
 
         }
 
-        if ( geometry.verticesNeedUpdate && position != undefined ) {
+        if ( geometry.verticesNeedUpdate && contains( attributes, "position" ) ){
 
+            auto& position = attributes[ "position" ];
             glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
             glBufferData( GL_ARRAY_BUFFER, position.array, hint );
 
         }
 
-        if ( geometry.normalsNeedUpdate && normal != undefined ) {
+        if ( geometry.normalsNeedUpdate && contains( attributes, "normals" ) ) {
 
+            auto& normal   = attributes[ "normal" ];
             glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
             glBufferData( GL_ARRAY_BUFFER, normal.array, hint );
 
         }
 
-        if ( geometry.uvsNeedUpdate && uv != undefined ) {
+        if ( geometry.uvsNeedUpdate && contains( attributes, "uv" ) ) {
 
+            auto& uv       = attributes[ "uv" ];
             glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
             glBufferData( GL_ARRAY_BUFFER, uv.array, hint );
 
         }
 
-        if ( geometry.colorsNeedUpdate && color != undefined ) {
+        if ( geometry.colorsNeedUpdate && contains( attributes, "color" ) ) {
 
+            auto& color    = attributes[ "color" ];
             glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
             glBufferData( GL_ARRAY_BUFFER, color.array, hint );
 
         }
 
-        if ( geometry.tangentsNeedUpdate && tangent != undefined ) {
+        if ( geometry.tangentsNeedUpdate && contains( attributes, "tangent") ) {
 
+            auto& tangent  = attributes[ "tangent" ];
             glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
             glBufferData( GL_ARRAY_BUFFER, tangent.array, hint );
 
@@ -3220,9 +3218,9 @@ public:
 
         if ( dispose ) {
 
-            for ( auto i in geometry.attributes ) {
+            for ( auto& attribute : geometry.attributes ) {
 
-                delete geometry.attributes[ i ].array;
+                attribute.array.clear();
 
             }
 
@@ -3230,9 +3228,12 @@ public:
 
     }
 
+
+#ifdef TODO_BUFFER_RENDERING
+
     // Buffer rendering
 
-    renderBufferImmediate = function ( object, program, material ) {
+    void renderBufferImmediate ( Object3D& object, Program& program, Material& material ) {
 
         if ( object.hasPositions && ! object.__glVertexBuffer ) object.__glVertexBuffer = glCreateBuffer();
         if ( object.hasNormals && ! object.__glNormalBuffer ) object.__glNormalBuffer = glCreateBuffer();
@@ -3664,6 +3665,10 @@ public:
         }
 
     }
+
+#endif // TODO_BUFFER_RENDERING
+
+//#ifdef TODO_MORPH_TARGETS
 
     function setupMorphTargets ( material, geometryGroup, object ) {
 

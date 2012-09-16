@@ -8,7 +8,7 @@
 
 namespace three {
 
-typedef int Buffer;
+typedef unsigned Buffer;
 
 class THREE {
 public:
@@ -127,8 +127,10 @@ public:
 		Light,
 		Scene,
 		Particle,
+		ParticleSystem,
 		Sprite,
 		Mesh,
+		Ribbon,
 		Line
 	};
 

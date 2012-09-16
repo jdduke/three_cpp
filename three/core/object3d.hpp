@@ -17,15 +17,6 @@
 
 namespace three {
 
-struct ObjectGLData {
-	ObjectGLData() : __glInit ( false ) { }
-
-	bool __glInit;
-	Matrix4 _modelViewMatrix;
-	Matrix4 _normalMatrix;
-
-};
-
 class Object3D : NonCopyable {
 public:
 
@@ -45,6 +36,7 @@ public:
 	int id;
 
 	std::string name;
+
 	//properties = {};
 
 	Object3D* parent;
@@ -82,6 +74,28 @@ public:
 	bool frustumCulled;
 
 	bool sortParticles;
+
+	struct GLData {
+		GLData() : __glInit ( false ) { }
+
+		bool __glInit;
+		Matrix4 _modelViewMatrix;
+		Matrix4 _normalMatrix;
+
+		std::vector<float> _normalMatrixArray;
+		std::vector<float> _modelViewMatrixArray;
+		std::vector<float> _modelMatrixArray;
+
+		void clear() {
+			__glInit = false;
+			_modelViewMatrix.identity();
+			_normalMatrix.identity();
+			_normalMatrixArray.clear();
+			_modelViewMatrixArray.clear();
+			_modelMatrixArray.clear();
+		}
+	} glData;
+
 
 	/////////////////////////////////////////////////////////////////////////
 
