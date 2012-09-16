@@ -17,6 +17,15 @@
 
 namespace three {
 
+struct ObjectGLData {
+	ObjectGLData() : __glInit ( false ) { }
+
+	bool __glInit;
+	Matrix4 _modelViewMatrix;
+	Matrix4 _normalMatrix;
+
+};
+
 class Object3D : NonCopyable {
 public:
 
@@ -71,6 +80,8 @@ public:
 	bool receiveShadow;
 
 	bool frustumCulled;
+
+	bool sortParticles;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -317,7 +328,8 @@ protected:
 	visible ( true ),
 	castShadow ( false ),
 	receiveShadow ( false ),
-	frustumCulled ( true ) { }
+	frustumCulled ( true ),
+	sortParticles ( false ) { }
 
 	virtual void __addObject(Ptr& object) { }
 

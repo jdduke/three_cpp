@@ -54,20 +54,20 @@
 #    define THREE_HAS_DELETED_FUNCTIONS 1
 #  endif
 #  if GCC_VERSION >= 40600
-#    define THREE_HAS_RANGE_BASED_FOR 1
+#    define THREE_HAS_RANGE_FOR 1
 #  endif
 #elif defined(__clang__)
 #  define THREE_HAS_VARIADIC_TEMPLATES (__has_feature(cxx_variadic_templates))
 #  define THREE_HAS_DELETED_FUNCTIONS  (__has_feature(cxx_deleted_functions))
 #  define THREE_HAS_RVALUE_REFERENCES  (__has_feature(cxx_rvalue_references))
-#  define THREE_HAS_RANGE_BASED_FOR    (__has_feature(cxx_range_for))
+#  define THREE_HAS_RANGE_FOR    (__has_feature(cxx_range_for))
 #elif defined(_MSC_VER)
 // No variadics, no deleted functions, no fun :(
 #  if _MSC_VER > 1500
 #    define THREE_HAS_RVALUE_REFERENCES 1
 #  endif
 #  if _MSC_VER > 1600
-#    define THREE_HAS_RANGE_BASED_FOR 1
+#    define THREE_HAS_RANGE_FOR 1
 #  endif
 #endif
 
@@ -80,14 +80,14 @@
 #if !defined(THREE_HAS_RVALUE_REFERENCES)
 #define THREE_HAS_RVALUE_REFERENCES 0
 #endif
-#if !defined(THREE_HAS_RANGE_BASED_FOR)
-# define THREE_HAS_RANGE_BASED_FOR 0
+#if !defined(THREE_HAS_RANGE_FOR)
+# define THREE_HAS_RANGE_FOR 0
 #endif
 
-#if THREE_HAS_RANGE_BASED_FOR==0
+#if !THREE_HAS_RANGE_FOR
 #  error Range-based for loop support required
 #endif
-#if THREE_HAS_RVALUE_REFERENCES==0
+#if !THREE_HAS_RVALUE_REFERENCES
 #  error R-value reference support required
 #endif
 

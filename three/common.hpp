@@ -158,7 +158,8 @@ public:
 	};
 
 	enum AttributeType {
-		C = 0,
+		I = 0,
+		C,
 		F,
 		V2,
 		V3,

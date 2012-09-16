@@ -19,10 +19,8 @@ public:
 
     Vector4() : x ( 0 ), y ( 0 ), z ( 0 ), w ( 1.f ) { }
     Vector4 ( float xIn, float yIn, float zIn, float wIn = 1.f ) : x ( xIn ), y ( yIn ), z ( zIn ), w ( wIn ) { }
-    /*Vector4 ( Vector4&& v )      = default;
-    Vector4 ( const Vector4& v ) = default;
-    Vector4& operator= ( const Vector4& v ) = default;
-    Vector4& operator= ( Vector4&& v )      = default;*/
+    explicit Vector4 ( float value ) : x ( value ), y ( value ), z ( value ), w ( value ) { }
+    explicit Vector4 ( float* values ) : x ( values[0] ), y ( values[1] ), z ( values[2] ), w ( values[3] ) { }
 
     float& operator[] (const int i) { return xyzw[i]; }
     const float operator[] (const int i) const { return xyzw[i]; }

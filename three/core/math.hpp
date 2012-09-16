@@ -13,6 +13,8 @@ public:
 
 	static const float PI;
 
+	static const float INF;
+
 	template < typename T > static T sqrt( T t )  { return std::sqrt( t ); }
 	template < typename T > static T abs( T t )   { return std::abs( t ); }
 
@@ -86,6 +88,7 @@ public:
 };
 
 const float Math::PI = std::atan(1.f)/4;
+const float Math::INF = std::numeric_limits<float>::max();//std::numeric_limits<float>::infinity();
 
 } // namespace three
 

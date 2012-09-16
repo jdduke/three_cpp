@@ -7,6 +7,10 @@
 #include <three/cameras/orthographic_camera.hpp>
 #include <three/cameras/perspective_camera.hpp>
 
+#include <three/core/buffer_geometry.hpp>
+#include <three/core/geometry.hpp>
+#include <three/core/geometry_buffer.hpp>
+#include <three/core/geometry_group.hpp>
 #include <three/core/clock.hpp>
 #include <three/core/color.hpp>
 #include <three/core/face3.hpp>

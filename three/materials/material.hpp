@@ -26,7 +26,7 @@ public:
 
 	std::string name;
 
-	//std::map<std::string, GLCustomAttribute> attributes;
+	std::map<std::string, GLCustomAttribute> attributes;
 
 	THREE::Side side;
 
@@ -55,6 +55,9 @@ public:
 	bool visible;
 
 	bool needsUpdate;
+
+	bool morphTargets;
+	bool morphNormals;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -92,6 +95,9 @@ public:
 
 		material.visible             = visible;
 
+		material.morphNormals        = morphNormals;
+		material.morphTargets        = morphTargets;
+
 		return material;
 
 	}
@@ -117,7 +123,9 @@ protected:
 	alphaTest ( 0 ),
 	overdraw ( false ),
 	visible ( true ),
-	needsUpdate ( true ) { }
+	needsUpdate ( true ),
+	morphTargets ( false ),
+	morphNormals ( false ) { }
 
 private:
 

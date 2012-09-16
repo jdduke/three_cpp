@@ -17,6 +17,8 @@ public:
 
     Vector3() : x ( 0 ), y ( 0 ), z ( 0 ) { }
     Vector3 ( float xIn, float yIn, float zIn ) : x ( xIn ), y ( yIn ), z ( zIn ) { }
+    explicit Vector3( float value ) : x ( value ), y ( value ), z ( value ) { }
+    explicit Vector3 ( float* values ) : x ( values[0] ), y ( values[1] ), z ( values[2] ) { }
 
     float& operator[] (const int i) { return xyz[i]; }
     const float operator[] (const int i) const { return xyz[i]; }

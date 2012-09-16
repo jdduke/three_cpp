@@ -17,7 +17,8 @@ public:
 
     Vector2() : x ( 0 ), y ( 0 ) { }
     Vector2 ( float xIn, float yIn ) : x ( xIn ), y ( yIn ) { }
-    Vector2 ( const Vector2& v ) : x ( v.x ), y ( v.y ) { }
+    explicit Vector2 ( float value ) : x ( value ), y ( value ) { }
+    explicit Vector2 ( float* values ) : x ( values[0] ), y ( values[1] ) { }
 
     float& operator[] (const int i) { return xy[i]; }
     const float operator[] (const int i) const { return xy[i]; }

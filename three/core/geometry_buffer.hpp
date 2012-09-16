@@ -41,7 +41,7 @@ struct GeometryBuffer {
 	std::vector<float> __normalArray;
 	std::vector<float> __tangentArray;
 	std::vector<float> __colorArray;
-	std::vector<int>   __sortArray;
+	std::vector<std::pair<float, int>> __sortArray;
 
 	std::vector<float> __uvArray;
 	std::vector<float> __uv2Array;

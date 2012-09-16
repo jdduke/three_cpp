@@ -45,7 +45,12 @@ inline void glDeleteBuffer( GLuint& buffer ) {
 
 #endif
 
-
+template < typename C >
+void glBindAndBuffer(int target, unsigned buffer, const C& container, int usage) {
+	glBindBuffer( target, buffer );
+	glBufferData( target, container.size() * sizeof(container[0]), container.data(), usage );
 }
+
+} // namespace three
 
 #endif // THREE_GL_HPP

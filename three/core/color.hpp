@@ -22,6 +22,9 @@ public:
     Color ( float r, float g, float b )
         : r ( r ), g ( g ), b ( b ) { }
 
+    float& operator[] (const int i) { return rgb[i]; }
+    const float operator[] (const int i) const { return rgb[i]; }
+
     Color& copyGammaToLinear ( const Color& color ) {
         r = color.r * color.r;
         g = color.g * color.g;

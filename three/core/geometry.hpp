@@ -3,6 +3,7 @@
 
 #include <three/common.hpp>
 
+#include <three/core/interfaces.hpp>
 #include <three/core/geometry_buffer.hpp>
 
 #include <three/core/math.hpp>
@@ -43,27 +44,34 @@ struct MorphTarget {
 };
 
 struct Box {
-    std::array<float, 2> x;
-    std::array<float, 2> y;
-    std::array<float, 2> z;
+    Vector3 min;
+    Vector3 max;
+
+    Box () { }
+    Box (const Vector3& min, const Vector3& max)
+    : min ( min ), max ( max ) { }
 
     void bound( const Vertex& vertex ) {
-       if ( vertex.position.x < x[ 0 ] ) {
-            x[ 0 ] = vertex.position.x;
-        } else if ( vertex.position.x > x[ 1 ] ) {
-            x[ 1 ] = vertex.position.x;
+       bound( vertex.position );
+    }
+
+    void bound( const Vector3& pos ) {
+       if ( pos.x < min.x ) {
+            min.x = pos.x;
+        } else if ( pos.x > max.x ) {
+            max.x = pos.x;
         }
 
-        if ( vertex.position.y < y[ 0 ] ) {
-            y[ 0 ] = vertex.position.y;
-        } else if ( vertex.position.y > y[ 1 ] ) {
-            y[ 1 ] = vertex.position.y;
+        if ( pos.y < min.y ) {
+            min.y = pos.y;
+        } else if ( pos.y > max.y ) {
+            max.y = pos.y;
         }
 
-        if ( vertex.position.z < z[ 0 ] ) {
-            z[ 0 ] = vertex.position.z;
-        } else if ( vertex.position.z > z[ 1 ] ) {
-            z[ 1 ] = vertex.position.z;
+        if ( pos.z < min.z ) {
+            min.z = pos.z;
+        } else if ( pos.z > max.z ) {
+            max.z = pos.z;
         }
     }
 };
@@ -73,7 +81,7 @@ struct Sphere {
     float radius;
 };
 
-class Geometry {
+class Geometry : public IGeometry {
 public:
 
     typedef std::shared_ptr<Geometry> Ptr;
@@ -91,6 +99,7 @@ public:
     std::vector<Color> colors; // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
 
     std::vector<Material::Ptr> materials;
+    std::map<std::string, GLCustomAttribute> attributes;
 
     std::vector<Face> faces;
 
@@ -101,21 +110,32 @@ public:
     std::vector<Color> morphColors;
     std::vector<Vector3> morphNormals;
 
-    std::vector<float> skinWeights;
-    std::vector<int> skinIndices;
+    std::vector<Vector3> skinVerticesA;
+    std::vector<Vector3> skinVerticesB;
+    std::vector<Vector4> skinWeights;
+    struct SkinIndices { int x, y, z, w; };
+    std::vector<SkinIndices> skinIndices;
 
     Box    boundingBox;
     Sphere boundingSphere;
 
     bool hasTangents;
-
     bool dynamic;
 
     GeometryBuffer buffer;
+    std::vector<GeometryGroup> geometryGroups;
+
+    bool verticesNeedUpdate;
+    bool morphTargetsNeedUpdate;
+    bool elementsNeedUpdate;
+    bool uvsNeedUpdate;
+    bool normalsNeedUpdate;
+    bool tangentsNeedUpdate;
+    bool colorsNeedUpdate;
 
     /////////////////////////////////////////////////////////////////////////
 
-    THREE_DECL void applyMatrix ( const Matrix4& matrix ) {
+    virtual THREE_DECL void applyMatrix ( const Matrix4& matrix ) {
 
         Matrix4 matrixRotation;
         matrixRotation.extractRotation( matrix );
@@ -142,7 +162,7 @@ public:
 
     }
 
-    THREE_DECL void computeCentroids () {
+    virtual THREE_DECL void computeCentroids () {
 
         for ( auto& face : faces ) {
 
@@ -160,7 +180,7 @@ public:
 
     }
 
-    THREE_DECL void computeFaceNormals () {
+    virtual THREE_DECL void computeFaceNormals () {
 
         for ( auto& face : faces ) {
 
@@ -184,7 +204,7 @@ public:
 
     }
 
-    THREE_DECL void computeVertexNormals () {
+    virtual THREE_DECL void computeVertexNormals () {
 
         // create internal buffers for reuse when calling this method repeatedly
         // (otherwise memory allocation / deallocation every frame is big resource hog)
@@ -225,7 +245,7 @@ public:
 
     }
 
-    THREE_DECL void computeTangents () {
+    virtual THREE_DECL void computeTangents () {
 
         // based on http://www.terathon.com/code/tangent.html
         // tangents go to vertices
@@ -324,13 +344,11 @@ public:
 
     }
 
-    THREE_DECL void computeBoundingBox () {
+    virtual THREE_DECL void computeBoundingBox () {
 
         if ( vertices.size() > 0 ) {
 
-            Box bb = { { vertices[ 0 ].position.x, vertices[ 0 ].position.x },
-                       { vertices[ 0 ].position.y, vertices[ 0 ].position.y },
-                       { vertices[ 0 ].position.z, vertices[ 0 ].position.z } };
+            Box bb (vertices[ 0 ].position, vertices[ 0 ].position );
 
             for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
@@ -344,7 +362,7 @@ public:
 
     }
 
-    THREE_DECL void computeBoundingSphere () {
+    virtual THREE_DECL void computeBoundingSphere () {
 
         // var radius = this.boundingSphere === null ? 0 : this.boundingSphere.radius;
 
@@ -423,8 +441,15 @@ protected:
 
     Geometry()
     : id ( GeometryCount()++ ),
-    hasTangents ( false ),
-    dynamic ( true ) { }
+      hasTangents ( false ),
+      dynamic ( true ),
+      verticesNeedUpdate ( false ),
+      morphTargetsNeedUpdate ( false ),
+      elementsNeedUpdate ( false ),
+      uvsNeedUpdate ( false ),
+      normalsNeedUpdate ( false ),
+      tangentsNeedUpdate ( false ),
+      colorsNeedUpdate ( false ) { }
 
 private:
 
