@@ -3144,19 +3144,7 @@ public:
 
         if ( dispose ) {
 
-            geometryGroup.buffer.__inittedArrays = false;
-            geometryGroup.buffer.__colorArray.clear();
-            geometryGroup.buffer.__normalArray.clear();
-            geometryGroup.buffer.__tangentArray.clear();
-            geometryGroup.buffer.__uvArray.clear();
-            geometryGroup.buffer.__uv2Array.clear();
-            geometryGroup.buffer.__faceArray.clear();
-            geometryGroup.buffer.__vertexArray.clear();
-            geometryGroup.buffer.__lineArray.clear();
-            geometryGroup.buffer.__skinVertexAArray.clear();
-            geometryGroup.buffer.__skinVertexBArray.clear();
-            geometryGroup.buffer.__skinIndexArray.clear();
-            geometryGroup.buffer.__skinWeightArray.clear();
+            geometryGroup.buffer.dispose();
 
         }
 
@@ -3326,15 +3314,13 @@ public:
 
     }
 
-    renderBufferDirect = function ( camera, lights, fog, material, geometry, object ) {
+    void renderBufferDirect ( Camera& camera, std::vector<Light*>& lights, Fog& fog, Material& material, Geometr& geometry, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
-        auto program, attributes, linewidth, primitives, a, attribute;
+        auto& program = setProgram( camera, lights, fog, material, object );
 
-        program = setProgram( camera, lights, fog, material, object );
-
-        attributes = program.attributes;
+        auto& attributes = program.attributes;
 
         auto updateBuffers = false;
         auto wireframeBit = material.wireframe ? 1 : 0;
@@ -3349,9 +3335,9 @@ public:
 
         // render mesh
 
-        if ( object instanceof THREE::Mesh ) {
+        if ( object.type() == THREE::Mesh ) {
 
-            auto offsets = geometry.offsets;
+            const auto& offsets = geometry.offsets;
 
             // if there is more than 1 chunk
             // must set attribute pointers to use new offsets for each chunk
@@ -3359,26 +3345,25 @@ public:
 
             if ( offsets.size() > 1 ) updateBuffers = true;
 
-            for ( auto i = 0, il = offsets.size(); i < il; ++ i ) {
+            for ( size_t i = 0, il = offsets.size(); i < il; ++ i ) {
 
-                auto startIndex = offsets[ i ].index;
+                const auto startIndex = offsets[ i ].index;
 
                 if ( updateBuffers ) {
 
                     // vertices
 
-                    auto position = geometry.attributes[ "position" ];
-                    auto positionSize = position.itemSize;
+                    auto& position = geometry.attributes[ "position" ];
+                    const auto positionSize = position.itemSize;
 
                     glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
                     glVertexAttribPointer( attributes.position, positionSize, GL_FLOAT, false, 0, startIndex * positionSize * 4 ); // 4 bytes per Float32
 
                     // normals
 
-                    auto normal = geometry.attributes[ "normal" ];
+                    if ( attributes.normal >= 0 && contains( geometry.attributes, "normal" ) ) {
 
-                    if ( attributes.normal >= 0 && normal ) {
-
+                        auto& normal = geometry.attributes[ "normal" ];
                         auto normalSize = normal.itemSize;
 
                         glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
@@ -3388,13 +3373,13 @@ public:
 
                     // uvs
 
-                    auto uv = geometry.attributes[ "uv" ];
+                    if ( attributes.uv >= 0 && contains( geometry.attributes, "uv") ) {
 
-                    if ( attributes.uv >= 0 && uv ) {
+                        const auto& uv = geometry.attributes[ "uv" ];
 
                         if ( uv.buffer ) {
 
-                            auto uvSize = uv.itemSize;
+                            const auto uvSize = uv.itemSize;
 
                             glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
                             glVertexAttribPointer( attributes.uv, uvSize, GL_FLOAT, false, 0, startIndex * uvSize * 4 );
@@ -3411,11 +3396,10 @@ public:
 
                     // colors
 
-                    auto color = geometry.attributes[ "color" ];
+                    if ( attributes.color >= 0 && contains( geometry.attributes, "color" ) ) {
 
-                    if ( attributes.color >= 0 && color ) {
-
-                        auto colorSize = color.itemSize;
+                        const auto& color = geometry.attributes[ "color" ];
+                        const auto colorSize = color.itemSize;
 
                         glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
                         glVertexAttribPointer( attributes.color, colorSize, GL_FLOAT, false, 0, startIndex * colorSize * 4 );
@@ -3424,11 +3408,10 @@ public:
 
                     // tangents
 
-                    auto tangent = geometry.attributes[ "tangent" ];
+                    if ( attributes.tangent >= 0 && contains( geometry.attributes, "tangent" ) ) {
 
-                    if ( attributes.tangent >= 0 && tangent ) {
-
-                        auto tangentSize = tangent.itemSize;
+                        const auto& tangent = geometry.attributes[ "tangent" ];
+                        const auto tangentSize = tangent.itemSize;
 
                         glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
                         glVertexAttribPointer( attributes.tangent, tangentSize, GL_FLOAT, false, 0, startIndex * tangentSize * 4 );
@@ -3437,7 +3420,7 @@ public:
 
                     // indices
 
-                    auto index = geometry.attributes[ "index" ];
+                    const auto& index = geometry.attributes[ "index" ];
 
                     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
 
@@ -3457,19 +3440,17 @@ public:
 
     }
 
-    renderBuffer = function ( camera, lights, fog, material, geometryGroup, object ) {
+    void renderBuffer ( Camera& camera, std::vector<Light*>& lights, Fog& fog, Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
-        auto program, attributes, linewidth, primitives, a, attribute, i, il;
+        auto& program = setProgram( camera, lights, fog, material, object );
 
-        program = setProgram( camera, lights, fog, material, object );
+        auto& attributes = program.attributes;
 
-        attributes = program.attributes;
-
-        auto updateBuffers = false,
-            wireframeBit = material.wireframe ? 1 : 0,
-            geometryGroupHash = ( geometryGroup.id * 0xffffff ) + ( program.id * 2 ) + wireframeBit;
+        auto updateBuffers = false;
+        auto wireframeBit = material.wireframe ? 1 : 0;
+        auto geometryGroupHash = ( geometryGroup.id * 0xffffff ) + ( program.id * 2 ) + wireframeBit;
 
         if ( geometryGroupHash != _currentGeometryGroupHash ) {
 
@@ -3506,18 +3487,13 @@ public:
 
             // Use the per-geometryGroup custom attribute arrays which are setup in initMeshBuffers
 
-            if ( geometryGroup.buffer.__glCustomAttributesList ) {
+            for ( auto& attribute : geometryGroup.buffer.__glCustomAttributesList )
 
-                for ( i = 0, il = geometryGroup.buffer.__glCustomAttributesList.size(); i < il; i ++ ) {
+                // TODO: Fix this?
+                if( contains( attributes, attribute.belongsToAttribute ) )
 
-                    attribute = geometryGroup.buffer.__glCustomAttributesList[ i ];
-
-                    if( attributes[ attribute.buffer.belongsToAttribute ] >= 0 ) {
-
-                        glBindBuffer( GL_ARRAY_BUFFER, attribute.buffer );
-                        glVertexAttribPointer( attributes[ attribute.buffer.belongsToAttribute ], attribute.size, GL_FLOAT, false, 0, 0 );
-
-                    }
+                    glBindBuffer( GL_ARRAY_BUFFER, attribute.buffer );
+                    glVertexAttribPointer( attributes[ attribute.belongsToAttribute ], attribute.size, GL_FLOAT, false, 0, 0 );
 
                 }
 
@@ -3609,7 +3585,7 @@ public:
 
         // render mesh
 
-        if ( object instanceof THREE::Mesh ) {
+        if ( object.type() == THREE::Mesh ) {
 
             // wireframe
 
@@ -3635,7 +3611,7 @@ public:
 
         // render lines
 
-        } else if ( object instanceof THREE::Line ) {
+        } else if ( object.type() == THREE::Line ) {
 
             primitives = ( object.type == THREE::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
 
@@ -3647,7 +3623,7 @@ public:
 
         // render particles
 
-        } else if ( object instanceof THREE::ParticleSystem ) {
+        } else if ( object.type() == THREE::ParticleSystem ) {
 
             glDrawArrays( GL_POINTS, 0, geometryGroup.buffer.__glParticleCount );
 
@@ -3656,7 +3632,7 @@ public:
 
         // render ribbon
 
-        } else if ( object instanceof THREE::Ribbon ) {
+        } else if ( object.type() == THREE::Ribbon ) {
 
             glDrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.buffer.__glVertexCount );
 
@@ -3670,11 +3646,20 @@ public:
 
 //#ifdef TODO_MORPH_TARGETS
 
-    function setupMorphTargets ( material, geometryGroup, object ) {
+    // Sorting
+
+    void NumericalSort {
+        template < typename T, typename U >
+        bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
+            return a.second > b.second;
+        }
+    }
+
+    void setupMorphTargets ( Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
         // set base
 
-        auto attributes = material.program.attributes;
+        auto& attributes = material.program.attributes;
 
         if ( object.morphTargetBase != -1 ) {
 
@@ -3717,17 +3702,17 @@ public:
 
             // find the most influencing
 
-            auto influence, activeInfluenceIndices = [];
-            auto influences = object.morphTargetInfluences;
-            auto i, il = influences.size();
+            typedef std::pair<int, int> IndexedInfluence;
+            std::vector<IndexedInfluence> activeInfluenceIndices;
+            auto& influences = object.morphTargetInfluences;
 
-            for ( i = 0; i < il; i ++ ) {
+            for ( size_t i = 0, il = influences.size(); i < il; i ++ ) {
 
-                influence = influences[ i ];
+                auto& influence = influences[ i ];
 
                 if ( influence > 0 ) {
 
-                    activeInfluenceIndices.push_back( [ i, influence ] );
+                    activeInfluenceIndices.push_back( IndexedInfluence( i, influence ) );
 
                 }
 
@@ -3735,16 +3720,20 @@ public:
 
             if ( activeInfluenceIndices.size() > material.numSupportedMorphTargets ) {
 
-                activeInfluenceIndices.sort( numericalSort );
-                activeInfluenceIndices.size() = material.numSupportedMorphTargets;
+                std::sort(activeInfluenceIndices.begin(),
+                          activeInfluenceIndices.end(),
+                          NumericalSort() );
+                activeInfluenceIndices.resize( material.numSupportedMorphTargets );
 
             } else if ( activeInfluenceIndices.size() > material.numSupportedMorphNormals ) {
 
-                activeInfluenceIndices.sort( numericalSort );
+                std::sort(activeInfluenceIndices.begin(),
+                          activeInfluenceIndices.end(),
+                          NumericalSort() );
 
             } else if ( activeInfluenceIndices.size() == 0 ) {
 
-                activeInfluenceIndices.push_back( [ 0, 0 ] );
+                activeInfluenceIndices.push_back( IndexedInfluence( 0, 0 ) );
 
             }
 
@@ -3791,22 +3780,13 @@ public:
 
         // load updated influences uniform
 
-        if ( material.program.uniforms.morphTargetInfluences != null ) {
+        if ( material.program.uniforms.morphTargetInfluences.size() > 0 ) {
 
             gluniform1fv( material.program.uniforms.morphTargetInfluences, object.__glMorphTargetInfluences );
 
         }
 
     }
-
-    // Sorting
-
-    function numericalSort ( a, b ) {
-
-        return b[ 1 ] - a[ 1 ];
-
-    }
-
 
     // Rendering
 
@@ -3887,7 +3867,7 @@ public:
 
             if ( object.visible ) {
 
-                if ( ! ( object instanceof THREE::Mesh || object instanceof THREE::ParticleSystem ) || ! ( object.frustumCulled ) || _frustum.contains( object ) ) {
+                if ( ! ( object.type() == THREE::Mesh || object.type() == THREE::ParticleSystem ) || ! ( object.frustumCulled ) || _frustum.contains( object ) ) {
 
                     //object.matrixWorld.flattenToArray( object._modelMatrixArray );
 
@@ -4393,7 +4373,7 @@ public:
 
                 }
 
-            } else if ( object instanceof THREE::Ribbon ) {
+            } else if ( object.type() == THREE::Ribbon ) {
 
                 geometry = object.geometry;
 
@@ -4407,7 +4387,7 @@ public:
 
                 }
 
-            } else if ( object instanceof THREE::Line ) {
+            } else if ( object.type() == THREE::Line ) {
 
                 geometry = object.geometry;
 
@@ -4421,7 +4401,7 @@ public:
 
                 }
 
-            } else if ( object instanceof THREE::ParticleSystem ) {
+            } else if ( object.type() == THREE::ParticleSystem ) {
 
                 geometry = object.geometry;
 
@@ -4441,7 +4421,7 @@ public:
 
         if ( ! object.__glActive ) {
 
-            if ( object instanceof THREE::Mesh ) {
+            if ( object.type() == THREE::Mesh ) {
 
                 geometry = object.geometry;
 
@@ -4461,22 +4441,22 @@ public:
 
                 }
 
-            } else if ( object instanceof THREE::Ribbon ||
-                        object instanceof THREE::Line ||
-                        object instanceof THREE::ParticleSystem ) {
+            } else if ( object.type() == THREE::Ribbon ||
+                        object.type() == THREE::Line ||
+                        object.type() == THREE::ParticleSystem ) {
 
                 geometry = object.geometry;
                 addBuffer( scene.__glObjects, geometry, object );
 
-            } else if ( object instanceof THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
+            } else if ( object.type() == THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
 
                 addBufferImmediate( scene.__glObjectsImmediate, object );
 
-            } else if ( object instanceof THREE::Sprite ) {
+            } else if ( object.type() == THREE::Sprite ) {
 
                 scene.__glSprites.push_back( object );
 
-            } else if ( object instanceof THREE::LensFlare ) {
+            } else if ( object.type() == THREE::LensFlare ) {
 
                 scene.__glFlares.push_back( object );
 
@@ -4520,7 +4500,7 @@ public:
         auto geometry = object.geometry,
             geometryGroup, customAttributesDirty, material;
 
-        if ( object instanceof THREE::Mesh ) {
+        if ( object.type() == THREE::Mesh ) {
 
             if ( geometry instanceof THREE::BufferGeometry ) {
 
@@ -4573,7 +4553,7 @@ public:
 
             }
 
-        } else if ( object instanceof THREE::Ribbon ) {
+        } else if ( object.type() == THREE::Ribbon ) {
 
             if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate ) {
 
@@ -4584,7 +4564,7 @@ public:
             geometry.verticesNeedUpdate = false;
             geometry.colorsNeedUpdate = false;
 
-        } else if ( object instanceof THREE::Line ) {
+        } else if ( object.type() == THREE::Line ) {
 
             material = getBufferMaterial( object, geometryGroup );
 
@@ -4601,7 +4581,7 @@ public:
 
             material.attributes && clearCustomAttributes( material );
 
-        } else if ( object instanceof THREE::ParticleSystem ) {
+        } else if ( object.type() == THREE::ParticleSystem ) {
 
             material = getBufferMaterial( object, geometryGroup );
 
@@ -4650,22 +4630,22 @@ public:
 
     function removeObject ( object, scene ) {
 
-        if ( object instanceof THREE::Mesh  ||
-             object instanceof THREE::ParticleSystem ||
-             object instanceof THREE::Ribbon ||
-             object instanceof THREE::Line ) {
+        if ( object.type() == THREE::Mesh  ||
+             object.type() == THREE::ParticleSystem ||
+             object.type() == THREE::Ribbon ||
+             object.type() == THREE::Line ) {
 
             removeInstances( scene.__glObjects, object );
 
-        } else if ( object instanceof THREE::Sprite ) {
+        } else if ( object.type() == THREE::Sprite ) {
 
             removeInstancesDirect( scene.__glSprites, object );
 
-        } else if ( object instanceof THREE::LensFlare ) {
+        } else if ( object.type() == THREE::LensFlare ) {
 
             removeInstancesDirect( scene.__glFlares, object );
 
-        } else if ( object instanceof THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
+        } else if ( object.type() == THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
 
             removeInstances( scene.__glObjectsImmediate, object );
 

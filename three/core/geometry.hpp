@@ -116,6 +116,9 @@ public:
     struct SkinIndices { int x, y, z, w; };
     std::vector<SkinIndices> skinIndices;
 
+    struct Offset { int index, count, start; };
+    std::vector<Offset> offsets;
+
     Box    boundingBox;
     Sphere boundingSphere;
 
