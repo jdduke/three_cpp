@@ -11,6 +11,8 @@ namespace three {
 
 class glRenderTarget;
 
+typedef std::vector<Light::Ptr> Lights;
+
 struct ExtractMaterialAndGeometry : public Visitor {
 
     ExtractMaterialAndGeometry()
@@ -604,9 +606,10 @@ public:
         }
 
     }
-#endif
+#endif // TODO_RENDER_TARGET
 
 #ifdef TODO_MATERIALS
+
     THREE_DECL void deallocateMaterial ( Material& material ) {
 
         auto program = material.program;
@@ -3150,7 +3153,6 @@ public:
 
     }
 
-#ifdef TODO_ATTRIBUTES
 
     void setDirectBuffers ( Geometry& geometry, int hint, bool dispose ) {
 
@@ -3159,48 +3161,42 @@ public:
         if ( geometry.elementsNeedUpdate && contains( attributes, "index" ) ) {
 
             auto& index = attributes[ "index" ];
-            glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
-            glBufferData( GL_ELEMENT_ARRAY_BUFFER, index.array, hint );
+            glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer, index.array, hint );
 
         }
 
         if ( geometry.verticesNeedUpdate && contains( attributes, "position" ) ){
 
             auto& position = attributes[ "position" ];
-            glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
-            glBufferData( GL_ARRAY_BUFFER, position.array, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, position.buffer, position.array, hint );
 
         }
 
         if ( geometry.normalsNeedUpdate && contains( attributes, "normals" ) ) {
 
             auto& normal   = attributes[ "normal" ];
-            glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
-            glBufferData( GL_ARRAY_BUFFER, normal.array, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, normal.buffer, normal.array, hint );
 
         }
 
         if ( geometry.uvsNeedUpdate && contains( attributes, "uv" ) ) {
 
             auto& uv       = attributes[ "uv" ];
-            glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
-            glBufferData( GL_ARRAY_BUFFER, uv.array, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, uv.buffer, uv.array, hint );
 
         }
 
         if ( geometry.colorsNeedUpdate && contains( attributes, "color" ) ) {
 
             auto& color    = attributes[ "color" ];
-            glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
-            glBufferData( GL_ARRAY_BUFFER, color.array, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, color.buffer, color.array, hint );
 
         }
 
         if ( geometry.tangentsNeedUpdate && contains( attributes, "tangent") ) {
 
             auto& tangent  = attributes[ "tangent" ];
-            glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
-            glBufferData( GL_ARRAY_BUFFER, tangent.array, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, tangent.buffer, tangent.array, hint );
 
         }
 
@@ -3208,7 +3204,7 @@ public:
 
             for ( auto& attribute : geometry.attributes ) {
 
-                attribute.array.clear();
+                attribute.second.array.clear();
 
             }
 
@@ -3216,6 +3212,7 @@ public:
 
     }
 
+#ifdef TODO_ATTRIBUTES
 
 #ifdef TODO_BUFFER_RENDERING
 
@@ -3314,7 +3311,7 @@ public:
 
     }
 
-    void renderBufferDirect ( Camera& camera, std::vector<Light*>& lights, Fog& fog, Material& material, Geometr& geometry, Object3D& object ) {
+    void renderBufferDirect ( Camera& camera, Lights& lights, Fog& fog, Material& material, Geometr& geometry, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
@@ -3440,7 +3437,7 @@ public:
 
     }
 
-    void renderBuffer ( Camera& camera, std::vector<Light*>& lights, Fog& fog, Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
+    void renderBuffer ( Camera& camera, Lights& lights, Fog& fog, Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
@@ -4685,7 +4682,7 @@ public:
 
     // Materials
 
-    initMaterial = function ( material, lights, fog, object ) {
+    void initMaterial = function ( Material& material, Lights& lights, Fog& fog, Object3D& object ) {
 
         auto u, a, identifiers, i, parameters, maxLightCount, maxBones, maxShadows, shaderID;
 
@@ -4868,7 +4865,7 @@ public:
 
     }
 
-    function setProgram( camera, lights, fog, material, object ) {
+    void setProgram( Camera& camera, Lights& lights, Fog& fog, Material& material, Object3D& object ) {
 
         if ( material.needsUpdate ) {
 
