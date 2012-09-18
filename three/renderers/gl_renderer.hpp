@@ -5899,42 +5899,44 @@ public:
 
 //#ifdef TODO_SHADERS
 
-    function buildProgram ( shaderID, fragmentShader, vertexShader, uniforms, attributes, parameters ) {
+    void buildProgram ( const std::string& shaderID,
+                        const std::string& fragmentShader,
+                        const std::string& vertexShader,
+                        uniforms,
+                        attributes,
+                        parameters ) {
 
-        auto p, pl, program, code;
-        auto chunks = [];
+        std::stringstream chunks;
 
         // Generate code
 
-        if ( shaderID ) {
+        if ( !shaderID.empty() ) {
 
-            chunks.push_back( shaderID );
+            chunks << shaderID;
 
         } else {
 
-            chunks.push_back( fragmentShader );
-            chunks.push_back( vertexShader );
+            chunks << fragmentShader;
+            chunks << vertexShader;
 
         }
 
-        for ( p in parameters ) {
+        for ( const auto& p : parameters ) {
 
-            chunks.push_back( p );
-            chunks.push_back( parameters[ p ] );
+            chunks << p.first;
+            chunks << p.second;
 
         }
 
-        code = chunks.join();
+        auto code = chunks.str();
 
         // Check if code has been already compiled
 
-        for ( p = 0, pl = _programs.size(); p < pl; p ++ ) {
-
-            auto programInfo = _programs[ p ];
+        for ( auto& programInfo : _programs ) {
 
             if ( programInfo.code == code ) {
 
-                // console().log( "Code already compiled." /*: \n\n" + code*/ );
+                console().log( "Code already compiled." /*: \n\n" + code*/ );
 
                 programInfo.usedTimes ++;
 
@@ -5948,162 +5950,169 @@ public:
 
         //
 
-        program = glCreateProgram();
+        auto program = glCreateProgram();
 
-        auto prefix_vertex = [
+        auto prefix_vertex = []() -> std::string
+        {
+            std::stringstream ss;
 
-            "precision " + _precision + " float;",
+            ss << "precision " + _precision + " float;" << std::endl <<
 
-            _supportsVertexTextures ? "#define VERTEX_TEXTURES" : "",
+            _supportsVertexTextures ? "#define VERTEX_TEXTURES" : "" << std::endl <<
 
-            _gammaInput ? "#define GAMMA_INPUT" : "",
-            _gammaOutput ? "#define GAMMA_OUTPUT" : "",
-            _physicallyBasedShading ? "#define PHYSICALLY_BASED_SHADING" : "",
+            _gammaInput ? "#define GAMMA_INPUT" : "" << std::endl <<
+            _gammaOutput ? "#define GAMMA_OUTPUT" : "" << std::endl <<
+            _physicallyBasedShading ? "#define PHYSICALLY_BASED_SHADING" : "" << std::endl <<
 
-            "#define MAX_DIR_LIGHTS " + parameters.maxDirLights,
-            "#define MAX_POINT_LIGHTS " + parameters.maxPointLights,
-            "#define MAX_SPOT_LIGHTS " + parameters.maxSpotLights,
+            "#define MAX_DIR_LIGHTS " + parameters.maxDirLights << std::endl <<
+            "#define MAX_POINT_LIGHTS " + parameters.maxPointLights << std::endl <<
+            "#define MAX_SPOT_LIGHTS " + parameters.maxSpotLights << std::endl <<
 
-            "#define MAX_SHADOWS " + parameters.maxShadows,
+            "#define MAX_SHADOWS " + parameters.maxShadows << std::endl <<
 
-            "#define MAX_BONES " + parameters.maxBones,
+            "#define MAX_BONES " + parameters.maxBones << std::endl <<
 
-            parameters.map ? "#define USE_MAP" : "",
-            parameters.envMap ? "#define USE_ENVMAP" : "",
-            parameters.lightMap ? "#define USE_LIGHTMAP" : "",
-            parameters.bumpMap ? "#define USE_BUMPMAP" : "",
-            parameters.specularMap ? "#define USE_SPECULARMAP" : "",
-            parameters.vertexColors ? "#define USE_COLOR" : "",
+            parameters.map ? "#define USE_MAP" : "" << std::endl <<
+            parameters.envMap ? "#define USE_ENVMAP" : "" << std::endl <<
+            parameters.lightMap ? "#define USE_LIGHTMAP" : "" << std::endl <<
+            parameters.bumpMap ? "#define USE_BUMPMAP" : "" << std::endl <<
+            parameters.specularMap ? "#define USE_SPECULARMAP" : "" << std::endl <<
+            parameters.vertexColors ? "#define USE_COLOR" : "" << std::endl <<
 
-            parameters.skinning ? "#define USE_SKINNING" : "",
-            parameters.useVertexTexture ? "#define BONE_TEXTURE" : "",
-            parameters.boneTextureWidth ? "#define N_BONE_PIXEL_X " + parameters.boneTextureWidth.toFixed( 1 ) : "",
-            parameters.boneTextureHeight ? "#define N_BONE_PIXEL_Y " + parameters.boneTextureHeight.toFixed( 1 ) : "",
+            parameters.skinning ? "#define USE_SKINNING" : "" << std::endl <<
+            parameters.useVertexTexture ? "#define BONE_TEXTURE" : "" << std::endl <<
+            parameters.boneTextureWidth ? "#define N_BONE_PIXEL_X " + parameters.boneTextureWidth.toFixed( 1 ) : "" << std::endl <<
+            parameters.boneTextureHeight ? "#define N_BONE_PIXEL_Y " + parameters.boneTextureHeight.toFixed( 1 ) : "" << std::endl <<
 
-            parameters.morphTargets ? "#define USE_MORPHTARGETS" : "",
-            parameters.morphNormals ? "#define USE_MORPHNORMALS" : "",
-            parameters.perPixel ? "#define PHONG_PER_PIXEL" : "",
-            parameters.wrapAround ? "#define WRAP_AROUND" : "",
-            parameters.doubleSided ? "#define DOUBLE_SIDED" : "",
+            parameters.morphTargets ? "#define USE_MORPHTARGETS" : "" << std::endl <<
+            parameters.morphNormals ? "#define USE_MORPHNORMALS" : "" << std::endl <<
+            parameters.perPixel ? "#define PHONG_PER_PIXEL" : "" << std::endl <<
+            parameters.wrapAround ? "#define WRAP_AROUND" : "" << std::endl <<
+            parameters.doubleSided ? "#define DOUBLE_SIDED" : "" << std::endl <<
 
-            parameters.shadowMapEnabled ? "#define USE_SHADOWMAP" : "",
-            parameters.shadowMapSoft ? "#define SHADOWMAP_SOFT" : "",
-            parameters.shadowMapDebug ? "#define SHADOWMAP_DEBUG" : "",
-            parameters.shadowMapCascade ? "#define SHADOWMAP_CASCADE" : "",
+            parameters.shadowMapEnabled ? "#define USE_SHADOWMAP" : "" << std::endl <<
+            parameters.shadowMapSoft ? "#define SHADOWMAP_SOFT" : "" << std::endl <<
+            parameters.shadowMapDebug ? "#define SHADOWMAP_DEBUG" : "" << std::endl <<
+            parameters.shadowMapCascade ? "#define SHADOWMAP_CASCADE" : "" << std::endl <<
 
-            parameters.sizeAttenuation ? "#define USE_SIZEATTENUATION" : "",
+            parameters.sizeAttenuation ? "#define USE_SIZEATTENUATION" : "" << std::endl <<
 
-            "uniform mat4 modelMatrix;",
-            "uniform mat4 modelViewMatrix;",
-            "uniform mat4 projectionMatrix;",
-            "uniform mat4 viewMatrix;",
-            "uniform mat3 normalMatrix;",
-            "uniform vec3 cameraPosition;",
+            "uniform mat4 modelMatrix;" << std::endl <<
+            "uniform mat4 modelViewMatrix;" << std::endl <<
+            "uniform mat4 projectionMatrix;" << std::endl <<
+            "uniform mat4 viewMatrix;" << std::endl <<
+            "uniform mat3 normalMatrix;" << std::endl <<
+            "uniform vec3 cameraPosition;" << std::endl <<
 
-            "attribute vec3 position;",
-            "attribute vec3 normal;",
-            "attribute vec2 uv;",
-            "attribute vec2 uv2;",
+            "attribute vec3 position;" << std::endl <<
+            "attribute vec3 normal;" << std::endl <<
+            "attribute vec2 uv;" << std::endl <<
+            "attribute vec2 uv2;" << std::endl <<
 
-            "#ifdef USE_COLOR",
+            "#ifdef USE_COLOR" << std::endl <<
 
-                "attribute vec3 color;",
+                "attribute vec3 color;" << std::endl <<
 
-            "#endif",
+            "#endif" << std::endl <<
 
-            "#ifdef USE_MORPHTARGETS",
+            "#ifdef USE_MORPHTARGETS" << std::endl <<
 
-                "attribute vec3 morphTarget0;",
-                "attribute vec3 morphTarget1;",
-                "attribute vec3 morphTarget2;",
-                "attribute vec3 morphTarget3;",
+                "attribute vec3 morphTarget0;" << std::endl <<
+                "attribute vec3 morphTarget1;" << std::endl <<
+                "attribute vec3 morphTarget2;" << std::endl <<
+                "attribute vec3 morphTarget3;" << std::endl <<
 
-                "#ifdef USE_MORPHNORMALS",
+                "#ifdef USE_MORPHNORMALS" << std::endl <<
 
-                    "attribute vec3 morphNormal0;",
-                    "attribute vec3 morphNormal1;",
-                    "attribute vec3 morphNormal2;",
-                    "attribute vec3 morphNormal3;",
+                    "attribute vec3 morphNormal0;" << std::endl <<
+                    "attribute vec3 morphNormal1;" << std::endl <<
+                    "attribute vec3 morphNormal2;" << std::endl <<
+                    "attribute vec3 morphNormal3;" << std::endl <<
 
-                "#else",
+                "#else" << std::endl <<
 
-                    "attribute vec3 morphTarget4;",
-                    "attribute vec3 morphTarget5;",
-                    "attribute vec3 morphTarget6;",
-                    "attribute vec3 morphTarget7;",
+                    "attribute vec3 morphTarget4;" << std::endl <<
+                    "attribute vec3 morphTarget5;" << std::endl <<
+                    "attribute vec3 morphTarget6;" << std::endl <<
+                    "attribute vec3 morphTarget7;" << std::endl <<
 
-                "#endif",
+                "#endif" << std::endl <<
 
-            "#endif",
+            "#endif" << std::endl <<
 
-            "#ifdef USE_SKINNING",
+            "#ifdef USE_SKINNING" << std::endl <<
 
-                "attribute vec4 skinVertexA;",
-                "attribute vec4 skinVertexB;",
-                "attribute vec4 skinIndex;",
-                "attribute vec4 skinWeight;",
+                "attribute vec4 skinVertexA;" << std::endl <<
+                "attribute vec4 skinVertexB;" << std::endl <<
+                "attribute vec4 skinIndex;" << std::endl <<
+                "attribute vec4 skinWeight;" << std::endl <<
 
-            "#endif",
+            "#endif" << std::endl;
 
-            ""
+            return ss.str();
 
-        ].join("\n");
+        }();
 
-        auto prefix_fragment = [
+        auto prefix_fragment = ()[] -> std::string
+        {
+            std::stringstream ss;
 
-            "precision " + _precision + " float;",
+            ss << "precision " + _precision + " float;" << std::endl <<
 
-            parameters.bumpMap ? "#extension GL_OES_standard_derivatives : enable" : "",
+            parameters.bumpMap ? "#extension GL_OES_standard_derivatives : enable" : "" << std::endl <<
 
-            "#define MAX_DIR_LIGHTS " + parameters.maxDirLights,
-            "#define MAX_POINT_LIGHTS " + parameters.maxPointLights,
-            "#define MAX_SPOT_LIGHTS " + parameters.maxSpotLights,
+            "#define MAX_DIR_LIGHTS " + parameters.maxDirLights << std::endl <<
+            "#define MAX_POINT_LIGHTS " + parameters.maxPointLights << std::endl <<
+            "#define MAX_SPOT_LIGHTS " + parameters.maxSpotLights << std::endl <<
 
-            "#define MAX_SHADOWS " + parameters.maxShadows,
+            "#define MAX_SHADOWS " + parameters.maxShadows << std::endl <<
 
-            parameters.alphaTest ? "#define ALPHATEST " + parameters.alphaTest: "",
+            parameters.alphaTest ? "#define ALPHATEST " + parameters.alphaTest: "" << std::endl <<
 
-            _gammaInput ? "#define GAMMA_INPUT" : "",
-            _gammaOutput ? "#define GAMMA_OUTPUT" : "",
-            _physicallyBasedShading ? "#define PHYSICALLY_BASED_SHADING" : "",
+            _gammaInput ? "#define GAMMA_INPUT" : "" << std::endl <<
+            _gammaOutput ? "#define GAMMA_OUTPUT" : "" << std::endl <<
+            _physicallyBasedShading ? "#define PHYSICALLY_BASED_SHADING" : "" << std::endl <<
 
-            ( parameters.useFog && parameters.fog ) ? "#define USE_FOG" : "",
-            ( parameters.useFog && parameters.fog instanceof THREE::FogExp2 ) ? "#define FOG_EXP2" : "",
+            ( parameters.useFog && parameters.fog ) ? "#define USE_FOG" : "" << std::endl <<
+            ( parameters.useFog && parameters.fog instanceof THREE::FogExp2 ) ? "#define FOG_EXP2" : "" << std::endl <<
 
-            parameters.map ? "#define USE_MAP" : "",
-            parameters.envMap ? "#define USE_ENVMAP" : "",
-            parameters.lightMap ? "#define USE_LIGHTMAP" : "",
-            parameters.bumpMap ? "#define USE_BUMPMAP" : "",
-            parameters.specularMap ? "#define USE_SPECULARMAP" : "",
-            parameters.vertexColors ? "#define USE_COLOR" : "",
+            parameters.map ? "#define USE_MAP" : "" << std::endl <<
+            parameters.envMap ? "#define USE_ENVMAP" : "" << std::endl <<
+            parameters.lightMap ? "#define USE_LIGHTMAP" : "" << std::endl <<
+            parameters.bumpMap ? "#define USE_BUMPMAP" : "" << std::endl <<
+            parameters.specularMap ? "#define USE_SPECULARMAP" : "" << std::endl <<
+            parameters.vertexColors ? "#define USE_COLOR" : "" << std::endl <<
 
-            parameters.metal ? "#define METAL" : "",
-            parameters.perPixel ? "#define PHONG_PER_PIXEL" : "",
-            parameters.wrapAround ? "#define WRAP_AROUND" : "",
-            parameters.doubleSided ? "#define DOUBLE_SIDED" : "",
+            parameters.metal ? "#define METAL" : "" << std::endl <<
+            parameters.perPixel ? "#define PHONG_PER_PIXEL" : "" << std::endl <<
+            parameters.wrapAround ? "#define WRAP_AROUND" : "" << std::endl <<
+            parameters.doubleSided ? "#define DOUBLE_SIDED" : "" << std::endl <<
 
-            parameters.shadowMapEnabled ? "#define USE_SHADOWMAP" : "",
-            parameters.shadowMapSoft ? "#define SHADOWMAP_SOFT" : "",
-            parameters.shadowMapDebug ? "#define SHADOWMAP_DEBUG" : "",
-            parameters.shadowMapCascade ? "#define SHADOWMAP_CASCADE" : "",
+            parameters.shadowMapEnabled ? "#define USE_SHADOWMAP" : "" << std::endl <<
+            parameters.shadowMapSoft ? "#define SHADOWMAP_SOFT" : "" << std::endl <<
+            parameters.shadowMapDebug ? "#define SHADOWMAP_DEBUG" : "" << std::endl <<
+            parameters.shadowMapCascade ? "#define SHADOWMAP_CASCADE" : "" << std::endl <<
 
-            "uniform mat4 viewMatrix;",
-            "uniform vec3 cameraPosition;",
-            ""
+            "uniform mat4 viewMatrix;" << std::endl <<
+            "uniform vec3 cameraPosition;" << std::endl;
 
-        ].join("\n");
+            return ss.str();
+
+        }();
 
         auto glFragmentShader = getShader( "fragment", prefix_fragment + fragmentShader );
         auto glVertexShader = getShader( "vertex", prefix_vertex + vertexShader );
 
-        glattachShader( program, glVertexShader );
-        glattachShader( program, glFragmentShader );
+        glAttachShader( program, glVertexShader );
+        glAttachShader( program, glFragmentShader );
 
         glLinkProgram( program );
 
-        if ( !_gl.getProgramParameter( program, GL_LINK_STATUS ) ) {
+        if ( !glGetProgramParameter( program, GL_LINK_STATUS ) ) {
 
-            console().error( "Could not initialise shader\n" + "VALIDATE_STATUS: " + GL_getProgramParameter( program, GL_VALIDATE_STATUS ) + ", gl error [" + GL_getError() + "]" );
+            console().error()
+                << "Could not initialise shader" << std::endl
+                << "VALIDATE_STATUS: " << glGetProgramParameter( program, GL_VALIDATE_STATUS ) << ", gl error [" << glGetError() << "]";
 
         }
 
@@ -6120,61 +6129,76 @@ public:
 
         auto identifiers, u, a, i;
 
-        // cache uniform locations
+        {
+            // cache uniform locations
 
-        identifiers = [
+            std::vector<std::string> identifiers = {
 
-            'viewMatrix', 'modelViewMatrix', 'projectionMatrix', 'normalMatrix', 'modelMatrix', 'cameraPosition',
-            'morphTargetInfluences'
+                "viewMatrix",
+                "modelViewMatrix",
+                "projectionMatrix",
+                "normalMatrix",
+                "modelMatrix",
+                "cameraPosition",
+                "morphTargetInfluences"
 
-        ];
+            };
 
-        if ( parameters.useVertexTexture ) {
+            if ( parameters.useVertexTexture ) {
 
-            identifiers.push_back( 'boneTexture' );
+                identifiers.push_back( "boneTexture" );
 
-        } else {
+            } else {
 
-            identifiers.push_back( 'boneGlobalMatrices' );
+                identifiers.push_back( "boneGlobalMatrices" );
 
-        }
+            }
 
-        for ( u in uniforms ) {
+            for ( const auto& u : uniforms ) {
 
-            identifiers.push_back( u );
+                identifiers.push_back( u );
 
-        }
+            }
 
-        cacheUniformLocations( program, identifiers );
-
-        // cache attributes locations
-
-        identifiers = [
-
-            "position", "normal", "uv", "uv2", "tangent", "color",
-            "skinVertexA", "skinVertexB", "skinIndex", "skinWeight"
-
-        ];
-
-        for ( i = 0; i < parameters.maxMorphTargets; i ++ ) {
-
-            identifiers.push_back( "morphTarget" + i );
+            cacheUniformLocations( program, identifiers );
 
         }
 
-        for ( i = 0; i < parameters.maxMorphNormals; i ++ ) {
+        {
+            // cache attributes locations
 
-            identifiers.push_back( "morphNormal" + i );
+            std::vector<std::string> identifiers = [
+
+                "position", "normal", "uv", "uv2", "tangent", "color",
+                "skinVertexA", "skinVertexB", "skinIndex", "skinWeight"
+
+            };
+
+            for ( i = 0; i < parameters.maxMorphTargets; i ++ ) {
+
+                std::stringstream ss;
+                ss << "morphTarget" << i;
+                identifiers.push_back( ss.str() );
+
+            }
+
+            for ( i = 0; i < parameters.maxMorphNormals; i ++ ) {
+
+                std::stringstream ss;
+                ss << "morphNormal" << i;
+                identifiers.push_back( ss.str() );
+
+            }
+
+            for ( const auto& a : attributes ) {
+
+                identifiers.push_back( a.first );
+
+            }
+
+            cacheAttributeLocations( program, identifiers );
 
         }
-
-        for ( a in attributes ) {
-
-            identifiers.push_back( a );
-
-        }
-
-        cacheAttributeLocations( program, identifiers );
 
         program.id = _programs_counter ++;
 
@@ -6195,7 +6219,7 @@ public:
         for( i = 0, l = identifiers.size(); i < l; i ++ ) {
 
             id = identifiers[ i ];
-            program.uniforms[ id ] = GL_getUniformLocation( program, id );
+            program.uniforms[ id ] = glGetUniformLocation( program, id );
 
         }
 
@@ -6208,32 +6232,29 @@ public:
         for( i = 0, l = identifiers.size(); i < l; i ++ ) {
 
             id = identifiers[ i ];
-            program.attributes[ id ] = GL_getAttribLocation( program, id );
+            program.attributes[ id ] = glGetAttribLocation( program, id );
 
         }
 
     }
 
-    function addLineNumbers ( string ) {
+    std::string addLineNumbers ( const std::string& string ) {
 
-        auto chunks = string.split( "\n" );
+        std::stringstream ss;
+        std::string line;
+        int i = 1;
 
-        for ( auto i = 0, il = chunks.size(); i < il; i ++ ) {
-
-            // Chrome reports shader errors on lines
-            // starting counting from 1
-
-            chunks[ i ] = ( i + 1 ) + ": " + chunks[ i ];
-
+        while ( std::getline( string, line ) ) {
+            ss << i++ << ": " << line;
         }
 
-        return chunks.join( "\n" );
+        return ss.str();
 
     }
 
-    function getShader ( type, string ) {
+    Buffer getShader ( const std::string& type, const std::string& source ) {
 
-        auto shader;
+        Buffer shader = 0;
 
         if ( type == "fragment" ) {
 
@@ -6245,15 +6266,17 @@ public:
 
         }
 
-        glshaderSource( shader, string );
-        glcompileShader( shader );
+        const char *source_str = source.c_str();
+        glShaderSource( shader, 1, &source_str, nullptr );
+        glCompileShader( shader );
 
-        if ( !_gl.getShaderParameter( shader, GL_COMPILE_STATUS ) ) {
-
-            console().error( GL_getShaderInfoLog( shader ) );
-            console().error( addLineNumbers( string ) );
-            return null;
-
+        if ( !glGetShaderParameter( shader, GL_COMPILE_STATUS ) ) {
+            int loglen;
+            char logbuffer[1000];
+            glGetShaderInfoLog(shader, sizeof(logbuffer), &loglen, logbuffer);
+            console().error( logbuffer );
+            console().error( addLineNumbers( source ) );
+            return 0;
         }
 
         return shader;
