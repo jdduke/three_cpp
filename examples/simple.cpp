@@ -1,48 +1,65 @@
 #include <three/three.hpp>
 
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include <three/extras/anim.hpp>
+#include <three/extras/sdl.hpp>
+#include <three/extras/glew.hpp>
 
 #include <thread>
 #include <fstream>
 
 using namespace three;
 
-bool initSDL( GLRenderer::Parameters& parameters ) {
+typedef std::function<bool(float)> Update;
+typedef std::function<bool(float)> Render;
 
-    if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
-        console().error() << "Error initializing SDL: " << SDL_GetError();
-        return false;
-    }
+void gameLoop(Update update, Render render) {
 
-    console().log() << "SDL initialized";
+    anim::AnimFrameRequest requestAnimFrame;
 
-    if ( SDL_SetVideoMode( parameters.width, parameters.height, parameters.precision, SDL_OPENGL ) == NULL ) {
-        console().error() << "Error setting SDL video mode: " << SDL_GetError();
-        return false;
-    }
+    while ( requestAnimFrame( [&]( float deltaTime ) {
+        return update( deltaTime ) && render( deltaTime );
+    } ) );
 
-    console().log() << "SDL video initialized";
-
-    SDL_WM_SetCaption( "Three.cpp", NULL );
-
-    return true;
 }
 
-bool initGLEW( GLRenderer::Parameters& parameters ) {
+bool gameUpdate( float /* deltaTime */ ) {
 
-    auto err = glewInit();
-
-    if ( GLEW_OK != err  ) {
-        console().error() << "Error initializing glew: " << glewGetErrorString( err );
-        return false;
+    SDL_Event event;
+    while ( SDL_PollEvent( &event ) ) {
+        switch( event.type ) {
+        case SDL_KEYDOWN:
+        case SDL_QUIT:
+            return false;
+        default:
+            break;
+        };
     }
-
-    console().log() << "GLEW initialized";
-
+    //if ( requestAnimFrame.elapsedTime() > 10 ) {
+    //    return false;
+    //}
     return true;
+
+};
+
+void test0( three::GLRenderer& renderer ) {
+
+    gameLoop ( gameUpdate, [&](float) -> bool {
+        SDL_GL_SwapBuffers();
+        return true;
+        //renderer->renderBuffer()
+    } );
+
 }
 
+void test1( three::GLRenderer& renderer ) {
+
+    gameLoop ( gameUpdate, [&](float) -> bool {
+        SDL_GL_SwapBuffers();
+        return true;
+        //renderer->renderBuffer()
+    } );
+
+}
 
 int main ( int argc, char* argv[] ) {
 
@@ -50,75 +67,26 @@ int main ( int argc, char* argv[] ) {
     freopen( "CON", "w", stdout );
     freopen( "CON", "w", stderr );*/
 
+    struct OnQuit {
+        ~OnQuit() {
+            SDL_Quit();
+        }
+    } onQuit;
+
     GLRenderer::Parameters parameters;
 
-    auto quit = [&]() {
-        SDL_Quit();
-        exit( 0 );
-    };
-
-    if ( !initSDL( parameters ) || !initGLEW( parameters ) ) {
-        quit();
+    if ( !sdl::initSDL( parameters ) || !glew::initGLEW( parameters ) ) {
+        return 0;
     }
 
     auto renderer = three::GLRenderer::create( parameters );
     if ( !renderer ) {
-        quit();
+        return 0;
     }
 
-    const auto frameTime = .016f;
+    test0( *renderer );
 
-    Clock clock;
-    auto lastTime = clock.getElapsedTime();
-    typedef std::function<void(void)> Callback;
-    auto requestAnimFrame = [&]( Callback callback ) {
-
-        auto time = clock.getElapsedTime();
-        auto deltaTime = ( time - lastTime );
-        auto sleepTime = frameTime - deltaTime;
-
-        std::this_thread::sleep_for( std::chrono::milliseconds( (int)(sleepTime * 1000) ) );
-
-        lastTime = time;
-
-        callback();
-
-    };
-
-    bool done = false;
-
-    auto update = [&]() {
-        SDL_Event event;
-        while ( SDL_PollEvent( &event ) ) {
-            switch( event.type ) {
-            case SDL_KEYDOWN:
-            case SDL_QUIT:
-                done = true;
-                break;
-            default:
-                break;
-            };
-        }
-    };
-
-    auto render = [&]() {
-        SDL_GL_SwapBuffers( );
-        //renderer->render();
-    };
-
-    while ( !done && clock.getElapsedTime() < 10 ) {
-
-        requestAnimFrame( [&] {
-
-            update();
-
-            render();
-
-        } );
-
-    }
-
-    quit();
+    test1( *renderer );
 
     return 0;
 }
