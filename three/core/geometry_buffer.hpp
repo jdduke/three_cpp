@@ -11,6 +11,13 @@ struct GeometryBuffer {
 
     typedef unsigned GLBuffer;
 
+    bool hasPositions;
+    bool hasNormals;
+    bool hasUvs;
+    bool hasColors;
+    bool hasTangents;
+    bool dynamic;
+
     std::vector<GLCustomAttribute> __glCustomAttributesList;
 
     GLBuffer __glColorBuffer;
@@ -49,7 +56,7 @@ struct GeometryBuffer {
     std::vector<float> __skinVertexAArray;
     std::vector<float> __skinVertexBArray;
     std::vector<int> __skinIndexArray;
-    std::vector<int> __skinWeightArray;
+    std::vector<float> __skinWeightArray;
 
     std::vector<uint16_t> __faceArray;
     std::vector<uint16_t> __lineArray;
@@ -71,6 +78,33 @@ struct GeometryBuffer {
         __skinIndexArray.clear();
         __skinWeightArray.clear();
     }
+
+    GeometryBuffer() 
+        : hasPositions ( false ),
+        hasNormals ( false ),
+        hasUvs ( false ),
+        hasColors ( false ),
+        hasTangents ( false ),
+        dynamic ( true ),
+        __glColorBuffer ( 0 ),
+        __glFaceBuffer ( 0 ),
+        __glLineBuffer ( 0 ),
+        __glNormalBuffer ( 0 ),
+        __glSkinIndicesBuffer ( 0 ),
+        __glSkinVertexABuffer ( 0 ),
+        __glSkinVertexBBuffer ( 0 ),
+        __glSkinWeightsBuffer ( 0 ),
+        __glTangentBuffer ( 0 ),
+        __glUV2Buffer ( 0 ),
+        __glUVBuffer ( 0 ),
+        __glVertexBuffer ( 0 ),
+        __glFaceCount ( 0 ),
+        __glLineCount ( 0 ),
+        __glParticleCount ( 0 ),
+        __glVertexCount ( 0 ),
+        numMorphTargets ( 0 ),
+        numMorphNormals ( 0 ),
+        __inittedArrays ( false ) { }
 
 };
 

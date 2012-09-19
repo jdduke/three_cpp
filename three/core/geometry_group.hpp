@@ -9,7 +9,7 @@
 
 namespace three {
 
-struct GeometryGroup {
+struct GeometryGroup : public GeometryBuffer {
 
     typedef GeometryBuffer::GLBuffer GLBuffer;
 
@@ -31,8 +31,15 @@ struct GeometryGroup {
 
     int    vertices;
 
-    GeometryBuffer buffer;
-
+    GeometryGroup()
+        : GeometryBuffer(),
+        materialIndex ( -1 ),
+        vertexColorBuffer ( 0 ),
+        vertexIndexBuffer ( 0 ),
+        vertexNormalBuffer ( 0 ),
+        vertexPositionBuffer ( 0 ),
+        vertexUvBuffer ( 0 ),
+        vertices ( 0 ) { }
 };
 
 } // namespace three

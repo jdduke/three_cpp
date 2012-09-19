@@ -4,14 +4,19 @@
 #include <three/common.hpp>
 
 #include <three/gl.hpp>
+
 #include <three/core/geometry.hpp>
 #include <three/core/geometry_group.hpp>
 
+#include <three/renderers/gl_render_target.hpp>
+
+#include <three/textures/texture.hpp>
+
 namespace three {
 
-class glRenderTarget;
-
 typedef std::vector<Light::Ptr> Lights;
+
+int asInt(bool b) { return b ? 1 : 0; }
 
 struct ExtractMaterialAndGeometry : public Visitor {
 
@@ -107,8 +112,8 @@ protected:
     maxMorphNormals ( 4 ),
     autoScaleCubemaps ( true ),
     _programs_counter ( 0 ),
-    _currentProgram ( nullptr ),
-    _currentFramebuffer ( nullptr ),
+    _currentProgram ( 0 ),
+    _currentFramebuffer ( 0 ),
     _currentMaterialId ( -1 ),
     _currentGeometryGroupHash ( 0 ),
     _currentCamera ( ),
@@ -132,7 +137,6 @@ protected:
     _currentWidth ( 0 ),
     _currentHeight ( 0 ),
     _lightsNeedUpdate ( true )
-
     {
         console().log() << "THREE::GLRenderer created";
     }
@@ -235,8 +239,8 @@ private:
     // internal state cache
 
     // TODO: Type
-    void* _currentProgram;
-    void* _currentFramebuffer;
+    Buffer _currentProgram;
+    Buffer _currentFramebuffer;
     int _currentMaterialId;
     int _currentGeometryGroupHash;
     Camera::Ptr _currentCamera;
@@ -257,10 +261,10 @@ private:
     int _oldDepthWrite;
 
     int _oldPolygonOffset;
-    int _oldPolygonOffsetFactor;
-    int _oldPolygonOffsetUnits;
+    float _oldPolygonOffsetFactor;
+    float _oldPolygonOffsetUnits;
 
-    int _oldLineWidth;
+    float _oldLineWidth;
 
     int _viewportX;
     int _viewportY;
@@ -503,8 +507,8 @@ public:
         glClear( bits );
     }
 
-    THREE_DECL void clearTarget ( glRenderTarget& renderTarget, bool color = true, bool depth = true, bool stencil = true ) {
-        // TODO: setRenderTarget( renderTarget );
+    THREE_DECL void clearTarget ( GLRenderTarget::Ptr renderTarget, bool color = true, bool depth = true, bool stencil = true ) {
+        setRenderTarget( renderTarget );
         clear( color, depth, stencil );
     }
 
@@ -542,6 +546,7 @@ public:
 
         if ( !geometry ) {
             console().warn( "Object3D contains no geometry" );
+            return;
         }
 
         if ( object.type() == THREE::Mesh ) {
@@ -678,7 +683,7 @@ public:
 
     THREE_DECL void updateShadowMap ( const Scene::Ptr& scene, const Camera::Ptr& camera ) {
 
-        _currentProgram = nullptr;
+        _currentProgram = 0;
         _oldBlending = -1;
         _oldDepthTest = -1;
         _oldDepthWrite = -1;
@@ -699,8 +704,8 @@ public:
 
     THREE_DECL void createParticleBuffers ( Geometry& geometry ) {
 
-        geometry.buffer.__glVertexBuffer = glCreateBuffer();
-        geometry.buffer.__glColorBuffer = glCreateBuffer();
+        geometry.__glVertexBuffer = glCreateBuffer();
+        geometry.__glColorBuffer = glCreateBuffer();
 
         _info.memory.geometries ++;
 
@@ -708,8 +713,8 @@ public:
 
     THREE_DECL void createLineBuffers ( Geometry& geometry ) {
 
-        geometry.buffer.__glVertexBuffer = glCreateBuffer();
-        geometry.buffer.__glColorBuffer  = glCreateBuffer();
+        geometry.__glVertexBuffer = glCreateBuffer();
+        geometry.__glColorBuffer  = glCreateBuffer();
 
         _info.memory.geometries ++;
 
@@ -717,8 +722,8 @@ public:
 
     THREE_DECL void createRibbonBuffers ( Geometry& geometry ) {
 
-        geometry.buffer.__glVertexBuffer = glCreateBuffer();
-        geometry.buffer.__glColorBuffer  = glCreateBuffer();
+        geometry.__glVertexBuffer = glCreateBuffer();
+        geometry.__glColorBuffer  = glCreateBuffer();
 
         _info.memory.geometries ++;
 
@@ -726,37 +731,37 @@ public:
 
     THREE_DECL void createMeshBuffers ( GeometryGroup& geometryGroup ) {
 
-        geometryGroup.buffer.__glVertexBuffer  = glCreateBuffer();
-        geometryGroup.buffer.__glNormalBuffer  = glCreateBuffer();
-        geometryGroup.buffer.__glTangentBuffer = glCreateBuffer();
-        geometryGroup.buffer.__glColorBuffer   = glCreateBuffer();
-        geometryGroup.buffer.__glUVBuffer      = glCreateBuffer();
-        geometryGroup.buffer.__glUV2Buffer     = glCreateBuffer();
+        geometryGroup.__glVertexBuffer  = glCreateBuffer();
+        geometryGroup.__glNormalBuffer  = glCreateBuffer();
+        geometryGroup.__glTangentBuffer = glCreateBuffer();
+        geometryGroup.__glColorBuffer   = glCreateBuffer();
+        geometryGroup.__glUVBuffer      = glCreateBuffer();
+        geometryGroup.__glUV2Buffer     = glCreateBuffer();
 
-        geometryGroup.buffer.__glSkinVertexABuffer = glCreateBuffer();
-        geometryGroup.buffer.__glSkinVertexBBuffer = glCreateBuffer();
-        geometryGroup.buffer.__glSkinIndicesBuffer = glCreateBuffer();
-        geometryGroup.buffer.__glSkinWeightsBuffer = glCreateBuffer();
+        geometryGroup.__glSkinVertexABuffer = glCreateBuffer();
+        geometryGroup.__glSkinVertexBBuffer = glCreateBuffer();
+        geometryGroup.__glSkinIndicesBuffer = glCreateBuffer();
+        geometryGroup.__glSkinWeightsBuffer = glCreateBuffer();
 
-        geometryGroup.buffer.__glFaceBuffer = glCreateBuffer();
-        geometryGroup.buffer.__glLineBuffer = glCreateBuffer();
+        geometryGroup.__glFaceBuffer = glCreateBuffer();
+        geometryGroup.__glLineBuffer = glCreateBuffer();
 
-        if ( geometryGroup.buffer.numMorphTargets > 0 ) {
+        if ( geometryGroup.numMorphTargets > 0 ) {
 
-            geometryGroup.buffer.__glMorphTargetsBuffers.clear();
+            geometryGroup.__glMorphTargetsBuffers.clear();
 
-            for ( int m = 0, ml = geometryGroup.buffer.numMorphTargets; m < ml; m ++ ) {
-                geometryGroup.buffer.__glMorphTargetsBuffers.push_back( glCreateBuffer() );
+            for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
+                geometryGroup.__glMorphTargetsBuffers.push_back( glCreateBuffer() );
             }
 
         }
 
-        if ( geometryGroup.buffer.numMorphNormals > 0 ) {
+        if ( geometryGroup.numMorphNormals > 0 ) {
 
-            geometryGroup.buffer.__glMorphNormalsBuffers.clear();
+            geometryGroup.__glMorphNormalsBuffers.clear();
 
-            for ( int m = 0, ml = geometryGroup.buffer.numMorphNormals; m < ml; m ++ ) {
-                geometryGroup.buffer.__glMorphNormalsBuffers.push_back( glCreateBuffer() );
+            for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+                geometryGroup.__glMorphNormalsBuffers.push_back( glCreateBuffer() );
             }
 
         }
@@ -769,8 +774,8 @@ public:
 
     THREE_DECL void deleteParticleBuffers ( Geometry& geometry ) {
 
-        glDeleteBuffer( geometry.buffer.__glVertexBuffer );
-        glDeleteBuffer( geometry.buffer.__glColorBuffer );
+        glDeleteBuffer( geometry.__glVertexBuffer );
+        glDeleteBuffer( geometry.__glColorBuffer );
 
         _info.memory.geometries --;
 
@@ -778,8 +783,8 @@ public:
 
     THREE_DECL void deleteLineBuffers ( Geometry& geometry ) {
 
-        glDeleteBuffer( geometry.buffer.__glVertexBuffer );
-        glDeleteBuffer( geometry.buffer.__glColorBuffer );
+        glDeleteBuffer( geometry.__glVertexBuffer );
+        glDeleteBuffer( geometry.__glColorBuffer );
 
         _info.memory.geometries --;
 
@@ -787,8 +792,8 @@ public:
 
     THREE_DECL void deleteRibbonBuffers ( Geometry& geometry ) {
 
-        glDeleteBuffer( geometry.buffer.__glVertexBuffer );
-        glDeleteBuffer( geometry.buffer.__glColorBuffer );
+        glDeleteBuffer( geometry.__glVertexBuffer );
+        glDeleteBuffer( geometry.__glColorBuffer );
 
         _info.memory.geometries --;
 
@@ -796,40 +801,40 @@ public:
 
     THREE_DECL void deleteMeshBuffers ( GeometryGroup& geometryGroup ) {
 
-        glDeleteBuffer( geometryGroup.buffer.__glVertexBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glNormalBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glTangentBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glColorBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glUVBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glUV2Buffer );
+        glDeleteBuffer( geometryGroup.__glVertexBuffer );
+        glDeleteBuffer( geometryGroup.__glNormalBuffer );
+        glDeleteBuffer( geometryGroup.__glTangentBuffer );
+        glDeleteBuffer( geometryGroup.__glColorBuffer );
+        glDeleteBuffer( geometryGroup.__glUVBuffer );
+        glDeleteBuffer( geometryGroup.__glUV2Buffer );
 
-        glDeleteBuffer( geometryGroup.buffer.__glSkinVertexABuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glSkinVertexBBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glSkinIndicesBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glSkinWeightsBuffer );
+        glDeleteBuffer( geometryGroup.__glSkinVertexABuffer );
+        glDeleteBuffer( geometryGroup.__glSkinVertexBBuffer );
+        glDeleteBuffer( geometryGroup.__glSkinIndicesBuffer );
+        glDeleteBuffer( geometryGroup.__glSkinWeightsBuffer );
 
-        glDeleteBuffer( geometryGroup.buffer.__glFaceBuffer );
-        glDeleteBuffer( geometryGroup.buffer.__glLineBuffer );
+        glDeleteBuffer( geometryGroup.__glFaceBuffer );
+        glDeleteBuffer( geometryGroup.__glLineBuffer );
 
-        if ( geometryGroup.buffer.numMorphTargets > 0 ) {
+        if ( geometryGroup.numMorphTargets > 0 ) {
 
-            for ( int m = 0, ml = geometryGroup.buffer.numMorphTargets; m < ml; m ++ ) {
+            for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
 
-                glDeleteBuffer( geometryGroup.buffer.__glMorphTargetsBuffers[ m ] );
+                glDeleteBuffer( geometryGroup.__glMorphTargetsBuffers[ m ] );
 
             }
 
         }
 
-        if ( geometryGroup.buffer.numMorphNormals > 0 ) {
+        if ( geometryGroup.numMorphNormals > 0 ) {
 
-            for ( int m = 0, ml = geometryGroup.buffer.numMorphNormals; m < ml; m ++ ) {
-                glDeleteBuffer( geometryGroup.buffer.__glMorphNormalsBuffers[ m ] );
+            for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+                glDeleteBuffer( geometryGroup.__glMorphNormalsBuffers[ m ] );
             }
 
         }
 
-        for ( auto& attribute : geometryGroup.buffer.__glCustomAttributesList ) {
+        for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
             glDeleteBuffer( attribute.buffer );
         }
 
@@ -852,7 +857,7 @@ public:
 
         if ( material.attributes.size() > 0 ) {
 
-            geometry.buffer.__glCustomAttributesList.clear();
+            geometry.__glCustomAttributesList.clear();
 
             for ( auto& namedAttribute : material.attributes ) {
 
@@ -881,7 +886,7 @@ public:
 
                 }
 
-                geometry.buffer.__glCustomAttributesList.push_back( attribute );
+                geometry.__glCustomAttributesList.push_back( attribute );
 
             }
 
@@ -893,12 +898,12 @@ public:
 
         auto nvertices = (int)geometry.vertices.size();
 
-        geometry.buffer.__vertexArray.resize( nvertices * 3 );
-        geometry.buffer.__colorArray.resize( nvertices * 3 );
+        geometry.__vertexArray.resize( nvertices * 3 );
+        geometry.__colorArray.resize( nvertices * 3 );
 
-        geometry.buffer.__sortArray.clear();
+        geometry.__sortArray.clear();
 
-        geometry.buffer.__glParticleCount = nvertices;
+        geometry.__glParticleCount = nvertices;
 
         initCustomAttributes ( geometry, object );
 
@@ -908,10 +913,10 @@ public:
 
         auto nvertices = geometry.vertices.size();
 
-        geometry.buffer.__vertexArray.resize( nvertices * 3 );
-        geometry.buffer.__colorArray.resize( nvertices * 3 );
+        geometry.__vertexArray.resize( nvertices * 3 );
+        geometry.__colorArray.resize( nvertices * 3 );
 
-        geometry.buffer.__glLineCount = (int)nvertices;
+        geometry.__glLineCount = (int)nvertices;
 
         initCustomAttributes ( geometry, object );
 
@@ -921,10 +926,10 @@ public:
 
         auto nvertices = (int)geometry.vertices.size();
 
-        geometry.buffer.__vertexArray.resize( nvertices * 3 );
-        geometry.buffer.__colorArray.resize( nvertices * 3 );
+        geometry.__vertexArray.resize( nvertices * 3 );
+        geometry.__colorArray.resize( nvertices * 3 );
 
-        geometry.buffer.__glVertexCount = nvertices;
+        geometry.__glVertexCount = nvertices;
 
     }
 
@@ -946,49 +951,49 @@ public:
 
         //console().log( "uvType", uvType, "normalType", normalType, "vertexColorType", vertexColorType, object, geometryGroup, material );
 
-        geometryGroup.buffer.__vertexArray.resize( nvertices * 3 );
+        geometryGroup.__vertexArray.resize( nvertices * 3 );
 
         if ( normalType ) {
-            geometryGroup.buffer.__normalArray.resize( nvertices * 3 );
+            geometryGroup.__normalArray.resize( nvertices * 3 );
         }
 
         if ( geometry.hasTangents ) {
-            geometryGroup.buffer.__tangentArray.resize( nvertices * 4 );
+            geometryGroup.__tangentArray.resize( nvertices * 4 );
         }
 
         if ( vertexColorType ) {
-            geometryGroup.buffer.__colorArray.resize( nvertices * 3 );
+            geometryGroup.__colorArray.resize( nvertices * 3 );
         }
 
         if ( uvType ) {
 
             if ( geometry.faceUvs.size() > 0 || geometry.faceVertexUvs.size() > 0 ) {
-                geometryGroup.buffer.__uvArray.resize( nvertices * 2 );
+                geometryGroup.__uvArray.resize( nvertices * 2 );
             }
 
             if ( geometry.faceUvs.size() > 1 || geometry.faceVertexUvs.size() > 1 ) {
-                geometryGroup.buffer.__uv2Array.resize( nvertices * 2 );
+                geometryGroup.__uv2Array.resize( nvertices * 2 );
             }
 
         }
 
         if ( geometry.skinWeights.size() && geometry.skinIndices.size() ) {
 
-            geometryGroup.buffer.__skinVertexAArray.resize( nvertices * 4 );
-            geometryGroup.buffer.__skinVertexBArray.resize( nvertices * 4 );
-            geometryGroup.buffer.__skinIndexArray.resize( nvertices * 4 );
-            geometryGroup.buffer.__skinWeightArray.resize( nvertices * 4 );
+            geometryGroup.__skinVertexAArray.resize( nvertices * 4 );
+            geometryGroup.__skinVertexBArray.resize( nvertices * 4 );
+            geometryGroup.__skinIndexArray.resize( nvertices * 4 );
+            geometryGroup.__skinWeightArray.resize( nvertices * 4 );
 
         }
 
-        geometryGroup.buffer.__faceArray.resize( ntris * 3 );
-        geometryGroup.buffer.__lineArray.resize( nlines * 2 );
+        geometryGroup.__faceArray.resize( ntris * 3 );
+        geometryGroup.__lineArray.resize( nlines * 2 );
 
-        if ( geometryGroup.buffer.numMorphTargets ) {
+        if ( geometryGroup.numMorphTargets ) {
 
             geometryGroup.__morphTargetsArrays.clear();
 
-            for ( int m = 0, ml = geometryGroup.buffer.numMorphTargets; m < ml; m ++ ) {
+            for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
 
                 geometryGroup.__morphTargetsArrays.push_back( std::vector<float>( nvertices * 3 ) );
 
@@ -996,25 +1001,25 @@ public:
 
         }
 
-        if ( geometryGroup.buffer.numMorphNormals ) {
+        if ( geometryGroup.numMorphNormals ) {
 
             geometryGroup.__morphNormalsArrays.clear();
 
-            for ( int m = 0, ml = geometryGroup.buffer.numMorphNormals; m < ml; m ++ ) {
+            for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
                 geometryGroup.__morphNormalsArrays.push_back( std::vector<float>( nvertices * 3 ) );
             }
 
         }
 
-        geometryGroup.buffer.__glFaceCount = ntris * 3;
-        geometryGroup.buffer.__glLineCount = nlines * 2;
+        geometryGroup.__glFaceCount = ntris * 3;
+        geometryGroup.__glLineCount = nlines * 2;
 
 
         // custom attributes
 
         if ( material && material->attributes.size() > 0 ) {
 
-            geometryGroup.buffer.__glCustomAttributesList.clear();
+            geometryGroup.__glCustomAttributesList.clear();
 
             for ( auto& a : material->attributes ) {
 
@@ -1054,13 +1059,13 @@ public:
 
                 }
 
-                geometryGroup.buffer.__glCustomAttributesList.push_back( attribute );
+                geometryGroup.__glCustomAttributesList.push_back( attribute );
 
             }
 
         }
 
-        geometryGroup.buffer.__inittedArrays = true;
+        geometryGroup.__inittedArrays = true;
 
     }
 
@@ -1150,21 +1155,21 @@ public:
     void setParticleBuffers ( Geometry& geometry, int hint, Object3D& object ) {
 
         auto& vertices = geometry.vertices;
-        auto vl = (int)vertices.size();
+        const auto vl = (int)vertices.size();
 
         auto& colors = geometry.colors;
-        auto cl = (int)colors.size();
+        const auto cl = (int)colors.size();
 
-        auto& vertexArray = geometry.buffer.__vertexArray;
-        auto& colorArray = geometry.buffer.__colorArray;
+        auto& vertexArray = geometry.__vertexArray;
+        auto& colorArray = geometry.__colorArray;
 
-        auto& sortArray = geometry.buffer.__sortArray;
+        auto& sortArray = geometry.__sortArray;
 
         auto dirtyVertices = geometry.verticesNeedUpdate;
         auto dirtyElements = geometry.elementsNeedUpdate;
         auto dirtyColors = geometry.colorsNeedUpdate;
 
-        auto& customAttributes = geometry.buffer.__glCustomAttributesList;
+        auto& customAttributes = geometry.__glCustomAttributesList;
 
         Vector3 _vector3;
         int offset = 0;
@@ -1435,11 +1440,11 @@ public:
         }
 
         if ( dirtyVertices || object.sortParticles ) {
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glVertexBuffer, vertexArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
         }
 
         if ( dirtyColors || object.sortParticles ) {
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glColorBuffer, colorArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
         }
 
         for ( int i = 0, il = (int)customAttributes.size(); i < il; i ++ ) {
@@ -1462,15 +1467,15 @@ public:
         const auto vl = vertices.size();
         const auto cl = colors.size();
 
-        auto& vertexArray = geometry.buffer.__vertexArray;
-        auto& colorArray = geometry.buffer.__colorArray;
+        auto& vertexArray = geometry.__vertexArray;
+        auto& colorArray = geometry.__colorArray;
 
         auto dirtyVertices = geometry.verticesNeedUpdate;
         auto dirtyColors = geometry.colorsNeedUpdate;
 
-        auto& customAttributes = geometry.buffer.__glCustomAttributesList;
+        auto& customAttributes = geometry.__glCustomAttributesList;
 
-        int i, il, a, ca, cal, v, c, offset;
+        int i, il, ca, cal, v, c, offset;
 
         if ( dirtyVertices ) {
 
@@ -1486,7 +1491,7 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glVertexBuffer, vertexArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
 
         }
 
@@ -1504,11 +1509,11 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glColorBuffer, colorArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
 
         }
 
-        for ( i = 0, il = customAttributes.size(); i < il; i ++ ) {
+        for ( i = 0, il = (int)customAttributes.size(); i < il; i ++ ) {
 
             auto& customAttribute = customAttributes[ i ];
 
@@ -1518,7 +1523,7 @@ public:
 
                 offset = 0;
 
-                cal = customAttribute.value.size();
+                cal = (int)customAttribute.value.size();
 
                 if ( customAttribute.size == 1 ) {
 
@@ -1607,8 +1612,8 @@ public:
         const auto vl = vertices.size();
         const auto cl = colors.size();
 
-        auto& vertexArray = geometry.buffer.__vertexArray;
-        auto& colorArray = geometry.buffer.__colorArray;
+        auto& vertexArray = geometry.__vertexArray;
+        auto& colorArray = geometry.__colorArray;
 
         const auto dirtyVertices = geometry.verticesNeedUpdate;
         const auto dirtyColors = geometry.colorsNeedUpdate;
@@ -1627,7 +1632,7 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glVertexBuffer, vertexArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
 
         }
 
@@ -1645,7 +1650,7 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.buffer.__glColorBuffer, colorArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
 
         }
 
@@ -1653,7 +1658,7 @@ public:
 
     void setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object, int hint, bool dispose, Material* material ) {
 
-        if ( ! geometryGroup.buffer.__inittedArrays ) {
+        if ( ! geometryGroup.__inittedArrays ) {
 
             // console().log( object );
             return;
@@ -1664,12 +1669,6 @@ public:
         const auto vertexColorType = bufferGuessVertexColorType( material );
         const auto uvType = bufferGuessUVType( material );
         const auto needsSmoothNormals = ( normalType == THREE::SmoothShading );
-
-        int f, fl, fi,
-            m, ml, i, il,
-            vn, uvi, uv2i,
-            vk, vkl,
-            chf, a;
 
         Color c1, c2, c3, c4;
 
@@ -1687,25 +1686,25 @@ public:
             offset_custom = 0,
             offset_customSrc = 0;
 
-        auto& vertexArray = geometryGroup.buffer.__vertexArray;
-        auto& uvArray = geometryGroup.buffer.__uvArray;
-        auto& uv2Array = geometryGroup.buffer.__uv2Array;
-        auto& normalArray = geometryGroup.buffer.__normalArray;
-        auto& tangentArray = geometryGroup.buffer.__tangentArray;
-        auto& colorArray = geometryGroup.buffer.__colorArray;
+        auto& vertexArray = geometryGroup.__vertexArray;
+        auto& uvArray = geometryGroup.__uvArray;
+        auto& uv2Array = geometryGroup.__uv2Array;
+        auto& normalArray = geometryGroup.__normalArray;
+        auto& tangentArray = geometryGroup.__tangentArray;
+        auto& colorArray = geometryGroup.__colorArray;
 
-        auto& skinVertexAArray = geometryGroup.buffer.__skinVertexAArray;
-        auto& skinVertexBArray = geometryGroup.buffer.__skinVertexBArray;
-        auto& skinIndexArray = geometryGroup.buffer.__skinIndexArray;
-        auto& skinWeightArray = geometryGroup.buffer.__skinWeightArray;
+        auto& skinVertexAArray = geometryGroup.__skinVertexAArray;
+        auto& skinVertexBArray = geometryGroup.__skinVertexBArray;
+        auto& skinIndexArray = geometryGroup.__skinIndexArray;
+        auto& skinWeightArray = geometryGroup.__skinWeightArray;
 
         auto& morphTargetsArrays = geometryGroup.__morphTargetsArrays;
         auto& morphNormalsArrays = geometryGroup.__morphNormalsArrays;
 
-        auto& customAttributes = geometryGroup.buffer.__glCustomAttributesList;
+        auto& customAttributes = geometryGroup.__glCustomAttributesList;
 
-        auto& faceArray = geometryGroup.buffer.__faceArray;
-        auto& lineArray = geometryGroup.buffer.__lineArray;
+        auto& faceArray = geometryGroup.__faceArray;
+        auto& lineArray = geometryGroup.__lineArray;
 
         ExtractMaterialAndGeometry extract;
         object.visit ( extract );
@@ -1739,9 +1738,9 @@ public:
 
         if ( dirtyVertices ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces3 ) {
 
-                const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 const auto& v1 = vertices[ face.a ].position;
                 const auto& v2 = vertices[ face.b ].position;
@@ -1763,9 +1762,9 @@ public:
 
             }
 
-            for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces4 ) {
 
-                const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 const auto& v1 = vertices[ face.a ].position;
                 const auto& v2 = vertices[ face.b ].position;
@@ -1792,7 +1791,7 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glVertexBuffer, vertexArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer, vertexArray, hint );
 
         }
 
@@ -1804,9 +1803,8 @@ public:
 
                 offset_morphTarget = 0;
 
-                for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                for ( const auto& chf : chunk_faces3 ) {
 
-                    const auto& chf = chunk_faces3[ f ];
                     const auto& face = obj_faces[ chf ];
 
                     // morph positions
@@ -1871,9 +1869,8 @@ public:
 
                 }
 
-                for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                for ( const auto& chf : chunk_faces4 ) {
 
-                    const auto& chf = chunk_faces4[ f ];
                     const auto& face = obj_faces[ chf ];
 
                     // morph positions
@@ -1950,13 +1947,13 @@ public:
                 }
 
                 glBindAndBuffer( GL_ARRAY_BUFFER,
-                                 geometryGroup.buffer.__glMorphTargetsBuffers[ vk ],
+                                 geometryGroup.__glMorphTargetsBuffers[ vk ],
                                  morphTargetsArrays[ vk ], hint );
 
                 if ( material.morphNormals ) {
 
                     glBindAndBuffer( GL_ARRAY_BUFFER,
-                                     geometryGroup.buffer.__glMorphNormalsBuffers[ vk ],
+                                     geometryGroup.__glMorphNormalsBuffers[ vk ],
                                      morphNormalsArrays[ vk ], hint );
 
                 }
@@ -1969,9 +1966,9 @@ public:
 
         if ( obj_skinWeights.size() ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces3 ) {
 
-                const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 // weights
 
@@ -2061,9 +2058,9 @@ public:
 
             }
 
-            for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces4 ) {
 
-                const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 // weights
 
@@ -2179,13 +2176,13 @@ public:
 
             if ( offset_skin > 0 ) {
 
-                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexABuffer, skinVertexAArray, hint );
+                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer, skinVertexAArray, hint );
 
-                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexBBuffer, skinVertexBArray, hint );
+                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer, skinVertexBArray, hint );
 
-                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinIndicesBuffer, skinIndexArray, hint );
+                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer, skinIndexArray, hint );
 
-                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinWeightsBuffer, skinWeightArray, hint );
+                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer, skinWeightArray, hint );
 
             }
 
@@ -2193,9 +2190,9 @@ public:
 
         if ( dirtyColors && vertexColorType ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces3 ) {
 
-                const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 const auto& vertexColors = face.vertexColors;
                 const auto& faceColor = face.color;
@@ -2230,9 +2227,9 @@ public:
 
             }
 
-            for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces4 ) {
 
-                const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 const auto& vertexColors = face.vertexColors;
                 const auto& faceColor = face.color;
@@ -2275,7 +2272,7 @@ public:
 
             if ( offset_color > 0 ) {
 
-                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glColorBuffer, colorArray, hint );
+                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer, colorArray, hint );
 
             }
 
@@ -2283,9 +2280,9 @@ public:
 
         if ( dirtyTangents && geometry.hasTangents ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces3 ) {
 
-                const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 const auto& vertexTangents = face.vertexTangents;
 
@@ -2312,9 +2309,9 @@ public:
 
             }
 
-            for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+            for ( const auto& chunk_face4 : chunk_faces4 ) {
 
-                const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                const auto& face = obj_faces[ chunk_face4 ];
 
                 const auto& vertexTangents = face.vertexTangents;
 
@@ -2347,15 +2344,17 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glTangentBuffer, tangentArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer, tangentArray, hint );
 
         }
 
+        int i = 0;
+
         if ( dirtyNormals && normalType ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces3 ) {
 
-                const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 const auto& vertexNormals = face.vertexNormals;
                 const auto& faceNormal = face.normal;
@@ -2390,9 +2389,9 @@ public:
 
             }
 
-            for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces4 ) {
 
-                const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 const auto& vertexNormals = face.vertexNormals;
                 const auto& faceNormal = face.normal;
@@ -2427,15 +2426,13 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glNormalBuffer, normalArray, hint );
+            glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer, normalArray, hint );
 
         }
 
         if ( dirtyUvs && obj_uvs.size() > 0 && uvType ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
-
-                const auto& fi = chunk_faces3[ f ];
+            for ( const auto& fi : chunk_faces3 ) {
 
                 const auto& face = obj_faces[ fi ];
                 const auto& uv = obj_uvs[ fi ];
@@ -2456,9 +2453,7 @@ public:
 
             }
 
-            for ( size_t f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
-
-                const auto& fi = chunk_faces4[ f ];
+            for ( const auto& fi : chunk_faces4 ) {
 
                 const auto& face = obj_faces[ fi ];
                 const auto& uv = obj_uvs[ fi ];
@@ -2481,7 +2476,7 @@ public:
 
             if ( offset_uv > 0 ) {
 
-                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUVBuffer, uvArray, hint );
+                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer, uvArray, hint );
 
             }
 
@@ -2489,9 +2484,7 @@ public:
 
         if ( dirtyUvs && obj_uvs2.size() > 0 && uvType ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
-
-                const auto& fi = chunk_faces3[ f ];
+            for ( const auto& fi : chunk_faces3 ) {
 
                 const auto& face = obj_faces[ fi ];
                 const auto& uv2 = obj_uvs2[ fi ];
@@ -2512,9 +2505,7 @@ public:
 
             }
 
-            for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
-
-                const auto& fi = chunk_faces4[ f ];
+            for ( const auto& fi : chunk_faces4 ) {
 
                 const auto& face = obj_faces[ fi ];
                 const auto& uv2 = obj_uvs2[ fi ];
@@ -2537,7 +2528,7 @@ public:
 
             if ( offset_uv2 > 0 ) {
 
-                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUV2Buffer, uv2Array, hint );
+                glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer, uv2Array, hint );
 
             }
 
@@ -2545,9 +2536,9 @@ public:
 
         if ( dirtyElements ) {
 
-            for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces3 ) {
 
-                const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 faceArray[ offset_face ]     = vertexIndex;
                 faceArray[ offset_face + 1 ] = vertexIndex + 1;
@@ -2570,9 +2561,9 @@ public:
 
             }
 
-            for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+            for ( const auto& fi : chunk_faces4 ) {
 
-                const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                const auto& face = obj_faces[ fi ];
 
                 faceArray[ offset_face ]     = vertexIndex;
                 faceArray[ offset_face + 1 ] = vertexIndex + 1;
@@ -2602,14 +2593,12 @@ public:
 
             }
 
-            glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glFaceBuffer, faceArray, hint );
-            glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glLineBuffer, lineArray, hint );
+            glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glFaceBuffer, faceArray, hint );
+            glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glLineBuffer, lineArray, hint );
 
         }
 
-        for ( i = 0, il = customAttributes.size(); i < il; i ++ ) {
-
-            auto& customAttribute = customAttributes[ i ];
+        for ( auto& customAttribute : customAttributes ) {
 
             if ( customAttribute.__original && (! customAttribute.__original->needsUpdate )) continue;
 
@@ -2620,9 +2609,9 @@ public:
 
                 if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         customAttribute.array[ offset_custom ]     = customAttribute.value[ face.a ].x;
                         customAttribute.array[ offset_custom + 1 ] = customAttribute.value[ face.b ].x;
@@ -2632,9 +2621,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         customAttribute.array[ offset_custom ]     = customAttribute.value[ face.a ].x;
                         customAttribute.array[ offset_custom + 1 ] = customAttribute.value[ face.b ].x;
@@ -2647,9 +2636,9 @@ public:
 
                 } else if ( customAttribute.boundTo == "faces" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces3[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         customAttribute.array[ offset_custom ]     = value.x;
                         customAttribute.array[ offset_custom + 1 ] = value.x;
@@ -2659,9 +2648,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces4[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         customAttribute.array[ offset_custom ]     = value.x;
                         customAttribute.array[ offset_custom + 1 ] = value.x;
@@ -2678,9 +2667,9 @@ public:
 
                 if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         const auto& v1 = customAttribute.value[ face.a ];
                         const auto& v2 = customAttribute.value[ face.b ];
@@ -2699,9 +2688,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         const auto& v1 = customAttribute.value[ face.a ];
                         const auto& v2 = customAttribute.value[ face.b ];
@@ -2726,9 +2715,9 @@ public:
 
                 } else if ( customAttribute.boundTo == "faces" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces3[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value;
                         const auto& v2 = value;
@@ -2747,9 +2736,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces4[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value;
                         const auto& v2 = value;
@@ -2778,9 +2767,9 @@ public:
 
                 if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         const auto& v1 = customAttribute.value[ face.a ];
                         const auto& v2 = customAttribute.value[ face.b ];
@@ -2802,9 +2791,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         const auto& v1 = customAttribute.value[ face.a ];
                         const auto& v2 = customAttribute.value[ face.b ];
@@ -2833,9 +2822,9 @@ public:
 
                 } else if ( customAttribute.boundTo == "faces" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces3[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value;
                         const auto& v2 = value;
@@ -2857,9 +2846,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces4[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value;
                         const auto& v2 = value;
@@ -2891,9 +2880,9 @@ public:
 #ifdef TODO_CHUNK_FACE_VERTICES
                 else if ( customAttribute.boundTo == "faceVertices" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces3[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value[ 0 ];
                         const auto& v2 = value[ 1 ];
@@ -2915,9 +2904,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces4[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value[ 0 ];
                         const auto& v2 = value[ 1 ];
@@ -2950,9 +2939,9 @@ public:
 
                 if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& face = obj_faces[ chunk_faces3[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         const auto& v1 = customAttribute.value[ face.a ];
                         const auto& v2 = customAttribute.value[ face.b ];
@@ -2977,9 +2966,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& face = obj_faces[ chunk_faces4[ f ] ];
+                        const auto& face = obj_faces[ fi ];
 
                         const auto& v1 = customAttribute.value[ face.a ];
                         const auto& v2 = customAttribute.value[ face.b ];
@@ -3012,9 +3001,9 @@ public:
 
                 } else if ( customAttribute.boundTo == "faces" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces3[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value;
                         const auto& v2 = value;
@@ -3039,9 +3028,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces4[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value;
                         const auto& v2 = value;
@@ -3076,9 +3065,9 @@ public:
 #ifdef TODO_CUSTOM_FACE_VERTICES
                 else if ( customAttribute.boundTo == "faceVertices" ) {
 
-                    for ( f = 0, fl = chunk_faces3.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces3 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces3[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value[ 0 ];
                         const auto& v2 = value[ 1 ];
@@ -3103,9 +3092,9 @@ public:
 
                     }
 
-                    for ( f = 0, fl = chunk_faces4.size(); f < fl; f ++ ) {
+                    for ( const auto& fi : chunk_faces4 ) {
 
-                        const auto& value = customAttribute.value[ chunk_faces4[ f ] ];
+                        const auto& value = customAttribute.value[ fi ];
 
                         const auto& v1 = value[ 0 ];
                         const auto& v2 = value[ 1 ];
@@ -3147,7 +3136,7 @@ public:
 
         if ( dispose ) {
 
-            geometryGroup.buffer.dispose();
+            geometryGroup.dispose();
 
         }
 
@@ -3211,8 +3200,6 @@ public:
         }
 
     }
-
-#ifdef TODO_ATTRIBUTES
 
 #ifdef TODO_BUFFER_RENDERING
 
@@ -3462,7 +3449,7 @@ public:
 
             if ( updateBuffers ) {
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glVertexBuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
                 glVertexAttribPointer( attributes.position, 3, GL_FLOAT, false, 0, 0 );
 
             }
@@ -3484,7 +3471,7 @@ public:
 
             // Use the per-geometryGroup custom attribute arrays which are setup in initMeshBuffers
 
-            for ( auto& attribute : geometryGroup.buffer.__glCustomAttributesList )
+            for ( auto& attribute : geometryGroup.__glCustomAttributesList )
 
                 // TODO: Fix this?
                 if( contains( attributes, attribute.belongsToAttribute ) )
@@ -3501,7 +3488,7 @@ public:
 
             if ( attributes.color >= 0 ) {
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glColorBuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
                 glVertexAttribPointer( attributes.color, 3, GL_FLOAT, false, 0, 0 );
 
             }
@@ -3510,7 +3497,7 @@ public:
 
             if ( attributes.normal >= 0 ) {
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glNormalBuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer );
                 glVertexAttribPointer( attributes.normal, 3, GL_FLOAT, false, 0, 0 );
 
             }
@@ -3519,7 +3506,7 @@ public:
 
             if ( attributes.tangent >= 0 ) {
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glTangentBuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer );
                 glVertexAttribPointer( attributes.tangent, 4, GL_FLOAT, false, 0, 0 );
 
             }
@@ -3528,9 +3515,9 @@ public:
 
             if ( attributes.uv >= 0 ) {
 
-                if ( geometryGroup.buffer.__glUVBuffer ) {
+                if ( geometryGroup.__glUVBuffer ) {
 
-                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUVBuffer );
+                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer );
                     glVertexAttribPointer( attributes.uv, 2, GL_FLOAT, false, 0, 0 );
 
                     glEnableVertexAttribArray( attributes.uv );
@@ -3545,9 +3532,9 @@ public:
 
             if ( attributes.uv2 >= 0 ) {
 
-                if ( geometryGroup.buffer.__glUV2Buffer ) {
+                if ( geometryGroup.__glUV2Buffer ) {
 
-                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glUV2Buffer );
+                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer );
                     glVertexAttribPointer( attributes.uv2, 2, GL_FLOAT, false, 0, 0 );
 
                     glEnableVertexAttribArray( attributes.uv2 );
@@ -3564,16 +3551,16 @@ public:
                  attributes.skinVertexA >= 0 && attributes.skinVertexB >= 0 &&
                  attributes.skinIndex >= 0 && attributes.skinWeight >= 0 ) {
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexABuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
                 glVertexAttribPointer( attributes.skinVertexA, 4, GL_FLOAT, false, 0, 0 );
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinVertexBBuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer );
                 glVertexAttribPointer( attributes.skinVertexB, 4, GL_FLOAT, false, 0, 0 );
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinIndicesBuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
                 glVertexAttribPointer( attributes.skinIndex, 4, GL_FLOAT, false, 0, 0 );
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glSkinWeightsBuffer );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer );
                 glVertexAttribPointer( attributes.skinWeight, 4, GL_FLOAT, false, 0, 0 );
 
             }
@@ -3590,21 +3577,21 @@ public:
 
                 setLineWidth( material.wireframeLinewidth );
 
-                if ( updateBuffers ) GL_bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glLineBuffer );
-                glDrawElements( GL_LINES, geometryGroup.buffer.__glLineCount, GL_UNSIGNED_SHORT, 0 );
+                if ( updateBuffers ) GL_bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glLineBuffer );
+                glDrawElements( GL_LINES, geometryGroup.__glLineCount, GL_UNSIGNED_SHORT, 0 );
 
             // triangles
 
             } else {
 
-                if ( updateBuffers ) GL_bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.buffer.__glFaceBuffer );
-                glDrawElements( GL_TRIANGLES, geometryGroup.buffer.__glFaceCount, GL_UNSIGNED_SHORT, 0 );
+                if ( updateBuffers ) GL_bindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glFaceBuffer );
+                glDrawElements( GL_TRIANGLES, geometryGroup.__glFaceCount, GL_UNSIGNED_SHORT, 0 );
 
             }
 
             _info.render.calls ++;
-            _info.render.vertices += geometryGroup.buffer.__glFaceCount;
-            _info.render.faces += geometryGroup.buffer.__glFaceCount / 3;
+            _info.render.vertices += geometryGroup.__glFaceCount;
+            _info.render.faces += geometryGroup.__glFaceCount / 3;
 
         // render lines
 
@@ -3614,7 +3601,7 @@ public:
 
             setLineWidth( material.linewidth );
 
-            glDrawArrays( primitives, 0, geometryGroup.buffer.__glLineCount );
+            glDrawArrays( primitives, 0, geometryGroup.__glLineCount );
 
             _info.render.calls ++;
 
@@ -3622,16 +3609,16 @@ public:
 
         } else if ( object.type() == THREE::ParticleSystem ) {
 
-            glDrawArrays( GL_POINTS, 0, geometryGroup.buffer.__glParticleCount );
+            glDrawArrays( GL_POINTS, 0, geometryGroup.__glParticleCount );
 
             _info.render.calls ++;
-            _info.render.points += geometryGroup.buffer.__glParticleCount;
+            _info.render.points += geometryGroup.__glParticleCount;
 
         // render ribbon
 
         } else if ( object.type() == THREE::Ribbon ) {
 
-            glDrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.buffer.__glVertexCount );
+            glDrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.__glVertexCount );
 
             _info.render.calls ++;
 
@@ -3641,7 +3628,7 @@ public:
 
 #endif // TODO_BUFFER_RENDERING
 
-//#ifdef TODO_MORPH_TARGETS
+#ifdef TODO_MORPH_TARGETS
 
     // Sorting
 
@@ -3660,12 +3647,12 @@ public:
 
         if ( object.morphTargetBase != -1 ) {
 
-            glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphTargetsBuffers[ object.morphTargetBase ] );
+            glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ object.morphTargetBase ] );
             glVertexAttribPointer( attributes.position, 3, GL_FLOAT, false, 0, 0 );
 
         } else if ( attributes.position >= 0 ) {
 
-            glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glVertexBuffer );
+            glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
             glVertexAttribPointer( attributes.position, 3, GL_FLOAT, false, 0, 0 );
 
         }
@@ -3680,12 +3667,12 @@ public:
 
             while ( m < material.numSupportedMorphTargets && m < order.size() ) {
 
-                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphTargetsBuffers[ order[ m ] ] );
+                glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ order[ m ] ] );
                 glVertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
 
                 if ( material.morphNormals ) {
 
-                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphNormalsBuffers[ order[ m ] ] );
+                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphNormalsBuffers[ order[ m ] ] );
                     glVertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
 
                 }
@@ -3742,13 +3729,13 @@ public:
 
                     influenceIndex = activeInfluenceIndices[ m ][ 0 ];
 
-                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphTargetsBuffers[ influenceIndex ] );
+                    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ influenceIndex ] );
 
                     glVertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
 
                     if ( material.morphNormals ) {
 
-                        glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.buffer.__glMorphNormalsBuffers[ influenceIndex ] );
+                        glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphNormalsBuffers[ influenceIndex ] );
                         glVertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
 
                     }
@@ -3784,6 +3771,11 @@ public:
         }
 
     }
+
+#endif // TODO_MORPH_TARGETS
+
+
+#ifdef TODO_RENDERING
 
     // Rendering
 
@@ -4219,12 +4211,11 @@ public:
 
         geometry.geometryGroups = {}
 
-        for ( f = 0, fl = geometry.faces.size(); f < fl; f ++ ) {
+        for ( const auto& face : geometry.faces ) {
 
-            face = geometry.faces[ f ];
             materialIndex = face.materialIndex;
 
-            materialHash = ( materialIndex != undefined ) ? materialIndex : -1;
+            materialHash = ( materialIndex != undefined ) materialIndex : -1;
 
             if ( hash_map[ materialHash ] == undefined ) {
 
@@ -4347,7 +4338,7 @@ public:
 
                         // initialise VBO on the first access
 
-                        if ( ! geometryGroup.buffer.__glVertexBuffer ) {
+                        if ( ! geometryGroup.__glVertexBuffer ) {
 
                             createMeshBuffers( geometryGroup );
                             initMeshBuffers( geometryGroup, object );
@@ -4374,7 +4365,7 @@ public:
 
                 geometry = object.geometry;
 
-                if( ! geometry.buffer.__glVertexBuffer ) {
+                if( ! geometry.__glVertexBuffer ) {
 
                     createRibbonBuffers( geometry );
                     initRibbonBuffers( geometry );
@@ -4388,7 +4379,7 @@ public:
 
                 geometry = object.geometry;
 
-                if( ! geometry.buffer.__glVertexBuffer ) {
+                if( ! geometry.__glVertexBuffer ) {
 
                     createLineBuffers( geometry );
                     initLineBuffers( geometry, object );
@@ -4402,7 +4393,7 @@ public:
 
                 geometry = object.geometry;
 
-                if ( ! geometry.buffer.__glVertexBuffer ) {
+                if ( ! geometry.__glVertexBuffer ) {
 
                     createParticleBuffers( geometry );
                     initParticleBuffers( geometry, object );
@@ -4996,7 +4987,7 @@ public:
                  material instanceof THREE::MeshPhongMaterial ||
                  material.envMap ) {
 
-                if ( p_uniforms.cameraPosition != null ) {
+                if ( p_uniforms.cameraPosition != 0 ) {
 
                     auto position = camera.matrixWorld.getPosition();
                     gluniform3f( p_uniforms.cameraPosition, position.x, position.y, position.z );
@@ -5010,7 +5001,7 @@ public:
                  material instanceof THREE::ShaderMaterial ||
                  material.skinning ) {
 
-                if ( p_uniforms.viewMatrix != null ) {
+                if ( p_uniforms.viewMatrix != 0 ) {
 
                     gluniformMatrix4fv( p_uniforms.viewMatrix, false, camera._viewMatrixArray );
 
@@ -5024,7 +5015,7 @@ public:
 
             if ( _supportsBoneTextures && object.useVertexTexture ) {
 
-                if ( p_uniforms.boneTexture != null ) {
+                if ( p_uniforms.boneTexture != 0 ) {
 
                     // shadowMap texture array starts from 6
                     // texture unit 12 should leave space for 6 shadowmaps
@@ -5038,7 +5029,7 @@ public:
 
             } else {
 
-                if ( p_uniforms.boneGlobalMatrices != null ) {
+                if ( p_uniforms.boneGlobalMatrices != 0 ) {
 
                     gluniformMatrix4fv( p_uniforms.boneGlobalMatrices, false, object.boneMatrices );
 
@@ -5050,7 +5041,7 @@ public:
 
         loadUniformsMatrices( p_uniforms, object );
 
-        if ( p_uniforms.modelMatrix != null ) {
+        if ( p_uniforms.modelMatrix != 0 ) {
 
             gluniformMatrix4fv( p_uniforms.modelMatrix, false, object.matrixWorld.elements );
 
@@ -5060,8 +5051,10 @@ public:
 
     }
 
+#endif //TODO_RENDERING
 
-//#ifdef TODO_UNIFORMS
+
+#ifdef TODO_UNIFORMS
 
     // Uniforms (refresh uniforms objects)
 
@@ -5484,18 +5477,18 @@ public:
 
     }
 
-//#endif // TODO_UNIFORMS
+#endif // TODO_UNIFORMS
 
     void setupMatrices ( Object3D& object, Camera& camera ) {
 
-        object._modelViewMatrix.multiply( camera.matrixWorldInverse, object.matrixWorld );
+        object.glData._modelViewMatrix.multiply( camera.matrixWorldInverse, object.matrixWorld );
 
-        object._normalMatrix.getInverse( object._modelViewMatrix );
-        object._normalMatrix.transpose();
+        object.glData._normalMatrix.getInverse( object.glData._modelViewMatrix );
+        object.glData._normalMatrix.transpose();
 
     }
 
-//#ifdef TODO_LIGHTS
+#ifdef TODO_LIGHTS
 
     function setupLights ( program, lights ) {
 
@@ -5652,7 +5645,7 @@ public:
 
         }
 
-        // null eventual remains from removed lights
+        // 0 eventual remains from removed lights
         // (this is to avoid if in shader)
 
         for ( l = dlength * 3, ll = dcolors.size(); l < ll; l ++ ) dcolors[ l ] = 0.0;
@@ -5669,13 +5662,13 @@ public:
 
     }
 
-//#endif // TODO_LIGHTS
+#endif // TODO_LIGHTS
 
     // GL state setting
 
     void setFaceCulling ( THREE::Side cullFace = THREE::NoSide, THREE::Dir frontFace = THREE::CCW ) {
 
-        if ( cullFace != Side::NoSide ) {
+        if ( cullFace != THREE::NoSide ) {
 
             if ( frontFace == THREE::CCW ) {
 
@@ -5713,8 +5706,8 @@ public:
 
     void setMaterialFaces ( Material& material ) {
 
-        auto doubleSided = material.side == THREE::DoubleSide;
-        auto flipSided = material.side == THREE::BackSide;
+        auto doubleSided = asInt(material.side == THREE::DoubleSide);
+        auto flipSided = asInt(material.side == THREE::BackSide);
 
         if ( _oldDoubleSided != doubleSided ) {
 
@@ -5752,7 +5745,7 @@ public:
 
     void setDepthTest ( bool depthTest ) {
 
-        if ( _oldDepthTest != depthTest ) {
+        if ( _oldDepthTest != asInt(depthTest) ) {
 
             if ( depthTest ) {
 
@@ -5764,7 +5757,7 @@ public:
 
             }
 
-            _oldDepthTest = depthTest;
+            _oldDepthTest = asInt(depthTest);
 
         }
 
@@ -5772,10 +5765,10 @@ public:
 
     void setDepthWrite ( bool depthWrite ) {
 
-        if ( _oldDepthWrite != depthWrite ) {
+        if ( _oldDepthWrite != asInt(depthWrite) ) {
 
             glDepthMask( depthWrite );
-            _oldDepthWrite = depthWrite;
+            _oldDepthWrite = asInt(depthWrite);
 
         }
 
@@ -5795,7 +5788,7 @@ public:
 
     void setPolygonOffset ( bool polygonoffset, float factor, float units ) {
 
-        if ( _oldPolygonOffset != polygonoffset ) {
+        if ( _oldPolygonOffset != asInt(polygonoffset) ) {
 
             if ( polygonoffset ) {
 
@@ -5807,7 +5800,7 @@ public:
 
             }
 
-            _oldPolygonOffset = polygonoffset;
+            _oldPolygonOffset = asInt(polygonoffset);
 
         }
 
@@ -5822,7 +5815,7 @@ public:
 
     }
 
-    void setBlending ( THREE::BlendingType blending, THREE::BlendEquation blendEquation, THREE::BlendFactor blendSrc, THREE::BlendFactor blendDst ) {
+    void setBlending ( THREE::Blending blending, THREE::BlendEquation blendEquation, THREE::BlendFactor blendSrc, THREE::BlendFactor blendDst ) {
 
         if ( blending != _oldBlending ) {
 
@@ -5897,7 +5890,7 @@ public:
 
     // Shaders
 
-//#ifdef TODO_SHADERS
+#ifdef TODO_SHADERS
 
     void buildProgram ( const std::string& shaderID,
                         const std::string& fragmentShader,
@@ -6283,7 +6276,7 @@ public:
 
     }
 
-//#endif TODO_SHADERS
+#endif TODO_SHADERS
 
     // Textures
 
@@ -6294,42 +6287,43 @@ public:
 
     }
 
-//#ifdef TODO_TEXTURE
-
-    function setTextureParameters ( textureType, texture, isImagePowerOfTwo ) {
+    template < typename TextureType >
+    void setTextureParameters ( int textureType, const TextureType& texture, bool isImagePowerOfTwo ) {
 
         if ( isImagePowerOfTwo ) {
 
-            gltexParameteri( textureType, GL_TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
-            gltexParameteri( textureType, GL_TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
+            glTexParameteri( textureType, GL_TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
+            glTexParameteri( textureType, GL_TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
 
-            gltexParameteri( textureType, GL_TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
-            gltexParameteri( textureType, GL_TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
+            glTexParameteri( textureType, GL_TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
+            glTexParameteri( textureType, GL_TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
 
         } else {
 
-            gltexParameteri( textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-            gltexParameteri( textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+            glTexParameteri( textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+            glTexParameteri( textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-            gltexParameteri( textureType, GL_TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
-            gltexParameteri( textureType, GL_TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
+            glTexParameteri( textureType, GL_TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
+            glTexParameteri( textureType, GL_TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
 
         }
 
-        if ( _glExtensionTextureFilterAnisotropic && texture.type != THREE::FloatType ) {
+#ifdef TODO_ANISTROPY
+        if ( _glExtensionTextureFilterAnisotropic && texture.dataType != THREE::FloatType ) {
 
             if ( texture.anisotropy > 1 || texture.__oldAnisotropy ) {
 
-                gltexParameterf( textureType, _glExtensionTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
+                glTexParameterf( textureType, _glExtensionTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
                 texture.__oldAnisotropy = texture.anisotropy;
 
             }
 
         }
+#endif // TODO_ANISOTROPY
 
     }
 
-    setTexture = function ( texture, slot ) {
+    void setTexture ( Texture& texture, int slot ) {
 
         if ( texture.needsUpdate ) {
 
@@ -6342,30 +6336,33 @@ public:
 
             }
 
-            glactiveTexture( GL_TEXTURE0 + slot );
+            glActiveTexture( GL_TEXTURE0 + slot );
             glBindTexture( GL_TEXTURE_2D, texture.__glTexture );
 
-            glpixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
-            glpixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
+#ifdef TODO_GLUNPACK
+            glPixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
+            glPixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
+#endif TODO_GLUNPACK
 
-            auto image = texture.image,
-            isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height ),
-            glFormat = paramThreeToGL( texture.format ),
-            glType = paramThreeToGL( texture.type );
+            const auto& image = texture.image[0];
+            const auto isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height );
+            const auto glFormat = paramThreeToGL( texture.format );
+            const auto glType = paramThreeToGL( texture.dataType );
 
             setTextureParameters( GL_TEXTURE_2D, texture, isImagePowerOfTwo );
 
-            if ( texture instanceof THREE::DataTexture ) {
+            //if ( texture.type() == THREE::DataTexture ) {
 
-                gltexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data );
+                glTexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data.data() );
 
-            } else {
+            //} else {
 
-                gltexImage2D( GL_TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image );
+            //    glTexImage2D( GL_TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image );
 
-            }
+            //}
 
-            if ( texture.generateMipmaps && isImagePowerOfTwo ) GL_generateMipmap( GL_TEXTURE_2D );
+            if ( texture.generateMipmaps && isImagePowerOfTwo ) 
+                glGenerateMipmap( GL_TEXTURE_2D );
 
             texture.needsUpdate = false;
 
@@ -6373,14 +6370,15 @@ public:
 
         } else {
 
-            glactiveTexture( GL_TEXTURE0 + slot );
+            glActiveTexture( GL_TEXTURE0 + slot );
             glBindTexture( GL_TEXTURE_2D, texture.__glTexture );
 
         }
 
     }
 
-    function clampToMaxSize ( image, maxSize ) {
+#ifdef TODO_IMAGE_SCALING
+    Image& clampToMaxSize ( Image& image, int maxSize ) {
 
         if ( image.width <= maxSize && image.height <= maxSize ) {
 
@@ -6405,56 +6403,62 @@ public:
         return canvas;
 
     }
+#endif
 
-    function setCubeTexture ( texture, slot ) {
+    void setCubeTexture ( Texture& texture, int slot ) {
 
         if ( texture.image.size() == 6 ) {
 
             if ( texture.needsUpdate ) {
 
-                if ( ! texture.image.__glTextureCube ) {
+                if ( ! texture.__glTextureCube ) {
 
-                    texture.image.__glTextureCube = glCreateTexture();
+                    texture.__glTextureCube = glCreateTexture();
 
                 }
 
-                glactiveTexture( GL_TEXTURE0 + slot );
-                glBindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__glTextureCube );
+                glActiveTexture( GL_TEXTURE0 + slot );
+                glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTextureCube );
 
-                glpixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
+#ifdef TODO_IMAGE_SCALING
+                glPixelStorei( GL_UNPACK_FLIP_Y, texture.flipY );
 
-                auto cubeImage = [];
-
+                std::array<auto cubeImage = [];
                 for ( auto i = 0; i < 6; i ++ ) {
 
                     if ( _autoScaleCubemaps ) {
 
                         cubeImage[ i ] = clampToMaxSize( texture.image[ i ], _maxCubemapSize );
 
-                    } else {
+                    } else 
+                    {
 
                         cubeImage[ i ] = texture.image[ i ];
 
                     }
 
                 }
+#else
+                auto& cubeImage = texture.image;
+#endif 
 
-                auto image = cubeImage[ 0 ],
-                isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height ),
-                glFormat = paramThreeToGL( texture.format ),
-                glType = paramThreeToGL( texture.type );
+                const auto& image = cubeImage[ 0 ];
+                const auto isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height );
+                const auto glFormat = paramThreeToGL( texture.format );
+                const auto glType = paramThreeToGL( texture.dataType );
 
                 setTextureParameters( GL_TEXTURE_CUBE_MAP, texture, isImagePowerOfTwo );
 
                 for ( auto i = 0; i < 6; i ++ ) {
 
-                    gltexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
+                    //glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
+                    glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, cubeImage[ 0 ].width, cubeImage[ 0 ].height, 0, glFormat, glType, cubeImage[ i ].data.data() );
 
                 }
 
                 if ( texture.generateMipmaps && isImagePowerOfTwo ) {
 
-                    glgenerateMipmap( GL_TEXTURE_CUBE_MAP );
+                    glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
 
                 }
 
@@ -6464,8 +6468,8 @@ public:
 
             } else {
 
-                glactiveTexture( GL_TEXTURE0 + slot );
-                glBindTexture( GL_TEXTURE_CUBE_MAP, texture.image.__glTextureCube );
+                glActiveTexture( GL_TEXTURE0 + slot );
+                glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTextureCube );
 
             }
 
@@ -6475,25 +6479,22 @@ public:
 
     void setCubeTextureDynamic ( Texture& texture, int slot ) {
 
-        glactiveTexture( GL_TEXTURE0 + slot );
+        glActiveTexture( GL_TEXTURE0 + slot );
         glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTexture );
 
     }
 
-//#endif TODO_TEXTURE
-
-//#ifdef TODO_RENDER_TARGET
 
     // Render targets
 
-    function setupFrameBuffer ( framebuffer, renderTarget, textureTarget ) {
+    void setupFrameBuffer ( Buffer framebuffer, GLRenderTarget& renderTarget, GLenum textureTarget ) {
 
         glBindFramebuffer( GL_FRAMEBUFFER, framebuffer );
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureTarget, renderTarget.__glTexture, 0 );
 
     }
 
-    function setupRenderBuffer ( renderbuffer, renderTarget  ) {
+    void setupRenderBuffer ( Buffer renderbuffer, GLRenderTarget& renderTarget  ) {
 
         glBindRenderbuffer( GL_RENDERBUFFER, renderbuffer );
 
@@ -6521,59 +6522,59 @@ public:
 
     }
 
-    setRenderTarget = function ( glRenderTarget& renderTarget ) {
+    void setRenderTarget ( GLRenderTarget::Ptr renderTarget ) {
 
-        auto isCube = ( renderTarget instanceof THREE::WebglRenderTargetCube );
+        auto isCube = false;// TODO: ( renderTarget instanceof THREE::WebglRenderTargetCube );
 
-        if ( renderTarget && ! renderTarget.__glFramebuffer ) {
+        if ( renderTarget && renderTarget->__glFramebuffer.size() == 0 ) {
 
-            if ( renderTarget.depthBuffer == undefined ) renderTarget.depthBuffer = true;
-            if ( renderTarget.stencilBuffer == undefined ) renderTarget.stencilBuffer = true;
-
-            renderTarget.__glTexture = glCreateTexture();
+            renderTarget->__glTexture = glCreateTexture();
 
             // Setup texture, create render and frame buffers
 
-            auto isTargetPowerOfTwo = isPowerOfTwo( renderTarget.width ) && isPowerOfTwo( renderTarget.height ),
-                glFormat = paramThreeToGL( renderTarget.format ),
-                glType = paramThreeToGL( renderTarget.type );
+            const auto isTargetPowerOfTwo = isPowerOfTwo( renderTarget->width ) && isPowerOfTwo( renderTarget->height );
+            const auto glFormat = paramThreeToGL( renderTarget->format );
+            const auto glType = paramThreeToGL( renderTarget->dataType );
 
             if ( isCube ) {
 
-                renderTarget.__glFramebuffer = [];
-                renderTarget.__glRenderbuffer = [];
+                renderTarget->__glFramebuffer.resize( 6 );
+                renderTarget->__glRenderbuffer.resize( 6 );
 
-                glBindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__glTexture );
-                setTextureParameters( GL_TEXTURE_CUBE_MAP, renderTarget, isTargetPowerOfTwo );
+                glBindTexture( GL_TEXTURE_CUBE_MAP, renderTarget->__glTexture );
+                setTextureParameters( GL_TEXTURE_CUBE_MAP, *renderTarget, isTargetPowerOfTwo );
 
                 for ( auto i = 0; i < 6; i ++ ) {
 
-                    renderTarget.__glFramebuffer[ i ] = glCreateFramebuffer();
-                    renderTarget.__glRenderbuffer[ i ] = glCreateRenderbuffer();
+                    renderTarget->__glFramebuffer[ i ] = glCreateFramebuffer();
+                    renderTarget->__glRenderbuffer[ i ] = glCreateRenderbuffer();
 
-                    gltexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
+                    glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
 
-                    setupFrameBuffer( renderTarget.__glFramebuffer[ i ], renderTarget, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i );
-                    setupRenderBuffer( renderTarget.__glRenderbuffer[ i ], renderTarget );
+                    setupFrameBuffer( renderTarget->__glFramebuffer[ i ], *renderTarget, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i );
+                    setupRenderBuffer( renderTarget->__glRenderbuffer[ i ], *renderTarget );
 
                 }
 
-                if ( isTargetPowerOfTwo ) GL_generateMipmap( GL_TEXTURE_CUBE_MAP );
+                if ( isTargetPowerOfTwo ) glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
 
             } else {
 
-                renderTarget.__glFramebuffer = glCreateFramebuffer();
-                renderTarget.__glRenderbuffer = glCreateRenderbuffer();
+                renderTarget->__glFramebuffer.resize( 1 );
+                renderTarget->__glRenderbuffer.resize( 1 );
 
-                glBindTexture( GL_TEXTURE_2D, renderTarget.__glTexture );
-                setTextureParameters( GL_TEXTURE_2D, renderTarget, isTargetPowerOfTwo );
+                renderTarget->__glFramebuffer[ 0 ] = glCreateFramebuffer();
+                renderTarget->__glRenderbuffer[ 0 ] = glCreateRenderbuffer();
 
-                gltexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
+                glBindTexture( GL_TEXTURE_2D, renderTarget->__glTexture );
+                setTextureParameters( GL_TEXTURE_2D, *renderTarget, isTargetPowerOfTwo );
 
-                setupFrameBuffer( renderTarget.__glFramebuffer, renderTarget, GL_TEXTURE_2D );
-                setupRenderBuffer( renderTarget.__glRenderbuffer, renderTarget );
+                glTexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
 
-                if ( isTargetPowerOfTwo ) GL_generateMipmap( GL_TEXTURE_2D );
+                setupFrameBuffer( renderTarget->__glFramebuffer[ 0 ], *renderTarget, GL_TEXTURE_2D );
+                setupRenderBuffer( renderTarget->__glRenderbuffer[ 0 ], *renderTarget );
+
+                if ( isTargetPowerOfTwo ) glGenerateMipmap( GL_TEXTURE_2D );
 
             }
 
@@ -6581,42 +6582,43 @@ public:
 
             if ( isCube ) {
 
-                glBindTexture( GL_TEXTURE_CUBE_MAP, null );
+                glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
 
             } else {
 
-                glBindTexture( GL_TEXTURE_2D, null );
+                glBindTexture( GL_TEXTURE_2D, 0 );
 
             }
 
-            glBindRenderbuffer( GL_RENDERBUFFER, null );
-            glBindFramebuffer( GL_FRAMEBUFFER, null);
+            glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+            glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
         }
 
-        auto framebuffer, width, height, vx, vy;
+        Buffer framebuffer = 0;
+        int width = 0, height = 0, vx = 0, vy = 0;
 
         if ( renderTarget ) {
 
             if ( isCube ) {
 
-                framebuffer = renderTarget.__glFramebuffer[ renderTarget.activeCubeFace ];
+                framebuffer = renderTarget->__glFramebuffer[ renderTarget->activeCubeFace ];
 
             } else {
 
-                framebuffer = renderTarget.__glFramebuffer;
+                framebuffer = renderTarget->__glFramebuffer[ 0 ];
 
             }
 
-            width = renderTarget.width;
-            height = renderTarget.height;
+            width = renderTarget->width;
+            height = renderTarget->height;
 
             vx = 0;
             vy = 0;
 
         } else {
 
-            framebuffer = null;
+            framebuffer = 0;
 
             width = _viewportWidth;
             height = _viewportHeight;
@@ -6640,25 +6642,24 @@ public:
 
     }
 
-    function updateRenderTargetMipmap ( renderTarget ) {
+    void updateRenderTargetMipmap ( GLRenderTarget& renderTarget ) {
 
-        if ( renderTarget instanceof THREE::WebglRenderTargetCube ) {
+        if ( renderTarget.type() == THREE::GLRenderTargetCube ) {
 
             glBindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__glTexture );
-            glgenerateMipmap( GL_TEXTURE_CUBE_MAP );
-            glBindTexture( GL_TEXTURE_CUBE_MAP, null );
+            glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
+            glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
 
         } else {
 
             glBindTexture( GL_TEXTURE_2D, renderTarget.__glTexture );
-            glgenerateMipmap( GL_TEXTURE_2D );
-            glBindTexture( GL_TEXTURE_2D, null );
+            glGenerateMipmap( GL_TEXTURE_2D );
+            glBindTexture( GL_TEXTURE_2D, 0 );
 
         }
 
     }
 
-//#endif TODO_RENDER_TARGET
 
     // Fallback filters for non-power-of-2 textures
 
@@ -6734,6 +6735,8 @@ public:
 
     // Allocations
 
+#ifdef TODO_BONES
+
     int allocateBones ( const Object3D::Ptr& object ) {
 
         if ( _supportsBoneTextures && object && object.useVertexTexture ) {
@@ -6772,21 +6775,28 @@ public:
 
     }
 
+#endif
+
     struct LightCount {
         int directional, point, spot;
     };
 
     THREE_DECL LightCount allocateLights ( std::vector<Light::Ptr> lights ) {
 
-        int dirLights = pointLights = spotLights = maxDirLights = maxPointLights = maxSpotLights = 0;
+        int dirLights = 0, 
+            pointLights  = 0, 
+            spotLights = 0, 
+            maxDirLights = 0,
+            maxPointLights = 0,
+            maxSpotLights = 0;
 
-        for ( auto light& : lights ) {
+        for ( const auto& light : lights ) {
 
-            if ( light.onlyShadow ) continue;
+            if ( light->onlyShadow ) continue;
 
-            if ( light.type() == THREE::DirectionalLight ) dirLights ++;
-            if ( light.type() == THREE::PointLight ) pointLights ++;
-            if ( light.type() == THREE::SpotLight ) spotLights ++;
+            if ( light->type() == THREE::DirectionalLight ) dirLights ++;
+            if ( light->type() == THREE::PointLight ) pointLights ++;
+            if ( light->type() == THREE::SpotLight ) spotLights ++;
 
         }
 
@@ -6813,22 +6823,18 @@ public:
 
         int maxShadows = 0;
 
-        for ( auto& light : lights ) {
+        for ( const auto& light : lights ) {
 
-            if ( ! light.castShadow ) continue;
+            if ( ! light->castShadow ) continue;
 
-            if ( light.type() == THREE::SpotLight ) maxShadows ++;
-            if ( light.type() == THREE::DirectionalLight && ! light.shadowCascade ) maxShadows ++;
+            if ( light->type() == THREE::SpotLight ) maxShadows ++;
+            if ( light->type() == THREE::DirectionalLight && ! light->shadowCascade ) maxShadows ++;
 
         }
 
         return maxShadows;
 
     }
-
-}
-
-#endif // DISABLED CODE
 
 }; // class GLRenderer
 

@@ -16,7 +16,7 @@ public:
 
 	typedef std::shared_ptr<Material> Ptr;
 
-	static Ptr create( int hex ) { return make_shared<Material>( ); }
+	static Ptr create() { return make_shared<Material>( ); }
 
 	virtual THREE::MaterialType type() const { return THREE::Material; }
 
@@ -105,7 +105,7 @@ public:
 protected:
 
 	Material ()
-	: id ( 0 ),//MaterialCount++ ),
+	: id ( MaterialCount()++ ),
 	side ( THREE::FrontSide ),
 	opacity ( 1 ),
 	transparent ( false ),
@@ -129,10 +129,10 @@ protected:
 
 private:
 
-	/*static int& MaterialCount() {
+	static int& MaterialCount() {
 		static int sMaterialCount = 0;
 		return sMaterialCount;
-	}*/
+	}
 
 };
 

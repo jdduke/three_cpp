@@ -106,7 +106,7 @@ public:
             const auto& indices = attributes[ "index" ].array;
             const auto& positions = attributes[ "position" ].array;
 
-            const auto nVertexElements = positions.size();
+            const auto nVertexElements = (int)positions.size();
 
             if ( !contains( attributes, "normal" ) ) {
 
@@ -137,9 +137,9 @@ public:
 
                 for ( auto i = start, il = start + count; i < il; i += 3 ) {
 
-                    const auto vA = index + indices[ i ];
-                    const auto vB = index + indices[ i + 1 ];
-                    const auto vC = index + indices[ i + 2 ];
+                    const auto vA = index + (int)indices[ i ];
+                    const auto vB = index + (int)indices[ i + 1 ];
+                    const auto vC = index + (int)indices[ i + 2 ];
 
                     auto x = positions[ vA * 3 ];
                     auto y = positions[ vA * 3 + 1 ];
@@ -216,7 +216,7 @@ public:
         const auto& normals   = attributes[ "normal" ].array;
         const auto& uvs       = attributes[ "uv" ].array;
 
-        const auto nVertices = positions.size() / 3;
+        const auto nVertices = (int)positions.size() / 3;
 
         if ( !contains( attributes, "tangent" ) ) {
 
@@ -313,9 +313,9 @@ public:
 
             for ( auto i = start, il = start + count; i < il; i += 3 ) {
 
-                const auto iA = index + indices[ i ];
-                const auto iB = index + indices[ i + 1 ];
-                const auto iC = index + indices[ i + 2 ];
+                const auto iA = index + (int)indices[ i ];
+                const auto iB = index + (int)indices[ i + 1 ];
+                const auto iC = index + (int)indices[ i + 2 ];
 
                 handleTriangle( iA, iB, iC );
 
@@ -362,9 +362,9 @@ public:
 
             for ( auto i = start, il = start + count; i < il; i += 3 ) {
 
-                const auto iA = index + indices[ i ];
-                const auto iB = index + indices[ i + 1 ];
-                const auto iC = index + indices[ i + 2 ];
+                const auto iA = index + (int)indices[ i ];
+                const auto iB = index + (int)indices[ i + 1 ];
+                const auto iC = index + (int)indices[ i + 2 ];
 
                 handleVertex( iA );
                 handleVertex( iB );

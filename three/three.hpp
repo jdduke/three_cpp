@@ -56,4 +56,6 @@
 #include <three/scenes/fog_exp2.hpp>
 #include <three/scenes/scene.hpp>
 
+#include <three/textures/texture.hpp>
+
 #endif // THREE_HPP

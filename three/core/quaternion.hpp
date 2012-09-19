@@ -221,8 +221,6 @@ public:
 
     Quaternion& slerpSelf ( const Quaternion& qb, float t ) {
 
-        float x = x, y = y, z = z, w = w;
-
         // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
         auto cosHalfTheta = w * qb.w + x * qb.x + y * qb.y + z * qb.z;
 

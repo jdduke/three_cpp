@@ -11,24 +11,32 @@ namespace three {
 class Light : public Object3D {
 public:
 
-	typedef std::shared_ptr<Light> Ptr;
+    typedef std::shared_ptr<Light> Ptr;
 
-	/////////////////////////////////////////////////////////////////////////
+    virtual THREE::Type type() const { return THREE::Light; }
 
-	Color color;
+    /////////////////////////////////////////////////////////////////////////
 
-	Object3D* target;
+    Color color;
 
-	/////////////////////////////////////////////////////////////////////////
+    Object3D* target;
+
+    bool castShadow, onlyShadow, shadowCascade;
+
+    /////////////////////////////////////////////////////////////////////////
 
 protected:
 
-	explicit Light ( int hex ) : Object3D(), color( hex ), target ( nullptr ) { }
+    explicit Light ( int hex ) 
+        : Object3D(), 
+        color( hex ), 
+        target ( nullptr ),
+        castShadow (false ),
+        onlyShadow ( false ),
+        shadowCascade ( false ) { }
 
-	virtual THREE::Type type() const { return THREE::Light; }
-
-	virtual void visit( Visitor& v ) { v( *this ); }
-	virtual void visit( ConstVisitor& v ) const { v( *this ); }
+    virtual void visit( Visitor& v ) { v( *this ); }
+    virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 };
 

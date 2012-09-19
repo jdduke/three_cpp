@@ -81,7 +81,7 @@ struct Sphere {
     float radius;
 };
 
-class Geometry : public IGeometry {
+class Geometry : public IGeometry, public GeometryBuffer {
 public:
 
     typedef std::shared_ptr<Geometry> Ptr;
@@ -125,7 +125,6 @@ public:
     bool hasTangents;
     bool dynamic;
 
-    GeometryBuffer buffer;
     std::vector<GeometryGroup> geometryGroups;
 
     bool verticesNeedUpdate;

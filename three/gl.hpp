@@ -43,6 +43,24 @@ inline void glDeleteBuffer( GLuint& buffer ) {
 	buffer = 0;
 }
 
+inline GLuint glCreateTexture() {
+    GLuint texture = 0;
+    glGenTextures( 1, &texture );
+    return texture;
+}
+
+inline GLuint glCreateFramebuffer() {
+    GLuint buffer = 0;
+    glGenFramebuffers( 1, &buffer );
+    return buffer;
+}
+
+inline GLuint glCreateRenderbuffer() {
+    GLuint buffer = 0;
+    glGenRenderbuffers( 1, &buffer );
+    return buffer;
+}
+
 #endif
 
 template < typename C >
