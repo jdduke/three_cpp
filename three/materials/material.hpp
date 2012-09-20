@@ -61,6 +61,8 @@ public:
 
 	bool wireframe;
 
+	Buffer program;
+
 	/////////////////////////////////////////////////////////////////////////
 
 	Material& clone ( Material& material ) {
@@ -130,7 +132,8 @@ protected:
 	needsUpdate ( true ),
 	morphTargets ( false ),
 	morphNormals ( false ),
-	wireframe ( false ) { }
+	wireframe ( false ),
+	program	( 0	) {	}
 
 private:
 

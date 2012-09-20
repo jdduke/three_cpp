@@ -213,8 +213,12 @@ private:
 
     // internal properties
 
-    // TODO: Type
-    std::vector<void*> _programs;
+    struct ProgramInfo {
+        int	usedTimes;
+        Buffer program;
+        ProgramInfo() :	usedTimes ( 0 ), program ( 0 ) { }
+    };
+    std::vector<ProgramInfo> _programs;
     int _programs_counter;
 
     // internal state cache
@@ -515,20 +519,20 @@ public:
 
     // Deallocation
 
-    THREE_DECL void deallocateObject ( Object3D& object ) {
+    THREE_DECL void deallocateObject ( Object3D::Ptr object ) {
 
-        if ( ! object.glData.__glInit ) return;
+        if ( !object || ! object->glData.__glInit ) return;
 
-        object.glData.clear();
+        object->glData.clear();
 
-        if ( !object.geometry ) {
+        if ( !object->geometry ) {
             console().warn( "Object3D contains no geometry" );
             return;
         }
 
-        auto& geometry = *object.geometry;
+        auto& geometry = *object->geometry;
 
-        if ( object.type() == THREE::Mesh ) {
+        if ( object->type() == THREE::Mesh ) {
 
             for ( auto& geometryGroup : geometry.geometryGroups ) {
 
@@ -536,15 +540,15 @@ public:
 
             }
 
-        } else if ( object.type() == THREE::Ribbon ) {
+        } else if ( object->type() == THREE::Ribbon ) {
 
             deleteRibbonBuffers( geometry );
 
-        } else if ( object.type() == THREE::Line ) {
+        } else if ( object->type() == THREE::Line ) {
 
             deleteLineBuffers( geometry );
 
-        } else if ( object.type() == THREE::ParticleSystem ) {
+        } else if ( object->type() == THREE::ParticleSystem ) {
 
             deleteParticleBuffers( geometry );
 
@@ -552,70 +556,68 @@ public:
 
     }
 
+    THREE_DECL void deallocateTexture ( Texture::Ptr texture ) {
 
-#ifdef TODO_TEXTURE
-    THREE_DECL void deallocateTexture ( Texture& texture ) {
+        if ( !texture || ! texture->__glInit ) return;
 
-        if ( ! texture.__glInit ) return;
-
-        texture.__glInit = false;
-        glDeleteTexture( texture.__glTexture );
+        texture->__glInit = false;
+        glDeleteTexture( texture->__glTexture );
 
         _info.memory.textures --;
 
     }
-#endif
 
-#ifdef TODO_RENDER_TARGET
-    THREE_DECL void deallocateRenderTarget ( RenderTarget::Ptr renderTarget ) {
 
-        if ( !renderTarget || ! renderTarget.__glTexture ) return;
+    THREE_DECL void deallocateRenderTarget ( GLRenderTarget::Ptr renderTarget ) {
 
-        glDeleteTexture( renderTarget.__glTexture );
+        if ( !renderTarget || ! renderTarget->__glTexture ) return;
 
-        if ( renderTarget instanceof THREE::WebglRenderTargetCube ) {
+        glDeleteTexture( renderTarget->__glTexture );
 
-            for ( auto i = 0; i < 6; i ++ ) {
+        for ( auto& frameBuffer : renderTarget->__glFramebuffer ) {
 
-                glDeleteFramebuffer( renderTarget.__glFramebuffer[ i ] );
-                glDeleteRenderbuffer( renderTarget.__glRenderbuffer[ i ] );
-
-            }
-
-        } else {
-
-            glDeleteFramebuffer( renderTarget.__glFramebuffer );
-            glDeleteRenderbuffer( renderTarget.__glRenderbuffer );
+            glDeleteFramebuffer( frameBuffer );
 
         }
 
+        renderTarget->__glFramebuffer.clear();
+
+
+        for ( auto& renderBuffer : renderTarget->__glRenderbuffer ) {
+
+            glDeleteRenderbuffer( renderBuffer );
+
+        }
+
+        renderTarget->__glRenderbuffer.clear();
+
     }
-#endif // TODO_RENDER_TARGET
 
-#ifdef TODO_MATERIALS
 
-    THREE_DECL void deallocateMaterial ( Material& material ) {
+    THREE_DECL void deallocateMaterial ( Material::Ptr material ) {
 
-        auto program = material.program;
+        if ( !material ) {
+            console().warn( "Deallocating invalid material" );
+            return;
+        }
+
+        auto program = material->program;
 
         if ( ! program ) return;
 
-        material.program = nullptr;
+        material->program = 0;
 
         // only deallocate GL program if this was the last use of shared program
         // assumed there is only single copy of any program in the _programs list
         // (that's how it's constructed)
 
-        auto i, il, programInfo;
         auto deleteProgram = false;
 
-        for ( i = 0, il = _programs.size(); i < il; i ++ ) {
-
-            programInfo = _programs[ i ];
+        for ( auto& programInfo : _programs ) {
 
             if ( programInfo.program == program ) {
 
-                programInfo.usedTimes --;
+                programInfo.usedTimes--;
 
                 if ( programInfo.usedTimes == 0 ) {
 
@@ -631,13 +633,9 @@ public:
 
         if ( deleteProgram ) {
 
-            // avoid using array.splice, this is costlier than creating new array from scratch
+            decltype(_programs) newPrograms;
 
-            auto newPrograms = [];
-
-            for ( i = 0, il = _programs.size(); i < il; i ++ ) {
-
-                programInfo = _programs[ i ];
+            for ( auto& programInfo : _programs ) {
 
                 if ( programInfo.program != program ) {
 
@@ -647,7 +645,7 @@ public:
 
             }
 
-            _programs = newPrograms;
+            _programs = std::move( newPrograms );
 
             glDeleteProgram( program );
 
@@ -656,7 +654,6 @@ public:
         }
 
     }
-#endif // TODO_MATERIALS
 
     // Rendering
 
@@ -3822,7 +3819,7 @@ public:
 
         for ( auto& glObject : renderList ) {
 
-            object = glObject.object;
+            auto& object = glObject.object;
 
             glObject.render = false;
 
@@ -3871,7 +3868,7 @@ public:
 
         for ( auto& glObject : immediateList ) {
 
-            object = glObject.object;
+            auto& object = glObject.object;
 
             if ( object.visible ) {
                 /*
@@ -4029,7 +4026,7 @@ public:
 
                 _setMaterialFaces( material );
 
-                if ( buffer instanceof THREE::BufferGeometry ) {
+                if ( buffer.type() == THREE:::BufferGeometry ) {
 
                     _renderBufferDirect( camera, lights, fog, material, buffer, object );
 
@@ -4129,7 +4126,7 @@ public:
 
         meshMaterial = object.material;
 
-        if ( meshMaterial instanceof THREE::MeshFaceMaterial ) {
+        if ( meshMaterial.type() == THREE:::MeshFaceMaterial ) {
 
             materialIndex = buffer.materialIndex;
 
@@ -4208,7 +4205,7 @@ public:
 
             }
 
-            vertices = face instanceof THREE::Face3 ? 3 : 4;
+            vertices = face.type() == THREE:::Face3 ? 3 : 4;
 
             if ( geometry.geometryGroups[ groupHash ].vertices + vertices > 65535 ) {
 
@@ -4223,7 +4220,7 @@ public:
 
             }
 
-            if ( face instanceof THREE::Face3 ) {
+            if ( face.type() == THREE:::Face3 ) {
 
                 geometry.geometryGroups[ groupHash ].faces3.push_back( f );
 
@@ -4303,7 +4300,7 @@ public:
                 Material& material = *object.material;
                 Geometry& geometry = *object.geometry;
 
-                //if ( geometry->type() instanceof THREE::Geometry ) {
+                //if ( geometry->type().type() == THREE:::Geometry ) {
 
                     if ( geometry.geometryGroups == undefined ) {
 
@@ -4334,7 +4331,7 @@ public:
 
                     }
 
-                } else if ( geometry instanceof THREE::BufferGeometry ) {
+                } else if ( geometry.type() == THREE:::BufferGeometry ) {
 
                     initDirectBuffers( geometry );
 
@@ -4392,7 +4389,7 @@ public:
 
                 geometry = object.geometry;
 
-                if ( geometry instanceof THREE::BufferGeometry ) {
+                if ( geometry.type() == THREE:::BufferGeometry ) {
 
                     addBuffer( scene.__glObjects, geometry, object );
 
@@ -4471,7 +4468,7 @@ public:
 
         if ( object.type() == THREE::Mesh ) {
 
-            if ( geometry instanceof THREE::BufferGeometry ) {
+            if ( geometry.type() == THREE:::BufferGeometry ) {
 
                 if ( geometry.verticesNeedUpdate || geometry.elementsNeedUpdate ||
                      geometry.uvsNeedUpdate || geometry.normalsNeedUpdate ||
@@ -4658,31 +4655,31 @@ public:
 
         auto u, a, identifiers, i, parameters, maxLightCount, maxBones, maxShadows, shaderID;
 
-        if ( material instanceof THREE::MeshDepthMaterial ) {
+        if ( material.type() == THREE:::MeshDepthMaterial ) {
 
             shaderID = 'depth';
 
-        } else if ( material instanceof THREE::MeshNormalMaterial ) {
+        } else if ( material.type() == THREE:::MeshNormalMaterial ) {
 
             shaderID = 'normal';
 
-        } else if ( material instanceof THREE::MeshBasicMaterial ) {
+        } else if ( material.type() == THREE:::MeshBasicMaterial ) {
 
             shaderID = 'basic';
 
-        } else if ( material instanceof THREE::MeshLambertMaterial ) {
+        } else if ( material.type() == THREE:::MeshLambertMaterial ) {
 
             shaderID = 'lambert';
 
-        } else if ( material instanceof THREE::MeshPhongMaterial ) {
+        } else if ( material.type() == THREE:::MeshPhongMaterial ) {
 
             shaderID = 'phong';
 
-        } else if ( material instanceof THREE::LineBasicMaterial ) {
+        } else if ( material.type() == THREE:::LineBasicMaterial ) {
 
             shaderID = 'basic';
 
-        } else if ( material instanceof THREE::ParticleBasicMaterial ) {
+        } else if ( material.type() == THREE:::ParticleBasicMaterial ) {
 
             shaderID = 'particle_basic';
 
@@ -4898,8 +4895,8 @@ public:
 
             }
 
-            if ( material instanceof THREE::MeshPhongMaterial ||
-                 material instanceof THREE::MeshLambertMaterial ||
+            if ( material.type() == THREE::MeshPhongMaterial ||
+                 material.type() == THREE::MeshLambertMaterial ||
                  material.lights ) {
 
                 if ( _lightsNeedUpdate ) {
@@ -4913,9 +4910,9 @@ public:
 
             }
 
-            if ( material instanceof THREE::MeshBasicMaterial ||
-                 material instanceof THREE::MeshLambertMaterial ||
-                 material instanceof THREE::MeshPhongMaterial ) {
+            if ( material.type() == THREE::MeshBasicMaterial ||
+                 material.type() == THREE:::MeshLambertMaterial ||
+                 material.type() == THREE:::MeshPhongMaterial ) {
 
                 refreshUniformsCommon( m_uniforms, material );
 
@@ -4923,29 +4920,29 @@ public:
 
             // refresh single material specific uniforms
 
-            if ( material instanceof THREE::LineBasicMaterial ) {
+            if ( material.type() == THREE:::LineBasicMaterial ) {
 
                 refreshUniformsLine( m_uniforms, material );
 
-            } else if ( material instanceof THREE::ParticleBasicMaterial ) {
+            } else if ( material.type() == THREE:::ParticleBasicMaterial ) {
 
                 refreshUniformsParticle( m_uniforms, material );
 
-            } else if ( material instanceof THREE::MeshPhongMaterial ) {
+            } else if ( material.type() == THREE:::MeshPhongMaterial ) {
 
                 refreshUniformsPhong( m_uniforms, material );
 
-            } else if ( material instanceof THREE::MeshLambertMaterial ) {
+            } else if ( material.type() == THREE:::MeshLambertMaterial ) {
 
                 refreshUniformsLambert( m_uniforms, material );
 
-            } else if ( material instanceof THREE::MeshDepthMaterial ) {
+            } else if ( material.type() == THREE:::MeshDepthMaterial ) {
 
                 m_uniforms.mNear.value = camera.near;
                 m_uniforms.mFar.value = camera.far;
                 m_uniforms.opacity.value = material.opacity;
 
-            } else if ( material instanceof THREE::MeshNormalMaterial ) {
+            } else if ( material.type() == THREE:::MeshNormalMaterial ) {
 
                 m_uniforms.opacity.value = material.opacity;
 
@@ -4964,8 +4961,8 @@ public:
             // load material specific uniforms
             // (shader material also gets them for the sake of genericity)
 
-            if ( material instanceof THREE::ShaderMaterial ||
-                 material instanceof THREE::MeshPhongMaterial ||
+            if ( material.type() == THREE:::ShaderMaterial ||
+                 material.type() == THREE:::MeshPhongMaterial ||
                  material.envMap ) {
 
                 if ( p_uniforms.cameraPosition != 0 ) {
@@ -4977,9 +4974,9 @@ public:
 
             }
 
-            if ( material instanceof THREE::MeshPhongMaterial ||
-                 material instanceof THREE::MeshLambertMaterial ||
-                 material instanceof THREE::ShaderMaterial ||
+            if ( material.type() == THREE:::MeshPhongMaterial ||
+                 material.type() == THREE:::MeshLambertMaterial ||
+                 material.type() == THREE:::ShaderMaterial ||
                  material.skinning ) {
 
                 if ( p_uniforms.viewMatrix != 0 ) {
@@ -5095,7 +5092,7 @@ public:
         }
 
         uniforms.envMap.texture = material.envMap;
-        uniforms.flipEnvMap.value = ( material.envMap instanceof THREE::WebglRenderTargetCube ) ? 1 : -1;
+        uniforms.flipEnvMap.value = ( material.envMap.type() == THREE:::WebglRenderTargetCube ) ? 1 : -1;
 
         if ( _gammaInput ) {
 
@@ -5110,7 +5107,7 @@ public:
 
         uniforms.refractionRatio.value = material.refractionRatio;
         uniforms.combine.value = material.combine;
-        uniforms.useRefract.value = material.envMap && material.envMap.mapping instanceof THREE::CubeRefractionMapping;
+        uniforms.useRefract.value = material.envMap && material.envMap.mapping.type() == THREE:::CubeRefractionMapping;
 
     }
 
@@ -5136,12 +5133,12 @@ public:
 
         uniforms.fogColor.value = fog.color;
 
-        if ( fog instanceof THREE::Fog ) {
+        if ( fog.type() == THREE:::Fog ) {
 
             uniforms.fogNear.value = fog.near;
             uniforms.fogFar.value = fog.far;
 
-        } else if ( fog instanceof THREE::FogExp2 ) {
+        } else if ( fog.type() == THREE:::FogExp2 ) {
 
             uniforms.fogDensity.value = fog.density;
 
@@ -5229,7 +5226,7 @@ public:
 
                 if ( ! light.castShadow ) continue;
 
-                if ( light instanceof THREE::SpotLight || ( light instanceof THREE::DirectionalLight && ! light.shadowCascade ) ) {
+                if ( light.type() == THREE:::SpotLight || ( light.type() == THREE:::DirectionalLight && ! light.shadowCascade ) ) {
 
                     uniforms.shadowMap.texture[ j ] = light.shadowMap;
                     uniforms.shadowMapSize.value[ j ] = light.shadowMapSize;
@@ -5416,7 +5413,7 @@ public:
 
                     setCubeTexture( texture, value );
 
-                } else if ( texture instanceof THREE::WebglRenderTargetCube ) {
+                } else if ( texture.type() == THREE:::WebglRenderTargetCube ) {
 
                     setCubeTextureDynamic( texture, value );
 
@@ -5511,7 +5508,7 @@ public:
             intensity = light.intensity;
             distance = light.distance;
 
-            if ( light instanceof THREE::AmbientLight ) {
+            if ( light.type() == THREE:::AmbientLight ) {
 
                 if ( _gammaInput ) {
 
@@ -5527,7 +5524,7 @@ public:
 
                 }
 
-            } else if ( light instanceof THREE::DirectionalLight ) {
+            } else if ( light.type() == THREE:::DirectionalLight ) {
 
                 doffset = dlength * 3;
 
@@ -5555,7 +5552,7 @@ public:
 
                 dlength += 1;
 
-            } else if( light instanceof THREE::PointLight ) {
+            } else if( light.type() == THREE:::PointLight ) {
 
                 poffset = plength * 3;
 
@@ -5583,7 +5580,7 @@ public:
 
                 plength += 1;
 
-            } else if( light instanceof THREE::SpotLight ) {
+            } else if( light.type() == THREE:::SpotLight ) {
 
                 soffset = slength * 3;
 
@@ -6048,7 +6045,7 @@ public:
             _physicallyBasedShading ? "#define PHYSICALLY_BASED_SHADING" : "" << std::endl <<
 
             ( parameters.useFog && parameters.fog ) ? "#define USE_FOG" : "" << std::endl <<
-            ( parameters.useFog && parameters.fog instanceof THREE::FogExp2 ) ? "#define FOG_EXP2" : "" << std::endl <<
+            ( parameters.useFog && parameters.fog.type() == THREE:::FogExp2 ) ? "#define FOG_EXP2" : "" << std::endl <<
 
             parameters.map ? "#define USE_MAP" : "" << std::endl <<
             parameters.envMap ? "#define USE_ENVMAP" : "" << std::endl <<
@@ -6506,7 +6503,7 @@ public:
 
     void setRenderTarget ( GLRenderTarget::Ptr renderTarget ) {
 
-        auto isCube = false;// TODO: ( renderTarget instanceof THREE::WebglRenderTargetCube );
+        auto isCube = false;// TODO: ( renderTarget.type() == THREE:::WebglRenderTargetCube );
 
         if ( renderTarget && renderTarget->__glFramebuffer.size() == 0 ) {
 
