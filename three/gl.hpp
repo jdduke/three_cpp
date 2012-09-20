@@ -66,15 +66,40 @@ inline void glDeleteFramebuffer( GLuint& buffer ) {
 }
 
 inline GLuint glCreateRenderbuffer() {
-    GLuint buffer =	0;
-    glGenRenderbuffers( 1, &buffer );
-    return buffer;
+	GLuint buffer =	0;
+	glGenRenderbuffers(	1, &buffer );
+	return buffer;
 }
 
-inline void glDeleteRenderbuffer( GLuint& buffer ) {
-    glDeleteRenderbuffers( 1, &buffer );
-    buffer = 0;
+inline void	glDeleteRenderbuffer( GLuint& buffer ) {
+	glDeleteRenderbuffers( 1, &buffer );
+	buffer = 0;
 }
+
+GLint glGetParameteri( GLenum pname	) {
+	GLint parameter = 0;
+	glGetIntegerv( pname, &parameter );
+	return parameter;
+}
+
+GLfloat glGetParameterf( GLenum pname ) {
+	GLfloat parameter = 0;
+	glGetFloatv( pname, &parameter );
+	return parameter;
+}
+
+GLint glGetTexParameteri( GLenum pname ) {
+	GLint parameter = 0;
+	glGetTexParameteriv( GL_TEXTURE_2D, pname, &parameter );
+	return parameter;
+}
+
+GLfloat glGetTexParameterf( GLenum pname ) {
+	GLfloat parameter = 0;
+	glGetTexParameterfv( GL_TEXTURE_2D,	pname, &parameter );
+	return parameter;
+}
+
 
 #endif
 

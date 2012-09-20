@@ -15,7 +15,7 @@ struct TargetDesc {
                          THREE::Filter minFilter   = THREE::LinearMipMapLinearFilter,
                          THREE::PixelFormat format = THREE::RGBAFormat,
                          THREE::DataType dataType  = THREE::UnsignedByteType,
-                         int anisotropy            = 1,
+                         float anisotropy          = 1,
                          bool depthBuffer          = true,
                          bool stencilBuffer        = true)
         : wrapS ( wrapS ),
@@ -33,7 +33,7 @@ struct TargetDesc {
     THREE::Filter magFilter, minFilter;
     THREE::PixelFormat format;
     THREE::DataType dataType;
-    int anisotropy;
+    float anisotropy;
     bool depthBuffer;
     bool stencilBuffer;
 };
@@ -61,7 +61,7 @@ public:
 
     THREE::DataType dataType;
 
-    int anisotropy;
+    float anisotropy;
     int activeCubeFace;
 
     Vector2 offset;
@@ -106,6 +106,8 @@ public:
     }
 
 protected:
+
+    GLRenderTarget();
 
     GLRenderTarget ( int width, int height, const TargetDesc& desc )
         : width ( width ),

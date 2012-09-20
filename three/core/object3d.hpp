@@ -78,6 +78,9 @@ public:
 
 	bool sortParticles;
 
+	bool useVertexTexture;
+	std::vector<Matrix4> bones;
+
 	Material::Ptr material;
 	Geometry::Ptr geometry;
 
@@ -351,8 +354,9 @@ protected:
 	receiveShadow ( false ),
 	frustumCulled ( true ),
 	sortParticles ( false ),
-	material ( material	),
-	geometry ( geometry	) {	}
+	useVertexTexture ( false ),
+	material ( material ),
+	geometry ( geometry ) { }
 
 	virtual void __addObject(Ptr& object) { }
 

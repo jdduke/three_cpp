@@ -14,7 +14,7 @@ struct TextureBuffer : NonCopyable {
 
     bool __glInit;
 
-    int __oldAnisotropy;
+    mutable float __oldAnisotropy;
 
     TextureBuffer() 
         : __glTexture ( 0 ),

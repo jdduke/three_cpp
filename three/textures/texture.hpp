@@ -25,7 +25,7 @@ struct TextureDesc {
                           THREE::Filter minFilter   = THREE::LinearMipMapLinearFilter,
                           THREE::PixelFormat format = THREE::RGBAFormat,
                           THREE::DataType dataType  = THREE::UnsignedByteType,
-                          int anisotropy            = 1)
+                          float anisotropy            = 1)
         : image ( image ),
         wrapS ( wrapS ),
         wrapT ( wrapT ),
@@ -41,7 +41,7 @@ struct TextureDesc {
     THREE::Filter magFilter, minFilter;
     THREE::PixelFormat format;
     THREE::DataType dataType;
-    int anisotropy;
+    float anisotropy;
 };
 
 class Texture : public TextureBuffer {
@@ -69,7 +69,7 @@ public:
 
     THREE::DataType dataType;
 
-    int anisotropy;
+    float anisotropy;
 
     Vector2 offset;
     Vector2 repeat;

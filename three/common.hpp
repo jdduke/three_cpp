@@ -134,6 +134,7 @@ public:
         ParticleSystem,
         Sprite,
         Mesh,
+        SkinnedMesh,
         Ribbon,
         Line
     };

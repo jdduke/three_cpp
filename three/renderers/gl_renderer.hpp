@@ -5,6 +5,7 @@
 
 #include <three/gl.hpp>
 
+#include <three/core/interfaces.hpp>
 #include <three/core/geometry.hpp>
 #include <three/core/geometry_group.hpp>
 
@@ -175,10 +176,8 @@ public:
 
     bool autoScaleCubemaps;
 
-    // TODO: custom render plugins
-
-    //renderPluginsPre = [];
-    //renderPluginsPost = [];
+    std::vector<std::shared_ptr<IPlugin>> renderPluginsPre;
+    std::vector<std::shared_ptr<IPlugin>> renderPluginsPost;
 
 private:
 
@@ -306,9 +305,9 @@ private:
 
     void* _gl;
 
-    //auto _glExtensionTextureFloat;
-    //auto _glExtensionStandardDerivatives;
-    //auto _glExtensionTextureFilterAnisotropic;
+    bool _glExtensionTextureFloat;
+    bool _glExtensionStandardDerivatives;
+    bool _glExtensionTextureFilterAnisotropic;
 
     // GPU capabilities
 
@@ -316,7 +315,7 @@ private:
     int _maxTextureSize;
     int _maxCubemapSize;
 
-    int _maxAnisotropy;
+    float _maxAnisotropy;
 
     bool _supportsVertexTextures;
     bool _supportsBoneTextures;
@@ -346,13 +345,16 @@ private:
         //context = _gl;
 
         // GPU capabilities
-        // TODO: Fix
-        _maxVertexTextures = 4;//glGetTexParameter( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
-        _maxTextureSize    = 8192;//glGetTexParameter( GL_MAX_TEXTURE_SIZE ),
-        _maxCubemapSize    = 8192;//glGetTexParameter( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
-        _maxAnisotropy = 1;//glExtensionTextureFilterAnisotropic ? GL_getParameter( _glExtensionTextureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT ) : 0;
+
+        _maxVertexTextures = glGetTexParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
+        _maxTextureSize    = glGetTexParameteri( GL_MAX_TEXTURE_SIZE ),
+        _maxCubemapSize    = glGetTexParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
+#ifndef TEXTURE_MAX_ANISOTROPY_EXT  
+#define TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+#endif
+        _maxAnisotropy = _glExtensionTextureFilterAnisotropic ? glGetTexParameterf( TEXTURE_MAX_ANISOTROPY_EXT ) : 0.f;
         _supportsVertexTextures = ( _maxVertexTextures > 0 );
-        _supportsBoneTextures = false;//_supportsVertexTextures && _glExtensionTextureFloat;
+        _supportsBoneTextures = _supportsVertexTextures && _glExtensionTextureFloat;
 
         console().log() << "THREE::GLRenderer initialized";
 
@@ -367,32 +369,27 @@ private:
             console().error( "Error loading OpenGL functions" );
         }*/
 
-        /*
-        _glExtensionTextureFloat = GL_getExtension( 'OES_texture_float' );
-        _glExtensionStandardDerivatives = GL_getExtension( 'OES_standard_derivatives' );
-
-        _glExtensionTextureFilterAnisotropic = GL_getExtension( 'EXT_texture_filter_anisotropic' ) ||
-                                               GL_getExtension( 'MOZ_EXT_texture_filter_anisotropic' ) ||
-                                               GL_getExtension( 'WEBKIT_EXT_texture_filter_anisotropic' );
+        _glExtensionTextureFloat = glewIsExtensionSupported( "ARB_texture_float" ) != 0 ? true : false;
+        _glExtensionStandardDerivatives = glewIsExtensionSupported( "OES_standard_derivatives" ) != 0 ? true : false;
+        _glExtensionTextureFilterAnisotropic = glewIsExtensionSupported( "EXT_texture_filter_anisotropic" ) != 0 ? true : false;
 
         if ( ! _glExtensionTextureFloat ) {
 
-            console().log( "THREE::WebGLRenderer: Float textures not supported." );
+            console().log( "THREE::GLRenderer: Float textures not supported." );
 
         }
 
         if ( ! _glExtensionStandardDerivatives ) {
 
-            console().log( "THREE::WebGLRenderer: Standard derivatives not supported." );
+            console().log( "THREE::GLRenderer: Standard derivatives not supported." );
 
         }
 
         if ( ! _glExtensionTextureFilterAnisotropic ) {
 
-            console().log( "THREE::WebGLRenderer: Anisotropic texture filtering not supported." );
+            console().log( "THREE::GLRenderer: Anisotropic texture filtering not supported." );
 
         }
-        */
 
     }
 
@@ -429,7 +426,7 @@ public:
         return _supportsVertexTextures;
     }
 
-    int getMaxAnisotropy  () const {
+    float getMaxAnisotropy () const {
         return _maxAnisotropy;
     }
 
@@ -497,25 +494,21 @@ public:
         clear( color, depth, stencil );
     }
 
-    // TODO: Implement
-
-#ifdef TODO_PLUGINS
     // Plugins
 
-    addPostPlugin = function ( plugin ) {
+    void addPostPlugin ( IPlugin::Ptr plugin ) {
 
-        plugin.init( this );
+        plugin->init( *this );
         renderPluginsPost.push_back( plugin );
 
     }
 
-    addPrePlugin = function ( plugin ) {
+    void addPrePlugin ( IPlugin::Ptr plugin ) {
 
-        plugin.init( this );
+        plugin->init( *this );
         renderPluginsPre.push_back( plugin );
 
     }
-#endif // TODO_PLUGINS
 
     // Deallocation
 
@@ -3792,13 +3785,11 @@ public:
         if ( autoUpdateObjects ) initGLObjects( scene );
 
 
-#ifdef TODO_PLUGINS
         // custom render plugins (pre pass)
 
         renderPlugins( renderPluginsPre, scene, camera );
 
         //
-#endif
 
         _info.render.calls = 0;
         _info.render.vertices = 0;
@@ -3910,11 +3901,9 @@ public:
 
         }
 
-#ifdef TODO_PLUGINS
         // custom render plugins (post pass)
 
         renderPlugins( renderPluginsPost, scene, camera );
-#endif
 
         // Generate mipmap if we're using any kind of mipmap filtering
 
@@ -3937,17 +3926,14 @@ public:
 
 #ifdef TODO_RENDERING
 
+    void renderPlugins( std::vector<IPlugin::Ptr>& plugins, Scene& scene, Camera& camera ) {
 
-    function renderPlugins( plugins, scene, camera ) {
-
-        if ( ! plugins.size() ) return;
-
-        for ( auto i = 0, il = plugins.size(); i < il; i ++ ) {
+        for ( auto& plugin : plugins ) {
 
             // reset state for plugin (to start from clean slate)
 
-            _currentProgram = null;
-            _currentCamera = null;
+            _currentProgram = 0;
+            _currentCamera = 0;
 
             _oldBlending = -1;
             _oldDepthTest = -1;
@@ -3959,12 +3945,12 @@ public:
 
             _lightsNeedUpdate = true;
 
-            plugins[ i ].render( scene, camera, _currentWidth, _currentHeight );
+            plugin->.render( scene, camera, _currentWidth, _currentHeight );
 
             // reset state after plugin (anything could have changed)
 
-            _currentProgram = null;
-            _currentCamera = null;
+            _currentProgram = 0;
+            _currentCamera = 0;
 
             _oldBlending = -1;
             _oldDepthTest = -1;
@@ -4016,23 +4002,23 @@ public:
 
                     if ( ! material ) continue;
 
-                    if ( useBlending ) _setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst );
+                    if ( useBlending ) setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst );
 
-                    _setDepthTest( material.depthTest );
-                    _setDepthWrite( material.depthWrite );
+                    setDepthTest( material.depthTest );
+                    setDepthWrite( material.depthWrite );
                     setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
 
                 }
 
-                _setMaterialFaces( material );
+                setMaterialFaces( material );
 
                 if ( buffer.type() == THREE:::BufferGeometry ) {
 
-                    _renderBufferDirect( camera, lights, fog, material, buffer, object );
+                    renderBufferDirect( camera, lights, fog, material, buffer, object );
 
                 } else {
 
-                    _renderBuffer( camera, lights, fog, material, buffer, object );
+                    renderBuffer( camera, lights, fog, material, buffer, object );
 
                 }
 
@@ -4063,15 +4049,15 @@ public:
 
                     if ( ! material ) continue;
 
-                    if ( useBlending ) _setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst );
+                    if ( useBlending ) setBlending( material.blending, material.blendEquation, material.blendSrc, material.blendDst );
 
-                    _setDepthTest( material.depthTest );
-                    _setDepthWrite( material.depthWrite );
+                    setDepthTest( material.depthTest );
+                    setDepthWrite( material.depthWrite );
                     setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
 
                 }
 
-                _renderImmediateObject( camera, lights, fog, material, object );
+                renderImmediateObject( camera, lights, fog, material, object );
 
             }
 
@@ -4085,7 +4071,7 @@ public:
 
         _currentGeometryGroupHash = -1;
 
-        _setMaterialFaces( material );
+        setMaterialFaces( material );
 
         if ( object.immediateRenderCallback ) {
 
@@ -4093,7 +4079,7 @@ public:
 
         } else {
 
-            object.render( function( object ) { _renderBufferImmediate( object, program, material ); } );
+            object.render( function( object ) { renderBufferImmediate( object, program, material ); } );
 
         }
 
@@ -6287,18 +6273,16 @@ public:
 
         }
 
-#ifdef TODO_ANISTROPY
         if ( _glExtensionTextureFilterAnisotropic && texture.dataType != THREE::FloatType ) {
 
             if ( texture.anisotropy > 1 || texture.__oldAnisotropy ) {
 
-                glTexParameterf( textureType, _glExtensionTextureFilterAnisotropic.TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
+                glTexParameterf( textureType, TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
                 texture.__oldAnisotropy = texture.anisotropy;
 
             }
 
         }
-#endif // TODO_ANISOTROPY
 
     }
 
@@ -6485,8 +6469,8 @@ public:
         /* For some reason this is not working. Defaulting to RGBA4.
         } else if( ! renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
-            glRenderbufferStorage( GL_RENDERBUFFER, GL_STENCIL_INDEX8, renderTarget.width, renderTarget.height );
-            glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer );
+            glRenderbufferStorage( GLrenderBuffer, GL_STENCIL_INDEX8, renderTarget.width, renderTarget.height );
+            glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GLrenderBuffer, renderbuffer );
         */
         } else if( renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
@@ -6714,11 +6698,9 @@ public:
 
     // Allocations
 
-#ifdef TODO_BONES
+    int allocateBones ( Object3D& object ) {
 
-    int allocateBones ( const Object3D::Ptr& object ) {
-
-        if ( _supportsBoneTextures && object && object.useVertexTexture ) {
+        if ( _supportsBoneTextures && object.useVertexTexture ) {
 
             return 1024;
 
@@ -6732,16 +6714,20 @@ public:
             //  - limit here is ANGLE's 254 max uniform vectors
             //    (up to 54 should be safe)
 
-            auto nVertexUniforms = glGetParameter( GL_MAX_VERTEX_UNIFORM_VECTORS );
-            auto nVertexMatrices = Math::floor( ( nVertexUniforms - 20 ) / 4 );
+            auto nVertexUniforms = glGetParameteri( GL_MAX_VERTEX_UNIFORM_VECTORS );
+            auto nVertexMatrices = (int)Math::floor( ( (float)nVertexUniforms - 20 ) / 4 );
 
             auto maxBones = nVertexMatrices;
 
-            if ( object && object.type() == THREE::SkinnedMesh ) {
+            if ( object.type() == THREE::SkinnedMesh ) {
 
-                maxBones = Math::min( object.bones.size(), maxBones );
+                maxBones = Math::min( (int)object.bones.size(), maxBones );
 
-                if ( maxBones < object.bones.size() ) {
+                if ( maxBones < (int)object.bones.size() ) {
+
+                    console().warn() << "WebGLRenderer: too many bones - " 
+                                     << object.bones.size() <<
+                                     ", this GPU supports just " << maxBones << " (try OpenGL instead of ANGLE)";
 
 
                 }
@@ -6753,8 +6739,6 @@ public:
         }
 
     }
-
-#endif
 
     struct LightCount {
         int directional, point, spot;

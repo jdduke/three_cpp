@@ -13,8 +13,11 @@ struct GLRenderTargetBuffer : NonCopyable {
     std::vector<GLBuffer> __glFramebuffer;
     std::vector<GLBuffer> __glRenderbuffer;
 
+    mutable float __oldAnisotropy;
+
     GLRenderTargetBuffer() 
-        : __glTexture ( 0 ) { }
+        : __glTexture ( 0 ),
+          __oldAnisotropy ( -1 ) { }
 
 };
 
