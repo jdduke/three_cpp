@@ -10,6 +10,8 @@
 
 #include <three/renderers/gl_render_target.hpp>
 
+#include <three/scenes/fog.hpp>
+
 #include <three/textures/texture.hpp>
 
 namespace three {
@@ -17,27 +19,6 @@ namespace three {
 typedef std::vector<Light::Ptr> Lights;
 
 int asInt(bool b) { return b ? 1 : 0; }
-
-struct ExtractMaterialAndGeometry : public Visitor {
-
-    ExtractMaterialAndGeometry()
-     : material ( nullptr ), geometry ( nullptr ) { }
-
-    //virtual void operator() (Particle& object) { extract( object ); }
-    // TODO: virtual void operator() (Sprite&   object) { material = object.material.get(); }
-    virtual void operator() (Mesh&     object) { extract( object ); }
-    virtual void operator() (Line&     object) { extract( object ); }
-
-    template < typename Object >
-    void extract ( Object& object ) {
-        material = object.material.get();
-        geometry = object.geometry.get();
-    }
-
-    Material* material;
-    Geometry* geometry;
-
-};
 
 class GLRenderer {
 public:
@@ -540,18 +521,16 @@ public:
 
         object.glData.clear();
 
-        ExtractMaterialAndGeometry extract;
-        object.visit ( extract );
-        Geometry* geometry = extract.geometry;
-
-        if ( !geometry ) {
+        if ( !object.geometry ) {
             console().warn( "Object3D contains no geometry" );
             return;
         }
 
+        auto& geometry = *object.geometry;
+
         if ( object.type() == THREE::Mesh ) {
 
-            for ( auto& geometryGroup : geometry->geometryGroups ) {
+            for ( auto& geometryGroup : geometry.geometryGroups ) {
 
                 deleteMeshBuffers( geometryGroup );
 
@@ -559,15 +538,15 @@ public:
 
         } else if ( object.type() == THREE::Ribbon ) {
 
-            deleteRibbonBuffers( *geometry );
+            deleteRibbonBuffers( geometry );
 
         } else if ( object.type() == THREE::Line ) {
 
-            deleteLineBuffers( *geometry );
+            deleteLineBuffers( geometry );
 
         } else if ( object.type() == THREE::ParticleSystem ) {
 
-            deleteParticleBuffers( *geometry );
+            deleteParticleBuffers( geometry );
 
         }
 
@@ -849,11 +828,14 @@ public:
 
         const auto nvertices = geometry.vertices.size();
 
-        ExtractMaterialAndGeometry extract;
-        object.visit ( extract );
-        if ( !extract.material ) return;
+        if ( !object.material ) {
 
-        auto& material = *extract.material;
+            console().warn( "Object contains no material" );
+            return;
+
+        }
+
+        auto& material = *object.material;
 
         if ( material.attributes.size() > 0 ) {
 
@@ -1071,12 +1053,8 @@ public:
 
     THREE_DECL Material* getBufferMaterial( Object3D& object, GeometryGroup& geometryGroup ) {
 
-        ExtractMaterialAndGeometry extract;
-
-        object.visit ( extract );
-
-        Material* material = extract.material;
-        Geometry* geometry = extract.geometry;
+        auto material = object.material.get();
+        auto geometry = object.geometry.get();
 
         if ( material && ! ( material->type() == THREE::MeshFaceMaterial ) ) {
             return material;
@@ -1706,9 +1684,7 @@ public:
         auto& faceArray = geometryGroup.__faceArray;
         auto& lineArray = geometryGroup.__lineArray;
 
-        ExtractMaterialAndGeometry extract;
-        object.visit ( extract );
-        Geometry& geometry = *extract.geometry;
+        Geometry& geometry = *object.geometry;
 
         const bool dirtyVertices = geometry.verticesNeedUpdate,
             dirtyElements = geometry.elementsNeedUpdate,
@@ -3201,21 +3177,20 @@ public:
 
     }
 
-#ifdef TODO_BUFFER_RENDERING
-
     // Buffer rendering
+
+#ifdef TODO_IMMEDIATE_RENDERING
 
     void renderBufferImmediate ( Object3D& object, Program& program, Material& material ) {
 
         if ( object.hasPositions && ! object.__glVertexBuffer ) object.__glVertexBuffer = glCreateBuffer();
         if ( object.hasNormals && ! object.__glNormalBuffer ) object.__glNormalBuffer = glCreateBuffer();
-        if ( object.hasUvs && ! object.__glUvBuffer ) object.__glUvBuffer = glCreateBuffer();
+        if ( object.hasUvs && ! object.__glUVBuffer ) object.__glUVBuffer = glCreateBuffer();
         if ( object.hasColors && ! object.__glColorBuffer ) object.__glColorBuffer = glCreateBuffer();
 
         if ( object.hasPositions ) {
 
-            glBindBuffer( GL_ARRAY_BUFFER, object.__glVertexBuffer );
-            glBufferData( GL_ARRAY_BUFFER, object.positionArray, GL_DYNAMIC_DRAW );
+            glBindAndBuffer( GL_ARRAY_BUFFER, object.__glVertexBuffer, object.positionArray, GL_DYNAMIC_DRAW );
             glEnableVertexAttribArray( program.attributes.position );
             glVertexAttribPointer( program.attributes.position, 3, GL_FLOAT, false, 0, 0 );
 
@@ -3232,9 +3207,9 @@ public:
                     normalArray,
                     i, il = object.count * 3;
 
-                for( i = 0; i < il; i += 9 ) {
+                const auto& normalArray = object.normalArray;
 
-                    normalArray = object.normalArray;
+                for( i = 0; i < il; i += 9 ) {
 
                     nax  = normalArray[ i ];
                     nay  = normalArray[ i + 1 ];
@@ -3298,7 +3273,11 @@ public:
 
     }
 
-    void renderBufferDirect ( Camera& camera, Lights& lights, Fog& fog, Material& material, Geometr& geometry, Object3D& object ) {
+#endif // TODO_IMMEDIATE_RENDERING
+
+#ifdef TODO_DIRECT_RENDERING
+
+    void renderBufferDirect ( Camera& camera, Lights& lights, Fog& fog, Material& material, Geometry& geometry, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
@@ -3626,7 +3605,7 @@ public:
 
     }
 
-#endif // TODO_BUFFER_RENDERING
+#endif TODO_DIRECT_RENDERING
 
 #ifdef TODO_MORPH_TARGETS
 
@@ -3774,27 +3753,21 @@ public:
 
 #endif // TODO_MORPH_TARGETS
 
-
 #ifdef TODO_RENDERING
 
     // Rendering
 
-    render = function ( scene, camera, renderTarget, forceClear ) {
+    void render ( Scene& scene, Camera& camera, GLRenderTarget& renderTarget, bool forceClear ) {
 
-        if ( camera instanceof THREE::Camera == false ) {
+        /*if ( camera.type() != THREE::Camera ) {
 
             console().error( 'THREE::WebGLRenderer.render: camera is not an instance of THREE::Camera.' );
             return;
 
-        }
+        }*/
 
-        auto i, il,
-
-        webglObject, object,
-        renderList,
-
-        lights = scene.__lights,
-        fog = scene.fog;
+        const auto& lights = scene.__lights;
+        const auto& fog = scene.fog;
 
         // reset caching for this frame
 
@@ -3807,10 +3780,7 @@ public:
 
         // update camera matrices and frustum
 
-        if ( camera.parent == undefined ) camera.updateMatrixWorld();
-
-        if ( ! camera._viewMatrixArray ) camera._viewMatrixArray.resize( 16 );
-        if ( ! camera._projectionMatrixArray ) camera._projectionMatrixArray.resize( 16 );
+        if ( ! camera.parent ) camera.updateMatrixWorld();
 
         camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
@@ -3822,13 +3792,16 @@ public:
 
         // update WebGL objects
 
-        if ( autoUpdateObjects ) initWebGLObjects( scene );
+        if ( autoUpdateObjects ) initGLObjects( scene );
 
+
+#ifdef TODO_PLUGINS
         // custom render plugins (pre pass)
 
         renderPlugins( renderPluginsPre, scene, camera );
 
         //
+#endif
 
         _info.render.calls = 0;
         _info.render.vertices = 0;
@@ -3845,14 +3818,13 @@ public:
 
         // set matrices for regular objects (frustum culled)
 
-        renderList = scene.__glObjects;
+        auto& renderList = scene.__glObjects;
 
-        for ( i = 0, il = renderList.size(); i < il; i ++ ) {
+        for ( auto& glObject : renderList ) {
 
-            webglObject = renderList[ i ];
-            object = webglObject.object;
+            object = glObject.object;
 
-            webglObject.render = false;
+            glObject.render = false;
 
             if ( object.visible ) {
 
@@ -3862,22 +3834,22 @@ public:
 
                     setupMatrices( object, camera );
 
-                    unrollBufferMaterial( webglObject );
+                    unrollBufferMaterial( glObject );
 
-                    webglObject.render = true;
+                    glObject.render = true;
 
                     if ( sortObjects ) {
 
                         if ( object.renderDepth ) {
 
-                            webglObject.z = object.renderDepth;
+                            glObject.z = object.renderDepth;
 
                         } else {
 
                             _vector3.copy( object.matrixWorld.getPosition() );
                             _projScreenMatrix.multiplyVector3( _vector3 );
 
-                            webglObject.z = _vector3.z;
+                            glObject.z = _vector3.z;
 
                         }
 
@@ -3895,12 +3867,11 @@ public:
 
         // set matrices for immediate objects
 
-        renderList = scene.__glObjectsImmediate;
+        auto& immediateList = scene.__glObjectsImmediate;
 
-        for ( i = 0, il = renderList.size(); i < il; i ++ ) {
+        for ( auto& glObject : immediateList ) {
 
-            webglObject = renderList[ i ];
-            object = webglObject.object;
+            object = glObject.object;
 
             if ( object.visible ) {
                 /*
@@ -3911,7 +3882,7 @@ public:
                 }
                 */
                 setupMatrices( object, camera );
-                unrollImmediateBufferMaterial( webglObject );
+                unrollImmediateBufferMaterial( glObject );
             }
         }
 
@@ -3942,10 +3913,11 @@ public:
 
         }
 
+#ifdef TODO_PLUGINS
         // custom render plugins (post pass)
 
         renderPlugins( renderPluginsPost, scene, camera );
-
+#endif
 
         // Generate mipmap if we're using any kind of mipmap filtering
 
@@ -3963,6 +3935,11 @@ public:
         // GL_finish();
 
     }
+
+#endif TODO_RENDERING
+
+#ifdef TODO_RENDERING
+
 
     function renderPlugins( plugins, scene, camera ) {
 
@@ -4008,7 +3985,7 @@ public:
 
     function renderObjects ( renderList, reverse, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
 
-        auto webglObject, object, buffer, material, start, end, delta;
+        auto glObject, object, buffer, material, start, end, delta;
 
         if ( reverse ) {
 
@@ -4025,12 +4002,12 @@ public:
 
         for ( auto i = start; i != end; i += delta ) {
 
-            webglObject = renderList[ i ];
+            glObject = renderList[ i ];
 
-            if ( webglObject.render ) {
+            if ( glObject.render ) {
 
-                object = webglObject.object;
-                buffer = webglObject.buffer;
+                object = glObject.object;
+                buffer = glObject.buffer;
 
                 if ( overrideMaterial ) {
 
@@ -4038,7 +4015,7 @@ public:
 
                 } else {
 
-                    material = webglObject[ materialType ];
+                    material = glObject[ materialType ];
 
                     if ( ! material ) continue;
 
@@ -4070,12 +4047,12 @@ public:
 
     function renderObjectsImmediate ( renderList, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
 
-        auto webglObject, object, material, program;
+        auto glObject, object, material, program;
 
         for ( auto i = 0, il = renderList.size(); i < il; i ++ ) {
 
-            webglObject = renderList[ i ];
-            object = webglObject.object;
+            glObject = renderList[ i ];
+            object = glObject.object;
 
             if ( object.visible ) {
 
@@ -4085,7 +4062,7 @@ public:
 
                 } else {
 
-                    material = webglObject[ materialType ];
+                    material = glObject[ materialType ];
 
                     if ( ! material ) continue;
 
@@ -4272,9 +4249,13 @@ public:
 
     }
 
+#endif TODO_RENDERING
+
+#ifdef TODO_GL_OBJECTS
+
     // Objects refresh
 
-    initWebGLObjects = function ( scene ) {
+    void initGLObjects ( Scene& scene ) {
 
         if ( !scene.__glObjects ) {
 
@@ -4319,10 +4300,8 @@ public:
 
             if ( object.type() == THREE::Mesh ) {
 
-                ExtractMaterialAndGeometry extract;
-                object.visit ( extract );
-                Material& material = *extract.material;
-                Geometry& geometry = *extract.geometry;
+                Material& material = *object.material;
+                Geometry& geometry = *object.geometry;
 
                 //if ( geometry->type() instanceof THREE::Geometry ) {
 
@@ -4483,10 +4462,12 @@ public:
 
     // Objects updates
 
-    function updateObject ( object ) {
+    void updateObject ( Object3D& object ) {
 
-        auto geometry = object.geometry,
-            geometryGroup, customAttributesDirty, material;
+        if ( !object.geometry )
+            return;
+
+        auto& geometry = *object.geometry;
 
         if ( object.type() == THREE::Mesh ) {
 
@@ -5051,7 +5032,7 @@ public:
 
     }
 
-#endif //TODO_RENDERING
+#endif //TODO_GL_OBJECTS
 
 
 #ifdef TODO_UNIFORMS
@@ -6276,7 +6257,8 @@ public:
 
     }
 
-#endif TODO_SHADERS
+#endif // TODO_SHADERS
+
 
     // Textures
 
@@ -6342,7 +6324,7 @@ public:
 #ifdef TODO_GLUNPACK
             glPixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
             glPixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
-#endif TODO_GLUNPACK
+#endif
 
             const auto& image = texture.image[0];
             const auto isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height );
@@ -6361,7 +6343,7 @@ public:
 
             //}
 
-            if ( texture.generateMipmaps && isImagePowerOfTwo ) 
+            if ( texture.generateMipmaps && isImagePowerOfTwo )
                 glGenerateMipmap( GL_TEXTURE_2D );
 
             texture.needsUpdate = false;
@@ -6430,7 +6412,7 @@ public:
 
                         cubeImage[ i ] = clampToMaxSize( texture.image[ i ], _maxCubemapSize );
 
-                    } else 
+                    } else
                     {
 
                         cubeImage[ i ] = texture.image[ i ];
@@ -6440,7 +6422,7 @@ public:
                 }
 #else
                 auto& cubeImage = texture.image;
-#endif 
+#endif
 
                 const auto& image = cubeImage[ 0 ];
                 const auto isImagePowerOfTwo = isPowerOfTwo( image.width ) && isPowerOfTwo( image.height );
@@ -6783,9 +6765,9 @@ public:
 
     THREE_DECL LightCount allocateLights ( std::vector<Light::Ptr> lights ) {
 
-        int dirLights = 0, 
-            pointLights  = 0, 
-            spotLights = 0, 
+        int dirLights = 0,
+            pointLights  = 0,
+            spotLights = 0,
             maxDirLights = 0,
             maxPointLights = 0,
             maxSpotLights = 0;
@@ -6808,7 +6790,7 @@ public:
 
         } else {
 
-            maxDirLights = Math::ceil( _maxLights * dirLights / ( pointLights + dirLights ) );
+            maxDirLights = (int)Math::ceil( (float)_maxLights * dirLights / ( pointLights + dirLights ) );
             maxPointLights = _maxLights - maxDirLights;
             maxSpotLights = maxPointLights; // this is not really correct
 

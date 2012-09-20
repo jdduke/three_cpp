@@ -32,9 +32,6 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-	Geometry::Ptr geometry;
-	Material::Ptr material;
-
 	float boundRadius;
 	int morphTargetBase;
 
@@ -56,7 +53,7 @@ public:
 protected:
 
 	Mesh ( Geometry::Ptr geometry, Material::Ptr material )
-	 : Object3D(), geometry ( geometry ), material ( material ),
+	 : Object3D( material, geometry ), 
 	 boundRadius ( 0 ), morphTargetBase ( -1 ) {
 
 		if ( geometry ) {
@@ -83,17 +80,6 @@ protected:
 			}
 		}
 	 }
-};
-
-struct ExtractMeshData : public ConstVisitor {
-	ExtractMeshData( )
-		: geometry( nullptr ), material ( nullptr ) { }
-	void operator() ( const Mesh& mesh ) {
-		geometry = mesh.geometry.get();
-		material = mesh.material.get();
-	}
-	const Geometry* geometry;
-	const Material* material;
 };
 
 } // namespace three

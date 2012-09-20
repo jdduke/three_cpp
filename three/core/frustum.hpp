@@ -47,17 +47,13 @@ public:
 
     bool contains ( const Object3D& object ) {
 
-        ExtractMeshData extract;
-
-        object.visit( extract );
-
-        if ( !extract.geometry )
+        if ( !object.geometry )
             return false;
 
         auto distance = 0.0f;
         const auto& matrix = object.matrixWorld;
         const auto& me = matrix.elements;
-        auto radius = -extract.geometry->boundingSphere.radius * matrix.getMaxScaleOnAxis();
+        auto radius = -object.geometry->boundingSphere.radius * matrix.getMaxScaleOnAxis();
 
         for ( int i = 0; i < 6; i ++ ) {
             distance = planes[ i ].x * me[12] + planes[ i ].y * me[13] + planes[ i ].z * me[14] + planes[ i ].w;

@@ -59,6 +59,8 @@ public:
 	bool morphTargets;
 	bool morphNormals;
 
+	bool wireframe;
+
 	/////////////////////////////////////////////////////////////////////////
 
 	Material& clone ( Material& material ) {
@@ -98,6 +100,8 @@ public:
 		material.morphNormals        = morphNormals;
 		material.morphTargets        = morphTargets;
 
+		material.wireframe            =	wireframe;
+
 		return material;
 
 	}
@@ -125,7 +129,8 @@ protected:
 	visible ( true ),
 	needsUpdate ( true ),
 	morphTargets ( false ),
-	morphNormals ( false ) { }
+	morphNormals ( false ),
+	wireframe ( false ) { }
 
 private:
 

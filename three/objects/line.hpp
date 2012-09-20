@@ -28,15 +28,12 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-	Geometry::Ptr geometry;
-	Material::Ptr material;
-
 	THREE::LineType lineType;
 
 protected:
 
 	Line ( Geometry::Ptr geometry, Material::Ptr material, THREE::LineType lineType )
-	 : Object3D(), geometry ( geometry ), material ( material ), lineType ( lineType ) {
+	 : Object3D( material, geometry ), lineType ( lineType ) {
 
 		if ( geometry ) {
 
@@ -46,16 +43,6 @@ protected:
 
 		}
 	 }
-};
-
-struct ExtractLineData : public ConstVisitor {
-	ExtractLineData( ) : geometry( nullptr ), material ( nullptr ) { }
-	void operator() ( const Mesh& mesh ) {
-		geometry = mesh.geometry.get();
-		material = mesh.material.get();
-	}
-	const Geometry* geometry;
-	const Material* material;
 };
 
 } // namespace three

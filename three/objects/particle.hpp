@@ -27,12 +27,10 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-	Material::Ptr material;
-
 protected:
 
 	Particle ( Material::Ptr material )
-	 : Object3D(), material ( material ) { }
+	 : Object3D( material ) { }
 
 };
 

@@ -21,6 +21,9 @@ public:
 
 	float near, far;
 
+	std::array<float, 16> _viewMatrixArray;
+	std::array<float, 16> _projectionMatrixArray;
+
 	/////////////////////////////////////////////////////////////////////////
 
 	void lookAt ( const Vector3& vector ) {

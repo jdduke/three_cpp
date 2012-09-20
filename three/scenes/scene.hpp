@@ -23,6 +23,23 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
+    struct GLObject {
+        Buffer buffer;
+        Object3D& object;
+        void* opaque;
+        void* transparent;
+    };
+
+    std::vector<GLObject>  __glObjects;
+
+    std::vector<Object3D*> __objects;
+    std::vector<Light*>    __lights;
+
+    std::vector<Object3D::Ptr> __objectsAdded;
+    std::vector<Object3D::Ptr> __objectsRemoved;
+
+	//////////////////////////////////////////////////////////////////////////
+
 protected:
 
 	struct Add : public Visitor {
@@ -110,13 +127,6 @@ protected:
 
 	virtual void visit( Visitor& v ) { v( *this ); }
 	virtual void visit( ConstVisitor& v ) const { v( *this ); }
-
-	std::vector<Object3D*> __objects;
-	std::vector<Light*>    __lights;
-
-	std::vector<Object3D::Ptr> __objectsAdded;
-	std::vector<Object3D::Ptr> __objectsRemoved;
-
 };
 
 } // namespace three

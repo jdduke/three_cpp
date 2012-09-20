@@ -8,6 +8,9 @@
 #include <three/core/quaternion.hpp>
 #include <three/core/matrix4.hpp>
 
+#include <three/materials/material.hpp>
+#include <three/core/geometry.hpp>
+
 #include <three/extras/noncopyable.hpp>
 
 #include <algorithm>
@@ -74,6 +77,9 @@ public:
 	bool frustumCulled;
 
 	bool sortParticles;
+
+	Material::Ptr material;
+	Geometry::Ptr geometry;
 
 	struct GLData {
 		GLData() : __glInit ( false ) { }
@@ -326,7 +332,8 @@ public:
 
 protected:
 
-	Object3D ()
+	Object3D ( Material::Ptr material = Material::Ptr(),
+	           Geometry::Ptr geometry = Geometry::Ptr() )
 	: id ( Object3DCount()++ ),
 	parent ( nullptr ),
 	up ( 0, 1, 0 ),
@@ -343,7 +350,9 @@ protected:
 	castShadow ( false ),
 	receiveShadow ( false ),
 	frustumCulled ( true ),
-	sortParticles ( false ) { }
+	sortParticles ( false ),
+	material ( material	),
+	geometry ( geometry	) {	}
 
 	virtual void __addObject(Ptr& object) { }
 

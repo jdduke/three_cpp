@@ -90,17 +90,13 @@ public:
 
 		} else if ( object.type() == THREE::Mesh ) {
 
-			ExtractMeshData meshData;
-
-			object.visit ( meshData );
-
-			if ( !meshData.geometry || !meshData.material ) {
+			if ( !object.geometry || !object.material ) {
 				console().warn( "Error extracting mesh geometry/material." );
 				return std::vector<Intersection>();
 			}
 
-			const auto& geometry = *meshData.geometry;
-			const auto& material = *meshData.material;
+			const auto& geometry = *object.geometry;
+			const auto& material = *object.material;
 
 			// Checking boundingSphere
 

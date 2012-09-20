@@ -303,7 +303,8 @@ public:
 
     }
 
-    float* flattenToArray ( float* flat ) const {
+    template < typename T >
+    T& flattenToArray ( T& flat ) const {
 
         flat[ 0 ] = te[0]; flat[ 1 ] = te[1]; flat[ 2 ] = te[2]; flat[ 3 ] = te[3];
         flat[ 4 ] = te[4]; flat[ 5 ] = te[5]; flat[ 6 ] = te[6]; flat[ 7 ] = te[7];
@@ -314,7 +315,8 @@ public:
 
     }
 
-    float* flattenToArrayOffset ( float* flat, size_t offset ) const {
+    template < typename T >
+    T& flattenToArrayOffset ( T& flat, size_t offset ) const {
 
         flat[ offset ] = te[0];
         flat[ offset + 1 ] = te[1];
