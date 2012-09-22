@@ -3,13 +3,15 @@
 
 #include <three/core/face.hpp>
 
-#include <three/renderers/gl_custom_attribute.hpp>
+#include <three/materials/custom_attribute.hpp>
 
 namespace three {
 
 struct GeometryBuffer {
 
-    typedef unsigned GLBuffer;
+    virtual THREE::GeometryType type() const { return THREE::Geometry; }
+
+    typedef Buffer GLBuffer;
 
     bool hasPositions;
     bool hasNormals;
@@ -18,7 +20,7 @@ struct GeometryBuffer {
     bool hasTangents;
     bool dynamic;
 
-    std::vector<GLCustomAttribute> __glCustomAttributesList;
+    std::vector<CustomAttribute> __glCustomAttributesList;
 
     GLBuffer __glColorBuffer;
     GLBuffer __glFaceBuffer;
@@ -79,7 +81,7 @@ struct GeometryBuffer {
         __skinWeightArray.clear();
     }
 
-    GeometryBuffer() 
+    GeometryBuffer( int numMorphTargets = 0, int numMorphNormals = 0)
         : hasPositions ( false ),
         hasNormals ( false ),
         hasUvs ( false ),
@@ -102,8 +104,8 @@ struct GeometryBuffer {
         __glLineCount ( 0 ),
         __glParticleCount ( 0 ),
         __glVertexCount ( 0 ),
-        numMorphTargets ( 0 ),
-        numMorphNormals ( 0 ),
+        numMorphTargets ( numMorphTargets ),
+        numMorphNormals ( numMorphNormals ),
         __inittedArrays ( false ) { }
 
 };

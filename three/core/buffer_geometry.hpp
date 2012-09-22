@@ -24,6 +24,8 @@ public:
 
     Ptr create() { return make_shared<BufferGeometry>(); }
 
+    virtual THREE::GeometryType type() const { return THREE::BufferGeometry; }
+
     /////////////////////////////////////////////////////////////////////////
 
     std::vector<Offset> offsets;
@@ -110,7 +112,7 @@ public:
 
             if ( !contains( attributes, "normal" ) ) {
 
-                attributes[ "normal" ] = GLCustomAttribute( THREE::V3, nVertexElements );
+                attributes[ "normal" ] = CustomAttribute( THREE::V3, nVertexElements );
 
             } else {
 
@@ -222,7 +224,7 @@ public:
 
              const auto nTangentElements = 4 * nVertices;
 
-             attributes[ "tangent" ] = GLCustomAttribute( THREE::V4, nTangentElements );
+             attributes[ "tangent" ] = CustomAttribute( THREE::V4, nTangentElements );
 
         }
 

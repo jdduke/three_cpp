@@ -13,6 +13,8 @@ struct GeometryGroup : public GeometryBuffer {
 
     typedef GeometryBuffer::GLBuffer GLBuffer;
 
+    int id;
+
     std::vector<std::vector<float>>   __morphNormalsArrays;
     std::vector<std::vector<float>>   __morphTargetsArrays;
 
@@ -29,11 +31,12 @@ struct GeometryGroup : public GeometryBuffer {
     GLBuffer vertexPositionBuffer;
     GLBuffer vertexUvBuffer;
 
-    int    vertices;
+    int vertices;
 
-    GeometryGroup()
-        : GeometryBuffer(),
-        materialIndex ( -1 ),
+    explicit GeometryGroup( int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0 )
+        : GeometryBuffer( numMorphTargets, numMorphNormals ),
+        id ( -1 ),
+        materialIndex ( materialIndex ),
         vertexColorBuffer ( 0 ),
         vertexIndexBuffer ( 0 ),
         vertexNormalBuffer ( 0 ),

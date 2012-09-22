@@ -5,7 +5,8 @@
 
 #include <three/extras/noncopyable.hpp>
 
-#include <three/renderers/gl_custom_attribute.hpp>
+#include <map>
+#include <string>
 
 namespace three {
 
@@ -14,29 +15,22 @@ public:
 
 	typedef std::shared_ptr<Program> Ptr;
 
-	static Ptr create( ) { return make_shared<Program>( ); }
+	static Ptr create( Buffer program, int id ) { 
+		return make_shared<Program>( program, id );	
+	}
 
 	/////////////////////////////////////////////////////////////////////////
 
-	struct Attributes {
-		int position;
-	} attributes;
+	std::map<std::string, int> uniforms;
+	std::map<std::string, int> attributes;
 
-	std::vector<float> uniforms;
 	Buffer program;
+	int id;
 
 protected:
 
-	Program ()
-	: program ( 0 ) { }
-
-private:
-
-	/*static int& MaterialCount() {
-		static int sMaterialCount = 0;
-		return sMaterialCount;
-	}*/
-
+	Program ( Buffer program, int id )
+	: program ( program ), id ( id ) { }
 };
 
 } // namespace three

@@ -3,7 +3,12 @@
 
 #include <three/common.hpp>
 
+#include <three/core/vector2.hpp>
+#include <three/core/vector3.hpp>
+
 #include <three/textures/texture_buffer.hpp>
+
+#include <functional>
 
 namespace three {
 

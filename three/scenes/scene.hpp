@@ -23,20 +23,24 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-    struct GLObject {
-        Buffer buffer;
-        Object3D& object;
-        void* opaque;
-        void* transparent;
-    };
+	struct GLObject	{
+		GeometryBuffer* buffer;
+		Object3D*	object;
+		bool render;
+		Material* opaque;
+		Material* transparent;
+	};
 
-    std::vector<GLObject>  __glObjects;
+	std::vector<GLObject>  __glObjects;
+	std::vector<GLObject>  __glObjectsImmediate;
+	std::vector<Object3D*> __glSprites;
+	std::vector<Object3D*> __glFlares;
 
-    std::vector<Object3D*> __objects;
-    std::vector<Light*>    __lights;
+	std::vector<Object3D*> __objects;
+	std::vector<Light*>    __lights;
 
-    std::vector<Object3D::Ptr> __objectsAdded;
-    std::vector<Object3D::Ptr> __objectsRemoved;
+	std::vector<Object3D::Ptr> __objectsAdded;
+	std::vector<Object3D::Ptr> __objectsRemoved;
 
 	//////////////////////////////////////////////////////////////////////////
 

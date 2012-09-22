@@ -72,7 +72,7 @@ struct choose_policy<any> {
 };
 
 /// Specializations for small types.
-#define SMALL_POLICY(TYPE) template<> struct
+#define SMALL_POLICY(TYPE) template<> struct \
    choose_policy<TYPE> { typedef small_any_policy<TYPE> type; };
 
 SMALL_POLICY(signed char);
@@ -105,20 +105,25 @@ private:
 public:
     /// Initializing constructor.
     template <typename T>
-    any(const T& x) : policy(anyimpl::get_policy<anyimpl::empty_any>()), object(NULL) {
+    any(const T& x) : policy(detail::get_policy<detail::empty_any>()), object(NULL) {
         assign(x);
     }
 
     /// Empty constructor.
-    any() : policy(anyimpl::get_policy<anyimpl::empty_any>()), object(NULL) { }
+    any() : policy(detail::get_policy<detail::empty_any>()), object(NULL) { }
 
     /// Special initializing constructor for string literals.
-    any(const char* x): policy(anyimpl::get_policy<anyimpl::empty_any>()), object(NULL) {
+    any(const char* x): policy(detail::get_policy<detail::empty_any>()), object(NULL) {
         assign(x);
     }
 
+    /// RValue constructor
+    any(any&& x) : policy(detail::get_policy<detail::empty_any>()), object(NULL) {
+      swap(x);
+    }
+
     /// Copy constructor.
-    any(const any& x) : policy(anyimpl::get_policy<anyimpl::empty_any>()), object(NULL) {
+    any(const any& x) : policy(detail::get_policy<detail::empty_any>()), object(NULL) {
         assign(x);
     }
 
@@ -139,7 +144,7 @@ public:
     template <typename T>
     any& assign(const T& x) {
         reset();
-        policy = anyimpl::get_policy<T>();
+        policy = detail::get_policy<T>();
         policy->copy_from_value(&x, &object);
         return *this;
     }
@@ -148,6 +153,12 @@ public:
     template<typename T>
     any& operator=(const T& x) {
         return assign(x);
+    }
+
+    /// Assignment operator.
+    template<typename T>
+    any& operator=(T x) {
+      return swap(*this, x);
     }
 
     /// Assignment operator, specialed for literal strings.
@@ -166,21 +177,21 @@ public:
     /// Cast operator. You can only cast to the original type.
     template<typename T>
     T& cast() {
-        if (policy != anyimpl::get_policy<T>())
-            throw anyimpl::bad_any_cast();
+        if (policy != detail::get_policy<T>())
+            throw detail::bad_any_cast();
         T* r = reinterpret_cast<T*>(policy->get_value(&object));
         return *r;
     }
 
     /// Returns true if the any contains no value.
     bool empty() const {
-        return policy == anyimpl::get_policy<anyimpl::empty_any>();
+        return policy == detail::get_policy<detail::empty_any>();
     }
 
     /// Frees any allocated memory, and sets the value to NULL.
     void reset() {
         policy->static_delete(&object);
-        policy = anyimpl::get_policy<anyimpl::empty_any>();
+        policy = detail::get_policy<detail::empty_any>();
     }
 
     /// Returns true if the two types are the same.

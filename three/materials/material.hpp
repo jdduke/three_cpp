@@ -5,9 +5,12 @@
 
 #include <three/extras/noncopyable.hpp>
 
-#include <three/renderers/gl_custom_attribute.hpp>
+#include <three/materials/attribute.hpp>
+#include <three/materials/custom_attribute.hpp>
+#include <three/materials/program.hpp>
+#include <three/materials/uniform.hpp>
 
-#include <map>
+#include <three/textures/texture.hpp>
 
 namespace three {
 
@@ -26,7 +29,8 @@ public:
 
 	std::string name;
 
-	std::map<std::string, GLCustomAttribute> attributes;
+	CustomAttributes customAttributes;
+	Attributes attributes;
 
 	THREE::Side side;
 
@@ -56,12 +60,29 @@ public:
 
 	bool needsUpdate;
 
+	bool skinning;
 	bool morphTargets;
 	bool morphNormals;
 
-	bool wireframe;
+	bool metal;
+	bool perPixel;
+	bool wrapAround;
 
-	Buffer program;
+	bool wireframe;
+	float wireframeLinewidth;
+	float linewidth;
+
+	int numSupportedMorphTargets;
+	int	numSupportedMorphNormals;
+
+	Program::Ptr program;
+	const Shader* shader;
+	std::vector<std::pair<Uniform, std::string>> uniformsList;
+
+	Texture::Ptr map, envMap, lightMap, bumpMap, specularMap;
+
+	bool fog;
+	float sizeAttenuation;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +92,8 @@ public:
 
 		material.side                = side;
 
-		//material.attributes          = material.attributes;
+		material.attributes          = material.attributes;
+		material.customAttributes    = material.customAttributes;
 
 		material.opacity             = opacity;
 		material.transparent         = transparent;
@@ -99,10 +121,29 @@ public:
 
 		material.visible             = visible;
 
+		material.skinning            = skinning;
 		material.morphNormals        = morphNormals;
 		material.morphTargets        = morphTargets;
 
-		material.wireframe            =	wireframe;
+		material.metal               = metal;
+		material.perPixel            = perPixel;
+		material.wrapAround          = wrapAround;
+
+		material.wireframe           = wireframe;
+		material.wireframeLinewidth  = wireframeLinewidth;
+		material.linewidth           = linewidth;
+
+		material.numSupportedMorphTargets = numSupportedMorphTargets;
+		material.numSupportedMorphNormals = numSupportedMorphNormals;
+
+		material.map         = map;
+		material.envMap      = envMap;
+		material.lightMap    = lightMap;
+		material.bumpMap     = bumpMap;
+		material.specularMap = specularMap;
+
+		material.fog             = fog;
+		material.sizeAttenuation = sizeAttenuation;
 
 		return material;
 
@@ -130,10 +171,19 @@ protected:
 	overdraw ( false ),
 	visible ( true ),
 	needsUpdate ( true ),
+	skinning ( false ),
 	morphTargets ( false ),
 	morphNormals ( false ),
+	metal ( false ),
+	perPixel ( false ),
+	wrapAround ( false ),
 	wireframe ( false ),
-	program	( 0	) {	}
+	wireframeLinewidth ( 1 ),
+	linewidth ( 1 ),
+	program	( 0 ),
+	shader ( nullptr ),
+	numSupportedMorphTargets ( 0 ),
+	numSupportedMorphNormals ( 0 ) { }
 
 private:
 

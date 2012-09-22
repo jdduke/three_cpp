@@ -100,6 +100,21 @@ GLfloat glGetTexParameterf( GLenum pname ) {
 	return parameter;
 }
 
+GLint glGetProgramParameter( GLuint program, GLenum pname ) {
+    GLint parameter = 0;
+    glGetProgramiv( program, pname, &parameter );
+    return parameter;
+}
+
+GLint glGetShaderParameter( GLuint program, GLenum pname ) {
+    GLint parameter = 0;
+    glGetShaderiv( program, pname, &parameter );
+    return parameter;
+}
+
+bool glTrue( GLboolean b ) {
+	return b ==	GL_TRUE;
+}
 
 #endif
 

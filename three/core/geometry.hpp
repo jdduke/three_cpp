@@ -88,6 +88,8 @@ public:
 
     Ptr create() { return make_shared<Geometry>(); }
 
+    virtual THREE::GeometryType type() const { return THREE::Geometry; }
+
     /////////////////////////////////////////////////////////////////////////
 
     int id;
@@ -99,7 +101,7 @@ public:
     std::vector<Color> colors; // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
 
     std::vector<Material::Ptr> materials;
-    std::map<std::string, GLCustomAttribute> attributes;
+    CustomAttributes attributes;
 
     std::vector<Face> faces;
 
@@ -125,7 +127,8 @@ public:
     bool hasTangents;
     bool dynamic;
 
-    std::vector<GeometryGroup> geometryGroups;
+    std::unordered_map<std::string, GeometryGroup> geometryGroups;
+    std::vector<GeometryGroup*> geometryGroupsList;
 
     bool verticesNeedUpdate;
     bool morphTargetsNeedUpdate;

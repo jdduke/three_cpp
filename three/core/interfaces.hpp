@@ -3,6 +3,12 @@
 
 namespace three {
 
+class IFog {
+public:
+    virtual THREE::FogType type() const = 0;
+    virtual ~IFog() { }
+};
+
 class IGeometry {
 public:
     virtual void applyMatrix( const Matrix4& ) = 0;

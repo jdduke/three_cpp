@@ -122,6 +122,7 @@ public:
 
     enum Type {
         Object3D = 0,
+        ImmediateRenderObject,
         Bone,
         Camera,
         Light,
@@ -133,10 +134,16 @@ public:
         Particle,
         ParticleSystem,
         Sprite,
+        LensFlare,
         Mesh,
         SkinnedMesh,
         Ribbon,
         Line
+    };
+
+    enum GeometryType {
+        Geometry = 0,
+        BufferGeometry
     };
 
     enum LineType {
@@ -161,7 +168,22 @@ public:
         MeshBasicMaterial,
         MeshDepthMaterial,
         MeshFaceMaterial,
+        MeshLambertMaterial,
+        MeshPhongMaterial,
+        LineBasicMaterial,
+        MeshNormalMaterial,
+        ParticleBasicMaterial,
         ShaderMaterial
+    };
+
+    enum RenderType {
+      Opaque = 0,
+      Transparent
+    };
+
+    enum FogType {
+        Fog = 0,
+        FogExp2
     };
 
     enum TextureType {

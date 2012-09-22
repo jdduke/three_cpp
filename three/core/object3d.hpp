@@ -14,6 +14,7 @@
 #include <three/extras/noncopyable.hpp>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -80,31 +81,38 @@ public:
 
 	bool useVertexTexture;
 	std::vector<Matrix4> bones;
+	int boneTextureWidth, boneTextureHeight;
 
 	Material::Ptr material;
 	Geometry::Ptr geometry;
 
 	struct GLData {
-		GLData() : __glInit ( false ) { }
+		GLData() : __glInit ( false ), __glActive ( false ) { }
 
 		bool __glInit;
+		bool __glActive;
 		Matrix4 _modelViewMatrix;
 		Matrix4 _normalMatrix;
 
 		std::vector<float> _normalMatrixArray;
 		std::vector<float> _modelViewMatrixArray;
 		std::vector<float> _modelMatrixArray;
+		std::vector<int>   __glMorphTargetInfluences;
 
 		void clear() {
 			__glInit = false;
+			__glActive = false;
 			_modelViewMatrix.identity();
 			_normalMatrix.identity();
 			_normalMatrixArray.clear();
 			_modelViewMatrixArray.clear();
 			_modelMatrixArray.clear();
+			__glMorphTargetInfluences.clear();
 		}
 	} glData;
 
+	typedef std::function<void(const Program&,void*,const Frustum&)> RenderCallback;
+	RenderCallback immediateRenderCallback;
 
 	/////////////////////////////////////////////////////////////////////////
 
@@ -355,6 +363,8 @@ protected:
 	frustumCulled ( true ),
 	sortParticles ( false ),
 	useVertexTexture ( false ),
+	boneTextureWidth ( 0 ),
+	boneTextureHeight ( 0 ),
 	material ( material ),
 	geometry ( geometry ) { }
 

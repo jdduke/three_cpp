@@ -20,6 +20,7 @@ class Vector4;
 class Matrix4;
 class Quaternion;
 class Ray;
+class Frustum;
 
 class RenderableFace;
 class RenderableObject;
@@ -34,7 +35,10 @@ struct GeometryBuffer;
 struct GeometryGroup;
 class Vertex;
 class Material;
-class Shader;
+class Program;
+class Texture;
+struct Shader;
+struct Uniform;
 
 class GLRenderer;
 
