@@ -20,6 +20,7 @@ struct base_any_policy {
     virtual void clone(void* const* src, void** dest) = 0;
     virtual void move(void* const* src, void** dest) = 0;
     virtual void* get_value(void** src) = 0;
+    virtual const void* get_value(void* const* src) const = 0;
     virtual size_t get_size() = 0;
 };
 
@@ -36,6 +37,7 @@ struct small_any_policy : typed_base_any_policy<T> {
     virtual void clone(void* const* src, void** dest) { *dest = *src; }
     virtual void move(void* const* src, void** dest) { *dest = *src; }
     virtual void* get_value(void** src) { return reinterpret_cast<void*>(src); }
+    virtual const void* get_value(void* const* src) const { return reinterpret_cast<const void*>(src); }
 };
 
 template<typename T>
@@ -50,6 +52,7 @@ struct big_any_policy : typed_base_any_policy<T> {
       (*reinterpret_cast<T**>(dest))->~T();
       **reinterpret_cast<T**>(dest) = **reinterpret_cast<T* const*>(src); }
     virtual void* get_value(void** src) { return *src; }
+    virtual const void* get_value(void* const* src) const { return *src; }
 };
 
 template<typename T>
@@ -180,6 +183,15 @@ public:
         if (policy != detail::get_policy<T>())
             throw detail::bad_any_cast();
         T* r = reinterpret_cast<T*>(policy->get_value(&object));
+        return *r;
+    }
+
+    /// Cast operator. You can only cast to the original type.
+    template<typename T>
+    const T& cast() const {
+        if (policy != detail::get_policy<T>())
+            throw detail::bad_any_cast();
+        const T* r = reinterpret_cast<const T*>(policy->get_value(&object));
         return *r;
     }
 

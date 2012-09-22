@@ -150,6 +150,8 @@ public:
     }
 };
 
+static_assert( sizeof(Vector3) == sizeof(float) * 3, "Invalid Vector3 storage size");
+
 inline Vector3 add ( const Vector3& a, const Vector3& b ) {
     return Vector3().add ( a, b );
 }

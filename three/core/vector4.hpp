@@ -157,6 +157,8 @@ public:
     }
 };
 
+static_assert( sizeof(Vector4) == sizeof(float) * 4, "Invalid Vector4 storage size");
+
 } // namespace three
 
 #endif // THREE_VECTOR4_HPP

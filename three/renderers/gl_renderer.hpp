@@ -5325,6 +5325,31 @@ public:
 
             auto& uniform = uniforms[ j ][ 0 ];
 
+            uniform.load ( location );
+
+            if ( uniform.type() == Uniform::t ) { // single THREE::Texture (2d or cube)
+
+                if ( !uniform.texture ) continue;
+
+                auto texture = *uniform.texture;
+
+                if ( texture.image.size() == 6 ) {
+
+                    setCubeTexture( texture, value );
+
+                } else if ( texture.type() == THREE::GLRenderTargetCube ) {
+
+                    setCubeTextureDynamic( texture, value );
+
+                } else {
+
+                    setTexture( texture, value );
+
+                }
+
+            }
+
+#ifdef TODO_REMOVE_THIS
             const auto type = uniform.type;
             auto& value = uniform.value;
 
@@ -5370,7 +5395,7 @@ public:
 
             } else if ( type == Uniform::v2v ) { // array of THREE::Vector2
 
-                if ( uniform._array == undefined ) {
+                /*if ( uniform._array == undefined ) {
 
                     uniform._array.resize( 2 * value.size() );
 
@@ -5383,13 +5408,13 @@ public:
                     uniform._array[ offset ]     = value[ i ].x;
                     uniform._array[ offset + 1 ] = value[ i ].y;
 
-                }
+                }*/
 
                 glUniform2fv( location, uniform._array );
 
             } else if ( type == Uniform::v3v ) { // array of THREE::Vector3
 
-                if ( uniform._array == undefined ) {
+                /*if ( uniform._array == undefined ) {
 
                     uniform._array.resize( 3 * value.size() );
 
@@ -5403,17 +5428,13 @@ public:
                     uniform._array[ offset + 1 ] = value[ i ].y;
                     uniform._array[ offset + 2 ] = value[ i ].z;
 
-                }
+                }*/
 
                 glUniform3fv( location, uniform._array );
 
             } else if ( type == Uniform::v4v ) { // array of THREE::Vector4
 
-                if ( uniform._array == undefined ) {
-
-                    uniform._array.resize( 4 * value.size() );
-
-                }
+                /*std::vector<float> _array( 4 * value.size() );
 
                 for ( size_t i = 0, il = value.size(); i < il; i ++ ) {
 
@@ -5424,24 +5445,24 @@ public:
                     uniform._array[ offset + 2 ] = value[ i ].z;
                     uniform._array[ offset + 3 ] = value[ i ].w;
 
-                }
+                }*/
 
-                glUniform4fv( location, uniform._array );
+                glUniform4fv( location, _array );
 
             } else if ( type == Uniform::m4) { // single THREE::Matrix4
 
-                if ( uniform._array == undefined ) {
+                /*if ( uniform._array == undefined ) {
 
                     uniform._array.resize( 16 );
 
-                }
+                }*/
 
                 value.flattenToArray( uniform._array );
                 glUniformMatrix4fv( location, false, uniform._array );
 
             } else if ( type == Uniform::m4v ) { // array of THREE::Matrix4
 
-                if ( uniform._array == undefined ) {
+                /*if ( uniform._array == undefined ) {
 
                     uniform._array.resize( 16 * value.size() );
 
@@ -5451,7 +5472,7 @@ public:
 
                     value[ i ].flattenToArrayOffset( uniform._array, i * 16 );
 
-                }
+                }*/
 
                 glUniformMatrix4fv( location, false, uniform._array );
 
@@ -5459,35 +5480,31 @@ public:
 
                 glUniform1i( location, value );
 
-                texture = uniform.texture;
+                if ( !uniform.texture ) continue;
 
-                if ( !texture ) continue;
+                auto texture = *uniform.texture;
 
                 if ( texture.image instanceof Array && texture.image.size() == 6 ) {
 
                     setCubeTexture( texture, value );
 
-                } else if ( texture.type() == THREE::WebglRenderTargetCube ) {
+                } else if ( texture.type() == THREE::GLRenderTargetCube ) {
 
                     setCubeTextureDynamic( texture, value );
 
                 } else {
 
-                    _setTexture( texture, value );
+                    setTexture( texture, value );
 
                 }
 
             } else if ( type == Uniform::tv ) { // array of THREE::Texture (2d)
 
-                if ( uniform._array == undefined ) {
+                std::vector<int> _array( uniform.texture.size() );
 
-                    uniform._array = [];
+                for( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
 
-                    for( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
-
-                        uniform._array[ i ] = value + i;
-
-                    }
+                    _array[ i ] = value + i;
 
                 }
 
@@ -5499,11 +5516,13 @@ public:
 
                     if ( !texture ) continue;
 
-                    _setTexture( texture, uniform._array[ i ] );
+                    setTexture( texture, uniform._array[ i ] );
 
                 }
 
             }
+
+#endif // TODO_REMOVE_THIS
 
         }
 

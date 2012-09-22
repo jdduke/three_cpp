@@ -32,6 +32,10 @@ inline bool push_unique( C& c, T&& elem ) {
 	return false;
 }
 
+template < int I >
+struct Int2Type {
+  enum { value = I };
+};
 
 // Workaround for using make_shared with protected constructors
 

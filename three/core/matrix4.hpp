@@ -1233,6 +1233,8 @@ public:
 
 };
 
+static_assert( sizeof(Matrix4) == sizeof(float) * 16, "Invalid Matrix4 storage size" );
+
 } // namespace three
 
 #endif // THREE_MATRIX4_HPP

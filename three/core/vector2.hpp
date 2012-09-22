@@ -125,6 +125,8 @@ public:
     }
 };
 
+static_assert( sizeof(Vector2) == sizeof(float) * 2, "Invalid Vector2 storage size");
+
 } // namespace three
 
 #endif // THREE_VECTOR2_HPP
