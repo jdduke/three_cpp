@@ -32,6 +32,8 @@ struct Uniform {
 };
 
 typedef std::unordered_map<std::string, Uniform> Uniforms;
+typedef std::unordered_map<std::string, int> UniformsIndices;
+typedef std::vector<std::pair<Uniform, std::string>> UniformsList;
 
 /////////////////////////////////////////////////////////////////////////
 

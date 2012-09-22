@@ -113,20 +113,20 @@ public:
     }
 
     /// Empty constructor.
-    any() : policy(detail::get_policy<detail::empty_any>()), object(NULL) { }
+    explicit any() : policy(detail::get_policy<detail::empty_any>()), object(NULL) { }
 
     /// Special initializing constructor for string literals.
-    any(const char* x): policy(detail::get_policy<detail::empty_any>()), object(NULL) {
+    explicit any(const char* x): policy(detail::get_policy<detail::empty_any>()), object(NULL) {
         assign(x);
     }
 
     /// RValue constructor
-    any(any&& x) : policy(detail::get_policy<detail::empty_any>()), object(NULL) {
+    explicit any(any&& x) : policy(detail::get_policy<detail::empty_any>()), object(NULL) {
       swap(x);
     }
 
     /// Copy constructor.
-    any(const any& x) : policy(detail::get_policy<detail::empty_any>()), object(NULL) {
+    explicit any(const any& x) : policy(detail::get_policy<detail::empty_any>()), object(NULL) {
         assign(x);
     }
 
@@ -156,12 +156,6 @@ public:
     template<typename T>
     any& operator=(const T& x) {
         return assign(x);
-    }
-
-    /// Assignment operator.
-    template<typename T>
-    any& operator=(T x) {
-      return swap(*this, x);
     }
 
     /// Assignment operator, specialed for literal strings.

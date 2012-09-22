@@ -1,3 +1,5 @@
+#if 0
+
 #ifndef THREE_SHADER_MATERIAL_HPP
 #define THREE_SHADER_MATERIAL_HPP
 
@@ -41,11 +43,6 @@ public:
 	static Ptr create( /* parameters */ ) { return make_shared<ShaderMaterial>( ); }
 
 	/////////////////////////////////////////////////////////////////////////
-
-	std::string fragmentShader;
-	std::string vertexShader;
-	//this.uniforms = {};
-	//this.attributes = null;
 
 	bool wireframe;
 	float wireframeLinewidth;
@@ -115,3 +112,5 @@ protected:
 } // namespace three
 
 #endif // THREE_MATERIAL_HPP
+
+#endif // 0

@@ -4798,9 +4798,9 @@ public:
         };
 
         material.program = buildProgram( shaderID,
-                                         material.shader->fs,//fragmentShader,
-                                         material.shader->vs,//vertexShader,
-                                         material.shader->uniforms,
+                                         material.fragmentShader,
+                                         material.vertexShader,
+                                         material.uniforms,
                                          material.attributes,
                                          parameters );
 
@@ -4876,7 +4876,7 @@ public:
 
         material.uniformsList.clear();
 
-        for ( auto& u : material.shader->uniforms ) {
+        for ( auto& u : material.uniforms ) {
 
             material.uniformsList.emplace_back( u.second, u.first );
 
@@ -4886,10 +4886,9 @@ public:
 
     void setMaterialShaders( Material& material, const Shader& shaders ) {
 
-        //material.uniforms = shaders.uniforms;
-        //material.vertexShader = shaders.vertexShader;
-        //material.fragmentShader = shaders.fragmentShader;
-        material.shader = &shaders;
+        material.uniforms = shaders.uniforms;
+        material.vertexShader = shaders.vertexShader;
+        material.fragmentShader = shaders.fragmentShader;
 
     }
 
@@ -4914,7 +4913,7 @@ public:
 
         auto& program    = *material.program;
         auto& p_uniforms = program.uniforms;
-        auto& m_uniforms = material.shader->uniforms;
+        auto& m_uniforms = material.uniforms;
 
         if ( &program != _currentProgram ) {
 
@@ -4934,7 +4933,7 @@ public:
 
         if ( refreshMaterial || &camera != _currentCamera ) {
 
-            glUniformMatrix4fv( p_uniforms["projectionMatrix"], false, camera._projectionMatrixArray );
+            glUniformMatrix4fv( p_uniforms["projectionMatrix"], 1, false, camera._projectionMatrixArray.data() );
 
             if ( &camera != _currentCamera ) _currentCamera = &camera;
 
@@ -4944,7 +4943,7 @@ public:
 
             // refresh uniforms common to several materials
 
-            if ( /*fog &&*// material.fog ) {
+            if ( /*fog &&*/ material.fog ) {
 
                 refreshUniformsFog( m_uniforms, fog );
 
@@ -4993,17 +4992,17 @@ public:
 
             } else if ( material.type() == THREE::MeshDepthMaterial ) {
 
-                m_uniforms.mNear.value = camera.near;
-                m_uniforms.mFar.value = camera.far;
-                m_uniforms.opacity.value = material.opacity;
+                m_uniforms["mNear"].value = camera.near;
+                m_uniforms["mFar"].value = camera.far;
+                m_uniforms["opacity"].value = material.opacity;
 
             } else if ( material.type() == THREE::MeshNormalMaterial ) {
 
-                m_uniforms.opacity.value = material.opacity;
+                m_uniforms["opacity"].value = material.opacity;
 
             }
 
-            if ( object.receiveShadow && ! material._shadowPass ) {
+            if ( object.receiveShadow && ! material.shadowPass ) {
 
                 refreshUniformsShadow( m_uniforms, lights );
 
@@ -5020,10 +5019,10 @@ public:
                  material.type() == THREE::MeshPhongMaterial ||
                  material.envMap ) {
 
-                if ( p_uniforms.cameraPosition != 0 ) {
+                if ( p_uniforms["cameraPosition"] != 0 ) {
 
                     auto position = camera.matrixWorld.getPosition();
-                    glUniform3f( p_uniforms.cameraPosition, position.x, position.y, position.z );
+                    glUniform3f( p_uniforms["cameraPosition"], position.x, position.y, position.z );
 
                 }
 
@@ -5034,9 +5033,9 @@ public:
                  material.type() == THREE::ShaderMaterial ||
                  material.skinning ) {
 
-                if ( p_uniforms.viewMatrix != 0 ) {
+                if ( p_uniforms["viewMatrix"] != 0 ) {
 
-                    glUniformMatrix4fv( p_uniforms.viewMatrix, false, camera._viewMatrixArray );
+                    glUniformMatrix4fv( p_uniforms["viewMatrix"], 1, false, camera._viewMatrixArray.data() );
 
                 }
 
@@ -5048,23 +5047,26 @@ public:
 
             if ( _supportsBoneTextures && object.useVertexTexture ) {
 
-                if ( p_uniforms.boneTexture != 0 ) {
+                if ( p_uniforms["boneTexture"] != 0  && object.boneTexture ) {
 
                     // shadowMap texture array starts from 6
                     // texture unit 12 should leave space for 6 shadowmaps
 
                     auto textureUnit = 12;
 
-                    glUniform1i( p_uniforms.boneTexture, textureUnit );
-                    _setTexture( object.boneTexture, textureUnit );
+                    glUniform1i( p_uniforms["boneTexture"], textureUnit );
+                    setTexture( *object.boneTexture, textureUnit );
 
                 }
 
             } else {
 
-                if ( p_uniforms.boneGlobalMatrices != 0 ) {
+                if ( p_uniforms["boneGlobalMatrices"] != 0 ) {
 
-                    glUniformMatrix4fv( p_uniforms.boneGlobalMatrices, false, object.boneMatrices );
+                    glUniformMatrix4fv( p_uniforms["boneGlobalMatrices"],
+                                        object.boneMatrices.size(),
+                                        false,
+                                        reinterpret_cast<const float*>( &object.boneMatrices[0] ) );
 
                 }
 
@@ -5074,18 +5076,16 @@ public:
 
         loadUniformsMatrices( p_uniforms, object );
 
-        if ( p_uniforms.modelMatrix != 0 ) {
+        if ( p_uniforms["modelMatrix"] != 0 ) {
 
-            glUniformMatrix4fv( p_uniforms.modelMatrix, false, object.matrixWorld.elements );
+            glUniformMatrix4fv( p_uniforms["modelMatrix"], 1, false, object.matrixWorld.elements );
 
         }
 
-        return *program;
+        return program;
 
     }
 
-
-#ifdef TODO_UNIFORMS
 
     // Uniforms (refresh uniforms objects)
 
@@ -5095,7 +5095,7 @@ public:
 
         if ( gammaInput ) {
 
-            uniforms["diffuse"].value.copyGammaToLinear( material.color );
+            uniforms["diffuse"].value = Vector3().copyGammaToLinear( material.color );
 
         } else {
 
@@ -5225,7 +5225,7 @@ public:
 
     }
 
-    void refreshUniformsLambert ( uniforms, material ) {
+    void refreshUniformsLambert ( Uniforms& uniforms, Material& material ) {
 
         if ( gammaInput ) {
 
@@ -5304,19 +5304,19 @@ public:
 
     // Uniforms (load to GPU)
 
-    void loadUniformsMatrices ( Uniforms& uniforms, Object3d& object ) {
+    void loadUniformsMatrices ( UniformsIndices& uniforms, Object3D& object ) {
 
-        glUniformMatrix4fv( uniforms["modelViewMatrix"].value, false, object._modelViewMatrix.elements );
+        glUniformMatrix4fv( uniforms["modelViewMatrix"], false, object._modelViewMatrix.elements );
 
         if ( uniforms.normalMatrix ) {
 
-            glUniformMatrix3fv( uniforms["normalMatrix"].value, false, object._normalMatrix.elements );
+            glUniformMatrix3fv( uniforms["normalMatrix"], false, object._normalMatrix.elements );
 
         }
 
     }
 
-    void loadUniformsGeneric ( Program& program, Uniforms& uniforms ) {
+    void loadUniformsGeneric ( Program& program, UniformsList& uniforms ) {
 
         for ( j = 0, jl = uniforms.size(); j < jl; j ++ ) {
 
@@ -5528,8 +5528,6 @@ public:
 
     }
 
-#endif // TODO_UNIFORMS
-
     void setupMatrices ( Object3D& object, Camera& camera ) {
 
         object.glData._modelViewMatrix.multiply( camera.matrixWorldInverse, object.matrixWorld );
@@ -5539,10 +5537,10 @@ public:
 
     }
 
-#ifdef TODO_LIGHTS
 
     void setupLights ( Program& program, Lights& lights ) {
 
+#ifdef TODO_LIGHTS
         auto l, ll, light, n,
         r = 0, g = 0, b = 0,
         color, position, intensity, distance,
@@ -5711,9 +5709,10 @@ public:
         zlights.ambient[ 1 ] = g;
         zlights.ambient[ 2 ] = b;
 
+        #endif // TODO_LIGHTS
+
     }
 
-#endif // TODO_LIGHTS
 
     // GL state setting
 

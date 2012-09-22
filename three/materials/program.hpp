@@ -5,6 +5,8 @@
 
 #include <three/extras/noncopyable.hpp>
 
+#include <three/materials/uniform.hpp>
+
 #include <map>
 #include <string>
 
@@ -15,14 +17,14 @@ public:
 
 	typedef std::shared_ptr<Program> Ptr;
 
-	static Ptr create( Buffer program, int id ) { 
-		return make_shared<Program>( program, id );	
+	static Ptr create( Buffer program, int id ) {
+		return make_shared<Program>( program, id );
 	}
 
 	/////////////////////////////////////////////////////////////////////////
 
-	std::map<std::string, int> uniforms;
-	std::map<std::string, int> attributes;
+	UniformsIndices uniforms;
+	UniformsIndices attributes;
 
 	Buffer program;
 	int id;

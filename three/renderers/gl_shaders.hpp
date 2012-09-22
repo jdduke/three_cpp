@@ -1605,11 +1605,9 @@ struct UniformsLib {
 
 struct Shader {
   Shader ( Uniforms uniforms, std::string vs, std::string fs )
-    : uniforms (std::move(uniforms) ), vs ( std::move(vs) ), fs ( std::move(fs) ) { }
-  const char* vertexShader() const { return vs.c_str(); }
-  const char* fragmentShader() const { return fs.c_str(); }
+    : uniforms (std::move(uniforms) ), vertexShader ( std::move(vs) ), fragmentShader ( std::move(fs) ) { }
   Uniforms uniforms;
-  std::string vs, fs;
+  std::string vertexShader, fragmentShader;
 };
 
 struct ShaderLib {

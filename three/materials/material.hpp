@@ -76,12 +76,18 @@ public:
 	int	numSupportedMorphNormals;
 
 	Program::Ptr program;
-	const Shader* shader;
-	std::vector<std::pair<Uniform, std::string>> uniformsList;
+
+	std::string fragmentShader;
+	std::string vertexShader;
+	Uniforms uniforms;
+
+	UniformsList uniformsList;
 
 	Texture::Ptr map, envMap, lightMap, bumpMap, specularMap;
 
 	bool fog;
+	bool lights;
+	bool shadowPass;
 	float sizeAttenuation;
 
 	/////////////////////////////////////////////////////////////////////////
@@ -136,6 +142,10 @@ public:
 		material.numSupportedMorphTargets = numSupportedMorphTargets;
 		material.numSupportedMorphNormals = numSupportedMorphNormals;
 
+		material.fragmentShader      = fragmentShader;
+		material.vertexShader        = vertexShader;
+		material.uniforms            = uniforms;
+
 		material.map         = map;
 		material.envMap      = envMap;
 		material.lightMap    = lightMap;
@@ -143,6 +153,8 @@ public:
 		material.specularMap = specularMap;
 
 		material.fog             = fog;
+		material.lights          = lights;
+		material.shadowPass      = shadowPass;
 		material.sizeAttenuation = sizeAttenuation;
 
 		return material;
@@ -181,9 +193,12 @@ protected:
 	wireframeLinewidth ( 1 ),
 	linewidth ( 1 ),
 	program	( 0 ),
-	shader ( nullptr ),
 	numSupportedMorphTargets ( 0 ),
-	numSupportedMorphNormals ( 0 ) { }
+	numSupportedMorphNormals ( 0 ),
+	fog ( false ),
+	lights ( false ),
+	shadowPass ( false ),
+	sizeAttenuation ( 0 ) { }
 
 private:
 

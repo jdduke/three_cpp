@@ -4,6 +4,7 @@
 #include <three/common.hpp>
 #include <three/utils.hpp>
 
+#include <three/core/bone.hpp>
 #include <three/core/vector3.hpp>
 #include <three/core/quaternion.hpp>
 #include <three/core/matrix4.hpp>
@@ -80,7 +81,9 @@ public:
 	bool sortParticles;
 
 	bool useVertexTexture;
-	std::vector<Matrix4> bones;
+	std::vector<Bone> bones;
+	std::vector<Matrix4> boneMatrices;
+	Texture::Ptr boneTexture;
 	int boneTextureWidth, boneTextureHeight;
 
 	Material::Ptr material;
