@@ -34,8 +34,12 @@ public:
 
 	THREE::Side side;
 
+	Color color, ambient, emissive, specular;
+	float shininess;
 	float opacity;
 	bool transparent;
+
+	float size;
 
 	THREE::Shading shading;
 	THREE::Colors vertexColors;
@@ -64,9 +68,14 @@ public:
 	bool morphTargets;
 	bool morphNormals;
 
+	float reflectivity;
+	float refractionRatio;
+	THREE::TextureConstant combine;
+
 	bool metal;
 	bool perPixel;
 	bool wrapAround;
+	Vector3 wrapRGB;
 
 	bool wireframe;
 	float wireframeLinewidth;
@@ -84,6 +93,7 @@ public:
 	UniformsList uniformsList;
 
 	Texture::Ptr map, envMap, lightMap, bumpMap, specularMap;
+	float bumpScale;
 
 	bool fog;
 	bool lights;
@@ -101,8 +111,16 @@ public:
 		material.attributes          = material.attributes;
 		material.customAttributes    = material.customAttributes;
 
+		material.color               = color;
+		material.ambient             = ambient;
+		material.emissive            = emissive;
+		material.specular            = specular;
+
+		material.shininess           = shininess;
 		material.opacity             = opacity;
 		material.transparent         = transparent;
+
+		material.size                = size;
 
 		material.shading             = shading;
 
@@ -131,9 +149,14 @@ public:
 		material.morphNormals        = morphNormals;
 		material.morphTargets        = morphTargets;
 
+		material.reflectivity        = reflectivity;
+		material.refractionRatio     = refractionRatio;
+		material.combine             = combine;
+
 		material.metal               = metal;
 		material.perPixel            = perPixel;
 		material.wrapAround          = wrapAround;
+		material.wrapRGB             = wrapRGB;
 
 		material.wireframe           = wireframe;
 		material.wireframeLinewidth  = wireframeLinewidth;
@@ -152,6 +175,8 @@ public:
 		material.bumpMap     = bumpMap;
 		material.specularMap = specularMap;
 
+		material.bumpScale       = bumpScale;
+
 		material.fog             = fog;
 		material.lights          = lights;
 		material.shadowPass      = shadowPass;
@@ -166,8 +191,14 @@ protected:
 	Material ()
 	: id ( MaterialCount()++ ),
 	side ( THREE::FrontSide ),
+	color ( 0xffffff ),
+	ambient ( 0xffffff ),
+	emissive ( 0x000000 ),
+	specular ( 0x111111 ),
+	shininess ( 30 ),
 	opacity ( 1 ),
 	transparent ( false ),
+	size ( 1.f ),
 	shading ( THREE::NoShading ),
 	vertexColors ( THREE::NoColors ),
 	blending ( THREE::NormalBlending ),
@@ -186,9 +217,13 @@ protected:
 	skinning ( false ),
 	morphTargets ( false ),
 	morphNormals ( false ),
+	reflectivity ( 1.f ),
+	refractionRatio ( 1.f ),
+	combine ( THREE::MultiplyOperation ),
 	metal ( false ),
 	perPixel ( false ),
 	wrapAround ( false ),
+	wrapRGB ( 1, 1, 1 ),
 	wireframe ( false ),
 	wireframeLinewidth ( 1 ),
 	linewidth ( 1 ),

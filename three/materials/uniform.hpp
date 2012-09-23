@@ -18,10 +18,13 @@ namespace three {
 struct Uniform {
 
     enum Type {
-        c = 0, i, iv, iv1, f, fv, fv1, v2, v3, v4, v2v, v3v, v4v, t, tv, m4, m4v
+        c = 0, i, iv, iv1, f, fv, fv1, v2, v3, v4, v2v, v3v, v4v, t, tv, m4, m4v, INVALID
     };
 
-    Uniform( Type type, any value = any(), Texture* texture = nullptr )
+    Uniform( )
+      : type ( INVALID ), value ( ), texture ( nullptr ) { }
+
+    explicit Uniform( Type type, any value = any(), Texture* texture = nullptr )
       : type ( type ), value ( std::move(value) ), texture ( texture ) { }
 
     THREE_DECL void load( GLint location );
@@ -39,22 +42,22 @@ typedef std::vector<std::pair<Uniform, std::string>> UniformsList;
 
 template < typename T, typename F >
 void load1(const F& f, int location, const any& value ) {
-    const auto& t = value.cast<T>( value );
+    const auto& t = value.cast<T>();
     f ( location, t );
 }
 template < typename T, typename F >
 void load2(const F& f, int location, const any& value ) {
-    const auto& t = value.cast<T>( value );
+    const auto& t = value.cast<T>();
     f ( location, t[ 0 ], t[ 1 ] );
 }
 template < typename T, typename F >
 void load3(const F& f, int location, const any& value ) {
-    const auto& t = value.cast<T>( value );
-    f ( location, t[ 0 ], t[ 1 ] );
+    const auto& t = value.cast<T>();
+    f ( location, t[ 0 ], t[ 1 ], t[ 2 ] );
 }
 template < typename T, typename F >
 void load4(const F& f, int location, const any& value ) {
-    const auto& t = value.cast<T>( value );
+    const auto& t = value.cast<T>();
     f ( location, t[ 0 ], t[ 1 ], t[ 2 ], t[ 3 ] );
 }
 template < typename V, typename T, typename F>

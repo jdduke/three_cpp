@@ -24,8 +24,19 @@ public:
 	/////////////////////////////////////////////////////////////////////////
 
 	struct GLObject	{
+		explicit GLObject ( GeometryBuffer* buffer = nullptr,
+		                    Object3D* object = nullptr,
+		                    bool render = false,
+		                    Material* opaque = nullptr,
+		                    Material* transparent = nullptr )
+		 : buffer ( buffer ),
+		   object ( object ),
+		   render ( render ),
+		   opaque ( opaque ),
+		   transparent ( transparent ) { }
+
 		GeometryBuffer* buffer;
-		Object3D*	object;
+		Object3D* object;
 		bool render;
 		Material* opaque;
 		Material* transparent;

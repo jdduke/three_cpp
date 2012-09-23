@@ -5,8 +5,10 @@ namespace three {
 
 class IFog {
 public:
+    IFog( int hex ) : color ( hex ) { }
     virtual THREE::FogType type() const = 0;
     virtual ~IFog() { }
+    Color color;
 };
 
 class IGeometry {

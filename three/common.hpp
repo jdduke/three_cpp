@@ -188,11 +188,8 @@ public:
 
     enum TextureType {
         Texture = 0,
-        DataTexture
-    };
-
-    enum TargetType {
-        GLRenderTarget = 0,
+        DataTexture,
+        GLRenderTarget,
         GLRenderTargetCube
     };
 

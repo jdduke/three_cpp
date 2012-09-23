@@ -15,14 +15,16 @@
 #include <three/renderers/gl_shaders.hpp>
 
 #include <three/scenes/fog.hpp>
+#include <three/scenes/fog_exp2.hpp>
 
 #include <three/textures/texture.hpp>
 
 namespace three {
 
 typedef std::vector<Scene::GLObject> RenderList;
-typedef std::vector<Light::Ptr> Lights;
-typedef std::vector<std::string> Identifiers;
+typedef std::vector<Object3D*>       RenderListDirect;
+typedef std::vector<Light::Ptr>      Lights;
+typedef std::vector<std::string>     Identifiers;
 
 template < typename T >
 void* toOffset( T t ) { return reinterpret_cast<void*>(t); }
@@ -49,7 +51,7 @@ public:
     struct ProgramParameters {
         bool map, envMap, lightMap, bumpMap, specularMap;
         THREE::Colors vertexColors;
-        Fog& fog;
+        IFog& fog;
         bool useFog;
         float sizeAttenuation;
         bool skinning;
@@ -547,8 +549,10 @@ public:
     }
 
     THREE_DECL void clearTarget ( GLRenderTarget::Ptr renderTarget, bool color = true, bool depth = true, bool stencil = true ) {
+
         setRenderTarget( renderTarget );
         clear( color, depth, stencil );
+
     }
 
     // Plugins
@@ -3222,14 +3226,15 @@ public:
 
     // Buffer rendering
 
-#ifdef TODO_IMMEDIATE_RENDERING
 
     void renderBufferImmediate ( Object3D& object, Program& program, Material& material ) {
 
+#ifdef TODO_RENDERING_IMMEDIATE
+
         if ( object.hasPositions && ! object.__glVertexBuffer ) object.__glVertexBuffer = glCreateBuffer();
-        if ( object.hasNormals && ! object.__glNormalBuffer ) object.__glNormalBuffer = glCreateBuffer();
-        if ( object.hasUvs && ! object.__glUVBuffer ) object.__glUVBuffer = glCreateBuffer();
-        if ( object.hasColors && ! object.__glColorBuffer ) object.__glColorBuffer = glCreateBuffer();
+        if ( object.hasNormals   && ! object.__glNormalBuffer ) object.__glNormalBuffer = glCreateBuffer();
+        if ( object.hasUvs       && ! object.__glUVBuffer )     object.__glUVBuffer     = glCreateBuffer();
+        if ( object.hasColors    && ! object.__glColorBuffer )  object.__glColorBuffer  = glCreateBuffer();
 
         if ( object.hasPositions ) {
 
@@ -3314,11 +3319,15 @@ public:
 
         object.count = 0;
 
+#else
+
+        console().warn( "Renderer::renderBufferImmediate: Not yet implemented" );
+
+#endif
+
     }
 
-#endif // TODO_IMMEDIATE_RENDERING
-
-    void renderBufferDirect ( Camera& camera, Lights& lights, Fog& fog, Material& material, Geometry& geometry, Object3D& object ) {
+    void renderBufferDirect ( Camera& camera, Lights& lights, IFog& fog, Material& material, Geometry& geometry, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
@@ -3444,7 +3453,7 @@ public:
 
     }
 
-    void renderBuffer ( Camera& camera, Lights& lights, Fog& fog, Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
+    void renderBuffer ( Camera& camera, Lights& lights, IFog& fog, Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
@@ -4026,7 +4035,7 @@ public:
 
 //#ifdef TODO_RENDERING
 
-    void renderObjects ( RenderList& renderList, bool reverse, THREE::RenderType materialType, Camera& camera, Lights& lights, Fog& fog, bool useBlending, Material* overrideMaterial = nullptr) {
+    void renderObjects ( RenderList& renderList, bool reverse, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog& fog, bool useBlending, Material* overrideMaterial = nullptr) {
 
         int start, end, delta;
 
@@ -4088,7 +4097,7 @@ public:
 
     }
 
-    void renderObjectsImmediate ( RenderList& renderList, THREE::RenderType materialType, Camera& camera, Lights& lights, Fog& fog, bool useBlending, Material* overrideMaterial = nullptr ) {
+    void renderObjectsImmediate ( RenderList& renderList, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog& fog, bool useBlending, Material* overrideMaterial = nullptr ) {
 
         for ( auto& glObject : renderList ) {
 
@@ -4124,7 +4133,7 @@ public:
 
     }
 
-    void renderImmediateObject ( Camera& camera, Lights& lights, Fog& fog, Material& material, Object3D& object ) {
+    void renderImmediateObject ( Camera& camera, Lights& lights, IFog& fog, Material& material, Object3D& object ) {
 
         auto& program = setProgram( camera, lights, fog, material, object );
 
@@ -4484,25 +4493,25 @@ public:
 
     void addBuffer ( RenderList& objlist, GeometryBuffer& buffer, Object3D& object ) {
 
-        objlist.emplace_back(
+        objlist.emplace_back( Scene::GLObject (
             &buffer,
             &object,
             false,
             nullptr,
             nullptr
-        );
+        ) );
 
     }
 
     void addBufferImmediate ( RenderList& objlist, Object3D& object ) {
 
-        objlist.emplace_back(
+        objlist.emplace_back( Scene::GLObject (
             nullptr,
             &object,
             false,
             nullptr,
             nullptr
-        );
+        ) );
 
     }
 
@@ -4679,12 +4688,11 @@ public:
 
     }
 
-    template < typename ObjList >
-    void removeInstances ( ObjList& objlist, Object3D& object ) {
+    void removeInstances ( RenderList& objlist, Object3D& object ) {
 
         for ( auto o = objlist.size() - 1; o >= 0; o -- ) {
 
-            if ( &objlist[ o ].object == &object ) {
+            if ( objlist[ o ].object == &object ) {
 
                 objlist.erase(objlist.begin() + o );
 
@@ -4694,12 +4702,11 @@ public:
 
     }
 
-    template < typename ObjList >
-    void removeInstancesDirect ( ObjList& objlist, Object3D& object ) {
+    void removeInstancesDirect ( RenderListDirect& objlist, Object3D& object ) {
 
         for ( auto o = objlist.size() - 1; o >= 0; o -- ) {
 
-            if ( &(objlist[ o ]) == &object ) {
+            if ( objlist[ o ] == &object ) {
 
               objlist.erase( objlist.begin() + o );
 
@@ -4711,7 +4718,7 @@ public:
 
     // Materials
 
-    void initMaterial ( Material& material, Lights& lights, Fog& fog, Object3D& object ) {
+    void initMaterial ( Material& material, Lights& lights, IFog& fog, Object3D& object ) {
 
         std::string shaderID;
 
@@ -4892,7 +4899,7 @@ public:
 
     }
 
-    Program& setProgram( Camera& camera, Lights& lights, Fog& fog, Material& material, Object3D& object ) {
+    Program& setProgram( Camera& camera, Lights& lights, IFog& fog, Material& material, Object3D& object ) {
 
         if ( material.needsUpdate ) {
 
@@ -5095,7 +5102,7 @@ public:
 
         if ( gammaInput ) {
 
-            uniforms["diffuse"].value = Vector3().copyGammaToLinear( material.color );
+            uniforms["diffuse"].value = Color().copyGammaToLinear( material.color );
 
         } else {
 
@@ -5110,7 +5117,7 @@ public:
         if ( material.bumpMap ) {
 
             uniforms["bumpMap"].texture = material.bumpMap.get();
-            uniforms["bumpScale"].value = material.bumpScale.get();
+            uniforms["bumpScale"].value = material.bumpScale;
 
         }
 
@@ -5137,15 +5144,15 @@ public:
 
         if ( uvScaleMap ) {
 
-            auto offset = uvScaleMap.offset;
-            auto repeat = uvScaleMap.repeat;
+            const auto& offset = uvScaleMap->offset;
+            const auto& repeat = uvScaleMap->repeat;
 
             uniforms["offsetRepeat"].value = Vector4( offset.x, offset.y, repeat.x, repeat.y );
 
         }
 
         uniforms["envMap"].texture = material.envMap.get();
-        uniforms["flipEnvMap"].value = ( material.envMap.type() == THREE::GLRenderTargetCube ) ? 1 : -1;
+        uniforms["flipEnvMap"].value = ( material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
 
         if ( gammaInput ) {
 
@@ -5159,8 +5166,8 @@ public:
         }
 
         uniforms["refractionRatio"].value = material.refractionRatio;
-        uniforms["combine"].value         = material.combine;
-        uniforms["useRefract"].value      = material.envMap && material.envMap.mapping.type() == THREE::CubeRefractionMapping;
+        uniforms["combine"].value         = (int)material.combine;
+        uniforms["useRefract"].value      = material.envMap && material.envMap->mapping == THREE::CubeRefractionMapping;
 
     }
 
@@ -5176,24 +5183,24 @@ public:
         uniforms["psColor"].value = material.color;
         uniforms["opacity"].value = material.opacity;
         uniforms["size"].value    = material.size;
-        uniforms["scale"].value   = canvas.height / 2.0; // TODO: Cache
+        uniforms["scale"].value   = _height / 2.0f; // TODO: Cache
 
         uniforms["map"].texture = material.map.get();
 
     }
 
-    void refreshUniformsFog ( Uniforms& uniforms, Fog& fog ) {
+    void refreshUniformsFog ( Uniforms& uniforms, IFog& fog ) {
 
         uniforms["fogColor"].value = fog.color;
 
         if ( fog.type() == THREE::Fog ) {
 
-            uniforms["fogNear"].value = fog.near;
-            uniforms["fogFar"].value = fog.far;
+            uniforms["fogNear"].value = static_cast<Fog&>(fog).near;
+            uniforms["fogFar"].value = static_cast<Fog&>(fog).far;
 
         } else if ( fog.type() == THREE::FogExp2 ) {
 
-            uniforms["fogDensity"].value = fog.density;
+            uniforms["fogDensity"].value = static_cast<FogExp2&>(fog).density;
 
         }
 
@@ -5201,13 +5208,13 @@ public:
 
     void refreshUniformsPhong ( Uniforms& uniforms, Material& material ) {
 
-        uniforms.shininess.value = material.shininess;
+        uniforms["shininess"].value = material.shininess;
 
         if ( gammaInput ) {
 
-            uniforms["ambient"].value  = Color3().copyGammaToLinear( material.ambient );
-            uniforms["emissive"].value = Color3().copyGammaToLinear( material.emissive );
-            uniforms["specular"].value = Color3().copyGammaToLinear( material.specular );
+            uniforms["ambient"].value  = Color().copyGammaToLinear( material.ambient );
+            uniforms["emissive"].value = Color().copyGammaToLinear( material.emissive );
+            uniforms["specular"].value = Color().copyGammaToLinear( material.specular );
 
         } else {
 
@@ -5229,8 +5236,8 @@ public:
 
         if ( gammaInput ) {
 
-            uniforms["ambient"].value = Color3().copyGammaToLinear( material.ambient );
-            uniforms["emissive"].value = Color3().copyGammaToLinear( material.emissive );
+            uniforms["ambient"].value = Color().copyGammaToLinear( material.ambient );
+            uniforms["emissive"].value = Color().copyGammaToLinear( material.emissive );
 
         } else {
 
@@ -5241,7 +5248,7 @@ public:
 
         if ( material.wrapAround ) {
 
-            uniforms["wrapRGB"].value.copy( material.wrapRGB );
+            uniforms["wrapRGB"].value = material.wrapRGB;
 
         }
 
@@ -5306,11 +5313,11 @@ public:
 
     void loadUniformsMatrices ( UniformsIndices& uniforms, Object3D& object ) {
 
-        glUniformMatrix4fv( uniforms["modelViewMatrix"], false, object._modelViewMatrix.elements );
+        glUniformMatrix4fv( uniforms["modelViewMatrix"], 1, false, object.glData._modelViewMatrix.elements );
 
-        if ( uniforms.normalMatrix ) {
+        if ( contains( uniforms, "normalMatrix" ) ) {
 
-            glUniformMatrix3fv( uniforms["normalMatrix"], false, object._normalMatrix.elements );
+            glUniformMatrix3fv( uniforms["normalMatrix"], 1, false, object.glData._normalMatrix.elements );
 
         }
 
@@ -5318,20 +5325,22 @@ public:
 
     void loadUniformsGeneric ( Program& program, UniformsList& uniforms ) {
 
-        for ( j = 0, jl = uniforms.size(); j < jl; j ++ ) {
+        for ( size_t j = 0, jl = uniforms.size(); j < jl; j ++ ) {
 
-            const auto& location = program.uniforms[ uniforms[ j ][ 1 ] ];
+            const auto& location = program.uniforms[ uniforms[ j ].second ];
+
             if ( !location ) continue;
 
-            auto& uniform = uniforms[ j ][ 0 ];
+            auto& uniform = uniforms[ j ].first;
 
             uniform.load ( location );
 
-            if ( uniform.type() == Uniform::t ) { // single THREE::Texture (2d or cube)
+            if ( uniform.type == Uniform::t ) { // single THREE::Texture (2d or cube)
 
                 if ( !uniform.texture ) continue;
 
-                auto texture = *uniform.texture;
+                auto& texture = *uniform.texture;
+                const auto& value = uniform.value.cast<int>();
 
                 if ( texture.image.size() == 6 ) {
 
@@ -5348,181 +5357,6 @@ public:
                 }
 
             }
-
-#ifdef TODO_REMOVE_THIS
-            const auto type = uniform.type;
-            auto& value = uniform.value;
-
-            if ( type == Uniform::i ) { // single integer
-
-                glUniform1i( location, value );
-
-            } else if ( type == Uniform::f ) { // single float
-
-                glUniform1f( location, value );
-
-            } else if ( type == Uniform::v2 ) { // single THREE::Vector2
-
-                glUniform2f( location, value[ 0 ], value[ 1 ] );
-
-            } else if ( type == Uniform::v3 ) { // single THREE::Vector3
-
-                glUniform3f( location, value[ 0 ], value[ 1 ], value[ 2 ] );
-
-            } else if ( type == Uniform::v4 ) { // single THREE::Vector4
-
-                glUniform4f( location, value[ 0 ], value[ 1 ], value[ 2 ], value[ 3 ] );
-
-            } else if ( type == Uniform::c ) { // single THREE::Color
-
-                glUniform3f( location, value[ 0 ], value[ 1 ], value[ 2 ] );
-
-            } else if ( type == Uniform::iv1 ) { // flat array of integers (JS or typed array)
-
-                glUniform1iv( location, value );
-
-            } else if ( type == Uniform::iv ) { // flat array of integers with 3 x N size (JS or typed array)
-
-                glUniform3iv( location, value );
-
-            } else if ( type == Uniform::fv1 ) { // flat array of floats (JS or typed array)
-
-                glUniform1fv( location, value );
-
-            } else if ( type == Uniform::fv ) { // flat array of floats with 3 x N size (JS or typed array)
-
-                glUniform3fv( location, value );
-
-            } else if ( type == Uniform::v2v ) { // array of THREE::Vector2
-
-                /*if ( uniform._array == undefined ) {
-
-                    uniform._array.resize( 2 * value.size() );
-
-                }
-
-                for ( size_t i = 0, il = value.size(); i < il; i ++ ) {
-
-                    const auto offset = i * 2;
-
-                    uniform._array[ offset ]     = value[ i ].x;
-                    uniform._array[ offset + 1 ] = value[ i ].y;
-
-                }*/
-
-                glUniform2fv( location, uniform._array );
-
-            } else if ( type == Uniform::v3v ) { // array of THREE::Vector3
-
-                /*if ( uniform._array == undefined ) {
-
-                    uniform._array.resize( 3 * value.size() );
-
-                }
-
-                for ( size_t i = 0, il = value.size(); i < il; i ++ ) {
-
-                    const auto offset = i * 3;
-
-                    uniform._array[ offset ]     = value[ i ].x;
-                    uniform._array[ offset + 1 ] = value[ i ].y;
-                    uniform._array[ offset + 2 ] = value[ i ].z;
-
-                }*/
-
-                glUniform3fv( location, uniform._array );
-
-            } else if ( type == Uniform::v4v ) { // array of THREE::Vector4
-
-                /*std::vector<float> _array( 4 * value.size() );
-
-                for ( size_t i = 0, il = value.size(); i < il; i ++ ) {
-
-                    const auto offset = i * 4;
-
-                    uniform._array[ offset ]     = value[ i ].x;
-                    uniform._array[ offset + 1 ] = value[ i ].y;
-                    uniform._array[ offset + 2 ] = value[ i ].z;
-                    uniform._array[ offset + 3 ] = value[ i ].w;
-
-                }*/
-
-                glUniform4fv( location, _array );
-
-            } else if ( type == Uniform::m4) { // single THREE::Matrix4
-
-                /*if ( uniform._array == undefined ) {
-
-                    uniform._array.resize( 16 );
-
-                }*/
-
-                value.flattenToArray( uniform._array );
-                glUniformMatrix4fv( location, false, uniform._array );
-
-            } else if ( type == Uniform::m4v ) { // array of THREE::Matrix4
-
-                /*if ( uniform._array == undefined ) {
-
-                    uniform._array.resize( 16 * value.size() );
-
-                }
-
-                for ( i = 0, il = value.size(); i < il; i ++ ) {
-
-                    value[ i ].flattenToArrayOffset( uniform._array, i * 16 );
-
-                }*/
-
-                glUniformMatrix4fv( location, false, uniform._array );
-
-            } else if ( type == Uniform::t ) { // single THREE::Texture (2d or cube)
-
-                glUniform1i( location, value );
-
-                if ( !uniform.texture ) continue;
-
-                auto texture = *uniform.texture;
-
-                if ( texture.image instanceof Array && texture.image.size() == 6 ) {
-
-                    setCubeTexture( texture, value );
-
-                } else if ( texture.type() == THREE::GLRenderTargetCube ) {
-
-                    setCubeTextureDynamic( texture, value );
-
-                } else {
-
-                    setTexture( texture, value );
-
-                }
-
-            } else if ( type == Uniform::tv ) { // array of THREE::Texture (2d)
-
-                std::vector<int> _array( uniform.texture.size() );
-
-                for( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
-
-                    _array[ i ] = value + i;
-
-                }
-
-                glUniform1iv( location, uniform._array );
-
-                for( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
-
-                    texture = uniform.texture[ i ];
-
-                    if ( !texture ) continue;
-
-                    setTexture( texture, uniform._array[ i ] );
-
-                }
-
-            }
-
-#endif // TODO_REMOVE_THIS
 
         }
 
@@ -5709,7 +5543,7 @@ public:
         zlights.ambient[ 1 ] = g;
         zlights.ambient[ 2 ] = b;
 
-        #endif // TODO_LIGHTS
+#endif // TODO_LIGHTS
 
     }
 
@@ -6421,9 +6255,9 @@ public:
 
     }
 
-#ifdef TODO_IMAGE_SCALING
     Image& clampToMaxSize ( Image& image, int maxSize ) {
 
+#ifdef TODO_IMAGE_SCALING
         if ( image.width <= maxSize && image.height <= maxSize ) {
 
             return image;
@@ -6446,8 +6280,13 @@ public:
 
         return canvas;
 
-    }
+#else
+
+        return image;
+
 #endif
+
+    }
 
     void setCubeTexture ( Texture& texture, int slot ) {
 
@@ -6467,17 +6306,17 @@ public:
 #ifdef TODO_IMAGE_SCALING
                 glPixelStorei( GL_UNPACK_FLIP_Y, texture.flipY );
 
-                std::array<auto cubeImage = [];
+                std::array<Image*, 6> cubeImage = [];
                 for ( auto i = 0; i < 6; i ++ ) {
 
                     if ( _autoScaleCubemaps ) {
 
-                        cubeImage[ i ] = clampToMaxSize( texture.image[ i ], _maxCubemapSize );
+                        cubeImage[ i ] = &clampToMaxSize( texture.image[ i ], _maxCubemapSize );
 
                     } else
                     {
 
-                        cubeImage[ i ] = texture.image[ i ];
+                        cubeImage[ i ] = &texture.image[ i ];
 
                     }
 

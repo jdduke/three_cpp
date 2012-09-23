@@ -43,11 +43,11 @@ public:
 
     typedef std::shared_ptr<GLRenderTarget> Ptr;
 
-    static Ptr create( int width, int height, const TargetDesc& desc ) { 
+    static Ptr create( int width, int height, const TargetDesc& desc ) {
         return make_shared<GLRenderTarget>( width, height, desc );
     }
 
-    virtual THREE::TargetType type() const { return THREE::GLRenderTarget; }
+    virtual THREE::TextureType type() const { return THREE::GLRenderTarget; }
 
     /////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +77,7 @@ public:
     Ptr clone ( ) const {
 
         auto target = create( width, height, TargetDesc() );
-        
+
         target->width = width;
         target->height = height;
 

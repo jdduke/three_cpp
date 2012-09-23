@@ -8,7 +8,7 @@
 namespace three {
 
 template < typename T >
-inline bool contains( const std::map<std::string, T>& c, const char* elem ) {
+inline bool contains( const std::unordered_map<std::string, T>& c, const char* elem ) {
     return c.find( std::string(elem) ) != c.end();
 }
 

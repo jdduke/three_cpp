@@ -11,11 +11,10 @@ class Fog : public IFog {
 public:
 
 	Fog ( int hex, float near = 1, float far = 1000 )
-	 : color ( hex ), near ( near ), far ( far ) { }
+	 : IFog ( hex ), near ( near ), far ( far ) { }
 
 	THREE::FogType type() const	{ return THREE::Fog; }
 
-	Color color;
 	float near, far;
 
 };
