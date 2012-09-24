@@ -1,5 +1,5 @@
-#ifndef THREE_SHADER_MATERIAL_HPP
-#define THREE_SHADER_MATERIAL_HPP
+#ifndef THREE_PARTICLE_BASIC_MATERIAL_HPP
+#define THREE_PARTICLE_BASIC_MATERIAL_HPP
 
 #include <three/common.hpp>
 
@@ -7,13 +7,13 @@
 
 namespace three {
 
-class ShaderMaterial : public Material {
+class LineParticleMaterial : public Material {
 public:
 
-	typedef std::shared_ptr<ShaderMaterial> Ptr;
+	typedef std::shared_ptr<LineParticleMaterial> Ptr;
 
 	static Ptr create( const Parameters& parameters = Parameters() ) {
-		return three::make_shared<ShaderMaterial>( parameters );
+		return three::make_shared<LineParticleMaterial>( parameters );
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -24,25 +24,19 @@ public:
 
 protected:
 
-	ShaderMaterial ( const Parameters& parameters )
+	LineParticleMaterial ( const Parameters& parameters )
 	  : Material() {
+		fog = true;
 		setParameters( parameters, DefaultKeys() );
 	}
 
 	static const ParameterKeys& DefaultKeys() {
-		static std::array<std::string, 13> sKeys = {
-			"fragmentShader",
-			"vertexShader",
-			"shading",
-			"blending",
-			"depthTest",
-			"wireframe",
-			"wireframeLinewidth",
-			"lights",
+		static std::array<std::string, 6> sKeys = {
+			"color",
+			"map",
+			"size",
+			"sizeAttenuation",
 			"vertexColors",
-			"skinning",
-			"morphTargets",
-			"morphNormals",
 			"fog"
 		};
 		static ParameterKeys sKeysSet(sKeys.begin(), sKeys.end());

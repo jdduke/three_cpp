@@ -1,5 +1,5 @@
-#ifndef THREE_SHADER_MATERIAL_HPP
-#define THREE_SHADER_MATERIAL_HPP
+#ifndef THREE_MESH_DEPTH_MATERIAL_HPP
+#define THREE_MESH_DEPTH_MATERIAL_HPP
 
 #include <three/common.hpp>
 
@@ -7,13 +7,13 @@
 
 namespace three {
 
-class ShaderMaterial : public Material {
+class MeshDepthMaterial : public Material {
 public:
 
-	typedef std::shared_ptr<ShaderMaterial> Ptr;
+	typedef std::shared_ptr<MeshDepthMaterial> Ptr;
 
 	static Ptr create( const Parameters& parameters = Parameters() ) {
-		return three::make_shared<ShaderMaterial>( parameters );
+		return three::make_shared<MeshDepthMaterial>( parameters );
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -24,26 +24,15 @@ public:
 
 protected:
 
-	ShaderMaterial ( const Parameters& parameters )
+	MeshDepthMaterial ( const Parameters& parameters )
 	  : Material() {
 		setParameters( parameters, DefaultKeys() );
 	}
 
 	static const ParameterKeys& DefaultKeys() {
-		static std::array<std::string, 13> sKeys = {
-			"fragmentShader",
-			"vertexShader",
-			"shading",
-			"blending",
-			"depthTest",
+		static std::array<std::string, 2> sKeys = {
 			"wireframe",
-			"wireframeLinewidth",
-			"lights",
-			"vertexColors",
-			"skinning",
-			"morphTargets",
-			"morphNormals",
-			"fog"
+			"wireframeLinewidth"
 		};
 		static ParameterKeys sKeysSet(sKeys.begin(), sKeys.end());
 		return sKeysSet;
@@ -53,5 +42,5 @@ protected:
 
 } // namespace three
 
-#endif // THREE_MATERIAL_HPP
+#endif // THREE_MESH_DEPTH_MATERIAL_HPP
 

@@ -151,6 +151,10 @@ public:
         LinePieces = 1
     };
 
+    enum LineEndType {
+        Round = 0,
+    };
+
     enum FaceType {
         Face3 = 0,
         Face4
@@ -208,7 +212,6 @@ public:
         V3,
         V4
     };
-
 
     typedef void(*Mapping)(void);
     static void CubeReflectionMapping();

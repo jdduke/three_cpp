@@ -68,6 +68,9 @@ struct Derived : public T {
 	Derived( )
 		: T ( ) { }
 	template < typename Arg0 >
+	Derived( const Arg0& arg0 )
+		: T ( arg0 ) { }
+	template < typename Arg0 >
 	Derived( Arg0&& arg0 )
 		: T ( std::move(arg0) ) { }
 	template < typename Arg0, typename Arg1 >
@@ -90,6 +93,10 @@ struct Derived : public T {
 template < typename T >
 inline std::shared_ptr<T> make_shared( ) {
 	return std::make_shared<Derived<T>>( );
+}
+template < typename T, typename Arg0 >
+inline std::shared_ptr<T> make_shared( const Arg0& arg0 ) {
+	return std::make_shared<Derived<T>>( arg0 );
 }
 template < typename T, typename Arg0 >
 inline std::shared_ptr<T> make_shared( Arg0&& arg0 ) {

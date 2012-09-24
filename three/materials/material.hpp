@@ -12,12 +12,16 @@
 
 #include <three/textures/texture.hpp>
 
+#include <unordered_set>
+
 namespace three {
 
 class Material : public NonCopyable {
 public:
 
 	typedef std::shared_ptr<Material> Ptr;
+
+	typedef std::unordered_map<std::string, any> Parameters;
 
 	static Ptr create() { return make_shared<Material>( ); }
 
@@ -40,6 +44,7 @@ public:
 	bool transparent;
 
 	float size;
+	float sizeAttenuation;
 
 	THREE::Shading shading;
 	THREE::Colors vertexColors;
@@ -80,6 +85,7 @@ public:
 	bool wireframe;
 	float wireframeLinewidth;
 	float linewidth;
+	THREE::LineEndType linecap, linejoin;
 
 	int numSupportedMorphTargets;
 	int	numSupportedMorphNormals;
@@ -94,15 +100,15 @@ public:
 
 	Texture::Ptr map, envMap, lightMap, bumpMap, specularMap;
 	float bumpScale;
+	Vector3 normalScale;
 
 	bool fog;
 	bool lights;
 	bool shadowPass;
-	float sizeAttenuation;
 
 	/////////////////////////////////////////////////////////////////////////
 
-	Material& clone ( Material& material ) {
+	Material& clone ( Material& material ) const {
 
 		material.name                = name;
 
@@ -121,6 +127,7 @@ public:
 		material.transparent         = transparent;
 
 		material.size                = size;
+		material.sizeAttenuation     = sizeAttenuation;
 
 		material.shading             = shading;
 
@@ -146,8 +153,8 @@ public:
 		material.visible             = visible;
 
 		material.skinning            = skinning;
-		material.morphNormals        = morphNormals;
 		material.morphTargets        = morphTargets;
+		material.morphNormals        = morphNormals;
 
 		material.reflectivity        = reflectivity;
 		material.refractionRatio     = refractionRatio;
@@ -161,6 +168,8 @@ public:
 		material.wireframe           = wireframe;
 		material.wireframeLinewidth  = wireframeLinewidth;
 		material.linewidth           = linewidth;
+		material.linejoin            = linejoin;
+		material.linecap             = linecap;
 
 		material.numSupportedMorphTargets = numSupportedMorphTargets;
 		material.numSupportedMorphNormals = numSupportedMorphNormals;
@@ -180,7 +189,6 @@ public:
 		material.fog             = fog;
 		material.lights          = lights;
 		material.shadowPass      = shadowPass;
-		material.sizeAttenuation = sizeAttenuation;
 
 		return material;
 
@@ -188,7 +196,7 @@ public:
 
 protected:
 
-	Material ()
+	Material ( )
 	: id ( MaterialCount()++ ),
 	side ( THREE::FrontSide ),
 	color ( 0xffffff ),
@@ -199,6 +207,7 @@ protected:
 	opacity ( 1 ),
 	transparent ( false ),
 	size ( 1.f ),
+	sizeAttenuation ( true ),
 	shading ( THREE::NoShading ),
 	vertexColors ( THREE::NoColors ),
 	blending ( THREE::NormalBlending ),
@@ -218,7 +227,7 @@ protected:
 	morphTargets ( false ),
 	morphNormals ( false ),
 	reflectivity ( 1.f ),
-	refractionRatio ( 1.f ),
+	refractionRatio ( 0.98f ),
 	combine ( THREE::MultiplyOperation ),
 	metal ( false ),
 	perPixel ( false ),
@@ -227,13 +236,111 @@ protected:
 	wireframe ( false ),
 	wireframeLinewidth ( 1 ),
 	linewidth ( 1 ),
+	linecap ( THREE::Round ),
+	linejoin ( THREE::Round ),
 	program	( 0 ),
 	numSupportedMorphTargets ( 0 ),
 	numSupportedMorphNormals ( 0 ),
+	fragmentShader ( "void main() { }" ),
+	vertexShader ( "void main() { }" ),
+	bumpScale ( 1 ),
+	normalScale ( 1, 1, 1 ),
 	fog ( false ),
 	lights ( false ),
-	shadowPass ( false ),
-	sizeAttenuation ( 0 ) { }
+	shadowPass ( false ) { }
+
+	template < typename MaterialType >
+	static std::shared_ptr<MaterialType> clone ( const MaterialType& src ) {
+
+		auto material = MaterialType::create();
+
+		static_cast<const Material&>(src).clone( *material );
+
+		return material;
+
+	}
+
+	template < typename T >
+	static bool load( const std::unordered_map<std::string, any>& parameters, 
+	                  const std::string& key, 
+	                  T& value ) {
+		auto paramIt = parameters.find( key );
+		if ( paramIt != parameters.end() ) {
+			try {
+				value = paramIt->second.cast<T>();
+			} catch ( ... ) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+#define PARAM_LOAD(PARAM_NAME) \
+	if ( loadAll || keys.count( #PARAM_NAME ) > 0 ) \
+		load ( parameters, #PARAM_NAME, PARAM_NAME )
+
+	typedef std::unordered_set<std::string> ParameterKeys;
+
+	void setParameters( const Parameters& parameters,
+	                    const ParameterKeys& keys = ParameterKeys() ) {
+		if ( parameters.empty() )
+			return;
+
+		bool loadAll = keys.empty();
+
+		PARAM_LOAD( side );
+		PARAM_LOAD( color );
+		PARAM_LOAD( ambient );
+		PARAM_LOAD( emissive );
+		PARAM_LOAD( specular );
+		PARAM_LOAD( shininess );
+		PARAM_LOAD( opacity );
+		PARAM_LOAD( transparent );
+		PARAM_LOAD( size );
+		PARAM_LOAD( sizeAttenuation );
+		PARAM_LOAD( shading );
+		PARAM_LOAD( vertexColors );
+		PARAM_LOAD( blending );
+		PARAM_LOAD( blendSrc );
+		PARAM_LOAD( blendDst );
+		PARAM_LOAD( blendEquation );
+		PARAM_LOAD( depthTest );
+		PARAM_LOAD( depthWrite );
+		PARAM_LOAD( polygonOffset );
+		PARAM_LOAD( polygonOffsetFactor );
+		PARAM_LOAD( polygonOffsetUnits );
+		PARAM_LOAD( alphaTest );
+		PARAM_LOAD( overdraw );
+		PARAM_LOAD( visible );
+		PARAM_LOAD( needsUpdate );
+		PARAM_LOAD( skinning );
+		PARAM_LOAD( morphTargets );
+		PARAM_LOAD( morphNormals );
+		PARAM_LOAD( reflectivity );
+		PARAM_LOAD( refractionRatio );
+		PARAM_LOAD( combine );
+		PARAM_LOAD( metal );
+		PARAM_LOAD( perPixel );
+		PARAM_LOAD( wrapAround );
+		PARAM_LOAD( wrapRGB );
+		PARAM_LOAD( wireframe );
+		PARAM_LOAD( wireframeLinewidth );
+		PARAM_LOAD( linewidth );
+		PARAM_LOAD( linecap );
+		PARAM_LOAD( linejoin );
+		PARAM_LOAD( program );
+		PARAM_LOAD( numSupportedMorphNormals );
+		PARAM_LOAD( fragmentShader );
+		PARAM_LOAD( vertexShader );
+		PARAM_LOAD( bumpScale );
+		PARAM_LOAD( normalScale );
+		PARAM_LOAD( fog );
+		PARAM_LOAD( lights );
+		PARAM_LOAD( shadowPass );
+	}
+
+#undef PARAM_LOAD
 
 private:
 

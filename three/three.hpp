@@ -36,6 +36,14 @@
 #include <three/lights/spot_light.hpp>
 
 #include <three/materials/material.hpp>
+#include <three/materials/line_basic_material.hpp>
+#include <three/materials/mesh_basic_material.hpp>
+#include <three/materials/mesh_depth_material.hpp>
+#include <three/materials/mesh_face_material.hpp>
+#include <three/materials/mesh_lambert_material.hpp>
+#include <three/materials/mesh_normal_material.hpp>
+#include <three/materials/mesh_phong_material.hpp>
+#include <three/materials/particle_basic_material.hpp>
 #include <three/materials/shader_material.hpp>
 
 #include <three/objects/line.hpp>
