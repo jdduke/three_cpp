@@ -21,8 +21,6 @@ struct GeometryGroup : public GeometryBuffer {
     std::vector<int>  faces3;
     std::vector<int>  faces4;
 
-    int    materialIndex;
-
     std::vector<int>  offsets;
 
     GLBuffer vertexColorBuffer;
@@ -34,9 +32,8 @@ struct GeometryGroup : public GeometryBuffer {
     int vertices;
 
     explicit GeometryGroup( int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0 )
-        : GeometryBuffer( numMorphTargets, numMorphNormals ),
+        : GeometryBuffer( numMorphTargets, numMorphNormals, materialIndex ),
         id ( -1 ),
-        materialIndex ( materialIndex ),
         vertexColorBuffer ( 0 ),
         vertexIndexBuffer ( 0 ),
         vertexNormalBuffer ( 0 ),

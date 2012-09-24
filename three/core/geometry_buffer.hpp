@@ -13,6 +13,8 @@ struct GeometryBuffer {
 
     typedef Buffer GLBuffer;
 
+    int materialIndex;
+
     bool hasPositions;
     bool hasNormals;
     bool hasUvs;
@@ -81,8 +83,9 @@ struct GeometryBuffer {
         __skinWeightArray.clear();
     }
 
-    GeometryBuffer( int numMorphTargets = 0, int numMorphNormals = 0)
-        : hasPositions ( false ),
+    GeometryBuffer( int numMorphTargets = 0, int numMorphNormals = 0, int materialIndex = -1 )
+        : materialIndex ( materialIndex ),
+        hasPositions ( false ),
         hasNormals ( false ),
         hasUvs ( false ),
         hasColors ( false ),

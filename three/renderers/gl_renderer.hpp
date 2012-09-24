@@ -1830,11 +1830,9 @@ public:
 
         }
 
-#ifdef TODO_MORPH_NORMALS
-
         if ( dirtyMorphTargets ) {
 
-            for ( vk = 0, vkl = morphTargets.size(); vk < vkl; vk ++ ) {
+            for ( size_t vk = 0, vkl = morphTargets.size(); vk < vkl; vk ++ ) {
 
                 offset_morphTarget = 0;
 
@@ -1866,17 +1864,22 @@ public:
 
                     if ( material && material->morphNormals ) {
 
+                        Vector3 n1, n2, n3;
+
                         if ( needsSmoothNormals ) {
 
-                            const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals[ chf ];
+                            // TODO: FIgure out where the vertexNormals array comes from
+                            const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals;//[ chf ];
 
-                            n1 = faceVertexNormals.a;
-                            n2 = faceVertexNormals.b;
-                            n3 = faceVertexNormals.c;
+                            n1 = faceVertexNormals[0];
+                            n2 = faceVertexNormals[1];
+                            n3 = faceVertexNormals[2];
 
                         } else {
 
-                            n1 = morphNormals[ vk ].faceNormals[ chf ];
+                            // TODO: FIgure out where the faceNormals array comes from
+                            //n1 = morphNormals[ vk ].faceNormals[ chf ];
+                            n1 = morphNormals[ vk ].normal;//faceNormals[ chf ];
                             n2 = n1;
                             n3 = n1;
 
@@ -1910,45 +1913,51 @@ public:
 
                     // morph positions
 
-                    v1 = morphTargets[ vk ].vertices[ face.a ];
-                    v2 = morphTargets[ vk ].vertices[ face.b ];
-                    v3 = morphTargets[ vk ].vertices[ face.c ];
-                    v4 = morphTargets[ vk ].vertices[ face.d ];
+                    const auto& v1 = morphTargets[ vk ].vertices[ face.a ];
+                    const auto& v2 = morphTargets[ vk ].vertices[ face.b ];
+                    const auto& v3 = morphTargets[ vk ].vertices[ face.c ];
+                    const auto& v4 = morphTargets[ vk ].vertices[ face.d ];
 
-                    vka = morphTargetsArrays[ vk ];
+                    auto& vka = morphTargetsArrays[ vk ];
 
-                    vka[ offset_morphTarget ]     = v1.x;
-                    vka[ offset_morphTarget + 1 ] = v1.y;
-                    vka[ offset_morphTarget + 2 ] = v1.z;
+                    vka[ offset_morphTarget ]     = v1.position.x;
+                    vka[ offset_morphTarget + 1 ] = v1.position.y;
+                    vka[ offset_morphTarget + 2 ] = v1.position.z;
 
-                    vka[ offset_morphTarget + 3 ] = v2.x;
-                    vka[ offset_morphTarget + 4 ] = v2.y;
-                    vka[ offset_morphTarget + 5 ] = v2.z;
+                    vka[ offset_morphTarget + 3 ] = v2.position.x;
+                    vka[ offset_morphTarget + 4 ] = v2.position.y;
+                    vka[ offset_morphTarget + 5 ] = v2.position.z;
 
-                    vka[ offset_morphTarget + 6 ] = v3.x;
-                    vka[ offset_morphTarget + 7 ] = v3.y;
-                    vka[ offset_morphTarget + 8 ] = v3.z;
+                    vka[ offset_morphTarget + 6 ] = v3.position.x;
+                    vka[ offset_morphTarget + 7 ] = v3.position.y;
+                    vka[ offset_morphTarget + 8 ] = v3.position.z;
 
-                    vka[ offset_morphTarget + 9 ]  = v4.x;
-                    vka[ offset_morphTarget + 10 ] = v4.y;
-                    vka[ offset_morphTarget + 11 ] = v4.z;
+                    vka[ offset_morphTarget + 9 ]  = v4.position.x;
+                    vka[ offset_morphTarget + 10 ] = v4.position.y;
+                    vka[ offset_morphTarget + 11 ] = v4.position.z;
 
                     // morph normals
 
-                    if ( material.morphNormals ) {
+                    if ( material && material->morphNormals ) {
+
+                        Vector3 n1, n2, n3, n4;
 
                         if ( needsSmoothNormals ) {
 
-                            const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals[ chf ];
+                          // TODO: Figure out if vector needed
+                            //const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals[ chf ];
+                          const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals;//[ chf ];
 
-                            n1 = faceVertexNormals.a;
-                            n2 = faceVertexNormals.b;
-                            n3 = faceVertexNormals.c;
-                            n4 = faceVertexNormals.d;
+                            n1 = faceVertexNormals[0];
+                            n2 = faceVertexNormals[1];
+                            n3 = faceVertexNormals[2];
+                            n4 = faceVertexNormals[3];
 
                         } else {
 
-                            n1 = morphNormals[ vk ].faceNormals[ chf ];
+                            // TODO: Figure out if vector needed
+                            //n1 = morphNormals[ vk ].faceNormals[ chf ];
+                            n1 = morphNormals[ vk ].normal;//faceNormals[ chf ];
                             n2 = n1;
                             n3 = n1;
                             n4 = n1;
@@ -1985,7 +1994,7 @@ public:
                                  geometryGroup.__glMorphTargetsBuffers[ vk ],
                                  morphTargetsArrays[ vk ], hint );
 
-                if ( material.morphNormals ) {
+                if ( material && material->morphNormals ) {
 
                     glBindAndBuffer( GL_ARRAY_BUFFER,
                                      geometryGroup.__glMorphNormalsBuffers[ vk ],
@@ -1996,8 +2005,6 @@ public:
             }
 
         }
-
-#endif // TODO_MORPH_NORMALS
 
         if ( obj_skinWeights.size() ) {
 
@@ -3097,7 +3104,7 @@ public:
                     }
 
                 }
-#ifdef TODO_CUSTOM_FACE_VERTICES
+#ifdef TODO_CHUNK_FACE_VERTICES
                 else if ( customAttribute.boundTo == "faceVertices" ) {
 
                     for ( const auto& fi : chunk_faces3 ) {
@@ -3161,7 +3168,8 @@ public:
                     }
 
                 }
-#endif
+
+#endif // TODO_CHUNK_FACE_VERTICES
 
             }
 
@@ -3241,51 +3249,42 @@ public:
 
     void renderBufferImmediate ( Object3D& object, Program& program, Material& material ) {
 
-#ifdef TODO_RENDERING_IMMEDIATE
+        if ( object.glImmediateData.hasPositions && ! object.glImmediateData.__glVertexBuffer ) object.glImmediateData.__glVertexBuffer = glCreateBuffer();
+        if ( object.glImmediateData.hasNormals   && ! object.glImmediateData.__glNormalBuffer ) object.glImmediateData.__glNormalBuffer = glCreateBuffer();
+        if ( object.glImmediateData.hasUvs       && ! object.glImmediateData.__glUvBuffer )     object.glImmediateData.__glUvBuffer     = glCreateBuffer();
+        if ( object.glImmediateData.hasColors    && ! object.glImmediateData.__glColorBuffer )  object.glImmediateData.__glColorBuffer  = glCreateBuffer();
 
-        if ( object.hasPositions && ! object.__glVertexBuffer ) object.__glVertexBuffer = glCreateBuffer();
-        if ( object.hasNormals   && ! object.__glNormalBuffer ) object.__glNormalBuffer = glCreateBuffer();
-        if ( object.hasUvs       && ! object.__glUVBuffer )     object.__glUVBuffer     = glCreateBuffer();
-        if ( object.hasColors    && ! object.__glColorBuffer )  object.__glColorBuffer  = glCreateBuffer();
+        if ( object.glImmediateData.hasPositions ) {
 
-        if ( object.hasPositions ) {
-
-            glBindAndBuffer( GL_ARRAY_BUFFER, object.__glVertexBuffer, object.positionArray, GL_DYNAMIC_DRAW );
+            glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glVertexBuffer, object.glImmediateData.positionArray, GL_DYNAMIC_DRAW );
             glEnableVertexAttribArray( program.attributes["position"] );
             glVertexAttribPointer( program.attributes["position"], 3, GL_FLOAT, false, 0, 0 );
 
         }
 
-        if ( object.hasNormals ) {
-
-            glBindBuffer( GL_ARRAY_BUFFER, object.__glNormalBuffer );
+        if ( object.glImmediateData.hasNormals ) {
 
             if ( material.shading == THREE::FlatShading ) {
 
-                auto nx, ny, nz,
-                    nax, nbx, ncx, nay, nby, ncy, naz, nbz, ncz,
-                    normalArray,
-                    i, il = object.count * 3;
+                auto& normalArray = object.glImmediateData.normalArray;
 
-                const auto& normalArray = object.normalArray;
+                for( int i = 0, il = object.glImmediateData.count; i < il; i += 9 ) {
 
-                for( i = 0; i < il; i += 9 ) {
+                    const auto nax  = normalArray[ i ];
+                    const auto nay  = normalArray[ i + 1 ];
+                    const auto naz  = normalArray[ i + 2 ];
 
-                    nax  = normalArray[ i ];
-                    nay  = normalArray[ i + 1 ];
-                    naz  = normalArray[ i + 2 ];
+                    const auto nbx  = normalArray[ i + 3 ];
+                    const auto nby  = normalArray[ i + 4 ];
+                    const auto nbz  = normalArray[ i + 5 ];
 
-                    nbx  = normalArray[ i + 3 ];
-                    nby  = normalArray[ i + 4 ];
-                    nbz  = normalArray[ i + 5 ];
+                    const auto ncx  = normalArray[ i + 6 ];
+                    const auto ncy  = normalArray[ i + 7 ];
+                    const auto ncz  = normalArray[ i + 8 ];
 
-                    ncx  = normalArray[ i + 6 ];
-                    ncy  = normalArray[ i + 7 ];
-                    ncz  = normalArray[ i + 8 ];
-
-                    nx = ( nax + nbx + ncx ) / 3;
-                    ny = ( nay + nby + ncy ) / 3;
-                    nz = ( naz + nbz + ncz ) / 3;
+                    const auto nx = ( nax + nbx + ncx ) / 3;
+                    const auto ny = ( nay + nby + ncy ) / 3;
+                    const auto nz = ( naz + nbz + ncz ) / 3;
 
                     normalArray[ i ]     = nx;
                     normalArray[ i + 1 ] = ny;
@@ -3303,39 +3302,31 @@ public:
 
             }
 
-            glBufferData( GL_ARRAY_BUFFER, object.normalArray, GL_DYNAMIC_DRAW );
+            glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glNormalBuffer, object.glImmediateData.normalArray, GL_DYNAMIC_DRAW );
             glEnableVertexAttribArray( program.attributes["normal"] );
             glVertexAttribPointer( program.attributes["normal"], 3, GL_FLOAT, false, 0, 0 );
 
         }
 
-        if ( object.hasUvs && material.map ) {
+        if ( object.glImmediateData.hasUvs && material.map ) {
 
-            glBindBuffer( GL_ARRAY_BUFFER, object.__glUvBuffer );
-            glBufferData( GL_ARRAY_BUFFER, object.uvArray, GL_DYNAMIC_DRAW );
+            glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glUvBuffer, object.glImmediateData.uvArray, GL_DYNAMIC_DRAW );
             glEnableVertexAttribArray( program.attributes["uv"] );
             glVertexAttribPointer( program.attributes["uv"], 2, GL_FLOAT, false, 0, 0 );
 
         }
 
-        if ( object.hasColors && material.vertexColors != THREE::NoColors ) {
+        if ( object.glImmediateData.hasColors && material.vertexColors != THREE::NoColors ) {
 
-            glBindBuffer( GL_ARRAY_BUFFER, object.__glColorBuffer );
-            glBufferData( GL_ARRAY_BUFFER, object.colorArray, GL_DYNAMIC_DRAW );
+            glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glColorBuffer, object.glImmediateData.colorArray, GL_DYNAMIC_DRAW );
             glEnableVertexAttribArray( program.attributes["color"] );
             glVertexAttribPointer( program.attributes["color"], 3, GL_FLOAT, false, 0, 0 );
 
         }
 
-        glDrawArrays( GL_TRIANGLES, 0, object.count );
+        glDrawArrays( GL_TRIANGLES, 0, object.glImmediateData.count );
 
-        object.count = 0;
-
-#else
-
-        console().warn( "Renderer::renderBufferImmediate: Not yet implemented" );
-
-#endif
+        object.glImmediateData.count = 0;
 
     }
 
@@ -3497,15 +3488,11 @@ public:
 
         } else {
 
-#ifdef TODO_MORPH_TARGETS
-
-            if ( object.morphTargetBase ) {
+            if ( object.morphTargetBase != -1 ) {
 
                 setupMorphTargets( material, geometryGroup, object );
 
             }
-
-#endif // TODO_MORPH_TARGETS
 
         }
 
@@ -3675,18 +3662,22 @@ public:
 
     }
 
-#ifdef TODO_MORPH_TARGETS
-
     // Sorting
 
-    void NumericalSort {
+    struct NumericalSort {
         template < typename T, typename U >
         bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
             return a.second > b.second;
         }
-    }
+    };
 
     void setupMorphTargets ( Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
+
+#ifndef TODO_MORPH_TARGETS
+
+        console().warn( "GLRenderer::setupMorphTargets: Not implemented" );
+
+#else
 
         // set base
 
@@ -3817,9 +3808,9 @@ public:
 
         }
 
-    }
-
 #endif // TODO_MORPH_TARGETS
+
+    }
 
     // Rendering
 
@@ -4155,9 +4146,11 @@ public:
 
         } else {
 
-#ifdef TODO_OBJECT_RENDER
-            object.render( function( object ) { renderBufferImmediate( object, *program, material ); } );
-#endif
+            object.render( [this, &program, &material]( Object3D& object ) { 
+
+              renderBufferImmediate( object, program, material ); 
+
+            } );
 
         }
 
@@ -4188,13 +4181,15 @@ public:
 
     void unrollBufferMaterial ( Scene::GLObject& globject ) {
 
-#ifdef TODO_MATERIALS
+        if ( globject.object || !globject.buffer )
+            return;
+
         auto& object = *globject.object;
 
-        if (!object.material)
+        if ( !object.material )
           return;
 
-        auto& buffer = globject.buffer;
+        auto& buffer = *globject.buffer;
 
         auto& meshMaterial = *object.material;
 
@@ -4204,7 +4199,7 @@ public:
 
             if ( materialIndex >= 0 ) {
 
-                auto& material = *object.geometry.materials[ materialIndex ];
+                auto& material = *object.geometry->materials[ materialIndex ];
 
                 if ( material.transparent ) {
 
@@ -4237,7 +4232,6 @@ public:
             }
 
         }
-#endif // TODO_MATERIALS
 
     }
 
@@ -5076,7 +5070,7 @@ public:
                 if ( p_uniforms["boneGlobalMatrices"] != 0 ) {
 
                     glUniformMatrix4fv( p_uniforms["boneGlobalMatrices"],
-                                        object.boneMatrices.size(),
+                                        (int)object.boneMatrices.size(),
                                         false,
                                         reinterpret_cast<const float*>( &object.boneMatrices[0] ) );
 
@@ -5807,10 +5801,8 @@ public:
 
 #ifdef TODO_HASH_PARAMETERS
         for ( const auto& p : parameters ) {
-
             chunks << p.first;
             chunks << p.second;
-
         }
 #endif
 

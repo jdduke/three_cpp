@@ -63,7 +63,7 @@ void load4(const F& f, int location, const any& value ) {
 template < typename V, typename T, typename F>
 void loadv(const F& f, int location, const any& value, int stride = 1) {
     const auto& v = value.cast<V>();
-    const int count = v.size() / stride;
+    const int count = (int)v.size() / stride;
     const auto pv = reinterpret_cast<const T*>(v.data());
     f ( location, count, pv );
 }
@@ -77,7 +77,7 @@ void loadm(const F& f, int location, const any& value) {
 template < typename V, typename F>
 void loadmv( const F& f, int location, const any& value) {
     const auto& v = value.cast<V>();
-    const int count = v.size();
+    const int count = (int)v.size();
     const auto pv = reinterpret_cast<const float *>(v.data());
     f ( location, count, false, pv );
 }

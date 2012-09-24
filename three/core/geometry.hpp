@@ -110,7 +110,8 @@ public:
 
     std::vector<MorphTarget> morphTargets;
     std::vector<Color> morphColors;
-    std::vector<Vector3> morphNormals;
+    //std::vector<Vector3> morphNormals;
+    std::vector<Face> morphNormals;
 
     std::vector<Vector3> skinVerticesA;
     std::vector<Vector3> skinVerticesB;

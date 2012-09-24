@@ -86,6 +86,9 @@ public:
 	Texture::Ptr boneTexture;
 	int boneTextureWidth, boneTextureHeight;
 
+	int morphTargetBase;
+  std::vector<int> morphTargetForcedOrder;
+
 	Material::Ptr material;
 	Geometry::Ptr geometry;
 
@@ -113,6 +116,18 @@ public:
 			__glMorphTargetInfluences.clear();
 		}
 	} glData;
+
+  struct ImmediateGLData {
+    ImmediateGLData() 
+      : count ( 0 ),
+        hasPositions ( false ), hasNormals( false ), hasUvs ( false ), hasColors ( false ),
+        __glVertexBuffer ( 0 ), __glNormalBuffer ( 0 ), __glUvBuffer ( 0 ), __glColorBuffer ( 0 ) { }
+
+    int count;
+    bool hasPositions, hasNormals, hasUvs, hasColors;
+    Buffer __glVertexBuffer, __glNormalBuffer, __glUvBuffer, __glColorBuffer;
+    std::vector<float> positionArray, normalArray, uvArray, colorArray;
+  } glImmediateData ;
 
 	typedef std::function<void(const Program&,void*,const Frustum&)> RenderCallback;
 	RenderCallback immediateRenderCallback;
@@ -336,6 +351,12 @@ public:
 
 	}
 
+	void render ( const std::function<void(Object3D&)> renderCallback ) {
+		if ( renderCallback ) {
+			renderCallback ( *this );
+		}
+	}
+
 /*
 	clone: function () {
 
@@ -368,6 +389,7 @@ protected:
 	useVertexTexture ( false ),
 	boneTextureWidth ( 0 ),
 	boneTextureHeight ( 0 ),
+	morphTargetBase ( -1 ),
 	material ( material ),
 	geometry ( geometry ) { }
 

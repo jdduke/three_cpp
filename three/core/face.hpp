@@ -7,7 +7,7 @@
 #include <three/core/vector3.hpp>
 #include <three/core/vector4.hpp>
 
-#include <vector>
+#include <array>
 
 namespace three {
 
@@ -40,12 +40,12 @@ public:
     };
 
     Vector3 normal;
-    Vector3 vertexNormals[4];
+    std::array<Vector3, 4> vertexNormals;
 
     Color color;
-    Color vertexColors[4];
+    std::array<Color, 4> vertexColors;
 
-    Vector4 vertexTangents[4];
+    std::array<Vector4, 4> vertexTangents;
 
     int materialIndex;
 

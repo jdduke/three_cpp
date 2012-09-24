@@ -8,7 +8,7 @@
 
 namespace three {
 
-struct Bone {
+class Bone {
 
     Bone( std::string name,
           Vector3 position,
