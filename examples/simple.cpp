@@ -43,20 +43,36 @@ bool gameUpdate( float /* deltaTime */ ) {
 
 void test0( three::GLRenderer& renderer ) {
 
-    auto scene = Scene::create();
+    // Camera
 
     auto camera = PerspectiveCamera::create( 50,
                                              (float)renderer.width() / renderer.height(),
                                              .1f, 1000.f );
+    camera->position.z = 300;
 
+    // Scene
+    auto scene = Scene::create();
     scene->add ( camera );
 
-    camera->position.z = 300;
+    // Materials
+    auto sphereMaterial = MeshLambertMaterial::create(
+        parameters( Parameter("color", Color(0xcc0000) ) )
+    );
+
+    // Geometries
+
+    float radius = 50;
+    int segments = 16, rings = 16;
+    auto sphereGeometry = Geometry::Ptr(); // TODO: SphereGeometry::create( radius, segments, rings );
+
+    // Rendering
+    auto sphere = Mesh::create( sphereGeometry, sphereMaterial );
+    scene->add( sphere );
 
     gameLoop ( gameUpdate, [&](float) -> bool {
         SDL_GL_SwapBuffers();
         return true;
-        //renderer->renderBuffer()
+        renderer.render( *scene, *camera );
     } );
 
 }

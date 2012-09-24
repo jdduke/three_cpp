@@ -16,12 +16,13 @@
 
 namespace three {
 
+typedef std::pair<std::string, any> Parameter;
+typedef std::unordered_map<std::string, any> Parameters;
+
 class Material : public NonCopyable {
 public:
 
 	typedef std::shared_ptr<Material> Ptr;
-
-	typedef std::unordered_map<std::string, any> Parameters;
 
 	static Ptr create() { return make_shared<Material>( ); }
 
@@ -196,7 +197,7 @@ public:
 
 protected:
 
-	Material ( )
+	THREE_DECL Material ( )
 	: id ( MaterialCount()++ ),
 	side ( THREE::FrontSide ),
 	color ( 0xffffff ),
@@ -261,8 +262,8 @@ protected:
 	}
 
 	template < typename T >
-	static bool load( const std::unordered_map<std::string, any>& parameters, 
-	                  const std::string& key, 
+	static bool load( const std::unordered_map<std::string, any>& parameters,
+	                  const std::string& key,
 	                  T& value ) {
 		auto paramIt = parameters.find( key );
 		if ( paramIt != parameters.end() ) {
@@ -282,8 +283,8 @@ protected:
 
 	typedef std::unordered_set<std::string> ParameterKeys;
 
-	void setParameters( const Parameters& parameters,
-	                    const ParameterKeys& keys = ParameterKeys() ) {
+	THREE_DECL void setParameters( const Parameters& parameters,
+	                               const ParameterKeys& keys = ParameterKeys() ) {
 		if ( parameters.empty() )
 			return;
 
@@ -350,6 +351,54 @@ private:
 	}
 
 };
+
+
+#ifdef THREE_HAS_VARIADIC_TEMPLATES
+
+template < typename... Params >
+Parameters parameters( Params&&... params ) {
+	return Parameters( {std::move(params)...} );
+}
+
+#else
+
+Parameters parameters( Parameter&& p0 ) {
+	Parameters params;
+	params.insert( p0 );
+	return std::move(params);
+}
+Parameters parameters( Parameter&& p0, Parameter&& p1 ) {
+	Parameters params;
+	params.insert( p0 );
+	params.insert( p1 );
+	return std::move(params);
+}
+Parameters parameters( Parameter&& p0, Parameter&& p1, Parameter&& p3 ) {
+	Parameters params;
+	params.insert( p0 );
+	params.insert( p1 );
+	params.insert( p2 );
+	return std::move(params);
+}
+Parameters parameters( Parameters&& p0, Parameter&& p1, Parameter&& p2, Parameter&& p3 ) {
+	Parameters params;
+	params.insert( p0 );
+	params.insert( p1 );
+	params.insert( p2 );
+	params.insert( p3 );
+	return std::move(params);
+}
+Parameters parameters( Parameters&& p0, Parameter&& p1, Parameter&& p2, Parameter&& p3, Parameter&& p4 ) {
+	Parameters params;
+	params.insert( p0 );
+	params.insert( p1 );
+	params.insert( p2 );
+	params.insert( p3 );
+	params.insert( p4 );
+	return std::move(params);
+}
+#endif
+
 
 } // namespace three
 
