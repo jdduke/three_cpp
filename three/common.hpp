@@ -177,8 +177,9 @@ public:
     };
 
     enum RenderType {
-      Opaque = 0,
-      Transparent
+        Opaque = 0,
+        Transparent,
+        Override
     };
 
     enum FogType {

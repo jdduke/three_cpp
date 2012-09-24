@@ -23,7 +23,7 @@ namespace three {
 
 typedef std::vector<Scene::GLObject> RenderList;
 typedef std::vector<Object3D*>       RenderListDirect;
-typedef std::vector<Light::Ptr>      Lights;
+typedef std::vector<Light*>          Lights;
 typedef std::vector<std::string>     Identifiers;
 
 template < typename T >
@@ -51,7 +51,7 @@ public:
     struct ProgramParameters {
         bool map, envMap, lightMap, bumpMap, specularMap;
         THREE::Colors vertexColors;
-        IFog& fog;
+        IFog* fog;
         bool useFog;
         float sizeAttenuation;
         bool skinning;
@@ -494,6 +494,18 @@ public:
         _width = width;
         _height = height;
         setViewport( 0, 0, _width, _height );
+    }
+
+    THREE_DECL int width() const {
+
+        return _width;
+
+    }
+
+    THREE_DECL int height() const {
+
+        return _height;
+
     }
 
     THREE_DECL void setViewport ( int x = 0, int y = 0, int width = -1, int height = -1 ) {
@@ -3327,7 +3339,7 @@ public:
 
     }
 
-    void renderBufferDirect ( Camera& camera, Lights& lights, IFog& fog, Material& material, Geometry& geometry, Object3D& object ) {
+    void renderBufferDirect ( Camera& camera, Lights& lights, IFog* fog, Material& material, Geometry& geometry, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
@@ -3453,7 +3465,7 @@ public:
 
     }
 
-    void renderBuffer ( Camera& camera, Lights& lights, IFog& fog, Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
+    void renderBuffer ( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
         if ( material.visible == false ) return;
 
@@ -3809,11 +3821,9 @@ public:
 
 #endif // TODO_MORPH_TARGETS
 
-#ifdef TODO_RENDERING
-
     // Rendering
 
-    void render ( Scene& scene, Camera& camera, GLRenderTarget& renderTarget, bool forceClear ) {
+    void render ( Scene& scene, Camera& camera, GLRenderTarget::Ptr renderTarget = GLRenderTarget::Ptr(), bool forceClear = false ) {
 
         /*if ( camera.type() != THREE::Camera ) {
 
@@ -3823,7 +3833,7 @@ public:
         }*/
 
         auto& lights = scene.__lights;
-        auto& fog = scene.fog;
+        auto  fog = scene.fog.get();
 
         // reset caching for this frame
 
@@ -3883,7 +3893,6 @@ public:
             if ( object.visible ) {
 
                 if ( ! ( object.type() == THREE::Mesh || object.type() == THREE::ParticleSystem ) || ! ( object.frustumCulled ) || _frustum.contains( object ) ) {
-
                     //object.matrixWorld.flattenToArray( object._modelMatrixArray );
 
                     setupMatrices( object, camera );
@@ -3917,7 +3926,7 @@ public:
 
         if ( sortObjects ) {
 
-            std::sort(renderList.begin(), renderList.end(), PainterSort() );
+            std::sort( renderList.begin(), renderList.end(), PainterSort() );
 
         }
 
@@ -3933,7 +3942,7 @@ public:
 
                 if ( object.matrixAutoUpdate ) {
 
-                    object.matrixWorld.flattenToArray( object._modelMatrixArray );
+                    object.matrixWorld.flattenToArray( object.glData._modelMatrixArray );
 
                 }
 
@@ -3951,8 +3960,8 @@ public:
             setDepthWrite( material.depthWrite );
             setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
 
-            renderObjects( scene.__glObjects, false, "", camera, lights, fog, true, &material );
-            renderObjectsImmediate( scene.__glObjectsImmediate, "", camera, lights, fog, false, &material );
+            renderObjects( scene.__glObjects, false, THREE::Override, camera, lights, fog, true, &material );
+            renderObjectsImmediate( scene.__glObjectsImmediate, THREE::Override, camera, lights, fog, false, &material );
 
         } else {
 
@@ -3960,13 +3969,13 @@ public:
 
             setBlending( THREE::NormalBlending );
 
-            renderObjects( scene.__glObjects, true, "opaque", camera, lights, fog, false );
-            renderObjectsImmediate( scene.__glObjectsImmediate, "opaque", camera, lights, fog, false );
+            renderObjects( scene.__glObjects, true, THREE::Opaque, camera, lights, fog, false );
+            renderObjectsImmediate( scene.__glObjectsImmediate, THREE::Opaque, camera, lights, fog, false );
 
             // transparent pass (back-to-front order)
 
-            renderObjects( scene.__glObjects, false, "transparent", camera, lights, fog, true );
-            renderObjectsImmediate( scene.__glObjectsImmediate, "transparent", camera, lights, fog, true );
+            renderObjects( scene.__glObjects, false, THREE::Transparent, camera, lights, fog, true );
+            renderObjectsImmediate( scene.__glObjectsImmediate, THREE::Transparent, camera, lights, fog, true );
 
         }
 
@@ -3976,9 +3985,12 @@ public:
 
         // Generate mipmap if we're using any kind of mipmap filtering
 
-        if ( renderTarget && renderTarget.generateMipmaps && renderTarget.minFilter != THREE::NearestFilter && renderTarget.minFilter != THREE::LinearFilter ) {
+        if ( renderTarget &&
+             renderTarget->generateMipmaps &&
+             renderTarget->minFilter != THREE::NearestFilter &&
+             renderTarget->minFilter != THREE::LinearFilter ) {
 
-            updateRenderTargetMipmap( renderTarget );
+            updateRenderTargetMipmap( *renderTarget );
 
         }
 
@@ -3990,8 +4002,6 @@ public:
         // glFinish();
 
     }
-
-#endif // TODO_RENDERING
 
     void renderPlugins( std::vector<IPlugin::Ptr>& plugins, Scene& scene, Camera& camera ) {
 
@@ -4033,9 +4043,7 @@ public:
 
     }
 
-//#ifdef TODO_RENDERING
-
-    void renderObjects ( RenderList& renderList, bool reverse, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog& fog, bool useBlending, Material* overrideMaterial = nullptr) {
+    void renderObjects ( RenderList& renderList, bool reverse, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial = nullptr) {
 
         int start, end, delta;
 
@@ -4097,7 +4105,7 @@ public:
 
     }
 
-    void renderObjectsImmediate ( RenderList& renderList, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog& fog, bool useBlending, Material* overrideMaterial = nullptr ) {
+    void renderObjectsImmediate ( RenderList& renderList, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial = nullptr ) {
 
         for ( auto& glObject : renderList ) {
 
@@ -4133,7 +4141,7 @@ public:
 
     }
 
-    void renderImmediateObject ( Camera& camera, Lights& lights, IFog& fog, Material& material, Object3D& object ) {
+    void renderImmediateObject ( Camera& camera, Lights& lights, IFog* fog, Material& material, Object3D& object ) {
 
         auto& program = setProgram( camera, lights, fog, material, object );
 
@@ -4154,8 +4162,6 @@ public:
         }
 
     }
-
-//#endif // TODO_RENDERING
 
     void unrollImmediateBufferMaterial ( Scene::GLObject& globject ) {
 
@@ -4180,9 +4186,9 @@ public:
 
     }
 
-#ifdef TODO_MATERIALS
     void unrollBufferMaterial ( Scene::GLObject& globject ) {
 
+#ifdef TODO_MATERIALS
         auto& object = *globject.object;
 
         if (!object.material)
@@ -4231,10 +4237,9 @@ public:
             }
 
         }
+#endif // TODO_MATERIALS
 
     }
-
-#endif // TODO_MATERIALS
 
     // Geometry splitting
 
@@ -4718,7 +4723,7 @@ public:
 
     // Materials
 
-    void initMaterial ( Material& material, Lights& lights, IFog& fog, Object3D& object ) {
+    void initMaterial ( Material& material, Lights& lights, IFog* fog, Object3D& object ) {
 
         std::string shaderID;
 
@@ -4899,7 +4904,7 @@ public:
 
     }
 
-    Program& setProgram( Camera& camera, Lights& lights, IFog& fog, Material& material, Object3D& object ) {
+    Program& setProgram( Camera& camera, Lights& lights, IFog* fog, Material& material, Object3D& object ) {
 
         if ( material.needsUpdate ) {
 
@@ -4950,9 +4955,9 @@ public:
 
             // refresh uniforms common to several materials
 
-            if ( /*fog &&*/ material.fog ) {
+            if ( fog && material.fog ) {
 
-                refreshUniformsFog( m_uniforms, fog );
+                refreshUniformsFog( m_uniforms, *fog );
 
             }
 
@@ -5699,7 +5704,10 @@ public:
 
     }
 
-    void setBlending ( THREE::Blending blending, THREE::BlendEquation blendEquation, THREE::BlendFactor blendSrc, THREE::BlendFactor blendDst ) {
+    void setBlending ( THREE::Blending blending,
+                       THREE::BlendEquation blendEquation = THREE::AddEquation,
+                       THREE::BlendFactor blendSrc = THREE::OneFactor,
+                       THREE::BlendFactor blendDst = THREE::OneFactor) {
 
         if ( blending != _oldBlending ) {
 
@@ -5948,8 +5956,8 @@ public:
             if (gammaOutput) ss << "#define GAMMA_OUTPUT" << std::endl;
             if (physicallyBasedShading) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
 
-            if ( parameters.useFog /*&& parameters.fog*/ ) ss << "#define USE_FOG" << std::endl;
-            if ( parameters.useFog && parameters.fog.type() == THREE::FogExp2 ) ss << "#define FOG_EXP2" << std::endl;
+            if ( parameters.useFog && parameters.fog != nullptr ) ss << "#define USE_FOG" << std::endl;
+            if ( parameters.useFog && parameters.fog != nullptr && parameters.fog->type() == THREE::FogExp2 ) ss << "#define FOG_EXP2" << std::endl;
 
             if (parameters.map) ss << "#define USE_MAP" <<  std::endl;
             if (parameters.envMap) ss << "#define USE_ENVMAP" <<  std::endl;

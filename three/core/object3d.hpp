@@ -54,7 +54,7 @@ public:
 	THREE::Order eulerOrder;
 	Vector3 scale;
 
-	void* renderDepth;
+	float renderDepth;
 
 	bool rotationAutoUpdate;
 
@@ -171,7 +171,7 @@ public:
 
 	}
 
-	void add ( Ptr& object ) {
+	void add ( Ptr object ) {
 
 		if ( !object )
 			return;
@@ -210,7 +210,7 @@ public:
 
 	}
 
-	void remove ( Ptr& object ) {
+	void remove ( Ptr object ) {
 
 		auto index = std::find( children.begin(), children.end(), object );
 
@@ -353,7 +353,7 @@ protected:
 	up ( 0, 1, 0 ),
 	eulerOrder ( THREE::XYZ ),
 	scale ( 1, 1, 1 ),
-	renderDepth ( nullptr ),
+	renderDepth ( 0 ),
 	rotationAutoUpdate ( true ),
 	matrixAutoUpdate ( true ),
 	matrixWorldNeedsUpdate ( true ),

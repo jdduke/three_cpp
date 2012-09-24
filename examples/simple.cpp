@@ -43,6 +43,16 @@ bool gameUpdate( float /* deltaTime */ ) {
 
 void test0( three::GLRenderer& renderer ) {
 
+    auto scene = Scene::create();
+
+    auto camera = PerspectiveCamera::create( 50,
+                                             (float)renderer.width() / renderer.height(),
+                                             .1f, 1000.f );
+
+    scene->add ( camera );
+
+    camera->position.z = 300;
+
     gameLoop ( gameUpdate, [&](float) -> bool {
         SDL_GL_SwapBuffers();
         return true;

@@ -17,26 +17,26 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////
 
-	void* fog;
+	IFog::Ptr fog;
 	Material* overrideMaterial;
 	bool matrixAutoUpdate;
 
 	/////////////////////////////////////////////////////////////////////////
 
-	struct GLObject	{
+	struct GLObject : RenderableObject {
 		explicit GLObject ( GeometryBuffer* buffer = nullptr,
 		                    Object3D* object = nullptr,
 		                    bool render = false,
 		                    Material* opaque = nullptr,
-		                    Material* transparent = nullptr )
-		 : buffer ( buffer ),
-		   object ( object ),
+		                    Material* transparent = nullptr,
+		                    float z = 0.f )
+		 : RenderableObject ( object, z ),
+		   buffer ( buffer ),
 		   render ( render ),
 		   opaque ( opaque ),
 		   transparent ( transparent ) { }
 
 		GeometryBuffer* buffer;
-		Object3D* object;
 		bool render;
 		Material* opaque;
 		Material* transparent;
@@ -134,7 +134,6 @@ protected:
 
 	Scene ()
 	: Object3D(),
-	fog ( nullptr ),
 	overrideMaterial ( nullptr ),
 	matrixAutoUpdate ( false ) { }
 
