@@ -18,6 +18,8 @@ public:
     /////////////////////////////////////////////////////////////////////////
 
     Color color;
+    float intensity;
+    float distance;
 
     std::shared_ptr<Object3D> target;
 
@@ -27,9 +29,11 @@ public:
 
 protected:
 
-    explicit Light ( int hex )
+    explicit Light ( int hex, float intensity = 1, float distance = 0 )
         : Object3D(),
         color( hex ),
+        intensity ( intensity ),
+        distance ( distance ),
         target ( nullptr ),
         castShadow (false ),
         onlyShadow ( false ),

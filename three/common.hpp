@@ -129,6 +129,7 @@ public:
         AmbientLight,
         PointLight,
         DirectionalLight,
+        HemisphereLight,
         SpotLight,
         Scene,
         Particle,

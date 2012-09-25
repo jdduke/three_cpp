@@ -336,30 +336,36 @@ private:
 
     struct InternalLights {
 
-        std::array<int, 3> ambient;//: [ 0, 0, 0 ],
+        std::vector<float> ambient;
 
         struct Directional {
             int length;
-            std::vector<Color> colors;
-            std::vector<Vector3> positions;
+            std::vector<float> colors;
+            std::vector<float> positions;
         } directional;
 
         struct Point {
             int length;
-            std::vector<Color> colors;
-            std::vector<Vector3> positions;
+            std::vector<float> colors;
+            std::vector<float> positions;
             std::vector<float> distances;
         } point;
 
         struct Spot {
             int length;
-            std::vector<Color> colors;
-            std::vector<Vector3> positions;
+            std::vector<float> colors;
+            std::vector<float> positions;
             std::vector<float> distances;
-            std::vector<Vector3> directions;
+            std::vector<float> directions;
             std::vector<float> angles;
             std::vector<float> exponents;
         } spot;
+
+        struct Hemi {
+          int length;
+          std::vector<float> skyColors, groundColors;
+          std::vector<float> positions;
+        } hemi;
 
     } _lights;
 
@@ -4894,7 +4900,7 @@ public:
 
         for ( auto& u : material.uniforms ) {
 
-            material.uniformsList.emplace_back( u.second, u.first );
+            material.uniformsList.emplace_back( &u.second, u.first );
 
         }
 
@@ -5161,7 +5167,7 @@ public:
         }
 
         uniforms["envMap"].texture = material.envMap.get();
-        uniforms["flipEnvMap"].value = ( material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
+        uniforms["flipEnvMap"].value = ( material.envMap && material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
 
         if ( gammaInput ) {
 
@@ -5281,15 +5287,22 @@ public:
         uniforms["spotLightAngle"].value            = lights.spot.angles;
         uniforms["spotLightExponent"].value         = lights.spot.exponents;
 
+        uniforms["hemisphereLightSkyColor"].value   = lights.hemi.skyColors;
+        uniforms["hemisphereLightGroundColor"].value = lights.hemi.groundColors;
+        uniforms["hemisphereLightPosition"].value   = lights.hemi.positions;
+
     }
 
     void refreshUniformsShadow ( Uniforms& uniforms, Lights& lights ) {
 
+#ifndef TODO_UNIFORMS_SHADOW
 
-#ifdef TODO_UNIFORMS_SHADOW
-        if ( uniforms.shadowMatrix ) {
+        console().warn( "GLRenderer::refreshUniformsShadow: Not implemented" );
 
-            auto j = 0;
+#else
+        if ( contains( uniforms, "shadowMatrix" ) ) {
+
+            int j = 0;
 
             for ( auto i = 0, il = lights.size(); i < il; i ++ ) {
 
@@ -5299,13 +5312,13 @@ public:
 
                 if ( light.type() == THREE::SpotLight || ( light.type() == THREE::DirectionalLight && ! light.shadowCascade ) ) {
 
-                    uniforms.shadowMap.texture[ j ] = light.shadowMap;
-                    uniforms.shadowMapSize.value[ j ] = light.shadowMapSize;
+                    uniforms["shadowMap"].texture[ j ] = light.shadowMap;
+                    uniforms["shadowMapSize"].value[ j ] = light.shadowMapSize;
 
-                    uniforms.shadowMatrix.value[ j ] = light.shadowMatrix;
+                    uniforms["shadowMatrix"].value[ j ] = light.shadowMatrix;
 
-                    uniforms.shadowDarkness.value[ j ] = light.shadowDarkness;
-                    uniforms.shadowBias.value[ j ] = light.shadowBias;
+                    uniforms["shadowDarkness"].value[ j ] = light.shadowDarkness;
+                    uniforms["shadowBias"].value[ j ] = light.shadowBias;
 
                     j ++;
 
@@ -5314,7 +5327,7 @@ public:
             }
 
         }
-#endif // TODO_UNIFORMS_SHADOW
+#endif
 
     }
 
@@ -5338,9 +5351,9 @@ public:
 
             const auto& location = program.uniforms[ uniforms[ j ].second ];
 
-            if ( !location ) continue;
+            if ( location <= 0 ) continue;
 
-            auto& uniform = uniforms[ j ].first;
+            auto& uniform = *uniforms[ j ].first;
 
             uniform.load ( location );
 
@@ -5374,53 +5387,63 @@ public:
     void setupMatrices ( Object3D& object, Camera& camera ) {
 
         object.glData._modelViewMatrix.multiply( camera.matrixWorldInverse, object.matrixWorld );
-
         object.glData._normalMatrix.getInverse( object.glData._modelViewMatrix );
         object.glData._normalMatrix.transpose();
 
     }
 
+    void setColorGamma( std::vector<float>& array, size_t offset, const Color& color, float intensitySq ) {
+
+      array[ offset ]     = color.r * color.r * intensitySq;
+      array[ offset + 1 ] = color.g * color.g * intensitySq;
+      array[ offset + 2 ] = color.b * color.b * intensitySq;
+
+    }
+
+    void setColorLinear( std::vector<float>& array, size_t offset, const Color& color, float intensity ) {
+
+      array[ offset ]     = color.r * intensity;
+      array[ offset + 1 ] = color.g * intensity;
+      array[ offset + 2 ] = color.b * intensity;
+
+    }
 
     void setupLights ( Program& program, Lights& lights ) {
 
-#ifdef TODO_LIGHTS
-        auto l, ll, light, n,
-        r = 0, g = 0, b = 0,
-        color, position, intensity, distance,
+        auto& zlights = _lights;
 
-        zlights = _lights,
+        auto& dcolors     = zlights.directional.colors;
+        auto& dpositions  = zlights.directional.positions;
 
-        dcolors = zlights.directional.colors,
-        dpositions = zlights.directional.positions,
+        auto& pcolors     = zlights.point.colors;
+        auto& ppositions  = zlights.point.positions;
+        auto& pdistances  = zlights.point.distances;
 
-        pcolors = zlights.point.colors,
-        ppositions = zlights.point.positions,
-        pdistances = zlights.point.distances,
+        auto& scolors     = zlights.spot.colors;
+        auto& spositions  = zlights.spot.positions;
+        auto& sdistances  = zlights.spot.distances;
+        auto& sdirections = zlights.spot.directions;
+        auto& sangles     = zlights.spot.angles;
+        auto& sexponents  = zlights.spot.exponents;
 
-        scolors = zlights.spot.colors,
-        spositions = zlights.spot.positions,
-        sdistances = zlights.spot.distances,
-        sdirections = zlights.spot.directions,
-        sangles = zlights.spot.angles,
-        sexponents = zlights.spot.exponents,
+        auto& hskyColors    = zlights.hemi.skyColors;
+        auto& hgroundColors = zlights.hemi.groundColors;
+        auto& hpositions    = zlights.hemi.positions;
 
-        dlength = 0,
-        plength = 0,
-        slength = 0,
+        int dlength = 0, plength = 0, slength = 0, hlength = 0;
+        int doffset = 0, poffset = 0, soffset = 0, hoffset = 0;
 
-        doffset = 0,
-        poffset = 0,
-        soffset = 0;
+        float r  = 0, g = 0, b = 0;
 
-        for ( l = 0, ll = lights.size(); l < ll; l ++ ) {
+        for ( size_t l = 0, ll = lights.size(); l < ll; l ++ ) {
 
             auto& light = *lights[ l ];
 
             if ( light.onlyShadow || ! light.visible ) continue;
 
-            color = light.color;
-            intensity = light.intensity;
-            distance = light.distance;
+            const auto& color    = light.color;
+            const auto intensity = light.intensity;
+            const auto distance  = light.distance;
 
             if ( light.type() == THREE::AmbientLight ) {
 
@@ -5440,7 +5463,10 @@ public:
 
             } else if ( light.type() == THREE::DirectionalLight ) {
 
-                doffset = dlength * 3;
+                const auto doffset = dlength * 3;
+
+                grow( dcolors, doffset + 3 );
+                grow( dpositions, doffset + 3 );
 
                 if ( gammaInput ) {
 
@@ -5456,8 +5482,8 @@ public:
 
                 }
 
-                _direction.copy( light.matrixWorld.getPosition() );
-                _direction.subSelf( light.target.matrixWorld.getPosition() );
+                Vector3 _direction = light.matrixWorld.getPosition();
+                _direction.subSelf( light.target->matrixWorld.getPosition() );
                 _direction.normalize();
 
                 dpositions[ doffset ]     = _direction.x;
@@ -5469,6 +5495,10 @@ public:
             } else if( light.type() == THREE::PointLight ) {
 
                 poffset = plength * 3;
+
+                grow( pcolors, poffset + 3 );
+                grow( ppositions, poffset + 3 );
+                grow( pdistances, plength + 1 );
 
                 if ( gammaInput ) {
 
@@ -5484,7 +5514,7 @@ public:
 
                 }
 
-                position = light.matrixWorld.getPosition();
+                const auto& position = light.matrixWorld.getPosition();
 
                 ppositions[ poffset ]     = position.x;
                 ppositions[ poffset + 1 ] = position.y;
@@ -5496,7 +5526,13 @@ public:
 
             } else if( light.type() == THREE::SpotLight ) {
 
+                auto& slight = static_cast<SpotLight&>( light );
+
                 soffset = slength * 3;
+
+                grow( scolors, soffset + 3 );
+                grow( spositions, soffset + 3 );
+                grow( sdistances, slength + 1 );
 
                 if ( gammaInput ) {
 
@@ -5512,7 +5548,7 @@ public:
 
                 }
 
-                position = light.matrixWorld.getPosition();
+                const auto& position = light.matrixWorld.getPosition();
 
                 spositions[ soffset ]     = position.x;
                 spositions[ soffset + 1 ] = position.y;
@@ -5521,17 +5557,52 @@ public:
                 sdistances[ slength ] = distance;
 
                 _direction.copy( position );
-                _direction.subSelf( light.target.matrixWorld.getPosition() );
+                _direction.subSelf( light.target->matrixWorld.getPosition() );
                 _direction.normalize();
 
                 sdirections[ soffset ]     = _direction.x;
                 sdirections[ soffset + 1 ] = _direction.y;
                 sdirections[ soffset + 2 ] = _direction.z;
 
-                sangles[ slength ] = Math::cos( light.angle );
-                sexponents[ slength ] = light.exponent;
+                sangles[ slength ] = Math::cos( slight.angle );
+                sexponents[ slength ] = slight.exponent;
 
                 slength += 1;
+
+            } else if ( light.type() == THREE::HemisphereLight ) {
+
+              auto& hlight = static_cast<HemisphereLight&>( light );
+
+              const auto& skyColor = hlight.color;
+              const auto& groundColor = hlight.groundColor;
+
+              hoffset = hlength * 3;
+
+              grow( hpositions, hoffset + 3 );
+              grow( hgroundColors, hoffset + 3 );
+              grow( hskyColors, hoffset + 3 );
+
+              if ( gammaInput ) {
+
+                  auto intensitySq = intensity * intensity;
+
+                  setColorGamma( hskyColors, hoffset, skyColor, intensitySq );
+                  setColorGamma( hgroundColors, hoffset, groundColor, intensitySq );
+
+              } else {
+
+                  setColorLinear( hskyColors, hoffset, skyColor, intensity );
+                  setColorLinear( hgroundColors, hoffset, groundColor, intensity );
+
+              }
+
+              const auto& position = light.matrixWorld.getPosition();
+
+              hpositions[ hoffset ]     = position.x;
+              hpositions[ hoffset + 1 ] = position.y;
+              hpositions[ hoffset + 2 ] = position.z;
+
+              hlength += 1;
 
             }
 
@@ -5540,19 +5611,21 @@ public:
         // 0 eventual remains from removed lights
         // (this is to avoid if in shader)
 
-        for ( l = dlength * 3, ll = dcolors.size(); l < ll; l ++ ) dcolors[ l ] = 0.0;
-        for ( l = plength * 3, ll = pcolors.size(); l < ll; l ++ ) pcolors[ l ] = 0.0;
-        for ( l = slength * 3, ll = scolors.size(); l < ll; l ++ ) scolors[ l ] = 0.0;
+        for ( size_t l = dlength * 3, ll = dcolors.size(); l < ll; l ++ ) dcolors[ l ] = 0.0;
+        for ( size_t l = plength * 3, ll = pcolors.size(); l < ll; l ++ ) pcolors[ l ] = 0.0;
+        for ( size_t l = slength * 3, ll = scolors.size(); l < ll; l ++ ) scolors[ l ] = 0.0;
+        for ( size_t l = hlength * 3, ll = hskyColors.size(); l < ll; l ++ ) hskyColors[ l ] = 0.0;
+        for ( size_t l = hlength * 3, ll = hgroundColors.size(); l < ll; l ++ ) hgroundColors[ l ] = 0.0;
 
-        zlights.directional.size() = dlength;
-        zlights.point.size() = plength;
-        zlights.spot.size() = slength;
+        zlights.directional.length = dlength;
+        zlights.point.length = plength;
+        zlights.spot.length = slength;
+        zlights.hemi.length = hlength;
 
+        grow( zlights.ambient, 3 );
         zlights.ambient[ 0 ] = r;
         zlights.ambient[ 1 ] = g;
         zlights.ambient[ 2 ] = b;
-
-#endif // TODO_LIGHTS
 
     }
 
@@ -6676,7 +6749,7 @@ public:
     }
 
     struct LightCount {
-        int directional, point, spot;
+        int directional, point, spot, hemi;
     };
 
     THREE_DECL LightCount allocateLights ( Lights& lights ) {
@@ -6684,9 +6757,11 @@ public:
         int dirLights = 0,
             pointLights  = 0,
             spotLights = 0,
+            hemiLights = 0,
             maxDirLights = 0,
             maxPointLights = 0,
-            maxSpotLights = 0;
+            maxSpotLights = 0,
+            maxHemiLights = 0;
 
         for ( const auto& light : lights ) {
 
@@ -6695,6 +6770,7 @@ public:
             if ( light->type() == THREE::DirectionalLight ) dirLights ++;
             if ( light->type() == THREE::PointLight ) pointLights ++;
             if ( light->type() == THREE::SpotLight ) spotLights ++;
+            if ( light->type() == THREE::SpotLight ) hemiLights ++;
 
         }
 
@@ -6703,16 +6779,21 @@ public:
             maxDirLights = dirLights;
             maxPointLights = pointLights;
             maxSpotLights = spotLights;
+            maxHemiLights = hemiLights;
 
         } else {
 
             maxDirLights = (int)Math::ceil( (float)_maxLights * dirLights / ( pointLights + dirLights ) );
             maxPointLights = _maxLights - maxDirLights;
-            maxSpotLights = maxPointLights; // this is not really correct
+
+            // these are not really correct
+
+            maxSpotLights = maxPointLights;
+            maxHemiLights = maxDirLights;
 
         }
 
-        LightCount lightCount = { maxDirLights, maxPointLights, maxSpotLights };
+        LightCount lightCount = { maxDirLights, maxPointLights, maxSpotLights, maxHemiLights };
         return lightCount;
 
     }

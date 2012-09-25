@@ -9,6 +9,12 @@
 
 namespace three {
 
+template < typename C >
+void grow( C& c, int size, float factor = 1.5f ) {
+	if ( c.size() < size )
+		c.resize( (int)(factor * size) );
+}
+
 template < typename C, typename T >
 inline bool contains( const C& c, const T& elem ) {
 	return std::find( c.begin(), c.end(), elem ) != c.end();

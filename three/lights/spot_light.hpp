@@ -20,8 +20,6 @@ public:
 
     /////////////////////////////////////////////////////////////////////////
 
-    float intensity;
-    float distance;
     float angle;
     float exponent;
 
@@ -49,8 +47,8 @@ public:
 protected:
 
     SpotLight ( int hex, float intensity, float distance, float angle, float exponent )
-        : Light ( hex ),
-        intensity ( intensity ), distance ( distance ), angle ( angle ), exponent ( exponent ),
+        : Light ( hex, intensity, distance ),
+        angle ( angle ), exponent ( exponent ),
         shadowCameraNear ( 50 ), shadowCameraFar ( 5000 ), shadowCameraFov ( 50 ),
         shadowCameraVisible ( false ),
         shadowBias ( 0 ),

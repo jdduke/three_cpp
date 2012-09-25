@@ -31,6 +31,7 @@
 
 #include <three/lights/ambient_light.hpp>
 #include <three/lights/directional_light.hpp>
+#include <three/lights/hemisphere_light.hpp>
 #include <three/lights/light.hpp>
 #include <three/lights/point_light.hpp>
 #include <three/lights/spot_light.hpp>

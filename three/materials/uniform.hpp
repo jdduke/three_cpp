@@ -36,7 +36,7 @@ struct Uniform {
 
 typedef std::unordered_map<std::string, Uniform> Uniforms;
 typedef std::unordered_map<std::string, int> UniformsIndices;
-typedef std::vector<std::pair<Uniform, std::string>> UniformsList;
+typedef std::vector<std::pair<Uniform*, std::string>> UniformsList;
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -120,6 +120,9 @@ DECLARE_UNIFORM_V( v2v, std::vector<Vector2>, float, glUniform2fv, 1 );
 DECLARE_UNIFORM_V( v3v, std::vector<Vector3>, float, glUniform3fv, 1 );
 DECLARE_UNIFORM_V( v4v, std::vector<Vector4>, float, glUniform4fv, 1 );
 
+#undef DECLARE_UNIFORM
+#undef DECLARE_UNIFORM_V
+
 void Uniform::load( GLint location ) {
 
     try {
@@ -127,37 +130,37 @@ void Uniform::load( GLint location ) {
     switch ( type ) {
 
     case Uniform::i: // single integer
-        UniformToType<Uniform::i>::load( location, value );
+        UniformToType<Uniform::i>::load( location, value ); break;
     case Uniform::f: // single float
-        UniformToType<Uniform::f>::load( location, value );
+        UniformToType<Uniform::f>::load( location, value ); break;
     case Uniform::v2: // single THREE::Vector2
-        UniformToType<Uniform::v2>::load( location, value );
+        UniformToType<Uniform::v2>::load( location, value ); break;
     case Uniform::v3: // single THREE::Vector3
-        UniformToType<Uniform::v3>::load( location, value );
+        UniformToType<Uniform::v3>::load( location, value ); break;
     case Uniform::v4: // single THREE::Vector4
-        UniformToType<Uniform::v4>::load( location, value );
+        UniformToType<Uniform::v4>::load( location, value ); break;
     case Uniform::c: // single THREE::Color
-        UniformToType<Uniform::c>::load( location, value );
+        UniformToType<Uniform::c>::load( location, value ); break;
     case Uniform::iv1: // flat array of integers (JS or typed array)
-        UniformToType<Uniform::iv1>::load( location, value );
+        UniformToType<Uniform::iv1>::load( location, value ); break;
     case Uniform::iv: // flat array of integers with 3 x N size (JS or typed array)
-        UniformToType<Uniform::iv>::load( location, value );
+        UniformToType<Uniform::iv>::load( location, value ); break;
     case Uniform::fv1: // flat array of floats (JS or typed array)
-        UniformToType<Uniform::fv1>::load( location, value );
+        UniformToType<Uniform::fv1>::load( location, value ); break;
     case Uniform::fv: // flat array of floats with 3 x N size (JS or typed array)
-        UniformToType<Uniform::fv>::load( location, value );
+        UniformToType<Uniform::fv>::load( location, value ); break;
     case Uniform::v2v: // array of THREE::Vector2
-        UniformToType<Uniform::v2v>::load( location, value );
+        UniformToType<Uniform::v2v>::load( location, value ); break;
     case Uniform::v3v: // array of THREE::Vector3
-        UniformToType<Uniform::v3v>::load( location, value );
+        UniformToType<Uniform::v3v>::load( location, value ); break;
     case Uniform::v4v: // array of THREE::Vector4
-        UniformToType<Uniform::v4v>::load( location, value );
+        UniformToType<Uniform::v4v>::load( location, value ); break;
     case Uniform::m4: // single THREE::Matrix4
-        UniformToType<Uniform::m4>::load( location, value );
+        UniformToType<Uniform::m4>::load( location, value ); break;
     case Uniform::m4v: // array of THREE::Matrix4
-        UniformToType<Uniform::m4v>::load( location, value );
+        UniformToType<Uniform::m4v>::load( location, value ); break;
     case Uniform::t: // single THREE::Texture (2d or cube)
-        UniformToType<Uniform::t>::load( location, value );
+        UniformToType<Uniform::t>::load( location, value ); break;
 #ifdef TODO_TEXTURE_ARRAY
     case Uniform::tv: // array of THREE::Texture (2d)
         std::vector<int> _array( uniform.texture.size() );
@@ -170,12 +173,14 @@ void Uniform::load( GLint location ) {
             if ( !texture ) continue;
             setTexture( texture, uniform._array[ i ] );
         }
+        break;
 #endif // TODO_TEXTURE_ARRAY
     default:
         console().warn() << "Unsupported uniform type: " << type;
+        break;
     };
 
-    } catch ( ... ) {
+    } catch ( detail::bad_any_cast& ) {
         console().warn() << "Uniform value/type mismatch" << type;
     }
 

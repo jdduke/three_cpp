@@ -18,20 +18,12 @@ public:
 
     virtual THREE::Type type() const { return THREE::PointLight; }
 
-    /////////////////////////////////////////////////////////////////////////
-
-    float intensity;
-    float distance;
-
-    /////////////////////////////////////////////////////////////////////////
-
-
 protected:
 
     PointLight ( int hex, float intensity, float distance )
-        : Light ( hex ), intensity ( intensity ), distance ( distance ) {
+        : Light ( hex, intensity, distance ) {
 
-            position.set ( 0, 0, 0 );
+         position.set ( 0, 0, 0 );
 
     }
 
