@@ -220,7 +220,7 @@ public:
 
 			}
 
-			for ( int f = 0; f < faces.size(); ++f ) {
+			for ( size_t f = 0; f < faces.size(); ++f ) {
 
 				auto& face = faces[ f ];
 

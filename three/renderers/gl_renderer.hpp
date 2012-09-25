@@ -1278,7 +1278,7 @@ public:
 
                 if ( customAttribute.size == 1 ) {
 
-                    for ( int ca = 0; ca < cal; ca ++ ) {
+                    for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                         const auto& index = sortArray[ ca ].second;
 
@@ -1289,7 +1289,7 @@ public:
 
                 } else if ( customAttribute.size == 2 ) {
 
-                    for ( int ca = 0; ca < cal; ca ++ ) {
+                    for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                         const auto& index = sortArray[ ca ].second;
 
@@ -1306,7 +1306,7 @@ public:
 
                     if ( customAttribute.type == THREE::C ) {
 
-                        for ( int ca = 0; ca < cal; ca ++ ) {
+                        for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                             const auto index = sortArray[ ca ].second;
 
@@ -1322,7 +1322,7 @@ public:
 
                     } else {
 
-                        for ( int ca = 0; ca < cal; ca ++ ) {
+                        for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                             const auto index = sortArray[ ca ].second;
 
@@ -1340,7 +1340,7 @@ public:
 
                 } else if ( customAttribute.size == 4 ) {
 
-                    for ( int ca = 0; ca < cal; ca ++ ) {
+                    for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                         const auto index = sortArray[ ca ].second;
 
@@ -1407,7 +1407,7 @@ public:
 
                     if ( customAttribute.size == 1 ) {
 
-                        for ( int ca = 0; ca < cal; ca ++ ) {
+                        for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                             //customAttribute.array[ ca ] = customAttribute.value[ ca ];
                             customAttribute.array[ ca ] = customAttribute.value[ ca ][ 0 ];
@@ -1416,7 +1416,7 @@ public:
 
                     } else if ( customAttribute.size == 2 ) {
 
-                        for ( int ca = 0; ca < cal; ca ++ ) {
+                        for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                             const auto& value = customAttribute.value[ ca ];
 
@@ -1431,7 +1431,7 @@ public:
 
                         if ( customAttribute.type == THREE::C ) {
 
-                            for ( int ca = 0; ca < cal; ca ++ ) {
+                            for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                                 const auto& value = customAttribute.value[ ca ];
 
@@ -1445,7 +1445,7 @@ public:
 
                         } else {
 
-                            for ( int ca = 0; ca < cal; ca ++ ) {
+                            for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                                 const auto& value = customAttribute.value[ ca ];
 
@@ -1461,7 +1461,7 @@ public:
 
                     } else if ( customAttribute.size == 4 ) {
 
-                        for ( int ca = 0; ca < cal; ca ++ ) {
+                        for ( size_t ca = 0; ca < cal; ca ++ ) {
 
                             const auto& value = customAttribute.value[ ca ];
 
@@ -1507,8 +1507,8 @@ public:
 
         const auto& vertices = geometry.vertices;
         const auto& colors = geometry.colors;
-        const auto vl = vertices.size();
-        const auto cl = colors.size();
+        const auto vl = (int)vertices.size();
+        const auto cl = (int)colors.size();
 
         auto& vertexArray = geometry.__vertexArray;
         auto& colorArray = geometry.__colorArray;
@@ -1652,8 +1652,8 @@ public:
 
         const auto& vertices = geometry.vertices;
         const auto& colors = geometry.colors;
-        const auto vl = vertices.size();
-        const auto cl = colors.size();
+        const auto vl = (int)vertices.size();
+        const auto cl = (int)colors.size();
 
         auto& vertexArray = geometry.__vertexArray;
         auto& colorArray = geometry.__colorArray;

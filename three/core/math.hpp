@@ -87,7 +87,7 @@ public:
 
 };
 
-const float Math::PI = std::atan(1.f)/4;
+const float Math::PI = 3.14159265358979323846f;//std::atan(1.f)/4;
 const float Math::INF = std::numeric_limits<float>::max();//std::numeric_limits<float>::infinity();
 
 } // namespace three

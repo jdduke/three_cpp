@@ -10,7 +10,7 @@
 namespace three {
 
 template < typename C >
-void grow( C& c, int size, float factor = 1.5f ) {
+void grow( C& c, size_t size, float factor = 1.5f ) {
 	if ( c.size() < size )
 		c.resize( (int)(factor * size) );
 }

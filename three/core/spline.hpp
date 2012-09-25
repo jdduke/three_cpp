@@ -43,8 +43,8 @@ public:
 
 		c[ 0 ] = intPoint == 0 ? intPoint : intPoint - 1;
 		c[ 1 ] = intPoint;
-		c[ 2 ] = intPoint  > points.size() - 2 ? (int)points.size() - 1 : intPoint + 1;
-		c[ 3 ] = intPoint  > points.size() - 3 ? (int)points.size() - 1 : intPoint + 2;
+		c[ 2 ] = intPoint  > (int)points.size() - 2 ? (int)points.size() - 1 : intPoint + 1;
+		c[ 3 ] = intPoint  > (int)points.size() - 3 ? (int)points.size() - 1 : intPoint + 2;
 
 		const auto& pa = points[ c[ 0 ] ];
 		const auto& pb = points[ c[ 1 ] ];

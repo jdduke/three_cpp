@@ -30,6 +30,11 @@ bool initSDL( GLRenderer::Parameters& parameters ) {
 	return true;
 }
 
+bool swapBuffers() {
+	SDL_GL_SwapBuffers();
+	return true;
+}
+
 } // namespace sdl
 } // namespace three
 
