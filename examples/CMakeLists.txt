@@ -23,8 +23,10 @@ include_directories(${SDL_INCLUDE_DIR})
 
 add_definitions(-DGLEW_STATIC -DTHREE_SDL -DTHREE_GLEW)
 
-#add_executable(simple ${THREE_HEADERS} simple.cpp)
+set(SAMPLE_LIBS ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
+
 add_executable(simple simple.cpp)
+add_executable(trails trails.cpp)
 
-target_link_libraries(simple ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
-
+target_link_libraries(simple ${SAMPLE_LIBS})
+target_link_libraries(trails ${SAMPLE_LIBS})

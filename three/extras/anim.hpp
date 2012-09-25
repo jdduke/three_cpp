@@ -10,7 +10,7 @@ namespace anim {
 
 class AnimFrameRequest : public NonCopyable {
 public:
-    explicit AnimFrameRequest( float frameRate = 60 ) 
+    explicit AnimFrameRequest( float frameRate = 60 )
      : frameTime ( 1.f / frameRate ),
        lastTime ( clock.getElapsedTime() ) { }
 
@@ -47,6 +47,21 @@ private:
     float frameTime;
     float lastTime;
 };
+
+/////////////////////////////////////////////////////////////////////////
+
+typedef std::function<bool(float)> Update;
+typedef std::function<bool(float)> Render;
+
+void gameLoop(Update update, Render render) {
+
+  anim::AnimFrameRequest requestAnimFrame;
+
+  while ( requestAnimFrame( [&]( float deltaTime ) {
+    return update( deltaTime ) && render( deltaTime );
+  } ) );
+
+}
 
 
 } // namespace anim

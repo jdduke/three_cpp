@@ -7,13 +7,13 @@
 
 namespace three {
 
-class LineParticleMaterial : public Material {
+class ParticleBasicMaterial : public Material {
 public:
 
-	typedef std::shared_ptr<LineParticleMaterial> Ptr;
+	typedef std::shared_ptr<ParticleBasicMaterial> Ptr;
 
 	static Ptr create( const Parameters& parameters = Parameters() ) {
-		return three::make_shared<LineParticleMaterial>( parameters );
+		return three::make_shared<ParticleBasicMaterial>( parameters );
 	}
 
 	virtual THREE::MaterialType type() const { return THREE::ParticleBasicMaterial; }
@@ -26,18 +26,20 @@ public:
 
 protected:
 
-	LineParticleMaterial ( const Parameters& parameters )
+	ParticleBasicMaterial ( const Parameters& parameters )
 	  : Material() {
 		fog = true;
 		setParameters( parameters, DefaultKeys() );
 	}
 
 	static const ParameterKeys& DefaultKeys() {
-		static std::array<std::string, 6> sKeys = {
+		static std::array<std::string, 8> sKeys = {
 			"color",
 			"map",
 			"size",
 			"sizeAttenuation",
+			"opacity",
+			"depthTest",
 			"vertexColors",
 			"fog"
 		};

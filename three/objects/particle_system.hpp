@@ -1,5 +1,5 @@
-#ifndef THREE_PARTICLE_HPP
-#define THREE_PARTICLE_HPP
+#ifndef THREE_PARTICLE_SYSTEM_HPP
+#define THREE_PARTICLE_SYSTEYM_HPP
 
 #include <three/common.hpp>
 
@@ -39,8 +39,8 @@ protected:
 
 	 	if ( geometry ) {
 
-	 		if ( geometry->boundingSphere == 0 ) {
-	 			geometry->computeBoundingRadius();
+	 		if ( geometry->boundingSphere.radius == 0 ) {
+	 			geometry->computeBoundingSphere();
 	 		}
 
 	 		boundRadius = geometry->boundingSphere.radius;
@@ -52,4 +52,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_PARTICLE_HPP
+#endif // THREE_PARTICLE_SYSTEM_HPP

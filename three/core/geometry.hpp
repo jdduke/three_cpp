@@ -92,7 +92,7 @@ public:
 
     typedef std::shared_ptr<Geometry> Ptr;
 
-    Ptr create() { return make_shared<Geometry>(); }
+    static Ptr create() { return make_shared<Geometry>(); }
 
     virtual THREE::GeometryType type() const { return THREE::Geometry; }
 

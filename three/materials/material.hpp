@@ -397,6 +397,16 @@ Parameters parameters( Parameter&& p0, Parameter&& p1, Parameter&& p2, Parameter
 	params.insert( p4 );
 	return std::move(params);
 }
+Parameters parameters( Parameter&& p0, Parameter&& p1, Parameter&& p2, Parameter&& p3, Parameter&& p4, Parameter&& p5 ) {
+  Parameters params;
+  params.insert( p0 );
+  params.insert( p1 );
+  params.insert( p2 );
+  params.insert( p3 );
+  params.insert( p4 );
+  params.insert( p5 );
+  return std::move(params);
+}
 #endif
 
 

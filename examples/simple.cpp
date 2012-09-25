@@ -11,21 +11,6 @@
 
 using namespace three;
 
-typedef std::function<bool(float)> Update;
-typedef std::function<bool(float)> Render;
-
-void gameLoop(Update update, Render render) {
-
-  anim::AnimFrameRequest requestAnimFrame;
-
-  while ( requestAnimFrame( [&]( float deltaTime ) {
-    return update( deltaTime ) && 
-           render( deltaTime ) &&
-           sdl::swapBuffers();
-  } ) );
-
-}
-
 bool gameUpdate( float /* deltaTime */ ) {
 
   SDL_Event event;
@@ -74,8 +59,9 @@ void test0( three::GLRenderer& renderer ) {
   scene->add( sphere );
 
   // Rendering
-  gameLoop ( gameUpdate, [&](float) -> bool {
+  anim::gameLoop ( gameUpdate, [&](float) -> bool {
     renderer.render( *scene, *camera );
+    sdl::swapBuffers();
     return true;
   } );
 
