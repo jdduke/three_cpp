@@ -51,17 +51,19 @@ void test0( three::GLRenderer& renderer ) {
                                              .1f, 1000.f );
     camera->position.z = 300;
 
-
     // Scene
     auto scene = Scene::create();
     scene->add ( camera );
 
+    // Lights
+    auto pointLight = PointLight::create( 0xFFFFFF );
+    pointLight->position = Vector3( 10, 50, 130 );
+    scene->add ( pointLight );
 
     // Materials
     auto sphereMaterial = MeshLambertMaterial::create(
         parameters( Parameter("color", Color(0xcc0000) ) )
     );
-
 
     // Geometries
     float radius = 50, segments = 16, rings = 16;
@@ -69,7 +71,6 @@ void test0( three::GLRenderer& renderer ) {
 
     auto sphere = Mesh::create( sphereGeometry, sphereMaterial );
     scene->add( sphere );
-
 
     // Rendering
     gameLoop ( gameUpdate, [&](float) -> bool {

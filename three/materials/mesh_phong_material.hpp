@@ -16,6 +16,8 @@ public:
 		return three::make_shared<MeshPhongMaterial>( parameters );
 	}
 
+	virtual THREE::MaterialType type() const { return THREE::MeshPhongMaterial; }
+
 	/////////////////////////////////////////////////////////////////////////
 
 	Ptr clone ( ) {

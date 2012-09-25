@@ -54,45 +54,45 @@ inline int glError( const char *file, int line ) {
 
 inline GLuint glCreateBuffer() {
 	GLuint buffer =	0;
-	GL_CALL( glGenBuffers( 1, &buffer ) );
+	glGenBuffers( 1, &buffer );
 	return buffer;
 }
 
 inline void	glDeleteBuffer(	GLuint&	buffer ) {
-	GL_CALL( glDeleteBuffers( 1, &buffer ) );
+	glDeleteBuffers( 1, &buffer );
 	buffer = 0;
 }
 
 inline GLuint glCreateTexture()	{
 	GLuint texture = 0;
-	GL_CALL( glGenTextures( 1, &texture ) );
+	glGenTextures( 1, &texture );
 	return texture;
 }
 
 inline void	glDeleteTexture( GLuint& texture ) {
-	GL_CALL( glDeleteTextures( 1, &texture ) );
+	glDeleteTextures( 1, &texture );
 	texture	= 0;
 }
 
 inline GLuint glCreateFramebuffer()	{
 	GLuint buffer =	0;
-	GL_CALL( glGenFramebuffers( 1, &buffer ) );
+	glGenFramebuffers( 1, &buffer );
 	return buffer;
 }
 
 inline void glDeleteFramebuffer( GLuint& buffer ) {
-	GL_CALL( glDeleteFramebuffers( 1, &buffer ) );
+	glDeleteFramebuffers( 1, &buffer );
 	buffer = 0;
 }
 
 inline GLuint glCreateRenderbuffer() {
 	GLuint buffer =	0;
-	GL_CALL( glGenRenderbuffers(	1, &buffer ) );
+	glGenRenderbuffers(	1, &buffer );
 	return buffer;
 }
 
 inline void	glDeleteRenderbuffer( GLuint& buffer ) {
-	GL_CALL( glDeleteRenderbuffers( 1, &buffer ) );
+	glDeleteRenderbuffers( 1, &buffer );
 	buffer = 0;
 }
 
@@ -139,9 +139,9 @@ bool glTrue( GLboolean b ) {
 #endif
 
 template < typename	C >
-void glBindAndBuffer(int target, unsigned buffer, const	C& container, int usage) {
-	GL_CALL( glBindBuffer( target, buffer ) );
-	GL_CALL( glBufferData( target, container.size() * sizeof(container[0]), container.data(), usage ) );
+void glBindAndBuffer( GLenum target, unsigned buffer, const	C& container, GLenum usage ) {
+	glBindBuffer( target, buffer );
+	glBufferData( target, container.size() * sizeof(container[0]), container.data(), usage );
 }
 
 } // namespace three

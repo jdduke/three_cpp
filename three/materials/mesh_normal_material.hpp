@@ -16,6 +16,8 @@ public:
 		return three::make_shared<MeshNormalMaterial>( parameters );
 	}
 
+	virtual THREE::MaterialType type() const { return THREE::MeshNormalMaterial; }
+
 	/////////////////////////////////////////////////////////////////////////
 
 	Ptr clone ( ) {

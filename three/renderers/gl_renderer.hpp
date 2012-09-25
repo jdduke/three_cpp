@@ -405,9 +405,9 @@ private:
 
         // GPU capabilities
 
-        _maxVertexTextures = glGetTexParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
-        _maxTextureSize    = glGetTexParameteri( GL_MAX_TEXTURE_SIZE ),
-        _maxCubemapSize    = glGetTexParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
+        _maxVertexTextures = glGetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
+        _maxTextureSize    = glGetParameteri( GL_MAX_TEXTURE_SIZE ),
+        _maxCubemapSize    = glGetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
 #ifndef TEXTURE_MAX_ANISOTROPY_EXT
 #define TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #endif
@@ -4743,7 +4743,10 @@ public:
           case THREE::ParticleBasicMaterial:
             setMaterialShaders( material, ShaderLib::particleBasic() );
             break;
+          case THREE::ShaderMaterial:
+            break;
           default:
+            console().warn( "GLRenderer::initMaterial: Unknown material type" );
             break;
        };
 
@@ -5978,22 +5981,27 @@ public:
         auto glFragmentShader = getShader( "fragment", prefix_fragment + fragmentShader );
         auto glVertexShader = getShader( "vertex", prefix_vertex + vertexShader );
 
-        glAttachShader( glProgram, glVertexShader );
-        glAttachShader( glProgram, glFragmentShader );
+        GL_CALL( glAttachShader( glProgram, glVertexShader ) );
+        GL_CALL( glAttachShader( glProgram, glFragmentShader ) );
 
-        glLinkProgram( glProgram );
+        GL_CALL( glLinkProgram( glProgram ) );
 
         if ( !glTrue( glGetProgramParameter( glProgram, GL_LINK_STATUS ) ) ) {
 
             console().error() << "Could not initialise shader\n"
                               << "VALIDATE_STATUS: " << glGetProgramParameter( glProgram, GL_VALIDATE_STATUS ) << ", gl error [" << glGetError() << "]";
 
+            glDeleteProgram( glProgram );
+            glProgram = 0;
+
         }
 
         // clean up
 
         glDeleteShader( glFragmentShader );
+        glFragmentShader = 0;
         glDeleteShader( glVertexShader );
+        glVertexShader = 0;
 
         if ( !glProgram ) {
 
@@ -6001,8 +6009,8 @@ public:
 
         }
 
-        //console().log( prefix_fragment + fragmentShader );
-        //console().log( prefix_vertex + vertexShader );
+        console().log() << prefix_fragment + fragmentShader;
+        console().log() << prefix_vertex   + vertexShader;
 
         auto program = Program::create( glProgram, _programs_counter++ );
 
@@ -6095,7 +6103,7 @@ public:
 
         for( const auto& id : identifiers ) {
 
-            program.uniforms[ id ] = glGetUniformLocation( program.program, id.c_str() );
+            program.uniforms[ id ] = GL_CALL( glGetUniformLocation( program.program, id.c_str() ) );
 
         }
 
@@ -6105,7 +6113,7 @@ public:
 
         for( const auto& id : identifiers ) {
 
-            program.attributes[ id ] = glGetAttribLocation( program.program, id.c_str() );
+            program.attributes[ id ] = GL_CALL( glGetAttribLocation( program.program, id.c_str() ) );
 
         }
 
@@ -6119,7 +6127,7 @@ public:
         int i = 1;
 
         while ( std::getline( iss, line ) ) {
-            ss << i++ << ": " << line;
+            ss << i++ << ": " << line << std::endl;
         }
 
         return ss.str();
@@ -6132,17 +6140,17 @@ public:
 
         if ( type == "fragment" ) {
 
-            shader = glCreateShader( GL_FRAGMENT_SHADER );
+            shader = GL_CALL( glCreateShader( GL_FRAGMENT_SHADER ) );
 
         } else if ( type == "vertex" ) {
 
-            shader = glCreateShader( GL_VERTEX_SHADER );
+            shader = GL_CALL( glCreateShader( GL_VERTEX_SHADER ) );
 
         }
 
         const char *source_str = source.c_str();
-        glShaderSource( shader, 1, &source_str, nullptr );
-        glCompileShader( shader );
+        GL_CALL( glShaderSource( shader, 1, &source_str, nullptr ) );
+        GL_CALL( glCompileShader( shader ) );
 
         if ( !glTrue( glGetShaderParameter( shader, GL_COMPILE_STATUS ) ) ) {
             int loglen;

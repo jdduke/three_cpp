@@ -16,6 +16,8 @@ public:
 		return three::make_shared<LineParticleMaterial>( parameters );
 	}
 
+	virtual THREE::MaterialType type() const { return THREE::ParticleBasicMaterial; }
+
 	/////////////////////////////////////////////////////////////////////////
 
 	Ptr clone ( ) {

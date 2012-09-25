@@ -16,6 +16,8 @@ public:
 		return three::make_shared<ShaderMaterial>( parameters );
 	}
 
+	virtual THREE::MaterialType type() const { return THREE::ShaderMaterial; }
+
 	/////////////////////////////////////////////////////////////////////////
 
 	Ptr clone ( ) {
