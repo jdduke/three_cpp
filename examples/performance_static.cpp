@@ -6,9 +6,13 @@
 #include <three/extras/sdl.hpp>
 #include <three/extras/glew.hpp>
 
+#ifndef THREE_ASSET_DIR
+#define THREE_ASSET_DIR "."
+#endif
+
 using namespace three;
 
-void trails( three::GLRenderer& renderer ) {
+void performance_static( three::GLRenderer& renderer ) {
 
   // Camera
   auto camera = PerspectiveCamera::create(
@@ -16,33 +20,38 @@ void trails( three::GLRenderer& renderer ) {
     (float)renderer.width() / renderer.height(),
     1, 10000
   );
-  camera->position.set( 100000, 0, 3200 );
+  camera->position.z = 3200;
 
   // Scene
   auto scene = Scene::create();
 
-  // Geometries
-  std::array<Color, 4> colors = { Color(0x000000), Color(0xff0080), Color(0x8000ff), Color(0xffffff) };
-  auto geometry = Geometry::create();
-
-  for ( int i = 0; i < 2000; i ++ ) {
-    Vertex vertex;
-    vertex.position.x = Math::random(-2000.f, 2000.f);
-    vertex.position.y = Math::random(-2000.f, 2000.f);
-    vertex.position.z = Math::random(-2000.f, 2000.f);
-    geometry->vertices.push_back( vertex );
-    geometry->colors.push_back( colors[ (int)Math::floor( Math::random() * colors.size() ) ] );
-  }
-
   // Materials
-  auto material = ParticleBasicMaterial::create(
-    parameters( Parameter("color", Color(0xcccccc)),
-                Parameter("size", 1.0f),
-                Parameter("vertexColors", THREE::VertexColors),
-                Parameter("depthTest", false),
-                Parameter("opacity", 0.5f),
-                Parameter("sizeAttenuation", false) )
+  auto material = MeshNormalMaterial::create(
+    parameters( Parameter("shading", THREE::SmoothShading) )
   );
+
+  // Geometries
+  auto loader = JSONLoader::create();
+  loader->load( std::string(THREE_ASSET_DIR) + "/obj/Suzanne.js", [&material]( Geometry::Ptr geometry ) {
+    geometry->computeVertexNormals();
+
+    for ( inti = 0; i < 7700; i ++ ) {
+
+      auto mesh = Mesh::create( geometry, material );
+
+      mesh->position.x = Math.random() * 10000 - 5000;
+      mesh->position.y = Math.random() * 10000 - 5000;
+      mesh->position.z = Math.random() * 10000 - 5000;
+      mesh->rotation.x = Math.random() * 360 * ( Math.PI / 180 );
+      mesh->rotation.y = Math.random() * 360 * ( Math.PI / 180 );
+      mesh->scale.x = mesh->scale.y = mesh->scale.z = Math.random(100.f, 150.f);
+      mesh->matrixAutoUpdate = false;
+      mesh->updateMatrix();
+
+      scene.add( mesh );
+
+    }
+  });
 
   auto mesh = ParticleSystem::create( geometry, material );
   scene->add( mesh );
@@ -95,7 +104,6 @@ int main ( int argc, char* argv[] ) {
   } onQuit;
 
   GLRenderer::Parameters parameters;
-  parameters.preserveDrawingBuffer = true;
 
   if ( !sdl::initSDL( parameters ) || !glew::initGLEW( parameters ) ) {
     return 0;
@@ -107,9 +115,8 @@ int main ( int argc, char* argv[] ) {
   }
 
   renderer->sortObjects = false;
-  renderer->autoClearColor = false;
 
-  trails( *renderer );
+  performance_static( *renderer );
 
   return 0;
 }

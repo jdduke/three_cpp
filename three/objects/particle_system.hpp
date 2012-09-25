@@ -14,39 +14,35 @@ public:
 	typedef std::shared_ptr<ParticleSystem> Ptr;
 
 	static Ptr create( Geometry::Ptr geometry, Material::Ptr material ) {
-		//return make_shared<Line>( geometry, material, lineType );
-		return Ptr( new ParticleSystem( geometry, material ) );
+		return three::make_shared<ParticleSystem>( geometry, material );
 	}
 
 	/////////////////////////////////////////////////////////////////////////
 
-	virtual THREE::Type type() const { return THREE::Particle; }
+	virtual THREE::Type type() const { return THREE::ParticleSystem; }
 
 	virtual void visit( Visitor& v ) { v( *this ); }
 	virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 	/////////////////////////////////////////////////////////////////////////
 
-	Geometry::Ptr geometry;
-	Material::Ptr material;
-
 	bool softParticles;
 
 protected:
 
 	ParticleSystem ( Geometry::Ptr geometry, Material::Ptr material )
-	 : Object3D(), geometry ( geometry ), material ( material ), softParticles ( false ) {
+	 : Object3D( material, geometry ), softParticles ( false ) {
 
-	 	if ( geometry ) {
+		if ( geometry ) {
+			if ( geometry->boundingSphere.radius == 0 ) {
+				geometry->computeBoundingSphere();
+			}
+			boundRadius = geometry->boundingSphere.radius;
+		}
 
-	 		if ( geometry->boundingSphere.radius == 0 ) {
-	 			geometry->computeBoundingSphere();
-	 		}
+		frustumCulled = false;
 
-	 		boundRadius = geometry->boundingSphere.radius;
-	 	}
-
-	 }
+	}
 
 };
 

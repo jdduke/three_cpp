@@ -45,7 +45,7 @@ public:
 	bool transparent;
 
 	float size;
-	float sizeAttenuation;
+	bool sizeAttenuation;
 
 	THREE::Shading shading;
 	THREE::Colors vertexColors;

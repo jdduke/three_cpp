@@ -6,9 +6,6 @@
 #include <three/extras/sdl.hpp>
 #include <three/extras/glew.hpp>
 
-#include <thread>
-#include <fstream>
-
 using namespace three;
 
 bool gameUpdate( float /* deltaTime */ ) {

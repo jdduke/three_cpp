@@ -53,7 +53,7 @@ public:
         THREE::Colors vertexColors;
         IFog* fog;
         bool useFog;
-        float sizeAttenuation;
+        bool sizeAttenuation;
         bool skinning;
         int maxBones;
         bool useVertexTexture;
@@ -5954,7 +5954,9 @@ public:
             if (parameters.shadowMapDebug) ss << "#define SHADOWMAP_DEBUG" << std::endl;
             if (parameters.shadowMapCascade) ss << "#define SHADOWMAP_CASCADE" << std::endl;
 
-            if (parameters.sizeAttenuation) ss << "#define USE_SIZEATTENUATION" << std::endl <<
+            if (parameters.sizeAttenuation) ss << "#define USE_SIZEATTENUATION" << std::endl;
+            
+            ss << 
 
             "uniform mat4 modelMatrix;" << std::endl <<
             "uniform mat4 modelViewMatrix;" << std::endl <<

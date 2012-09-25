@@ -36,6 +36,9 @@
 #include <three/lights/point_light.hpp>
 #include <three/lights/spot_light.hpp>
 
+#include <three/loaders/loader.hpp>
+#include <three/loaders/json_loader.hpp>
+
 #include <three/materials/material.hpp>
 #include <three/materials/line_basic_material.hpp>
 #include <three/materials/mesh_basic_material.hpp>
