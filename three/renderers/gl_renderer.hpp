@@ -4815,10 +4815,17 @@ public:
 
         auto& attributes = material.program->attributes;
 
-        if ( attributes["position"] >= 0 ) glEnableVertexAttribArray( attributes["position"] );
-        if ( attributes["color"] >= 0 )    glEnableVertexAttribArray( attributes["color"] );
-        if ( attributes["normal"] >= 0 )   glEnableVertexAttribArray( attributes["normal"] );
-        if ( attributes["tangent"] >= 0 )  glEnableVertexAttribArray( attributes["tangent"] );
+        if ( attributes["position"] >= 0 ) 
+          glEnableVertexAttribArray( attributes["position"] );
+
+        if ( attributes["color"] >= 0 )    
+          glEnableVertexAttribArray( attributes["color"] );
+
+        if ( attributes["normal"] >= 0 )   
+          glEnableVertexAttribArray( attributes["normal"] );
+
+        if ( attributes["tangent"] >= 0 )  
+          glEnableVertexAttribArray( attributes["tangent"] );
 
         if ( material.skinning &&
              attributes["skinVertexA"] >=0 && attributes["skinVertexB"] >= 0 &&
@@ -6009,8 +6016,8 @@ public:
 
         }
 
-        console().log() << prefix_fragment + fragmentShader;
-        console().log() << prefix_vertex   + vertexShader;
+        //console().log() << prefix_fragment + fragmentShader;
+        //console().log() << prefix_vertex   + vertexShader;
 
         auto program = Program::create( glProgram, _programs_counter++ );
 
