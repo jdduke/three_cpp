@@ -5,6 +5,7 @@
 #include <three/utils.hpp>
 
 #include <three/core/object3d.hpp>
+#include <three/lights/light.hpp>
 
 namespace three {
 
@@ -72,13 +73,16 @@ protected:
 		void operator() ( Scene& s ) { fallback ( s ); }
 		void operator() ( Light& l ) {
 			push_unique( s.__lights, &l );
-			// TODO:
-			/*if ( l.target && l.target->parent == nullptr ) {
+			if ( l.target && l.target->parent == nullptr ) {
 				s.add( l.target );
-			}*/
+			}
 		}
 		void operator() ( Bone& ) { }
 		void operator() ( Camera& ) { }
+		void operator() ( Particle& p ) { fallback(p); }
+		//void operator() ( Sprite& s)    { fallback(s); }
+		void operator() ( Mesh& m)      { fallback(m); }
+		void operator() ( Line& l)      { fallback(l); }
 
 		Scene& s;
 		Object3D::Ptr& object;

@@ -19,6 +19,12 @@
 #include <unordered_map>
 #include <tuple>
 
+template < typename T >
+inline std::array<T, 4> toArray( const T& t0, const T& t1, const T& t2, const T& t3 = T() ) {
+    std::array<T, 4> a = { t0, t1, t2, t3 };
+    return a;
+}
+
 namespace three {
 
 template <class T>
@@ -106,7 +112,7 @@ public:
     std::vector<Face> faces;
 
     std::vector<std::vector<UV>> faceUvs;
-    std::vector<std::array<std::vector<UV>, 4>> faceVertexUvs;
+    std::vector<std::vector<std::array<UV, 4>>> faceVertexUvs;
 
     std::vector<MorphTarget> morphTargets;
     std::vector<Color> morphColors;
@@ -259,7 +265,7 @@ public:
         std::vector<Vector3> tan1 ( vertices.size() );
         std::vector<Vector3> tan2 ( vertices.size() );
 
-        auto handleTriangle = [&,this] (const std::vector<UV>& uv, int a, int b, int c, int ua, int ub, int uc ) {
+        auto handleTriangle = [&,this] (const std::array<UV, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
 
             const auto& vA = vertices[ a ].position;
             const auto& vB = vertices[ b ].position;
@@ -447,6 +453,7 @@ protected:
 
     Geometry()
     : id ( GeometryCount()++ ),
+      faceVertexUvs ( 2 ),
       hasTangents ( false ),
       dynamic ( true ),
       verticesNeedUpdate ( false ),

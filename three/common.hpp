@@ -213,14 +213,15 @@ public:
         V4
     };
 
+    // TODO: Implement?
     typedef void(*Mapping)(void);
-    static void CubeReflectionMapping();
-    static void CubeRefractionMapping();
-    static void LatitudeReflectionMapping();
-    static void LatitudeRefractionMapping();
-    static void SphericalReflectionMapping();
-    static void SphericalRefractionMapping();
-    static void UVMapping();
+    static void CubeReflectionMapping() {}
+    static void CubeRefractionMapping() {}
+    static void LatitudeReflectionMapping() {}
+    static void LatitudeRefractionMapping() {}
+    static void SphericalReflectionMapping() {}
+    static void SphericalRefractionMapping() {}
+    static void UVMapping() {}
 };
 
 } // namespace three

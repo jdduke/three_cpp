@@ -353,7 +353,7 @@ private:
 };
 
 
-#ifdef THREE_HAS_VARIADIC_TEMPLATES
+#if THREE_HAS_VARIADIC_TEMPLATES
 
 template < typename... Params >
 Parameters parameters( Params&&... params ) {
@@ -373,14 +373,14 @@ Parameters parameters( Parameter&& p0, Parameter&& p1 ) {
 	params.insert( p1 );
 	return std::move(params);
 }
-Parameters parameters( Parameter&& p0, Parameter&& p1, Parameter&& p3 ) {
+Parameters parameters( Parameter&& p0, Parameter&& p1, Parameter&& p2 ) {
 	Parameters params;
 	params.insert( p0 );
 	params.insert( p1 );
 	params.insert( p2 );
 	return std::move(params);
 }
-Parameters parameters( Parameters&& p0, Parameter&& p1, Parameter&& p2, Parameter&& p3 ) {
+Parameters parameters( Parameter&& p0, Parameter&& p1, Parameter&& p2, Parameter&& p3 ) {
 	Parameters params;
 	params.insert( p0 );
 	params.insert( p1 );
@@ -388,7 +388,7 @@ Parameters parameters( Parameters&& p0, Parameter&& p1, Parameter&& p2, Paramete
 	params.insert( p3 );
 	return std::move(params);
 }
-Parameters parameters( Parameters&& p0, Parameter&& p1, Parameter&& p2, Parameter&& p3, Parameter&& p4 ) {
+Parameters parameters( Parameter&& p0, Parameter&& p1, Parameter&& p2, Parameter&& p3, Parameter&& p4 ) {
 	Parameters params;
 	params.insert( p0 );
 	params.insert( p1 );

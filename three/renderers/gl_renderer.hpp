@@ -152,7 +152,7 @@ protected:
     _currentProgram ( 0 ),
     _currentFramebuffer ( 0 ),
     _currentMaterialId ( -1 ),
-    _currentGeometryGroupHash ( 0 ),
+    _currentGeometryGroupHash ( -1 ),
     _currentCamera ( nullptr ),
     _geometryGroupCounter ( 0 ),
     _oldDoubleSided ( -1 ),
@@ -4146,9 +4146,9 @@ public:
 
         } else {
 
-            object.render( [this, &program, &material]( Object3D& object ) { 
+            object.render( [this, &program, &material]( Object3D& object ) {
 
-              renderBufferImmediate( object, program, material ); 
+              renderBufferImmediate( object, program, material );
 
             } );
 
@@ -4181,7 +4181,7 @@ public:
 
     void unrollBufferMaterial ( Scene::GLObject& globject ) {
 
-        if ( globject.object || !globject.buffer )
+        if ( !globject.object || !globject.buffer )
             return;
 
         auto& object = *globject.object;
@@ -5834,7 +5834,7 @@ public:
         {
             std::stringstream ss;
 
-            ss << "precision " << _precision << " float;" << std::endl;
+            //ss << "precision " << _precision << " float;" << std::endl;
 
             if (_supportsVertexTextures) ss << "#define VERTEX_TEXTURES" << std::endl;
 
@@ -5898,7 +5898,7 @@ public:
                 "attribute vec3 morphTarget2;" << std::endl <<
                 "attribute vec3 morphTarget3;" << std::endl <<
 
-                "#ifde fUSE_MORPHNORMALS" << std::endl <<
+                "#ifdef USE_MORPHNORMALS" << std::endl <<
 
                     "attribute vec3 morphNormal0;" << std::endl <<
                     "attribute vec3 morphNormal1;" << std::endl <<
@@ -5933,7 +5933,7 @@ public:
         {
             std::stringstream ss;
 
-            ss << "precision " << _precision << " float;" << std::endl;
+            //ss << "precision " << _precision << " float;" << std::endl;
 
             if (parameters.bumpMap) ss << "#extension GL_OES_standard_derivatives : enable" << std::endl;
 
@@ -5986,7 +5986,7 @@ public:
         if ( !glTrue( glGetProgramParameter( glProgram, GL_LINK_STATUS ) ) ) {
 
             console().error() << "Could not initialise shader\n"
-                << "VALIDATE_STATUS: " << glGetProgramParameter( glProgram, GL_VALIDATE_STATUS ) << ", gl error [" << glGetError() << "]";
+                              << "VALIDATE_STATUS: " << glGetProgramParameter( glProgram, GL_VALIDATE_STATUS ) << ", gl error [" << glGetError() << "]";
 
         }
 

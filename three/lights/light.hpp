@@ -19,7 +19,7 @@ public:
 
     Color color;
 
-    Object3D* target;
+    std::shared_ptr<Object3D> target;
 
     bool castShadow, onlyShadow, shadowCascade;
 
@@ -27,9 +27,9 @@ public:
 
 protected:
 
-    explicit Light ( int hex ) 
-        : Object3D(), 
-        color( hex ), 
+    explicit Light ( int hex )
+        : Object3D(),
+        color( hex ),
         target ( nullptr ),
         castShadow (false ),
         onlyShadow ( false ),

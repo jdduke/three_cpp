@@ -87,7 +87,7 @@ public:
 	int boneTextureWidth, boneTextureHeight;
 
 	int morphTargetBase;
-  std::vector<int> morphTargetForcedOrder;
+	std::vector<int> morphTargetForcedOrder;
 
 	Material::Ptr material;
 	Geometry::Ptr geometry;
@@ -118,7 +118,7 @@ public:
 	} glData;
 
   struct ImmediateGLData {
-    ImmediateGLData() 
+    ImmediateGLData()
       : count ( 0 ),
         hasPositions ( false ), hasNormals( false ), hasUvs ( false ), hasColors ( false ),
         __glVertexBuffer ( 0 ), __glNormalBuffer ( 0 ), __glUvBuffer ( 0 ), __glColorBuffer ( 0 ) { }
