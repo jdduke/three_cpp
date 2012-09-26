@@ -3,28 +3,35 @@
 
 #include <three/common.hpp>
 
+#include <three/extras/noncopyable.hpp>
+
 #include <iomanip>
 #include <functional>
 
 namespace three {
 
-class Loader {
+class Loader : NonCopyable {
+public:
 
-  Loader() 
-  {
+  Loader( bool showStatus = true ) 
+    : showStatus ( showStatus ) {
+
+      if ( showStatus )
+        onStatus = [](const char* status) { console().log( status ); };
 
   }
 
-  typedef std::function<void(std::string)> StatusCallback;
+protected:
+
   bool showStatus;
+
+  typedef std::function<void(const char*)> StatusCallback;
   StatusCallback onStatus;
 
   typedef std::function<void(void)> Callback;
   Callback onLoadStart;
   Callback onLoadProgress;
   Callback onLoadComplete;
-
-protected:
 
   //////////////////////////////////////////////////////////////////////////
 
@@ -44,14 +51,11 @@ protected:
     }
 
     if ( onStatus )
-      onStatus ( message.str() );
+      onStatus ( message.str().c_str() );
 
   }
 
-  struct Scope {
-    std::vector<Material::Ptr> materials;
-  };
-
+  template < typename Scope >
   void initMaterials( Scope& scope, const std::vector<Material::Ptr>& materials, const std::string& texturePath ) {
     scope.materials.clear();
     for ( size_t i = 0; i < materials.size(); ++ i ) {
@@ -59,9 +63,10 @@ protected:
     }
   }
 
+  template < typename Scope >
   bool hasNormals( Scope& scope ) {
      for( auto& m : scope.materials ) {
-       if ( m->type() == THREE.ShaderMaterial ) return true;
+       if ( m->type() == THREE::ShaderMaterial ) return true;
      }
      return false;
   }
@@ -78,7 +83,7 @@ protected:
 
     auto nearest_pow2 = []( int n ) {
       const auto l = Math::log( (float)n ) / Math::LN2;
-      return Math::pow( 2, (int)Math::round( l ) );
+      return (int)Math::pow( (float)2, Math::round( l ) );
     };
 
 #ifdef TODO_CREATE_MATERIAL
