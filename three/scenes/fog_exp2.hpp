@@ -10,12 +10,12 @@ namespace three {
 class FogExp2 : public IFog {
 public:
 
-	FogExp2 ( int hex, float density = 0.00025f )
-	 : IFog( hex ), density ( density ) { }
+  FogExp2( int hex, float density = 0.00025f )
+    : IFog( hex ), density( density ) { }
 
-	THREE::FogType type() const    { return THREE::FogExp2; }
+  THREE::FogType type() const    { return THREE::FogExp2; }
 
-	float density;
+  float density;
 
 };
 

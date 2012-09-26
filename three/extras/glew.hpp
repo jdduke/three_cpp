@@ -8,16 +8,16 @@ namespace glew {
 
 bool initGLEW( GLRenderer::Parameters& parameters ) {
 
-	auto err = glewInit();
+  auto err = glewInit();
 
-	if ( GLEW_OK != err  ) {
-		console().error() << "Error initializing glew: " << glewGetErrorString( err );
-		return false;
-	}
+  if ( GLEW_OK != err ) {
+    console().error() << "Error initializing glew: " << glewGetErrorString( err );
+    return false;
+  }
 
-	console().log() << "GLEW initialized";
+  console().log() << "GLEW initialized";
 
-	return true;
+  return true;
 }
 
 } // namespace glew

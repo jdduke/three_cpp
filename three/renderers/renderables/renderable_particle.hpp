@@ -12,19 +12,19 @@ namespace three {
 class RenderableParticle : public Renderable {
 public:
 
-	RenderableParticle()
-	 : Renderable( 0 ),
-	 object ( nullptr ),
-	 x ( 0 ), y ( 0 ), rotation ( 0 ), material ( nullptr ) { }
+  RenderableParticle()
+    : Renderable( 0 ),
+      object( nullptr ),
+      x( 0 ), y( 0 ), rotation( 0 ), material( nullptr ) { }
 
-	Object3D* object;
+  Object3D* object;
 
-	float x, y;
+  float x, y;
 
-	float rotation;
-	Vector2 scale;
+  float rotation;
+  Vector2 scale;
 
-	Material* material;
+  Material* material;
 };
 
 } // namespace three

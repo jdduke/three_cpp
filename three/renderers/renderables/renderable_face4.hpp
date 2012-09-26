@@ -7,7 +7,7 @@ namespace three {
 
 class RenderableFace4 : public RenderableFace {
 public:
-	RenderableFace4() : RenderableFace( THREE::Face4 ) { }
+  RenderableFace4() : RenderableFace( THREE::Face4 ) { }
 };
 
 } // namespace three

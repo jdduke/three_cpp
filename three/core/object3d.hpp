@@ -25,103 +25,103 @@ namespace three {
 class Object3D : NonCopyable {
 public:
 
-	typedef std::shared_ptr<Object3D> Ptr;
+  typedef std::shared_ptr<Object3D> Ptr;
 
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-	virtual THREE::Type type() const { return THREE::Object3D; }
+  virtual THREE::Type type() const { return THREE::Object3D; }
 
-	virtual void visit( Visitor& v ) = 0;
-	virtual void visit( ConstVisitor& v ) const = 0;
+  virtual void visit( Visitor& v ) = 0;
+  virtual void visit( ConstVisitor& v ) const = 0;
 
-	virtual ~Object3D() { }
+  virtual ~Object3D() { }
 
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-	int id;
+  int id;
 
-	std::string name;
+  std::string name;
 
-	//properties = {};
+  //properties = {};
 
-	Object3D* parent;
-	std::vector<Object3D::Ptr> children;
+  Object3D* parent;
+  std::vector<Object3D::Ptr> children;
 
-	Vector3 up;
+  Vector3 up;
 
-	Vector3 position;
-	Vector3 rotation;
-	THREE::Order eulerOrder;
-	Vector3 scale;
+  Vector3 position;
+  Vector3 rotation;
+  THREE::Order eulerOrder;
+  Vector3 scale;
 
-	float renderDepth;
+  float renderDepth;
 
-	bool rotationAutoUpdate;
+  bool rotationAutoUpdate;
 
-	Matrix4 matrix;
-	Matrix4 matrixWorld;
-	mutable Matrix4 matrixRotationWorld;
+  Matrix4 matrix;
+  Matrix4 matrixWorld;
+  mutable Matrix4 matrixRotationWorld;
 
-	bool matrixAutoUpdate;
-	bool matrixWorldNeedsUpdate;
+  bool matrixAutoUpdate;
+  bool matrixWorldNeedsUpdate;
 
-	Quaternion quaternion;
-	bool useQuaternion;
+  Quaternion quaternion;
+  bool useQuaternion;
 
-	float boundRadius;
-	float boundRadiusScale;
+  float boundRadius;
+  float boundRadiusScale;
 
-	bool visible;
+  bool visible;
 
-	bool castShadow;
-	bool receiveShadow;
+  bool castShadow;
+  bool receiveShadow;
 
-	bool frustumCulled;
+  bool frustumCulled;
 
-	bool sortParticles;
+  bool sortParticles;
 
-	bool useVertexTexture;
-	std::vector<Bone> bones;
-	std::vector<Matrix4> boneMatrices;
-	Texture::Ptr boneTexture;
-	int boneTextureWidth, boneTextureHeight;
+  bool useVertexTexture;
+  std::vector<Bone> bones;
+  std::vector<Matrix4> boneMatrices;
+  Texture::Ptr boneTexture;
+  int boneTextureWidth, boneTextureHeight;
 
-	int morphTargetBase;
-	std::vector<int> morphTargetForcedOrder;
+  int morphTargetBase;
+  std::vector<int> morphTargetForcedOrder;
 
-	Material::Ptr material;
-	Geometry::Ptr geometry;
+  Material::Ptr material;
+  Geometry::Ptr geometry;
 
-	struct GLData {
-		GLData() : __glInit ( false ), __glActive ( false ) { }
+  struct GLData {
+    GLData() : __glInit( false ), __glActive( false ) { }
 
-		bool __glInit;
-		bool __glActive;
-		Matrix4 _modelViewMatrix;
-		Matrix4 _normalMatrix;
+    bool __glInit;
+    bool __glActive;
+    Matrix4 _modelViewMatrix;
+    Matrix4 _normalMatrix;
 
-		std::vector<float> _normalMatrixArray;
-		std::vector<float> _modelViewMatrixArray;
-		std::vector<float> _modelMatrixArray;
-		std::vector<int>   __glMorphTargetInfluences;
+    std::vector<float> _normalMatrixArray;
+    std::vector<float> _modelViewMatrixArray;
+    std::vector<float> _modelMatrixArray;
+    std::vector<int>   __glMorphTargetInfluences;
 
-		void clear() {
-			__glInit = false;
-			__glActive = false;
-			_modelViewMatrix.identity();
-			_normalMatrix.identity();
-			_normalMatrixArray.clear();
-			_modelViewMatrixArray.clear();
-			_modelMatrixArray.clear();
-			__glMorphTargetInfluences.clear();
-		}
-	} glData;
+    void clear() {
+      __glInit = false;
+      __glActive = false;
+      _modelViewMatrix.identity();
+      _normalMatrix.identity();
+      _normalMatrixArray.clear();
+      _modelViewMatrixArray.clear();
+      _modelMatrixArray.clear();
+      __glMorphTargetInfluences.clear();
+    }
+  } glData;
 
   struct ImmediateGLData {
     ImmediateGLData()
-      : count ( 0 ),
-        hasPositions ( false ), hasNormals( false ), hasUvs ( false ), hasColors ( false ),
-        __glVertexBuffer ( 0 ), __glNormalBuffer ( 0 ), __glUvBuffer ( 0 ), __glColorBuffer ( 0 ) { }
+      : count( 0 ),
+        hasPositions( false ), hasNormals( false ), hasUvs( false ), hasColors( false ),
+        __glVertexBuffer( 0 ), __glNormalBuffer( 0 ), __glUvBuffer( 0 ), __glColorBuffer( 0 ) { }
 
     int count;
     bool hasPositions, hasNormals, hasUvs, hasColors;
@@ -129,280 +129,280 @@ public:
     std::vector<float> positionArray, normalArray, uvArray, colorArray;
   } glImmediateData ;
 
-	typedef std::function<void(const Program&,void*,const Frustum&)> RenderCallback;
-	RenderCallback immediateRenderCallback;
+  typedef std::function<void( const Program&, void*, const Frustum& )> RenderCallback;
+  RenderCallback immediateRenderCallback;
 
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-	void applyMatrix ( const Matrix4& m ) {
+  void applyMatrix( const Matrix4& m ) {
 
-		matrix.multiply( m, matrix );
+    matrix.multiply( m, matrix );
 
-		scale = matrix.getScale();
+    scale = matrix.getScale();
 
-		auto mat = Matrix4().extractRotation( matrix );
-		rotation = mat.getEulerRotation( eulerOrder );
+    auto mat = Matrix4().extractRotation( matrix );
+    rotation = mat.getEulerRotation( eulerOrder );
 
-		position = matrix.getPosition();
+    position = matrix.getPosition();
 
-	}
+  }
 
-	void translate ( float distance, Vector3 axis ) {
+  void translate( float distance, Vector3 axis ) {
 
-		matrix.rotateAxis( axis );
-		position.addSelf( axis.multiplyScalar( distance ) );
+    matrix.rotateAxis( axis );
+    position.addSelf( axis.multiplyScalar( distance ) );
 
-	}
+  }
 
-	void translateX ( float distance ) {
+  void translateX( float distance ) {
 
-		translate( distance, Vector3( 1, 0, 0 ) );
+    translate( distance, Vector3( 1, 0, 0 ) );
 
-	}
+  }
 
-	void translateY ( float distance ) {
+  void translateY( float distance ) {
 
-		translate( distance, Vector3( 0, 1, 0 ) );
+    translate( distance, Vector3( 0, 1, 0 ) );
 
-	}
+  }
 
-	void translateZ ( float distance ) {
+  void translateZ( float distance ) {
 
-		translate( distance, Vector3( 0, 0, 1 ) );
+    translate( distance, Vector3( 0, 0, 1 ) );
 
-	}
+  }
 
-	void lookAt ( const Vector3& vector ) {
+  void lookAt( const Vector3& vector ) {
 
-		// TODO: Add hierarchy support.
+    // TODO: Add hierarchy support.
 
-		matrix.lookAt( vector, position, up );
+    matrix.lookAt( vector, position, up );
 
-		if ( rotationAutoUpdate ) {
+    if ( rotationAutoUpdate ) {
 
-			rotation = matrix.getEulerRotation( eulerOrder );
+      rotation = matrix.getEulerRotation( eulerOrder );
 
-		}
+    }
 
-	}
+  }
 
-	void add ( Ptr object ) {
+  void add( Ptr object ) {
 
-		if ( !object )
-			return;
+    if ( !object )
+      return;
 
-		if ( object.get() == this ) {
+    if ( object.get() == this ) {
 
-			console().warn( "Three.Object3D.add: An object can't be added as a child of itself." );
-			return;
+      console().warn( "Three.Object3D.add: An object can't be added as a child of itself." );
+      return;
 
-		}
+    }
 
-		if ( object->parent != nullptr ) {
+    if ( object->parent != nullptr ) {
 
-			object->parent->remove( object );
+      object->parent->remove( object );
 
-		}
+    }
 
-		object->parent = this;
-		children.push_back( object );
+    object->parent = this;
+    children.push_back( object );
 
-		// add to scene
+    // add to scene
 
-		auto scene = this;
+    auto scene = this;
 
-		while ( scene->parent != nullptr ) {
+    while ( scene->parent != nullptr ) {
 
-			scene = scene->parent;
+      scene = scene->parent;
 
-		}
+    }
 
-		if ( scene != nullptr )  {
+    if ( scene != nullptr )  {
 
-			scene->__addObject( object );
+      scene->__addObject( object );
 
-		}
+    }
 
-	}
+  }
 
-	void remove ( Ptr object ) {
+  void remove( Ptr object ) {
 
-		auto index = std::find( children.begin(), children.end(), object );
+    auto index = std::find( children.begin(), children.end(), object );
 
-		if ( index != children.end() ) {
+    if ( index != children.end() ) {
 
-			object->parent = nullptr;
-			children.erase( index );
+      object->parent = nullptr;
+      children.erase( index );
 
-			// remove from scene
+      // remove from scene
 
-			auto scene = this;
+      auto scene = this;
 
-			while ( scene->parent != nullptr ) {
+      while ( scene->parent != nullptr ) {
 
-				scene = scene->parent;
+        scene = scene->parent;
 
-			}
+      }
 
-			if ( scene != nullptr ) {
+      if ( scene != nullptr ) {
 
-				scene->__removeObject( object );
+        scene->__removeObject( object );
 
-			}
+      }
 
-		}
+    }
 
-	}
+  }
 
-	Ptr getChildByName ( const std::string& name, bool recursive ) {
+  Ptr getChildByName( const std::string& name, bool recursive ) {
 
-		for ( auto& child : children ) {
+for ( auto & child : children ) {
 
-			if ( child->name == name ) {
+      if ( child->name == name ) {
 
-				return child;
+        return child;
 
-			}
+      }
 
-			if ( recursive ) {
+      if ( recursive ) {
 
-				auto recursive_child = child->getChildByName( name, recursive );
+        auto recursive_child = child->getChildByName( name, recursive );
 
-				if ( recursive_child ) {
+        if ( recursive_child ) {
 
-					return recursive_child;
+          return recursive_child;
 
-				}
+        }
 
-			}
+      }
 
-		}
+    }
 
-		return Object3D::Ptr();
+    return Object3D::Ptr();
 
-	}
+  }
 
-	void updateMatrix () {
+  void updateMatrix() {
 
-		matrix.setPosition( position );
+    matrix.setPosition( position );
 
-		if ( useQuaternion )  {
+    if ( useQuaternion )  {
 
-			matrix.setRotationFromQuaternion( quaternion );
+      matrix.setRotationFromQuaternion( quaternion );
 
-		} else {
+    } else {
 
-			matrix.setRotationFromEuler( rotation, eulerOrder );
+      matrix.setRotationFromEuler( rotation, eulerOrder );
 
-		}
+    }
 
-		if ( scale.x != 1 || scale.y != 1 || scale.z != 1 ) {
+    if ( scale.x != 1 || scale.y != 1 || scale.z != 1 ) {
 
-			matrix.scale( scale );
-			boundRadiusScale = std::max( scale.x, std::max( scale.y, scale.z ) );
+      matrix.scale( scale );
+      boundRadiusScale = std::max( scale.x, std::max( scale.y, scale.z ) );
 
-		}
+    }
 
-		matrixWorldNeedsUpdate = true;
+    matrixWorldNeedsUpdate = true;
 
-	}
+  }
 
-	void updateMatrixWorld ( bool force = false ) {
+  void updateMatrixWorld( bool force = false ) {
 
-		if ( matrixAutoUpdate ) updateMatrix();
+    if ( matrixAutoUpdate ) updateMatrix();
 
-		if ( matrixWorldNeedsUpdate || force ) {
+    if ( matrixWorldNeedsUpdate || force ) {
 
-			if ( parent != nullptr ) {
+      if ( parent != nullptr ) {
 
-				matrixWorld.multiply( parent->matrixWorld, matrix );
+        matrixWorld.multiply( parent->matrixWorld, matrix );
 
-			} else {
+      } else {
 
-				matrixWorld.copy( matrix );
+        matrixWorld.copy( matrix );
 
-			}
+      }
 
-			matrixWorldNeedsUpdate = false;
+      matrixWorldNeedsUpdate = false;
 
-			force = true;
+      force = true;
 
-		}
+    }
 
-		// update children
+    // update children
 
-		for ( auto& child : children ) {
+for ( auto & child : children ) {
 
-			child->updateMatrixWorld( force );
+      child->updateMatrixWorld( force );
 
-		}
+    }
 
-	}
+  }
 
-	Vector3 worldToLocal ( const Vector3& vector ) {
+  Vector3 worldToLocal( const Vector3& vector ) {
 
-		return Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
+    return Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
 
-	}
+  }
 
-	Vector3 localToWorld ( const Vector3& vector ) {
+  Vector3 localToWorld( const Vector3& vector ) {
 
-		return matrixWorld.multiplyVector3( vector );
+    return matrixWorld.multiplyVector3( vector );
 
-	}
+  }
 
-	void render ( const std::function<void(Object3D&)> renderCallback ) {
-		if ( renderCallback ) {
-			renderCallback ( *this );
-		}
-	}
+  void render( const std::function<void( Object3D& )> renderCallback ) {
+    if ( renderCallback ) {
+      renderCallback( *this );
+    }
+  }
 
-/*
-	clone: function () {
+  /*
+    clone: function () {
 
-		// TODO
+      // TODO
 
-	}
-*/
+    }
+  */
 
 protected:
 
-	Object3D ( Material::Ptr material = Material::Ptr(),
-	           Geometry::Ptr geometry = Geometry::Ptr() )
-	: id ( Object3DCount()++ ),
-	parent ( nullptr ),
-	up ( 0, 1, 0 ),
-	eulerOrder ( THREE::XYZ ),
-	scale ( 1, 1, 1 ),
-	renderDepth ( 0 ),
-	rotationAutoUpdate ( true ),
-	matrixAutoUpdate ( true ),
-	matrixWorldNeedsUpdate ( true ),
-	useQuaternion ( false ),
-	boundRadius ( 0.0f ),
-	boundRadiusScale ( 1.0f ),
-	visible ( true ),
-	castShadow ( false ),
-	receiveShadow ( false ),
-	frustumCulled ( true ),
-	sortParticles ( false ),
-	useVertexTexture ( false ),
-	boneTextureWidth ( 0 ),
-	boneTextureHeight ( 0 ),
-	morphTargetBase ( -1 ),
-	material ( material ),
-	geometry ( geometry ) { }
+  Object3D( Material::Ptr material = Material::Ptr(),
+            Geometry::Ptr geometry = Geometry::Ptr() )
+    : id( Object3DCount()++ ),
+      parent( nullptr ),
+      up( 0, 1, 0 ),
+      eulerOrder( THREE::XYZ ),
+      scale( 1, 1, 1 ),
+      renderDepth( 0 ),
+      rotationAutoUpdate( true ),
+      matrixAutoUpdate( true ),
+      matrixWorldNeedsUpdate( true ),
+      useQuaternion( false ),
+      boundRadius( 0.0f ),
+      boundRadiusScale( 1.0f ),
+      visible( true ),
+      castShadow( false ),
+      receiveShadow( false ),
+      frustumCulled( true ),
+      sortParticles( false ),
+      useVertexTexture( false ),
+      boneTextureWidth( 0 ),
+      boneTextureHeight( 0 ),
+      morphTargetBase( -1 ),
+      material( material ),
+      geometry( geometry ) { }
 
-	virtual void __addObject(Ptr& object) { }
+  virtual void __addObject( Ptr& object ) { }
 
-	virtual void __removeObject(Ptr& object) { }
+  virtual void __removeObject( Ptr& object ) { }
 
 private:
 
-	static int& Object3DCount() {
-		static int sObject3DCount = 0;
-		return sObject3DCount;
-	}
+  static int& Object3DCount() {
+    static int sObject3DCount = 0;
+    return sObject3DCount;
+  }
 
 };
 

@@ -2,35 +2,35 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-THREE.LoadingMonitor = function () {
+THREE.LoadingMonitor = function() {
 
-	THREE.EventTarget.call( this );
+  THREE.EventTarget.call( this );
 
-	var scope = this;
+  var scope = this;
 
-	var loaded = 0;
-	var total = 0;
+  var loaded = 0;
+  var total = 0;
 
-	var onLoad = function ( event ) {
+  var onLoad = function( event ) {
 
-		loaded ++;
+    loaded ++;
 
-		scope.dispatchEvent( { type: 'progress', loaded: loaded, total: total } );
+scope.dispatchEvent( { type: 'progress', loaded: loaded, total: total } );
 
-		if ( loaded === total ) {
+    if ( loaded == = total ) {
 
-			scope.dispatchEvent( { type: 'load' } );
+scope.dispatchEvent( { type: 'load' } );
 
-		}
+    }
 
-	};
+  };
 
-	this.add = function ( loader ) {
+  this.add = function( loader ) {
 
-		total ++;
+    total ++;
 
-		loader.addEventListener( 'load', onLoad, false );
+    loader.addEventListener( 'load', onLoad, false );
 
-	};
+  };
 
 };

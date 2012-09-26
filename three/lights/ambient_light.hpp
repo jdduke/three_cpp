@@ -10,15 +10,15 @@ namespace three {
 class AmbientLight : public Light {
 public:
 
-    typedef std::shared_ptr<AmbientLight> Ptr;
+  typedef std::shared_ptr<AmbientLight> Ptr;
 
-    static Ptr create( int hex ) { return make_shared<AmbientLight>( hex ); }
+  static Ptr create( int hex ) { return make_shared<AmbientLight>( hex ); }
 
-    virtual THREE::Type type() const { return THREE::AmbientLight; }
+  virtual THREE::Type type() const { return THREE::AmbientLight; }
 
 protected:
 
-    AmbientLight( int hex ) : Light( hex ) { }
+  AmbientLight( int hex ) : Light( hex ) { }
 
 };
 

@@ -7,17 +7,17 @@ namespace three {
 
 struct GLRenderTargetBuffer : NonCopyable {
 
-    typedef unsigned GLBuffer;
+  typedef unsigned GLBuffer;
 
-    GLBuffer __glTexture;
-    std::vector<GLBuffer> __glFramebuffer;
-    std::vector<GLBuffer> __glRenderbuffer;
+  GLBuffer __glTexture;
+  std::vector<GLBuffer> __glFramebuffer;
+  std::vector<GLBuffer> __glRenderbuffer;
 
-    mutable float __oldAnisotropy;
+  mutable float __oldAnisotropy;
 
-    GLRenderTargetBuffer() 
-        : __glTexture ( 0 ),
-          __oldAnisotropy ( -1 ) { }
+  GLRenderTargetBuffer()
+    : __glTexture( 0 ),
+      __oldAnisotropy( -1 ) { }
 
 };
 

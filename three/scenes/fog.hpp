@@ -10,12 +10,12 @@ namespace three {
 class Fog : public IFog {
 public:
 
-	Fog ( int hex, float near = 1, float far = 1000 )
-	 : IFog ( hex ), near ( near ), far ( far ) { }
+  Fog( int hex, float near = 1, float far = 1000 )
+    : IFog( hex ), near( near ), far( far ) { }
 
-	THREE::FogType type() const	{ return THREE::Fog; }
+  THREE::FogType type() const { return THREE::Fog; }
 
-	float near, far;
+  float near, far;
 
 };
 

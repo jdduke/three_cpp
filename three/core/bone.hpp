@@ -10,22 +10,22 @@ namespace three {
 
 class Bone {
 
-    Bone( std::string name,
-          Vector3 position,
-          Quaternion quaternion,
-          bool useQuaternion = true,
-          Vector3 scale = Vector3(1, 1, 1) )
-    : name ( name ),
-      position ( position ),
-      quaternion ( quaternion ),
-      useQuaternion ( useQuaternion ),
-      scale ( scale ) { }
+  Bone( std::string name,
+        Vector3 position,
+        Quaternion quaternion,
+        bool useQuaternion = true,
+        Vector3 scale = Vector3( 1, 1, 1 ) )
+    : name( name ),
+      position( position ),
+      quaternion( quaternion ),
+      useQuaternion( useQuaternion ),
+      scale( scale ) { }
 
-    std::string name;
-    Vector3 position;
-    Quaternion quaternion;
-    bool useQuaternion;
-    Vector3 scale;
+  std::string name;
+  Vector3 position;
+  Quaternion quaternion;
+  bool useQuaternion;
+  Vector3 scale;
 
 };
 

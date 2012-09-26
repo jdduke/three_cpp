@@ -10,35 +10,35 @@ namespace three {
 class MeshDepthMaterial : public Material {
 public:
 
-	typedef std::shared_ptr<MeshDepthMaterial> Ptr;
+  typedef std::shared_ptr<MeshDepthMaterial> Ptr;
 
-	static Ptr create( const Parameters& parameters = Parameters() ) {
-		return three::make_shared<MeshDepthMaterial>( parameters );
-	}
+  static Ptr create( const Parameters& parameters = Parameters() ) {
+    return three::make_shared<MeshDepthMaterial>( parameters );
+  }
 
-	virtual THREE::MaterialType type() const { return THREE::MeshDepthMaterial; }
+  virtual THREE::MaterialType type() const { return THREE::MeshDepthMaterial; }
 
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-	Ptr clone ( ) {
-		return Material::clone( *this );
-	}
+  Ptr clone( ) {
+    return Material::clone( *this );
+  }
 
 protected:
 
-	MeshDepthMaterial ( const Parameters& parameters )
-	  : Material() {
-		setParameters( parameters, DefaultKeys() );
-	}
+  MeshDepthMaterial( const Parameters& parameters )
+    : Material() {
+    setParameters( parameters, DefaultKeys() );
+  }
 
-	static const ParameterKeys& DefaultKeys() {
-		static std::array<std::string, 2> sKeys = {
-			"wireframe",
-			"wireframeLinewidth"
-		};
-		static ParameterKeys sKeysSet(sKeys.begin(), sKeys.end());
-		return sKeysSet;
-	}
+  static const ParameterKeys& DefaultKeys() {
+    static std::array<std::string, 2> sKeys = {
+      "wireframe",
+      "wireframeLinewidth"
+    };
+    static ParameterKeys sKeysSet( sKeys.begin(), sKeys.end() );
+    return sKeysSet;
+  }
 
 };
 

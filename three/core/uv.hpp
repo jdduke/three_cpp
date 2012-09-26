@@ -8,46 +8,46 @@ namespace three {
 class UV {
 public:
 
-	union {
-		struct { float u, v; };
-		float uv[2];
-	};
+  union {
+    struct { float u, v; };
+    float uv[2];
+  };
 
-	UV ( float u = 0, float v = 0 )
-		: u ( u ), v ( v ) { }
+  UV( float u = 0, float v = 0 )
+    : u( u ), v( v ) { }
 
-	UV& set ( float uIn, float vIn ) {
+  UV& set( float uIn, float vIn ) {
 
-		u = uIn;
-		v = vIn;
+    u = uIn;
+    v = vIn;
 
-		return *this;
+    return *this;
 
-	}
+  }
 
-	UV& copy ( const UV& uv ) {
+  UV& copy( const UV& uv ) {
 
-		u = uv.u;
-		v = uv.v;
+    u = uv.u;
+    v = uv.v;
 
-		return *this;
+    return *this;
 
-	}
+  }
 
-	UV& lerpSelf ( const UV& uv, float alpha ) {
+  UV& lerpSelf( const UV& uv, float alpha ) {
 
-		u += ( uv.u - u ) * alpha;
-		v += ( uv.v - v ) * alpha;
+    u += ( uv.u - u ) * alpha;
+    v += ( uv.v - v ) * alpha;
 
-		return *this;
+    return *this;
 
-	}
+  }
 
-	UV clone () {
+  UV clone() {
 
-		return UV ( *this );
+    return UV( *this );
 
-	}
+  }
 
 };
 

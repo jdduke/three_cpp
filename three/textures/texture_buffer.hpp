@@ -7,20 +7,20 @@ namespace three {
 
 struct TextureBuffer : NonCopyable {
 
-    typedef unsigned GLBuffer;
+  typedef unsigned GLBuffer;
 
-    GLBuffer __glTexture;
-    GLBuffer __glTextureCube;
+  GLBuffer __glTexture;
+  GLBuffer __glTextureCube;
 
-    bool __glInit;
+  bool __glInit;
 
-    mutable float __oldAnisotropy;
+  mutable float __oldAnisotropy;
 
-    TextureBuffer() 
-        : __glTexture ( 0 ),
-        __glTextureCube ( 0 ),
-        __glInit ( false ),
-        __oldAnisotropy ( -1 ) { }
+  TextureBuffer()
+    : __glTexture( 0 ),
+      __glTextureCube( 0 ),
+      __glInit( false ),
+      __oldAnisotropy( -1 ) { }
 
 };
 

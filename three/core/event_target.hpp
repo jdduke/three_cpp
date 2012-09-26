@@ -8,50 +8,50 @@ namespace three {
 class EventTarget {
 public:
 
-	// TODO: Implement
+  // TODO: Implement
 
-/*
-	var listeners = {};
+  /*
+    var listeners = {};
 
-	template < typename T >
-	void addEventListener ( type, listener ) {
+    template < typename T >
+    void addEventListener ( type, listener ) {
 
-		if ( listeners[ type ] === undefined ) {
+      if ( listeners[ type ] === undefined ) {
 
-			listeners[ type ] = [];
+        listeners[ type ] = [];
 
-		}
+      }
 
-		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+      if ( listeners[ type ].indexOf( listener ) === - 1 ) {
 
-			listeners[ type ].push( listener );
+        listeners[ type ].push( listener );
 
-		}
+      }
 
-	}
+    }
 
-	void dispatchEvent ( event ) {
+    void dispatchEvent ( event ) {
 
-		for ( var listener in listeners[ event.type ] ) {
+      for ( var listener in listeners[ event.type ] ) {
 
-			listeners[ event.type ][ listener ]( event );
+        listeners[ event.type ][ listener ]( event );
 
-		}
+      }
 
-	}
+    }
 
-	void removeEventListener ( type, listener ) {
+    void removeEventListener ( type, listener ) {
 
-		var index = listeners[ type ].indexOf( listener );
+      var index = listeners[ type ].indexOf( listener );
 
-		if ( index !== - 1 ) {
+      if ( index !== - 1 ) {
 
-			listeners[ type ].splice( index, 1 );
+        listeners[ type ].splice( index, 1 );
 
-		}
+      }
 
-	}
-*/
+    }
+  */
 
 };
 

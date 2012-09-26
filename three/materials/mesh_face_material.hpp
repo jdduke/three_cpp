@@ -10,31 +10,31 @@ namespace three {
 class MeshFaceMaterial : public Material {
 public:
 
-	typedef std::shared_ptr<MeshFaceMaterial> Ptr;
+  typedef std::shared_ptr<MeshFaceMaterial> Ptr;
 
-	static Ptr create( const Parameters& parameters = Parameters() ) {
-		return three::make_shared<MeshFaceMaterial>( parameters );
-	}
+  static Ptr create( const Parameters& parameters = Parameters() ) {
+    return three::make_shared<MeshFaceMaterial>( parameters );
+  }
 
-	virtual THREE::MaterialType type() const { return THREE::MeshFaceMaterial; }
+  virtual THREE::MaterialType type() const { return THREE::MeshFaceMaterial; }
 
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-	Ptr clone ( ) {
-		return Material::clone( *this );
-	}
+  Ptr clone( ) {
+    return Material::clone( *this );
+  }
 
 protected:
 
-	MeshFaceMaterial ( const Parameters& parameters )
-	  : Material() {
-		setParameters( parameters, DefaultKeys() );
-	}
+  MeshFaceMaterial( const Parameters& parameters )
+    : Material() {
+    setParameters( parameters, DefaultKeys() );
+  }
 
-	static const ParameterKeys& DefaultKeys() {
-		static ParameterKeys sKeysSet;
-		return sKeysSet;
-	}
+  static const ParameterKeys& DefaultKeys() {
+    static ParameterKeys sKeysSet;
+    return sKeysSet;
+  }
 
 };
 

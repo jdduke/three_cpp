@@ -10,55 +10,55 @@ namespace anim {
 
 class AnimFrameRequest : public NonCopyable {
 public:
-    explicit AnimFrameRequest( float frameRate = 60 )
-     : frameTime ( 1.f / frameRate ),
-       lastTime ( clock.getElapsedTime() ) { }
+  explicit AnimFrameRequest( float frameRate = 60 )
+    : frameTime( 1.f / frameRate ),
+      lastTime( clock.getElapsedTime() ) { }
 
-    typedef std::function<bool(float)> Callback;
+  typedef std::function<bool( float )> Callback;
 
-    bool operator() (const Callback& callback) {
+  bool operator()( const Callback& callback ) {
 
-        auto time = elapsedTime();
-        auto deltaTime = ( time - lastTime );
-        auto sleepTime = frameTime - deltaTime;
+    auto time = elapsedTime();
+    auto deltaTime = ( time - lastTime );
+    auto sleepTime = frameTime - deltaTime;
 
-        if ( sleepTime > 0 ) {
-            std::this_thread::sleep_for( std::chrono::milliseconds( (int)(sleepTime * 1000) ) );
-            deltaTime = frameTime;
-        }
-
-        lastTime = time;
-
-        return callback( deltaTime );
-
+    if ( sleepTime > 0 ) {
+      std::this_thread::sleep_for( std::chrono::milliseconds( ( int )( sleepTime * 1000 ) ) );
+      deltaTime = frameTime;
     }
 
-    float elapsedTime() {
-        return clock.getElapsedTime();
-    }
+    lastTime = time;
 
-    void reset() {
-        lastTime = 0;
-        clock.stop();
-    }
+    return callback( deltaTime );
+
+  }
+
+  float elapsedTime() {
+    return clock.getElapsedTime();
+  }
+
+  void reset() {
+    lastTime = 0;
+    clock.stop();
+  }
 
 private:
-    Clock clock;
-    float frameTime;
-    float lastTime;
+  Clock clock;
+  float frameTime;
+  float lastTime;
 };
 
 /////////////////////////////////////////////////////////////////////////
 
-typedef std::function<bool(float)> Update;
-typedef std::function<bool(float)> Render;
+typedef std::function<bool( float )> Update;
+typedef std::function<bool( float )> Render;
 
-void gameLoop(Update update, Render render) {
+void gameLoop( Update update, Render render ) {
 
   anim::AnimFrameRequest requestAnimFrame;
 
   while ( requestAnimFrame( [&]( float deltaTime ) {
-    return update( deltaTime ) && render( deltaTime );
+  return update( deltaTime ) && render( deltaTime );
   } ) );
 
 }

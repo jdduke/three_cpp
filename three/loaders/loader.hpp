@@ -13,11 +13,11 @@ namespace three {
 class Loader : NonCopyable {
 public:
 
-  Loader( bool showStatus = true ) 
-    : showStatus ( showStatus ) {
+  Loader( bool showStatus = true )
+    : showStatus( showStatus ) {
 
-      if ( showStatus )
-        onStatus = [](const char* status) { console().log( status ); };
+    if ( showStatus )
+      onStatus = []( const char * status ) { console().log( status ); };
 
   }
 
@@ -25,10 +25,10 @@ protected:
 
   bool showStatus;
 
-  typedef std::function<void(const char*)> StatusCallback;
+  typedef std::function<void( const char* )> StatusCallback;
   StatusCallback onStatus;
 
-  typedef std::function<void(void)> Callback;
+  typedef std::function<void( void )> Callback;
   Callback onLoadStart;
   Callback onLoadProgress;
   Callback onLoadComplete;
@@ -40,18 +40,18 @@ protected:
     float loaded;
   };
 
-  void updateProgress ( Progress progress ) {
+  void updateProgress( Progress progress ) {
 
     std::stringstream message( "Loaded " );
 
     if ( progress.total ) {
-      message << std::setprecision(0) << 100.f * progress.loaded / progress.total << "%";
+      message << std::setprecision( 0 ) << 100.f* progress.loaded / progress.total << "%";
     } else {
-      message << std::setprecision(2) << ( progress.loaded / 1000 ) << " KB";
+      message << std::setprecision( 2 ) << ( progress.loaded / 1000 ) << " KB";
     }
 
     if ( onStatus )
-      onStatus ( message.str().c_str() );
+      onStatus( message.str().c_str() );
 
   }
 
@@ -65,10 +65,10 @@ protected:
 
   template < typename Scope >
   bool hasNormals( Scope& scope ) {
-     for( auto& m : scope.materials ) {
-       if ( m->type() == THREE::ShaderMaterial ) return true;
-     }
-     return false;
+for ( auto & m : scope.materials ) {
+      if ( m->type() == THREE::ShaderMaterial ) return true;
+    }
+    return false;
   }
 
 
@@ -77,330 +77,330 @@ protected:
     Material::Ptr material;
 
     auto is_pow2 = []( int n ) {
-      const auto l = Math::log( (float)n ) / Math::LN2;
-      return (int)Math::floor( l ) == l;
+      const auto l = Math::log( ( float )n ) / Math::LN2;
+      return ( int )Math::floor( l ) == l;
     };
 
     auto nearest_pow2 = []( int n ) {
-      const auto l = Math::log( (float)n ) / Math::LN2;
-      return (int)Math::pow( (float)2, Math::round( l ) );
+      const auto l = Math::log( ( float )n ) / Math::LN2;
+      return ( int )Math::pow( ( float )2, Math::round( l ) );
     };
 
 #ifdef TODO_CREATE_MATERIAL
     function load_image( where, url ) {
 
-                  var image = new Image();
+      var image = new Image();
 
-                  image.onload = function () {
+      image.onload = function() {
 
-                    if ( !is_pow2( this.width ) || !is_pow2( this.height ) ) {
+        if ( !is_pow2( this.width ) || !is_pow2( this.height ) ) {
 
-                      var width = nearest_pow2( this.width );
-                      var height = nearest_pow2( this.height );
+          var width = nearest_pow2( this.width );
+          var height = nearest_pow2( this.height );
 
-                      where.image.width = width;
-                      where.image.height = height;
-                      where.image.getContext( '2d' ).drawImage( this, 0, 0, width, height );
+          where.image.width = width;
+          where.image.height = height;
+          where.image.getContext( '2d' ).drawImage( this, 0, 0, width, height );
 
-                    } else {
+        } else {
 
-                      where.image = this;
+          where.image = this;
 
-                    }
+        }
 
-                    where.needsUpdate = true;
+        where.needsUpdate = true;
 
-                  };
+      };
 
-                  image.crossOrigin = _this.crossOrigin;
-                  image.src = url;
+      image.crossOrigin = _this.crossOrigin;
+      image.src = url;
 
-                }
+    }
 
-                function create_texture( where, name, sourceFile, repeat, offset, wrap, anisotropy ) {
+    function create_texture( where, name, sourceFile, repeat, offset, wrap, anisotropy ) {
 
-                  var isCompressed = sourceFile.toLowerCase().endsWith( ".dds" );
-                  var fullPath = texturePath + "/" + sourceFile;
+      var isCompressed = sourceFile.toLowerCase().endsWith( ".dds" );
+      var fullPath = texturePath + "/" + sourceFile;
 
-                  if ( isCompressed ) {
+      if ( isCompressed ) {
 
-                    var texture = THREE.ImageUtils.loadCompressedTexture( fullPath );
+        var texture = THREE.ImageUtils.loadCompressedTexture( fullPath );
 
-                    where[ name ] = texture;
+        where[ name ] = texture;
 
-                  } else {
+      } else {
 
-                    var texture = document.createElement( 'canvas' );
+        var texture = document.createElement( 'canvas' );
 
-                    where[ name ] = new THREE.Texture( texture );
+        where[ name ] = new THREE.Texture( texture );
 
-                  }
+      }
 
-                  where[ name ].sourceFile = sourceFile;
+      where[ name ].sourceFile = sourceFile;
 
-                  if( repeat ) {
+      if ( repeat ) {
 
-                    where[ name ].repeat.set( repeat[ 0 ], repeat[ 1 ] );
+        where[ name ].repeat.set( repeat[ 0 ], repeat[ 1 ] );
 
-                    if ( repeat[ 0 ] !== 1 ) where[ name ].wrapS = THREE.RepeatWrapping;
-                    if ( repeat[ 1 ] !== 1 ) where[ name ].wrapT = THREE.RepeatWrapping;
+        if ( repeat[ 0 ] != = 1 ) where[ name ].wrapS = THREE.RepeatWrapping;
+        if ( repeat[ 1 ] != = 1 ) where[ name ].wrapT = THREE.RepeatWrapping;
 
-                  }
+      }
 
-                  if ( offset ) {
+      if ( offset ) {
 
-                    where[ name ].offset.set( offset[ 0 ], offset[ 1 ] );
+        where[ name ].offset.set( offset[ 0 ], offset[ 1 ] );
 
-                  }
+      }
 
-                  if ( wrap ) {
+      if ( wrap ) {
 
-                    var wrapMap = {
-                      "repeat": THREE.RepeatWrapping,
-                      "mirror": THREE.MirroredRepeatWrapping
-                    }
+        var wrapMap = {
+"repeat": THREE.RepeatWrapping,
+"mirror": THREE.MirroredRepeatWrapping
+        }
 
-                    if ( wrapMap[ wrap[ 0 ] ] !== undefined ) where[ name ].wrapS = wrapMap[ wrap[ 0 ] ];
-                    if ( wrapMap[ wrap[ 1 ] ] !== undefined ) where[ name ].wrapT = wrapMap[ wrap[ 1 ] ];
+        if ( wrapMap[ wrap[ 0 ] ] != = undefined ) where[ name ].wrapS = wrapMap[ wrap[ 0 ] ];
+        if ( wrapMap[ wrap[ 1 ] ] != = undefined ) where[ name ].wrapT = wrapMap[ wrap[ 1 ] ];
 
-                  }
+      }
 
-                  if ( anisotropy ) {
+      if ( anisotropy ) {
 
-                    where[ name ].anisotropy = anisotropy;
+        where[ name ].anisotropy = anisotropy;
 
-                  }
+      }
 
-                  if ( ! isCompressed ) {
+      if ( ! isCompressed ) {
 
-                    load_image( where[ name ], fullPath );
+        load_image( where[ name ], fullPath );
 
-                  }
+      }
 
-                }
+    }
 
-                function rgb2hex( rgb ) {
+    function rgb2hex( rgb ) {
 
-                  return ( rgb[ 0 ] * 255 << 16 ) + ( rgb[ 1 ] * 255 << 8 ) + rgb[ 2 ] * 255;
+      return ( rgb[ 0 ] * 255 << 16 ) + ( rgb[ 1 ] * 255 << 8 ) + rgb[ 2 ] * 255;
 
-                }
+    }
 
-                // defaults
+    // defaults
 
-                var mtype = "MeshLambertMaterial";
-                var mpars = { color: 0xeeeeee, opacity: 1.0, map: null, lightMap: null, normalMap: null, bumpMap: null, wireframe: false };
+    var mtype = "MeshLambertMaterial";
+var mpars = { color: 0xeeeeee, opacity: 1.0, map: null, lightMap: null, normalMap: null, bumpMap: null, wireframe: false };
 
-                // parameters from model file
+    // parameters from model file
 
-                if ( m.shading ) {
+    if ( m.shading ) {
 
-                  var shading = m.shading.toLowerCase();
+      var shading = m.shading.toLowerCase();
 
-                  if ( shading === "phong" ) mtype = "MeshPhongMaterial";
-                  else if ( shading === "basic" ) mtype = "MeshBasicMaterial";
+      if ( shading == = "phong" ) mtype = "MeshPhongMaterial";
+      else if ( shading == = "basic" ) mtype = "MeshBasicMaterial";
 
-                }
+    }
 
-                if ( m.blending !== undefined && THREE[ m.blending ] !== undefined ) {
+    if ( m.blending != = undefined && THREE[ m.blending ] != = undefined ) {
 
-                  mpars.blending = THREE[ m.blending ];
+      mpars.blending = THREE[ m.blending ];
 
-                }
+    }
 
-                if ( m.transparent !== undefined || m.opacity < 1.0 ) {
+    if ( m.transparent != = undefined || m.opacity < 1.0 ) {
 
-                  mpars.transparent = m.transparent;
+      mpars.transparent = m.transparent;
 
-                }
+    }
 
-                if ( m.depthTest !== undefined ) {
+    if ( m.depthTest != = undefined ) {
 
-                  mpars.depthTest = m.depthTest;
+      mpars.depthTest = m.depthTest;
 
-                }
+    }
 
-                if ( m.depthWrite !== undefined ) {
+    if ( m.depthWrite != = undefined ) {
 
-                  mpars.depthWrite = m.depthWrite;
+      mpars.depthWrite = m.depthWrite;
 
-                }
+    }
 
-                if ( m.visible !== undefined ) {
+    if ( m.visible != = undefined ) {
 
-                  mpars.visible = m.visible;
+      mpars.visible = m.visible;
 
-                }
+    }
 
-                if ( m.flipSided !== undefined ) {
+    if ( m.flipSided != = undefined ) {
 
-                  mpars.side = THREE.BackSide;
+      mpars.side = THREE.BackSide;
 
-                }
+    }
 
-                if ( m.doubleSided !== undefined ) {
+    if ( m.doubleSided != = undefined ) {
 
-                  mpars.side = THREE.DoubleSide;
+      mpars.side = THREE.DoubleSide;
 
-                }
+    }
 
-                if ( m.wireframe !== undefined ) {
+    if ( m.wireframe != = undefined ) {
 
-                  mpars.wireframe = m.wireframe;
+      mpars.wireframe = m.wireframe;
 
-                }
+    }
 
-                if ( m.vertexColors !== undefined ) {
+    if ( m.vertexColors != = undefined ) {
 
-                  if ( m.vertexColors === "face" ) {
+      if ( m.vertexColors == = "face" ) {
 
-                    mpars.vertexColors = THREE.FaceColors;
+        mpars.vertexColors = THREE.FaceColors;
 
-                  } else if ( m.vertexColors ) {
+      } else if ( m.vertexColors ) {
 
-                    mpars.vertexColors = THREE.VertexColors;
+        mpars.vertexColors = THREE.VertexColors;
 
-                  }
+      }
 
-                }
+    }
 
-                // colors
+    // colors
 
-                if ( m.colorDiffuse ) {
+    if ( m.colorDiffuse ) {
 
-                  mpars.color = rgb2hex( m.colorDiffuse );
+      mpars.color = rgb2hex( m.colorDiffuse );
 
-                } else if ( m.DbgColor ) {
+    } else if ( m.DbgColor ) {
 
-                  mpars.color = m.DbgColor;
+      mpars.color = m.DbgColor;
 
-                }
+    }
 
-                if ( m.colorSpecular ) {
+    if ( m.colorSpecular ) {
 
-                  mpars.specular = rgb2hex( m.colorSpecular );
+      mpars.specular = rgb2hex( m.colorSpecular );
 
-                }
+    }
 
-                if ( m.colorAmbient ) {
+    if ( m.colorAmbient ) {
 
-                  mpars.ambient = rgb2hex( m.colorAmbient );
+      mpars.ambient = rgb2hex( m.colorAmbient );
 
-                }
+    }
 
-                // modifiers
+    // modifiers
 
-                if ( m.transparency ) {
+    if ( m.transparency ) {
 
-                  mpars.opacity = m.transparency;
+      mpars.opacity = m.transparency;
 
-                }
+    }
 
-                if ( m.specularCoef ) {
+    if ( m.specularCoef ) {
 
-                  mpars.shininess = m.specularCoef;
+      mpars.shininess = m.specularCoef;
 
-                }
+    }
 
-                // textures
+    // textures
 
-                if ( m.mapDiffuse && texturePath ) {
+    if ( m.mapDiffuse && texturePath ) {
 
-                  create_texture( mpars, "map", m.mapDiffuse, m.mapDiffuseRepeat, m.mapDiffuseOffset, m.mapDiffuseWrap, m.mapDiffuseAnisotropy );
+      create_texture( mpars, "map", m.mapDiffuse, m.mapDiffuseRepeat, m.mapDiffuseOffset, m.mapDiffuseWrap, m.mapDiffuseAnisotropy );
 
-                }
+    }
 
-                if ( m.mapLight && texturePath ) {
+    if ( m.mapLight && texturePath ) {
 
-                  create_texture( mpars, "lightMap", m.mapLight, m.mapLightRepeat, m.mapLightOffset, m.mapLightWrap, m.mapLightAnisotropy );
+      create_texture( mpars, "lightMap", m.mapLight, m.mapLightRepeat, m.mapLightOffset, m.mapLightWrap, m.mapLightAnisotropy );
 
-                }
+    }
 
-                if ( m.mapBump && texturePath ) {
+    if ( m.mapBump && texturePath ) {
 
-                  create_texture( mpars, "bumpMap", m.mapBump, m.mapBumpRepeat, m.mapBumpOffset, m.mapBumpWrap, m.mapBumpAnisotropy );
+      create_texture( mpars, "bumpMap", m.mapBump, m.mapBumpRepeat, m.mapBumpOffset, m.mapBumpWrap, m.mapBumpAnisotropy );
 
-                }
+    }
 
-                if ( m.mapNormal && texturePath ) {
+    if ( m.mapNormal && texturePath ) {
 
-                  create_texture( mpars, "normalMap", m.mapNormal, m.mapNormalRepeat, m.mapNormalOffset, m.mapNormalWrap, m.mapNormalAnisotropy );
+      create_texture( mpars, "normalMap", m.mapNormal, m.mapNormalRepeat, m.mapNormalOffset, m.mapNormalWrap, m.mapNormalAnisotropy );
 
-                }
+    }
 
-                if ( m.mapSpecular && texturePath ) {
+    if ( m.mapSpecular && texturePath ) {
 
-                  create_texture( mpars, "specularMap", m.mapSpecular, m.mapSpecularRepeat, m.mapSpecularOffset, m.mapSpecularWrap, m.mapSpecularAnisotropy );
+      create_texture( mpars, "specularMap", m.mapSpecular, m.mapSpecularRepeat, m.mapSpecularOffset, m.mapSpecularWrap, m.mapSpecularAnisotropy );
 
-                }
+    }
 
-                //
+    //
 
-                if ( m.mapBumpScale ) {
+    if ( m.mapBumpScale ) {
 
-                  mpars.bumpScale = m.mapBumpScale;
+      mpars.bumpScale = m.mapBumpScale;
 
-                }
+    }
 
-                // special case for normal mapped material
+    // special case for normal mapped material
 
-                if ( m.mapNormal ) {
+    if ( m.mapNormal ) {
 
-                  var shader = THREE.ShaderUtils.lib[ "normal" ];
-                  var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+      var shader = THREE.ShaderUtils.lib[ "normal" ];
+      var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
 
-                  uniforms[ "tNormal" ].value = mpars.normalMap;
+      uniforms[ "tNormal" ].value = mpars.normalMap;
 
-                  if ( m.mapNormalFactor ) {
+      if ( m.mapNormalFactor ) {
 
-                    uniforms[ "uNormalScale" ].value.set( m.mapNormalFactor, m.mapNormalFactor );
+        uniforms[ "uNormalScale" ].value.set( m.mapNormalFactor, m.mapNormalFactor );
 
-                  }
+      }
 
-                  if ( mpars.map ) {
+      if ( mpars.map ) {
 
-                    uniforms[ "tDiffuse" ].value = mpars.map;
-                    uniforms[ "enableDiffuse" ].value = true;
+        uniforms[ "tDiffuse" ].value = mpars.map;
+        uniforms[ "enableDiffuse" ].value = true;
 
-                  }
+      }
 
-                  if ( mpars.specularMap ) {
+      if ( mpars.specularMap ) {
 
-                    uniforms[ "tSpecular" ].value = mpars.specularMap;
-                    uniforms[ "enableSpecular" ].value = true;
+        uniforms[ "tSpecular" ].value = mpars.specularMap;
+        uniforms[ "enableSpecular" ].value = true;
 
-                  }
+      }
 
-                  if ( mpars.lightMap ) {
+      if ( mpars.lightMap ) {
 
-                    uniforms[ "tAO" ].value = mpars.lightMap;
-                    uniforms[ "enableAO" ].value = true;
+        uniforms[ "tAO" ].value = mpars.lightMap;
+        uniforms[ "enableAO" ].value = true;
 
-                  }
+      }
 
-                  // for the moment don't handle displacement texture
+      // for the moment don't handle displacement texture
 
-                  uniforms[ "uDiffuseColor" ].value.setHex( mpars.color );
-                  uniforms[ "uSpecularColor" ].value.setHex( mpars.specular );
-                  uniforms[ "uAmbientColor" ].value.setHex( mpars.ambient );
+      uniforms[ "uDiffuseColor" ].value.setHex( mpars.color );
+      uniforms[ "uSpecularColor" ].value.setHex( mpars.specular );
+      uniforms[ "uAmbientColor" ].value.setHex( mpars.ambient );
 
-                  uniforms[ "uShininess" ].value = mpars.shininess;
+      uniforms[ "uShininess" ].value = mpars.shininess;
 
-                  if ( mpars.opacity !== undefined ) {
+      if ( mpars.opacity != = undefined ) {
 
-                    uniforms[ "uOpacity" ].value = mpars.opacity;
+        uniforms[ "uOpacity" ].value = mpars.opacity;
 
-                  }
+      }
 
-                  var parameters = { fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader, uniforms: uniforms, lights: true, fog: true };
-                  var material = new THREE.ShaderMaterial( parameters );
+var parameters = { fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader, uniforms: uniforms, lights: true, fog: true };
+      var material = new THREE.ShaderMaterial( parameters );
 
-                } else {
+    } else {
 
-                  var material = new THREE[ mtype ]( mpars );
+      var material = new THREE[ mtype ]( mpars );
 
-                }
+    }
 
-                if ( m.DbgName !== undefined ) material.name = m.DbgName;
+    if ( m.DbgName != = undefined ) material.name = m.DbgName;
 #endif
     return material;
 

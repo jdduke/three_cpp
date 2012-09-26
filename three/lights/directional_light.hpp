@@ -10,76 +10,76 @@ namespace three {
 class DirectionalLight : public Light {
 public:
 
-    typedef std::shared_ptr<DirectionalLight> Ptr;
+  typedef std::shared_ptr<DirectionalLight> Ptr;
 
-    static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
-        return make_shared<DirectionalLight>( hex, intensity, distance );
-    }
+  static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
+    return make_shared<DirectionalLight>( hex, intensity, distance );
+  }
 
-    virtual THREE::Type type() const { return THREE::DirectionalLight; }
+  virtual THREE::Type type() const { return THREE::DirectionalLight; }
 
-    /////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-    Object3D* target;
+  Object3D* target;
 
-    float shadowCameraNear;
-    float shadowCameraFar;
+  float shadowCameraNear;
+  float shadowCameraFar;
 
-    float shadowCameraLeft;
-    float shadowCameraRight;
-    float shadowCameraTop;
-    float shadowCameraBottom;
+  float shadowCameraLeft;
+  float shadowCameraRight;
+  float shadowCameraTop;
+  float shadowCameraBottom;
 
-    bool shadowCameraVisible;
+  bool shadowCameraVisible;
 
-    float shadowBias;
-    float shadowDarkness;
+  float shadowBias;
+  float shadowDarkness;
 
-    int shadowMapWidth;
-    int shadowMapHeight;
+  int shadowMapWidth;
+  int shadowMapHeight;
 
-    // TODO:
-    /*
+  // TODO:
+  /*
 
-    this.shadowCascadeOffset = new THREE.Vector3( 0, 0, -1000 );
-    this.shadowCascadeCount = 2;
+  this.shadowCascadeOffset = new THREE.Vector3( 0, 0, -1000 );
+  this.shadowCascadeCount = 2;
 
-    this.shadowCascadeBias = [ 0, 0, 0 ];
-    this.shadowCascadeWidth = [ 512, 512, 512 ];
-    this.shadowCascadeHeight = [ 512, 512, 512 ];
+  this.shadowCascadeBias = [ 0, 0, 0 ];
+  this.shadowCascadeWidth = [ 512, 512, 512 ];
+  this.shadowCascadeHeight = [ 512, 512, 512 ];
 
-    this.shadowCascadeNearZ = [ -1.000, 0.990, 0.998 ];
-    this.shadowCascadeFarZ  = [  0.990, 0.998, 1.000 ];
+  this.shadowCascadeNearZ = [ -1.000, 0.990, 0.998 ];
+  this.shadowCascadeFarZ  = [  0.990, 0.998, 1.000 ];
 
-    this.shadowCascadeArray = [];
+  this.shadowCascadeArray = [];
 
-    //
+  //
 
-    this.shadowMap = null;
-    this.shadowMapSize = null;
-    this.shadowCamera = null;
-    this.shadowMatrix = null;
-    */
+  this.shadowMap = null;
+  this.shadowMapSize = null;
+  this.shadowCamera = null;
+  this.shadowMatrix = null;
+  */
 
-    /////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
 protected:
 
-    DirectionalLight ( int hex, float intensity, float distance )
-        : Light ( hex, intensity, distance ),
-        target ( nullptr ),
-        shadowCameraNear ( 50 ), shadowCameraFar ( 5000 ),
-        shadowCameraLeft ( -500 ), shadowCameraRight ( 500 ),
-        shadowCameraTop ( 500 ), shadowCameraBottom ( -500 ),
-        shadowCameraVisible ( false ),
-        shadowBias ( 0 ),
-        shadowDarkness ( 0.5 ),
-        shadowMapWidth ( 512 ),
-        shadowMapHeight ( 512 ) {
+  DirectionalLight( int hex, float intensity, float distance )
+    : Light( hex, intensity, distance ),
+      target( nullptr ),
+      shadowCameraNear( 50 ), shadowCameraFar( 5000 ),
+      shadowCameraLeft( -500 ), shadowCameraRight( 500 ),
+      shadowCameraTop( 500 ), shadowCameraBottom( -500 ),
+      shadowCameraVisible( false ),
+      shadowBias( 0 ),
+      shadowDarkness( 0.5 ),
+      shadowMapWidth( 512 ),
+      shadowMapHeight( 512 ) {
 
-            position.set ( 0, 1, 0 );
+    position.set( 0, 1, 0 );
 
-    }
+  }
 
 };
 

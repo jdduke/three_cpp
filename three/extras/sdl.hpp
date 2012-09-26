@@ -11,28 +11,28 @@ namespace sdl {
 
 bool initSDL( GLRenderer::Parameters& parameters ) {
 
-	if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
-		console().error() << "Error initializing SDL: " << SDL_GetError();
-		return false;
-	}
+  if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
+    console().error() << "Error initializing SDL: " << SDL_GetError();
+    return false;
+  }
 
-	console().log() << "SDL initialized";
+  console().log() << "SDL initialized";
 
-	if ( SDL_SetVideoMode( parameters.width, parameters.height, parameters.precision, SDL_OPENGL ) == NULL ) {
-		console().error() << "Error setting SDL video mode: " << SDL_GetError();
-		return false;
-	}
+  if ( SDL_SetVideoMode( parameters.width, parameters.height, parameters.precision, SDL_OPENGL ) == NULL ) {
+    console().error() << "Error setting SDL video mode: " << SDL_GetError();
+    return false;
+  }
 
-	console().log() << "SDL video initialized";
+  console().log() << "SDL video initialized";
 
-	SDL_WM_SetCaption( "Three.cpp", NULL );
+  SDL_WM_SetCaption( "Three.cpp", NULL );
 
-	return true;
+  return true;
 }
 
 bool swapBuffers() {
-	SDL_GL_SwapBuffers();
-	return true;
+  SDL_GL_SwapBuffers();
+  return true;
 }
 
 } // namespace sdl

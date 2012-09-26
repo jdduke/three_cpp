@@ -8,16 +8,16 @@ namespace three {
 class RenderableVertex {
 public:
 
-	Vector3 positionWorld;
-	Vector4 positionScreen;
+  Vector3 positionWorld;
+  Vector4 positionScreen;
 
-	bool visible;
+  bool visible;
 
-	RenderableVertex() : visible ( true ) { }
+  RenderableVertex() : visible( true ) { }
 
-	RenderableVertex& copy ( const RenderableVertex& vertex ) {
-		return (*this) = vertex;
-	}
+  RenderableVertex& copy( const RenderableVertex& vertex ) {
+    return ( *this ) = vertex;
+  }
 };
 
 } // namespace three

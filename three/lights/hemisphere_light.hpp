@@ -10,29 +10,29 @@ namespace three {
 class HemisphereLight : public Light {
 public:
 
-    typedef std::shared_ptr<HemisphereLight> Ptr;
+  typedef std::shared_ptr<HemisphereLight> Ptr;
 
-    static Ptr create( int skyColorHex, int groundColorHex, float intensity = 1 ) { 
-      return make_shared<HemisphereLight>( skyColorHex, groundColorHex, intensity );
-    }
+  static Ptr create( int skyColorHex, int groundColorHex, float intensity = 1 ) {
+    return make_shared<HemisphereLight>( skyColorHex, groundColorHex, intensity );
+  }
 
-    virtual THREE::Type type() const { return THREE::HemisphereLight; }
+  virtual THREE::Type type() const { return THREE::HemisphereLight; }
 
-    //////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
 
-    Color groundColor;
+  Color groundColor;
 
-    //////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
 
 protected:
 
-    HemisphereLight( int skyColorHex, int groundColorHex, float intensity) 
-      : Light( skyColorHex, intensity ),
-        groundColor ( groundColorHex ) {
+  HemisphereLight( int skyColorHex, int groundColorHex, float intensity )
+    : Light( skyColorHex, intensity ),
+      groundColor( groundColorHex ) {
 
-        position = Vector3( 0, 100, 0 );
+    position = Vector3( 0, 100, 0 );
 
-    }
+  }
 
 };
 

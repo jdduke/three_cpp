@@ -11,26 +11,26 @@ namespace three {
 class Particle : public Object3D {
 public:
 
-	typedef std::shared_ptr<Particle> Ptr;
+  typedef std::shared_ptr<Particle> Ptr;
 
-	static Ptr create( Material::Ptr material ) {
-		//return make_shared<Line>( geometry, material, lineType );
-		return Ptr( new Particle( material ) );
-	}
+  static Ptr create( Material::Ptr material ) {
+    //return make_shared<Line>( geometry, material, lineType );
+    return Ptr( new Particle( material ) );
+  }
 
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
-	virtual THREE::Type type() const { return THREE::Particle; }
+  virtual THREE::Type type() const { return THREE::Particle; }
 
-	virtual void visit( Visitor& v ) { v( *this ); }
-	virtual void visit( ConstVisitor& v ) const { v( *this ); }
+  virtual void visit( Visitor& v ) { v( *this ); }
+  virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 
 protected:
 
-	Particle ( Material::Ptr material )
-	 : Object3D( material ) { }
+  Particle( Material::Ptr material )
+    : Object3D( material ) { }
 
 };
 
