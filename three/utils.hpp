@@ -10,7 +10,7 @@
 namespace three {
 
 template < typename C >
-void grow( C& c, size_t size, float factor = 1.5f ) {
+inline void grow( C& c, size_t size, float factor = 1.5f ) {
   if ( c.size() < size )
     c.resize( ( int )( factor * size ) );
 }
@@ -18,6 +18,16 @@ void grow( C& c, size_t size, float factor = 1.5f ) {
 template < typename C, typename T >
 inline bool contains( const C& c, const T& elem ) {
   return std::find( c.begin(), c.end(), elem ) != c.end();
+}
+
+template < typename T >
+inline bool contains( const std::unordered_map<std::string, T>& c, const std::string& elem ) {
+  return c.find( elem ) != c.end();
+}
+
+template < typename T >
+inline bool contains( const std::unordered_map<std::string, T>& c, const char* elem ) {
+  return contains ( c, std::string( elem ) );
 }
 
 template < typename C, typename T >
@@ -38,6 +48,35 @@ inline bool push_unique( C& c, T && elem ) {
   }
   return false;
 }
+
+/////////////////////////////////////////////////////////////////////////
+
+template < typename T >
+inline std::array<T, 4> toArray( const T& t0, const T& t1, const T& t2, const T& t3 = T() ) {
+  std::array<T, 4> a = { t0, t1, t2, t3 };
+  return a;
+}
+
+template < typename T >
+void* toOffset( T t ) { return reinterpret_cast<void*>( t ); }
+
+inline int toInt( bool b ) { return b ? 1 : 0; }
+
+template < typename T, typename U >
+inline std::string toString( const T& t, const U& u ) {
+  std::stringstream ss;
+  ss << t << u;
+  return ss.str();
+}
+
+template < typename T, typename U >
+inline std::string toString( const std::pair<T, U>& p ) {
+  std::stringstream ss;
+  ss << p.first << "_" << p.second;
+  return ss.str();
+}
+
+/////////////////////////////////////////////////////////////////////////
 
 template < int I >
 struct Int2Type {

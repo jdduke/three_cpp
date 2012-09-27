@@ -50,7 +50,6 @@ public:
 
 protected:
 
-
   static bool loadJSON( JSONLoader& context,
                         const std::string& url,
                         const Callback& callback,

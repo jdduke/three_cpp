@@ -2,7 +2,8 @@
 #define THREE_SPHERE_GEOMETRY_HPP
 
 #include <three/core/geometry.hpp>
-
+#include <three/core/face3.hpp>
+#include <three/core/face4.hpp>
 #include <three/core/math.hpp>
 
 namespace three {
@@ -16,9 +17,9 @@ public:
                      float segmentsWidth = 8,
                      float segmentsHeight = 6,
                      float phiStart = 0,
-                     float phiLength = Math::PI * 2,
+                     float phiLength = Math::PI() * 2,
                      float thetaStart = 0,
-                     float thetaLength = Math::PI ) {
+                     float thetaLength = Math::PI() ) {
 
     auto geometry = make_shared<SphereGeometry>();
     geometry->initialize( radius,

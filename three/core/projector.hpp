@@ -163,7 +163,7 @@ public:
 
       }
 
-for ( auto & child : object.children ) {
+      for ( auto& child : object.children ) {
 
         projectObject( *child );
 
@@ -203,7 +203,7 @@ for ( auto & child : object.children ) {
 
       auto isFaceMaterial = object.material->type() == THREE::MeshFaceMaterial;
 
-for ( const auto & v : vertices ) {
+      for ( const auto& v : vertices ) {
 
         auto& vertex = p._vertices.next();
         vertex.positionWorld.copy( v.position );
@@ -415,7 +415,7 @@ for ( const auto & v : vertices ) {
 
     _renderData = projectGraph( scene, false );
 
-for ( auto & renderObject : _renderData.objects ) {
+    for ( auto& renderObject : _renderData.objects ) {
 
       auto& object = *renderObject.object;
 
@@ -431,7 +431,7 @@ for ( auto & renderObject : _renderData.objects ) {
 
     Vector4 _vector4;
 
-for ( auto & renderSprite : _renderData.sprites ) {
+    for ( auto& renderSprite : _renderData.sprites ) {
 
       auto& object = *renderSprite.object;
 
@@ -480,9 +480,7 @@ for ( auto & renderSprite : _renderData.sprites ) {
     }
 
     if ( sort ) {
-
       std::sort( _renderData.elements.begin(), _renderData.elements.end(), PainterSort() );
-
     }
 
     return _renderData;

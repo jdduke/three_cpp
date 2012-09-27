@@ -3,6 +3,8 @@
 
 #include <three/common.hpp>
 
+#include <unordered_map>
+
 namespace three {
 
 class CustomAttribute {

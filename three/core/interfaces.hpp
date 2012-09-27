@@ -1,6 +1,8 @@
 #ifndef THREE_INTERFACES_HPP
 #define THREE_INTERFACES_HPP
 
+#include <three/fwd.hpp>
+
 namespace three {
 
 class IFog {

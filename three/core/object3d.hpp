@@ -134,268 +134,33 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  void applyMatrix( const Matrix4& m ) {
+  THREE_DECL void applyMatrix( const Matrix4& m );
+  THREE_DECL void translate( float distance, Vector3 axis );
+  THREE_DECL void translateX( float distance );
+  THREE_DECL void translateY( float distance );
+  THREE_DECL void translateZ( float distance );
+  THREE_DECL void lookAt( const Vector3& vector );
 
-    matrix.multiply( m, matrix );
+  THREE_DECL void add( Ptr object );
+  THREE_DECL void remove( Ptr object );
 
-    scale = matrix.getScale();
+  THREE_DECL Ptr getChildByName( const std::string& name, bool recursive );
 
-    auto mat = Matrix4().extractRotation( matrix );
-    rotation = mat.getEulerRotation( eulerOrder );
+  THREE_DECL void updateMatrix();
+  THREE_DECL void updateMatrixWorld( bool force = false );
 
-    position = matrix.getPosition();
+  THREE_DECL Vector3 worldToLocal( const Vector3& vector );
+  THREE_DECL Vector3 localToWorld( const Vector3& vector );
 
-  }
-
-  void translate( float distance, Vector3 axis ) {
-
-    matrix.rotateAxis( axis );
-    position.addSelf( axis.multiplyScalar( distance ) );
-
-  }
-
-  void translateX( float distance ) {
-
-    translate( distance, Vector3( 1, 0, 0 ) );
-
-  }
-
-  void translateY( float distance ) {
-
-    translate( distance, Vector3( 0, 1, 0 ) );
-
-  }
-
-  void translateZ( float distance ) {
-
-    translate( distance, Vector3( 0, 0, 1 ) );
-
-  }
-
-  void lookAt( const Vector3& vector ) {
-
-    // TODO: Add hierarchy support.
-
-    matrix.lookAt( vector, position, up );
-
-    if ( rotationAutoUpdate ) {
-
-      rotation = matrix.getEulerRotation( eulerOrder );
-
-    }
-
-  }
-
-  void add( Ptr object ) {
-
-    if ( !object )
-      return;
-
-    if ( object.get() == this ) {
-
-      console().warn( "Three.Object3D.add: An object can't be added as a child of itself." );
-      return;
-
-    }
-
-    if ( object->parent != nullptr ) {
-
-      object->parent->remove( object );
-
-    }
-
-    object->parent = this;
-    children.push_back( object );
-
-    // add to scene
-
-    auto scene = this;
-
-    while ( scene->parent != nullptr ) {
-
-      scene = scene->parent;
-
-    }
-
-    if ( scene != nullptr )  {
-
-      scene->__addObject( object );
-
-    }
-
-  }
-
-  void remove( Ptr object ) {
-
-    auto index = std::find( children.begin(), children.end(), object );
-
-    if ( index != children.end() ) {
-
-      object->parent = nullptr;
-      children.erase( index );
-
-      // remove from scene
-
-      auto scene = this;
-
-      while ( scene->parent != nullptr ) {
-
-        scene = scene->parent;
-
-      }
-
-      if ( scene != nullptr ) {
-
-        scene->__removeObject( object );
-
-      }
-
-    }
-
-  }
-
-  Ptr getChildByName( const std::string& name, bool recursive ) {
-
-for ( auto & child : children ) {
-
-      if ( child->name == name ) {
-
-        return child;
-
-      }
-
-      if ( recursive ) {
-
-        auto recursive_child = child->getChildByName( name, recursive );
-
-        if ( recursive_child ) {
-
-          return recursive_child;
-
-        }
-
-      }
-
-    }
-
-    return Object3D::Ptr();
-
-  }
-
-  void updateMatrix() {
-
-    matrix.setPosition( position );
-
-    if ( useQuaternion )  {
-
-      matrix.setRotationFromQuaternion( quaternion );
-
-    } else {
-
-      matrix.setRotationFromEuler( rotation, eulerOrder );
-
-    }
-
-    if ( scale.x != 1 || scale.y != 1 || scale.z != 1 ) {
-
-      matrix.scale( scale );
-      boundRadiusScale = std::max( scale.x, std::max( scale.y, scale.z ) );
-
-    }
-
-    matrixWorldNeedsUpdate = true;
-
-  }
-
-  void updateMatrixWorld( bool force = false ) {
-
-    if ( matrixAutoUpdate ) updateMatrix();
-
-    if ( matrixWorldNeedsUpdate || force ) {
-
-      if ( parent != nullptr ) {
-
-        matrixWorld.multiply( parent->matrixWorld, matrix );
-
-      } else {
-
-        matrixWorld.copy( matrix );
-
-      }
-
-      matrixWorldNeedsUpdate = false;
-
-      force = true;
-
-    }
-
-    // update children
-
-for ( auto & child : children ) {
-
-      child->updateMatrixWorld( force );
-
-    }
-
-  }
-
-  Vector3 worldToLocal( const Vector3& vector ) {
-
-    return Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
-
-  }
-
-  Vector3 localToWorld( const Vector3& vector ) {
-
-    return matrixWorld.multiplyVector3( vector );
-
-  }
-
-  void render( const std::function<void( Object3D& )> renderCallback ) {
-    if ( renderCallback ) {
-      renderCallback( *this );
-    }
-  }
-
-  /*
-    clone: function () {
-
-      // TODO
-
-    }
-  */
+  THREE_DECL void render( const std::function<void( Object3D& )> renderCallback );
 
 protected:
 
-  Object3D( Material::Ptr material = Material::Ptr(),
-            Geometry::Ptr geometry = Geometry::Ptr() )
-    : id( Object3DCount()++ ),
-      parent( nullptr ),
-      up( 0, 1, 0 ),
-      eulerOrder( THREE::XYZ ),
-      scale( 1, 1, 1 ),
-      renderDepth( 0 ),
-      rotationAutoUpdate( true ),
-      matrixAutoUpdate( true ),
-      matrixWorldNeedsUpdate( true ),
-      useQuaternion( false ),
-      boundRadius( 0.0f ),
-      boundRadiusScale( 1.0f ),
-      visible( true ),
-      castShadow( false ),
-      receiveShadow( false ),
-      frustumCulled( true ),
-      sortParticles( false ),
-      useVertexTexture( false ),
-      boneTextureWidth( 0 ),
-      boneTextureHeight( 0 ),
-      morphTargetBase( -1 ),
-      material( material ),
-      geometry( geometry ) { }
+  THREE_DECL Object3D( Material::Ptr material = Material::Ptr(),
+            Geometry::Ptr geometry = Geometry::Ptr() );
 
-  virtual void __addObject( Ptr& object ) { }
-
-  virtual void __removeObject( Ptr& object ) { }
+  THREE_DECL virtual void __addObject( Ptr& object );
+  THREE_DECL virtual void __removeObject( Ptr& object );
 
 private:
 
@@ -407,5 +172,9 @@ private:
 };
 
 } // namespace three
+
+#if defined(THREE_HEADER_ONLY)
+# include <three/core/impl/object3d.ipp>
+#endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_OBJECT3D_HPP

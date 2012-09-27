@@ -5,6 +5,8 @@
 #include <three/utils.hpp>
 
 #include <three/core/object3d.hpp>
+#include <three/objects/particle.hpp>
+#include <three/objects/line.hpp>
 #include <three/lights/light.hpp>
 
 namespace three {
@@ -96,7 +98,7 @@ protected:
     Add objectAdd( *this, object );
     object->visit( objectAdd );
 
-for ( auto & child : object->children ) {
+    for ( auto& child : object->children ) {
       __addObject( child );
     }
 
@@ -128,7 +130,7 @@ for ( auto & child : object->children ) {
     Remove objectRemove( *this, object );
     object->visit( objectRemove );
 
-for ( auto & child : object->children ) {
+    for ( auto& child : object->children ) {
       __removeObject( child );
     }
 

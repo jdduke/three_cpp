@@ -1,4 +1,8 @@
-#include <three/three.hpp>
+#include <three/core/geometry.hpp>
+#include <three/objects/particle_system.hpp>
+#include <three/cameras/perspective_camera.hpp>
+#include <three/materials/particle_basic_material.hpp>
+#include <three/renderers/gl_renderer.hpp>
 
 #include <three/extras.hpp>
 

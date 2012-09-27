@@ -15,8 +15,7 @@ public:
   typedef std::shared_ptr<Line> Ptr;
 
   static Ptr create( Geometry::Ptr geometry, Material::Ptr material, THREE::LineType lineType = THREE::LineStrip ) {
-    //return make_shared<Line>( geometry, material, lineType );
-    return Ptr( new Line( geometry, material, lineType ) );
+    return three::make_shared<Line>( geometry, material, lineType );
   }
 
   /////////////////////////////////////////////////////////////////////////

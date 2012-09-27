@@ -21,7 +21,7 @@ public:
   Frustum() { }
   Frustum( const Matrix4& m ) { setFromMatrix( m ); }
 
-  void setFromMatrix( const Matrix4& m ) {
+  THREE_DECL void setFromMatrix( const Matrix4& m ) {
 
     const auto& me = m.elements;
 
@@ -37,15 +37,13 @@ public:
     planes[ 4 ].set( me3 - me2, me7 - me6, me11 - me10, me15 - me14 );
     planes[ 5 ].set( me3 + me2, me7 + me6, me11 + me10, me15 + me14 );
 
-for ( auto & plane : planes ) {
-
+    for ( auto& plane : planes ) {
       plane.divideScalar( Math::sqrt( plane.x * plane.x + plane.y * plane.y + plane.z * plane.z ) );
-
     }
 
   }
 
-  bool contains( const Object3D& object ) {
+  THREE_DECL bool contains( const Object3D& object ) {
 
     if ( !object.geometry )
       return false;

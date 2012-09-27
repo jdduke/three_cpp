@@ -65,7 +65,7 @@ protected:
 
   template < typename Scope >
   bool hasNormals( Scope& scope ) {
-for ( auto & m : scope.materials ) {
+    for ( auto& m : scope.materials ) {
       if ( m->type() == THREE::ShaderMaterial ) return true;
     }
     return false;
@@ -77,12 +77,12 @@ for ( auto & m : scope.materials ) {
     Material::Ptr material;
 
     auto is_pow2 = []( int n ) {
-      const auto l = Math::log( ( float )n ) / Math::LN2;
+      const auto l = Math::log( ( float )n ) / Math::LN2();
       return ( int )Math::floor( l ) == l;
     };
 
     auto nearest_pow2 = []( int n ) {
-      const auto l = Math::log( ( float )n ) / Math::LN2;
+      const auto l = Math::log( ( float )n ) / Math::LN2();
       return ( int )Math::pow( ( float )2, Math::round( l ) );
     };
 

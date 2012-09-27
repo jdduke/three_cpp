@@ -1,6 +1,8 @@
 #ifndef THREE_ANIM_HPP
 #define THREE_ANIM_HPP
 
+#include <three/core/clock.hpp>
+
 #include <three/extras/noncopyable.hpp>
 
 #include <thread>
@@ -58,11 +60,10 @@ void gameLoop( Update update, Render render ) {
   anim::AnimFrameRequest requestAnimFrame;
 
   while ( requestAnimFrame( [&]( float deltaTime ) {
-  return update( deltaTime ) && render( deltaTime );
+    return update( deltaTime ) && render( deltaTime );
   } ) );
 
 }
-
 
 } // namespace anim
 } // namespace three

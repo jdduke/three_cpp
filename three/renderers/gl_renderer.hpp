@@ -5,15 +5,23 @@
 
 #include <three/gl.hpp>
 
+#include <three/core/frustum.hpp>
 #include <three/core/interfaces.hpp>
 #include <three/core/geometry.hpp>
 #include <three/core/geometry_group.hpp>
+
+#include <three/lights/spot_light.hpp>
+#include <three/lights/hemisphere_light.hpp>
+#include <three/lights/spot_light.hpp>
+#include <three/lights/spot_light.hpp>
 
 #include <three/materials/program.hpp>
 
 #include <three/renderers/gl_render_target.hpp>
 #include <three/renderers/gl_shaders.hpp>
+#include <three/renderers/renderables/renderable_object.hpp>
 
+#include <three/scenes/scene.hpp>
 #include <three/scenes/fog.hpp>
 #include <three/scenes/fog_exp2.hpp>
 
@@ -25,25 +33,6 @@ typedef std::vector<Scene::GLObject> RenderList;
 typedef std::vector<Object3D*>       RenderListDirect;
 typedef std::vector<Light*>          Lights;
 typedef std::vector<std::string>     Identifiers;
-
-template < typename T >
-void* toOffset( T t ) { return reinterpret_cast<void*>( t ); }
-
-inline int toInt( bool b ) { return b ? 1 : 0; }
-
-template < typename T, typename U >
-inline std::string toString( const T& t, const U& u ) {
-  std::stringstream ss;
-  ss << t << u;
-  return ss.str();
-}
-
-template < typename T, typename U >
-inline std::string toString( const std::pair<T, U>& p ) {
-  std::stringstream ss;
-  ss << p.first << "_" << p.second;
-  return ss.str();
-}
 
 class GLRenderer {
 public:
@@ -605,7 +594,7 @@ public:
 
     if ( object->type() == THREE::Mesh ) {
 
-for ( auto & geometryGroup : geometry.geometryGroups ) {
+      for ( auto& geometryGroup : geometry.geometryGroups ) {
 
         deleteMeshBuffers( geometryGroup.second );
 
@@ -645,19 +634,14 @@ for ( auto & geometryGroup : geometry.geometryGroups ) {
 
     glDeleteTexture( renderTarget->__glTexture );
 
-for ( auto & frameBuffer : renderTarget->__glFramebuffer ) {
-
+    for ( auto& frameBuffer : renderTarget->__glFramebuffer ) {
       glDeleteFramebuffer( frameBuffer );
-
     }
 
     renderTarget->__glFramebuffer.clear();
 
-
-for ( auto & renderBuffer : renderTarget->__glRenderbuffer ) {
-
+    for ( auto& renderBuffer : renderTarget->__glRenderbuffer ) {
       glDeleteRenderbuffer( renderBuffer );
-
     }
 
     renderTarget->__glRenderbuffer.clear();
@@ -678,20 +662,15 @@ for ( auto & renderBuffer : renderTarget->__glRenderbuffer ) {
 
     auto deleteProgram = false;
 
-for ( auto & programInfo : _programs ) {
+    for ( auto& programInfo : _programs ) {
 
       if ( programInfo.program == program ) {
-
         programInfo.usedTimes--;
-
         if ( programInfo.usedTimes == 0 ) {
-
           deleteProgram = true;
-
         }
 
         break;
-
       }
 
     }
@@ -700,20 +679,14 @@ for ( auto & programInfo : _programs ) {
 
       decltype( _programs ) newPrograms;
 
-for ( auto & programInfo : _programs ) {
-
+      for ( auto& programInfo : _programs ) {
         if ( programInfo.program != program ) {
-
           newPrograms.push_back( programInfo );
-
         }
-
       }
 
       _programs = std::move( newPrograms );
-
       glDeleteProgram( program->program );
-
       _info.memory.programs --;
 
     }
@@ -875,7 +848,7 @@ for ( auto & programInfo : _programs ) {
 
     }
 
-for ( auto & attribute : geometryGroup.__glCustomAttributesList ) {
+    for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
       glDeleteBuffer( attribute.buffer );
     }
 
@@ -903,7 +876,7 @@ for ( auto & attribute : geometryGroup.__glCustomAttributesList ) {
 
       geometry.__glCustomAttributesList.clear();
 
-for ( auto & namedAttribute : material.customAttributes ) {
+      for ( auto& namedAttribute : material.customAttributes ) {
 
         auto& a = namedAttribute.first;
         auto& attribute = namedAttribute.second;
@@ -1065,7 +1038,7 @@ for ( auto & namedAttribute : material.customAttributes ) {
 
       geometryGroup.__glCustomAttributesList.clear();
 
-for ( auto & a : material->customAttributes ) {
+      for ( auto& a : material->customAttributes ) {
 
         // Do a shallow copy of the attribute object soe different geometryGroup chunks use different
         // attribute buffers which are correctly indexed in the setMeshBuffers function
@@ -1178,7 +1151,7 @@ for ( auto & a : material->customAttributes ) {
 
   void initDirectBuffers( Geometry& geometry ) {
 
-for ( auto & a : geometry.attributes ) {
+    for ( auto& a : geometry.attributes ) {
 
       auto type = a.first == "index" ? GL_ELEMENT_ARRAY_BUFFER
                   : GL_ARRAY_BUFFER;
@@ -1778,7 +1751,7 @@ for ( auto & a : geometry.attributes ) {
 
     if ( dirtyVertices ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -1802,7 +1775,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & fi : chunk_faces4 ) {
+      for ( const auto& fi : chunk_faces4 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -1841,7 +1814,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         offset_morphTarget = 0;
 
-for ( const auto & chf : chunk_faces3 ) {
+        for ( const auto& chf : chunk_faces3 ) {
 
           const auto& face = obj_faces[ chf ];
 
@@ -1912,7 +1885,7 @@ for ( const auto & chf : chunk_faces3 ) {
 
         }
 
-for ( const auto & chf : chunk_faces4 ) {
+        for ( const auto& chf : chunk_faces4 ) {
 
           const auto& face = obj_faces[ chf ];
 
@@ -2013,7 +1986,7 @@ for ( const auto & chf : chunk_faces4 ) {
 
     if ( obj_skinWeights.size() ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2105,7 +2078,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & fi : chunk_faces4 ) {
+      for ( const auto& fi : chunk_faces4 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2237,7 +2210,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
     if ( dirtyColors && vertexColorType ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2274,7 +2247,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & fi : chunk_faces4 ) {
+      for ( const auto& fi : chunk_faces4 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2327,7 +2300,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
     if ( dirtyTangents && geometry.hasTangents ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2356,7 +2329,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & chunk_face4 : chunk_faces4 ) {
+      for ( const auto& chunk_face4 : chunk_faces4 ) {
 
         const auto& face = obj_faces[ chunk_face4 ];
 
@@ -2399,7 +2372,7 @@ for ( const auto & chunk_face4 : chunk_faces4 ) {
 
     if ( dirtyNormals && normalType ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2436,7 +2409,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & fi : chunk_faces4 ) {
+      for ( const auto& fi : chunk_faces4 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2479,7 +2452,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
     if ( dirtyUvs && obj_uvs.size() > 0 && uvType ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
         const auto& uv = obj_uvs[ fi ];
@@ -2500,7 +2473,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & fi : chunk_faces4 ) {
+      for ( const auto& fi : chunk_faces4 ) {
 
         const auto& face = obj_faces[ fi ];
         const auto& uv = obj_uvs[ fi ];
@@ -2531,7 +2504,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
     if ( dirtyUvs && obj_uvs2.size() > 0 && uvType ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
         const auto& uv2 = obj_uvs2[ fi ];
@@ -2552,7 +2525,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & fi : chunk_faces4 ) {
+      for ( const auto& fi : chunk_faces4 ) {
 
         const auto& face = obj_faces[ fi ];
         const auto& uv2 = obj_uvs2[ fi ];
@@ -2583,7 +2556,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
     if ( dirtyElements ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+      for ( const auto& fi : chunk_faces3 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2608,7 +2581,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
       }
 
-for ( const auto & fi : chunk_faces4 ) {
+      for ( const auto& fi : chunk_faces4 ) {
 
         const auto& face = obj_faces[ fi ];
 
@@ -2645,7 +2618,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
     }
 
-for ( auto & customAttribute : customAttributes ) {
+    for ( auto& customAttribute : customAttributes ) {
 
       if ( customAttribute.__original && ( ! customAttribute.__original->needsUpdate ) ) continue;
 
@@ -2656,7 +2629,7 @@ for ( auto & customAttribute : customAttributes ) {
 
         if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -2668,7 +2641,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -2683,7 +2656,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         } else if ( customAttribute.boundTo == "faces" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2695,7 +2668,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2714,7 +2687,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -2735,7 +2708,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -2762,7 +2735,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         } else if ( customAttribute.boundTo == "faces" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2783,7 +2756,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2814,7 +2787,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -2838,7 +2811,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -2869,7 +2842,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         } else if ( customAttribute.boundTo == "faces" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2893,7 +2866,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2927,7 +2900,7 @@ for ( const auto & fi : chunk_faces4 ) {
 #ifdef TODO_CHUNK_FACE_VERTICES
         else if ( customAttribute.boundTo == "faceVertices" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2951,7 +2924,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -2986,7 +2959,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -3013,7 +2986,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& face = obj_faces[ fi ];
 
@@ -3048,7 +3021,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
         } else if ( customAttribute.boundTo == "faces" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -3075,7 +3048,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -3112,7 +3085,7 @@ for ( const auto & fi : chunk_faces4 ) {
 #ifdef TODO_CHUNK_FACE_VERTICES
         else if ( customAttribute.boundTo == "faceVertices" ) {
 
-for ( const auto & fi : chunk_faces3 ) {
+          for ( const auto& fi : chunk_faces3 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -3139,7 +3112,7 @@ for ( const auto & fi : chunk_faces3 ) {
 
           }
 
-for ( const auto & fi : chunk_faces4 ) {
+          for ( const auto& fi : chunk_faces4 ) {
 
             const auto& value = customAttribute.value[ fi ];
 
@@ -3239,7 +3212,7 @@ for ( const auto & fi : chunk_faces4 ) {
 
     if ( dispose ) {
 
-for ( auto & attribute : geometry.attributes ) {
+for ( auto& attribute : geometry.attributes ) {
 
         attribute.second.array.clear();
 
@@ -3508,7 +3481,7 @@ for ( auto & attribute : geometry.attributes ) {
 
       // Use the per-geometryGroup custom attribute arrays which are setup in initMeshBuffers
 
-for ( auto & attribute : geometryGroup.__glCustomAttributesList ) {
+      for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
 
         // TODO: Fix this?
         if ( contains( attributes, attribute.belongsToAttribute ) ) {
@@ -3880,7 +3853,7 @@ for ( auto & attribute : geometryGroup.__glCustomAttributesList ) {
 
     auto& renderList = scene.__glObjects;
 
-for ( auto & glObject : renderList ) {
+    for ( auto& glObject : renderList ) {
 
       auto& object = *glObject.object;
 
@@ -3930,7 +3903,7 @@ for ( auto & glObject : renderList ) {
 
     auto& immediateList = scene.__glObjectsImmediate;
 
-for ( auto & glObject : immediateList ) {
+    for ( auto& glObject : immediateList ) {
 
       auto& object = *glObject.object;
 
@@ -4001,7 +3974,7 @@ for ( auto & glObject : immediateList ) {
 
   void renderPlugins( std::vector<IPlugin::Ptr>& plugins, Scene& scene, Camera& camera ) {
 
-for ( auto & plugin : plugins ) {
+    for ( auto& plugin : plugins ) {
 
       // reset state for plugin (to start from clean slate)
 
@@ -4056,7 +4029,7 @@ for ( auto & plugin : plugins ) {
       delta = 1;
     }
 
-for ( auto & glObject : renderList ) {
+    for ( auto& glObject : renderList ) {
 
       if ( glObject.render ) {
 
@@ -4103,7 +4076,7 @@ for ( auto & glObject : renderList ) {
 
   void renderObjectsImmediate( RenderList& renderList, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial = nullptr ) {
 
-for ( auto & glObject : renderList ) {
+    for ( auto& glObject : renderList ) {
 
       auto& object = *glObject.object;
 
@@ -4307,7 +4280,7 @@ for ( auto & glObject : renderList ) {
 
     geometry.geometryGroupsList.clear();
 
-for ( auto & geometryGroup : geometry.geometryGroups ) {
+    for ( auto& geometryGroup : geometry.geometryGroups ) {
 
       geometryGroup.second.id = _geometryGroupCounter ++;
 
@@ -4344,7 +4317,7 @@ for ( auto & geometryGroup : geometry.geometryGroups ) {
 
     // update must be called after objects adding / removal
 
-for ( auto & glObject : scene.__glObjects ) {
+    for ( auto& glObject : scene.__glObjects ) {
 
       updateObject( *glObject.object );
 
@@ -4375,7 +4348,7 @@ for ( auto & glObject : scene.__glObjects ) {
 
           // create separate VBOs per geometry chunk
 
-for ( auto & geometryGroup : geometry.geometryGroups ) {
+          for ( auto& geometryGroup : geometry.geometryGroups ) {
 
             // initialise VBO on the first access
 
@@ -4460,7 +4433,7 @@ for ( auto & geometryGroup : geometry.geometryGroups ) {
 
         } else {
 
-for ( auto & geometryGroup : geometry.geometryGroups ) {
+          for ( auto& geometryGroup : geometry.geometryGroups ) {
 
             addBuffer( scene.__glObjects, geometryGroup.second, object );
 
@@ -4554,7 +4527,7 @@ for ( auto & geometryGroup : geometry.geometryGroups ) {
 
         // check all geometry groups
 
-for ( auto geometryGroup : geometry.geometryGroupsList ) {
+        for ( auto& geometryGroup : geometry.geometryGroupsList ) {
 
           material = getBufferMaterial( object, geometryGroup );
 
@@ -4643,7 +4616,7 @@ for ( auto geometryGroup : geometry.geometryGroupsList ) {
 
   bool areCustomAttributesDirty( const Material& material ) {
 
-for ( const auto & attribute : material.customAttributes ) {
+    for ( const auto& attribute : material.customAttributes ) {
 
       if ( attribute.second.needsUpdate ) return true;
 
@@ -4655,7 +4628,7 @@ for ( const auto & attribute : material.customAttributes ) {
 
   void clearCustomAttributes( Material& material ) {
 
-for ( auto & attribute : material.customAttributes ) {
+    for ( auto& attribute : material.customAttributes ) {
 
       attribute.second.needsUpdate = false;
 
@@ -4843,7 +4816,7 @@ for ( auto & attribute : material.customAttributes ) {
 
     }
 
-for ( auto & a : material.attributes ) {
+    for ( auto& a : material.attributes ) {
 
       if ( a.second >= 0 ) {
 
@@ -4897,7 +4870,7 @@ for ( auto & a : material.attributes ) {
 
     material.uniformsList.clear();
 
-for ( auto & u : material.uniforms ) {
+    for ( auto& u : material.uniforms ) {
 
       material.uniformsList.emplace_back( &u.second, u.first );
 
@@ -5882,7 +5855,7 @@ for ( auto & u : material.uniforms ) {
     }
 
 #ifdef TODO_HASH_PARAMETERS
-for ( const auto & p : parameters ) {
+    for ( const auto& p : parameters ) {
       chunks << p.first;
       chunks << p.second;
     }
@@ -5892,7 +5865,7 @@ for ( const auto & p : parameters ) {
 
     // Check if code has been already compiled
 
-for ( auto & programInfo : _programs ) {
+    for ( auto& programInfo : _programs ) {
 
       if ( programInfo.code == code ) {
 
@@ -6120,7 +6093,7 @@ for ( auto & programInfo : _programs ) {
 
       }
 
-for ( const auto & u : uniforms ) {
+      for ( const auto& u : uniforms ) {
 
         identifiers.push_back( u.first );
 
@@ -6158,7 +6131,7 @@ for ( const auto & u : uniforms ) {
 
       }
 
-for ( const auto & a : attributes ) {
+      for ( const auto& a : attributes ) {
 
         identifiers.push_back( a.first );
 
@@ -6180,7 +6153,7 @@ for ( const auto & a : attributes ) {
 
   void cacheUniformLocations( Program& program, const Identifiers& identifiers ) {
 
-for ( const auto & id : identifiers ) {
+    for ( const auto& id : identifiers ) {
 
       program.uniforms[ id ] = GL_CALL( glGetUniformLocation( program.program, id.c_str() ) );
 
@@ -6190,7 +6163,7 @@ for ( const auto & id : identifiers ) {
 
   void cacheAttributeLocations( Program& program, const Identifiers& identifiers ) {
 
-for ( const auto & id : identifiers ) {
+    for ( const auto& id : identifiers ) {
 
       program.attributes[ id ] = GL_CALL( glGetAttribLocation( program.program, id.c_str() ) );
 
@@ -6218,13 +6191,9 @@ for ( const auto & id : identifiers ) {
     Buffer shader = 0;
 
     if ( type == "fragment" ) {
-
       shader = GL_CALL( glCreateShader( GL_FRAGMENT_SHADER ) );
-
     } else if ( type == "vertex" ) {
-
       shader = GL_CALL( glCreateShader( GL_VERTEX_SHADER ) );
-
     }
 
     const char* source_str = source.c_str();
@@ -6550,13 +6519,9 @@ for ( const auto & id : identifiers ) {
       // Release everything
 
       if ( isCube ) {
-
         glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
-
       } else {
-
         glBindTexture( GL_TEXTURE_2D, 0 );
-
       }
 
       glBindRenderbuffer( GL_RENDERBUFFER, 0 );
@@ -6570,13 +6535,9 @@ for ( const auto & id : identifiers ) {
     if ( renderTarget ) {
 
       if ( isCube ) {
-
         framebuffer = renderTarget->__glFramebuffer[ renderTarget->activeCubeFace ];
-
       } else {
-
         framebuffer = renderTarget->__glFramebuffer[ 0 ];
-
       }
 
       width = renderTarget->width;
@@ -6629,19 +6590,13 @@ for ( const auto & id : identifiers ) {
 
   }
 
-
   // Fallback filters for non-power-of-2 textures
 
   int filterFallback( int f ) {
-
     if ( f == THREE::NearestFilter || f == THREE::NearestMipMapNearestFilter || f == THREE::NearestMipMapLinearFilter ) {
-
       return GL_NEAREST;
-
     }
-
     return GL_LINEAR;
-
   }
 
   // Map THREE::cpp constants to WebGL constants
@@ -6761,7 +6716,7 @@ for ( const auto & id : identifiers ) {
         maxSpotLights = 0,
         maxHemiLights = 0;
 
-for ( const auto & light : lights ) {
+        for ( const auto& light : lights ) {
 
       if ( light->onlyShadow ) continue;
 
@@ -6800,7 +6755,7 @@ for ( const auto & light : lights ) {
 
     int maxShadows = 0;
 
-for ( const auto & light : lights ) {
+    for ( const auto& light : lights ) {
 
       if ( ! light->castShadow ) continue;
 

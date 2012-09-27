@@ -54,9 +54,7 @@ public:
   };
 
   static bool descSort( const Intersection& a, const Intersection& b ) {
-
     return a.distance < b.distance;
-
   }
 
 
@@ -66,11 +64,9 @@ public:
 
     if ( recursive ) {
 
-for ( const auto & child : object.children ) {
-
+      for ( const auto& child : object.children ) {
         auto iter_intersects = intersectObject( *child, recursive );
         intersects.insert( intersects.end(), iter_intersects.begin(), iter_intersects.end() );
-
       }
 
     }
@@ -80,9 +76,7 @@ for ( const auto & child : object.children ) {
       auto distance = distanceFromIntersection( origin, direction, object.matrixWorld.getPosition() );
 
       if ( distance > object.scale.x ) {
-
         return std::vector<Intersection>();//intersects;
-
       }
 
       Intersection i = { distance, object.position, nullptr, 0, &object };
@@ -110,9 +104,7 @@ for ( const auto & child : object.children ) {
       auto distance = distanceFromIntersection( origin, direction, object.matrixWorld.getPosition() );
 
       if ( distance > scaledRadius ) {
-
         return intersects;
-
       }
 
       // Checking faces
@@ -213,11 +205,9 @@ for ( const auto & child : object.children ) {
 
     std::vector<Intersection> intersects;
 
-for ( const auto & object : objects ) {
-
+    for ( const auto& object : objects ) {
       auto iter_intersects = intersectObject( *object, recursive );
       intersects.insert( intersects.end(), iter_intersects.begin(), iter_intersects.end() );
-
     }
 
     std::sort( intersects.begin(), intersects.end(), descSort );
@@ -227,9 +217,7 @@ for ( const auto & object : objects ) {
   }
 
   void setPrecision( float value ) {
-
     precision = value;
-
   }
 
 private:

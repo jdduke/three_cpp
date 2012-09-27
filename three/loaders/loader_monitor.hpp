@@ -15,11 +15,11 @@ THREE.LoadingMonitor = function() {
 
     loaded ++;
 
-scope.dispatchEvent( { type: 'progress', loaded: loaded, total: total } );
+    scope.dispatchEvent( { type: 'progress', loaded: loaded, total: total } );
 
     if ( loaded == = total ) {
 
-scope.dispatchEvent( { type: 'load' } );
+      scope.dispatchEvent( { type: 'load' } );
 
     }
 

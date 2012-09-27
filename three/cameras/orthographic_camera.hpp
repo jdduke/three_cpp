@@ -25,16 +25,14 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   void updateProjectionMatrix() {
-
     projectionMatrix.makeOrthographic( left, right, top, bottom, near, far );
-
   }
 
   /////////////////////////////////////////////////////////////////////////
 
 protected:
 
-  OrthographicCamera( float left, float right, float top, float bottom, float near, float far )
+  THREE_DECL OrthographicCamera( float left, float right, float top, float bottom, float near, float far )
     : Camera( near, far ), left( left ), right( right ), top( top ), bottom( bottom ) {
 
     updateProjectionMatrix();

@@ -96,50 +96,50 @@ inline void glDeleteRenderbuffer( GLuint& buffer ) {
   buffer = 0;
 }
 
-GLint glGetParameteri( GLenum pname ) {
+inline GLint glGetParameteri( GLenum pname ) {
   GLint parameter = 0;
   glGetIntegerv( pname, &parameter );
   return parameter;
 }
 
-GLfloat glGetParameterf( GLenum pname ) {
+inline GLfloat glGetParameterf( GLenum pname ) {
   GLfloat parameter = 0;
   glGetFloatv( pname, &parameter );
   return parameter;
 }
 
-GLint glGetTexParameteri( GLenum pname ) {
+inline GLint glGetTexParameteri( GLenum pname ) {
   GLint parameter = 0;
   glGetTexParameteriv( GL_TEXTURE_2D, pname, &parameter );
   return parameter;
 }
 
-GLfloat glGetTexParameterf( GLenum pname ) {
+inline GLfloat glGetTexParameterf( GLenum pname ) {
   GLfloat parameter = 0;
   glGetTexParameterfv( GL_TEXTURE_2D, pname, &parameter );
   return parameter;
 }
 
-GLint glGetProgramParameter( GLuint program, GLenum pname ) {
+inline GLint glGetProgramParameter( GLuint program, GLenum pname ) {
   GLint parameter = 0;
   glGetProgramiv( program, pname, &parameter );
   return parameter;
 }
 
-GLint glGetShaderParameter( GLuint program, GLenum pname ) {
+inline GLint glGetShaderParameter( GLuint program, GLenum pname ) {
   GLint parameter = 0;
   glGetShaderiv( program, pname, &parameter );
   return parameter;
 }
 
-bool glTrue( GLboolean b ) {
+inline bool glTrue( GLboolean b ) {
   return b == GL_TRUE;
 }
 
 #endif
 
 template < typename C >
-void glBindAndBuffer( GLenum target, unsigned buffer, const C& container, GLenum usage ) {
+inline void glBindAndBuffer( GLenum target, unsigned buffer, const C& container, GLenum usage ) {
   glBindBuffer( target, buffer );
   glBufferData( target, container.size() * sizeof( container[0] ), container.data(), usage );
 }

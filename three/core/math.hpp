@@ -11,9 +11,9 @@ namespace three {
 class Math {
 public:
 
-  static const float PI;
-  static const float LN2;
-  static const float INF;
+  static const float PI()  { return 3.1415926535897932384f; }//std::atan(1.f)/4;
+  static const float LN2() { return 0.6931471805599453094f; }
+  static const float INF() { return std::numeric_limits<float>::max(); }//std::numeric_limits<float>::infinity();
 
   template < typename T > static T sqrt( T t )  { return std::sqrt( t ); }
   template < typename T > static T abs( T t )   { return std::abs( t ); }
@@ -87,10 +87,6 @@ public:
   }
 
 };
-
-const float Math::PI  = 3.1415926535897932384f;//std::atan(1.f)/4;
-const float Math::LN2 = 0.6931471805599453094f;
-const float Math::INF = std::numeric_limits<float>::max();//std::numeric_limits<float>::infinity();
 
 } // namespace three
 

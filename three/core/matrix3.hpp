@@ -42,7 +42,7 @@ class Matrix3 {
 
   }
 
-  Matrix3& getInverse( const Matrix4& m ) {
+  THREE_DECL Matrix3& getInverse( const Matrix4& m ) {
 
     // input: THREE.Matrix4
     // ( based on http://code.google.com/p/webgl-mjs/ )
@@ -79,7 +79,7 @@ class Matrix3 {
 
   }
 
-  Matrix3& transpose() {
+  THREE_DECL Matrix3& transpose() {
 
     float tmp;
 
@@ -91,7 +91,7 @@ class Matrix3 {
 
   }
 
-  Matrix3& transposeIntoArray()( float* flat ) const {
+  THREE_DECL Matrix3& transposeIntoArray()( float* flat ) const {
 
     r[ 0 ] = te[ 0 ];
     r[ 1 ] = te[ 3 ];
@@ -107,9 +107,9 @@ class Matrix3 {
 
   }
 
-  Matrix4& set( float n11, float n12, float n13,
-                float n21, float n22, float n23,
-                float n31, float n32, float n33 ) {
+  THREE_DECL Matrix4& set( float n11, float n12, float n13,
+                           float n21, float n22, float n23,
+                           float n31, float n32, float n33 ) {
 
     te[0] = n11; te[3] = n12; te[6] = n13;
     te[1] = n21; te[4] = n22; te[7] = n23;
@@ -119,7 +119,7 @@ class Matrix3 {
 
   }
 
-  Matrix4& identity() {
+  THREE_DECL Matrix4& identity() {
 
     return this.set( 1, 0, 0,
                      0, 1, 0,
@@ -127,7 +127,7 @@ class Matrix3 {
 
   }
 
-  Matrix4& copy( const Mat4rix4& m ) {
+  THREE_DECL Matrix4& copy( const Mat4rix4& m ) {
 
     const auto& me = m.elements;
 
@@ -137,7 +137,7 @@ class Matrix3 {
 
   }
 
-  Matrix3 clone() {
+  THREE_DECL Matrix3 clone() {
 
     return Matrix3( *this );
 

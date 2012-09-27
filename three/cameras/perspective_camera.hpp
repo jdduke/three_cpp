@@ -20,7 +20,6 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   float fov, aspect;
-
   float fullWidth, fullHeight;
   float x, y;
   float width, height;
@@ -29,7 +28,7 @@ public:
 
   void setLens( float focalLength, float frameHeight = 24 ) {
 
-    fov = 2.f * Math::atan( frameHeight / ( focalLength * 2 ) ) * ( 180 / Math::PI );
+    fov = 2.f * Math::atan( frameHeight / ( focalLength * 2 ) ) * ( 180 / Math::PI() );
     updateProjectionMatrix();
 
   }
@@ -84,12 +83,12 @@ public:
   }
 
 
-  void updateProjectionMatrix() {
+  THREE_DECL void updateProjectionMatrix() {
 
     if ( fullWidth != 0.f ) {
 
       auto asp    = fullWidth / fullHeight;
-      auto top    = Math::tan( fov * Math::PI / 360 ) * near;
+      auto top    = Math::tan( fov * Math::PI() / 360 ) * near;
       auto bottom = -top;
       auto left   = asp * bottom;
       auto right  = asp * top;

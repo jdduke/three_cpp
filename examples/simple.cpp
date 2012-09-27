@@ -1,4 +1,10 @@
-#include <three/three.hpp>
+//#include <three/three.hpp>
+#include <three/core/geometry.hpp>
+#include <three/cameras/perspective_camera.hpp>
+#include <three/lights/point_light.hpp>
+#include <three/extras/geometries/sphere_geometry.hpp>
+#include <three/materials/mesh_lambert_material.hpp>
+#include <three/renderers/gl_renderer.hpp>
 
 #include <three/extras.hpp>
 

@@ -2,6 +2,7 @@
 #define THREE_PROGRAM_HPP
 
 #include <three/common.hpp>
+#include <three/utils.hpp>
 
 #include <three/extras/noncopyable.hpp>
 
@@ -18,7 +19,7 @@ public:
   typedef std::shared_ptr<Program> Ptr;
 
   static Ptr create( Buffer program, int id ) {
-    return make_shared<Program>( program, id );
+    return three::make_shared<Program>( program, id );
   }
 
   /////////////////////////////////////////////////////////////////////////

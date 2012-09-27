@@ -19,8 +19,7 @@ public:
   typedef std::shared_ptr<Mesh> Ptr;
 
   static Ptr create( Geometry::Ptr geometry, Material::Ptr material ) {
-    //return make_shared<Mesh>( geometry, material );
-    return Ptr( new Mesh( geometry, material ) );
+    return three::make_shared<Mesh>( geometry, material );
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -69,13 +68,11 @@ protected:
       if ( geometry->morphTargets.size() > 0 ) {
 
         morphTargetBase = -1;
-
         int m = 0;
-for ( const auto & morphTarget : geometry->morphTargets ) {
 
+        for ( const auto& morphTarget : geometry->morphTargets ) {
           morphTargetInfluences.push_back( 0 );
           morphTargetDictionary[ morphTarget.name ] = m++;
-
         }
       }
     }

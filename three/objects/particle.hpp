@@ -14,8 +14,7 @@ public:
   typedef std::shared_ptr<Particle> Ptr;
 
   static Ptr create( Material::Ptr material ) {
-    //return make_shared<Line>( geometry, material, lineType );
-    return Ptr( new Particle( material ) );
+    return three::make_shared<Particle>( material );
   }
 
   /////////////////////////////////////////////////////////////////////////

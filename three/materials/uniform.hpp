@@ -27,7 +27,8 @@ struct Uniform {
   explicit Uniform( Type type, any value = any(), Texture* texture = nullptr )
     : type( type ), value( std::move( value ) ), texture( texture ) { }
 
-  THREE_DECL void load( GLint location );
+  //THREE_DECL void load( GLint location );
+  inline void load( GLint location );
 
   Type type;
   any value;
@@ -123,7 +124,7 @@ DECLARE_UNIFORM_V( v4v, std::vector<Vector4>, float, glUniform4fv, 1 );
 #undef DECLARE_UNIFORM
 #undef DECLARE_UNIFORM_V
 
-void Uniform::load( GLint location ) {
+THREE_DECL void Uniform::load( GLint location ) {
 
   try {
 
