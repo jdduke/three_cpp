@@ -2,7 +2,6 @@
 #define THREE_OBJECT3D_HPP
 
 #include <three/common.hpp>
-#include <three/utils.hpp>
 
 #include <three/core/bone.hpp>
 #include <three/core/vector3.hpp>
@@ -11,6 +10,7 @@
 #include <three/core/matrix4.hpp>
 
 #include <three/materials/material.hpp>
+//#include <three/core/frustum.hpp>
 #include <three/core/geometry.hpp>
 
 #include <three/utils/noncopyable.hpp>
@@ -132,7 +132,7 @@ public:
     std::vector<float> positionArray, normalArray, uvArray, colorArray;
   } glImmediateData ;
 
-  typedef std::function<void( const Program&, void*, const Frustum& )> RenderCallback;
+  typedef std::function<void( const Program*, void*, const Frustum* )> RenderCallback;
   RenderCallback immediateRenderCallback;
 
   /////////////////////////////////////////////////////////////////////////

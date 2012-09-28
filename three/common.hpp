@@ -186,6 +186,11 @@ enum RenderType {
   Override
 };
 
+enum ShaderType {
+  ShaderVertex = 0,
+  ShaderFragment,
+};
+
 enum FogType {
   Fog = 0,
   FogExp2

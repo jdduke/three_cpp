@@ -1,6 +1,7 @@
 #include <three/core/geometry.hpp>
 #include <three/cameras/perspective_camera.hpp>
 #include <three/lights/directional_light.hpp>
+#include <three/objects/mesh.hpp>
 #include <three/extras/geometries/cube_geometry.hpp>
 #include <three/materials/mesh_normal_material.hpp>
 #include <three/renderers/gl_renderer.hpp>
@@ -49,8 +50,8 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
   scene->add( group );
 
   auto light = DirectionalLight::create( 0xFFFFFF );
-  light->target = group.get();
-  scene->add ( light );
+  light->target = group;
+  scene->add( light );
 
   auto time = 0.f, mouseX = 0.f, mouseY = 0.f;
 
@@ -100,11 +101,11 @@ int main ( int argc, char* argv[] ) {
 
   GLRenderer::Parameters parameters;
 
-  if ( !sdl::initSDL( parameters ) || !glew::initGLEW( parameters ) ) {
+  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;
   }
 
-  auto renderer = three::GLRenderer::create( parameters );
+  auto renderer = GLRenderer::create( parameters );
   if ( !renderer ) {
     return 0;
   }

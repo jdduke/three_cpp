@@ -2,6 +2,7 @@
 #include <three/core/geometry.hpp>
 #include <three/cameras/perspective_camera.hpp>
 #include <three/lights/point_light.hpp>
+#include <three/objects/mesh.hpp>
 #include <three/extras/geometries/sphere_geometry.hpp>
 #include <three/materials/mesh_lambert_material.hpp>
 #include <three/renderers/gl_renderer.hpp>
@@ -63,8 +64,8 @@ void simple( GLRenderer::Ptr renderer ) {
       };
     }
 
-    camera->position.x += ( 1000.f * mouseX - camera->position.x );
-    camera->position.y += ( 1000.f * mouseY - camera->position.y );
+    camera->position.x += ( 100.f * mouseX - camera->position.x );
+    camera->position.y += ( 100.f * mouseY - camera->position.y );
     camera->lookAt( scene->position );
 
     renderer->render( *scene, *camera );
@@ -77,19 +78,15 @@ void simple( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  /*std::ofstream ctt("CON");
-  freopen( "CON", "w", stdout );
-  freopen( "CON", "w", stderr );*/
-
   auto onQuit = defer( SDL_Quit );
 
   GLRenderer::Parameters parameters;
 
-  if ( !sdl::initSDL( parameters ) || !glew::initGLEW( parameters ) ) {
+  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;
   }
 
-  auto renderer = three::GLRenderer::create( parameters );
+  auto renderer = GLRenderer::create( parameters );
   if ( !renderer ) {
     return 0;
   }

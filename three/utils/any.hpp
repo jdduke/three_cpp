@@ -168,6 +168,11 @@ public:
   }
 
   /// Assignment operator.
+  any& operator=( const any& other ) {
+    return assign( other );
+  }
+
+  /// Assignment operator.
   template<typename T>
   any& operator=( const T& x ) {
     return assign( x );

@@ -143,8 +143,11 @@ foreach(subdir ${THREE_SUBDIRS})
   set(THREE_HEADERS ${THREE_HEADERS} ${THREE_SUBDIR_HEADERS})
 endforeach()
 
-add_library(three STATIC ${THREE_HEADERS})
-set_target_properties(three PROPERTIES LINKER_LANGUAGE CXX)
+
+if(MSVC)
+  add_library(three STATIC ${THREE_HEADERS})
+  set_target_properties(three PROPERTIES LINKER_LANGUAGE CXX)
+endif()
 
 if(BUILD_THREE_EXAMPLES)
   if(WIN32)

@@ -94,11 +94,11 @@ int main ( int argc, char* argv[] ) {
   GLRenderer::Parameters parameters;
   parameters.preserveDrawingBuffer = true;
 
-  if ( !sdl::initSDL( parameters ) || !glew::initGLEW( parameters ) ) {
+  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;
   }
 
-  auto renderer = three::GLRenderer::create( parameters );
+  auto renderer = GLRenderer::create( parameters );
   if ( !renderer ) {
     return 0;
   }

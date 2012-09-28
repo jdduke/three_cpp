@@ -1,11 +1,11 @@
 #ifndef THREE_MESH_HPP
 #define THREE_MESH_HPP
 
-#include <three/common.hpp>
-
 #include <three/core/object3d.hpp>
 #include <three/core/geometry.hpp>
 #include <three/materials/material.hpp>
+
+//#include <three/common.hpp>
 
 #include <vector>
 #include <unordered_map>

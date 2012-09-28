@@ -6,7 +6,7 @@
 namespace three {
 namespace glew {
 
-bool initGLEW( GLRenderer::Parameters& parameters ) {
+inline bool init( GLRenderer::Parameters& parameters ) {
 
   auto err = glewInit();
 

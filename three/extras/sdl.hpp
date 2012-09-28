@@ -9,7 +9,7 @@
 namespace three {
 namespace sdl {
 
-bool initSDL( GLRenderer::Parameters& parameters ) {
+inline bool init( GLRenderer::Parameters& parameters ) {
 
   if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
     console().error() << "Error initializing SDL: " << SDL_GetError();

@@ -2,12 +2,8 @@
 #define THREE_SCENE_HPP
 
 #include <three/common.hpp>
-#include <three/utils.hpp>
 
 #include <three/core/object3d.hpp>
-#include <three/objects/particle.hpp>
-#include <three/objects/line.hpp>
-#include <three/lights/light.hpp>
 
 #include <three/renderers/renderables/renderable_object.hpp>
 
@@ -62,88 +58,12 @@ public:
 
 protected:
 
-  struct Add : public Visitor {
-    Add( Scene& s, Object3D::Ptr& o )
-      : s( s ), object( o ) { }
-
-    void operator()( Object3D& o ) {
-      if ( push_unique( s.__objects, &o ) ) {
-
-        s.__objectsAdded.push_back( object );
-
-        erase( s.__objectsRemoved, object );
-      }
-    }
-    void operator()( Scene& s ) { fallback( s ); }
-    void operator()( Light& l ) {
-      push_unique( s.__lights, &l );
-      if ( l.target && l.target->parent == nullptr ) {
-        s.add( l.target );
-      }
-    }
-    void operator()( Bone& ) { }
-    void operator()( Camera& ) { }
-    void operator()( Particle& p ) { fallback( p ); }
-    //void operator() ( Sprite& s)    { fallback(s); }
-    void operator()( Mesh& m )      { fallback( m ); }
-    void operator()( Line& l )      { fallback( l ); }
-
-    Scene& s;
-    Object3D::Ptr& object;
-  };
-
-  virtual void __addObject( Object3D::Ptr& object ) {
-
-    if ( !object )
-      return;
-
-    Add objectAdd( *this, object );
-    object->visit( objectAdd );
-
-    for ( auto& child : object->children ) {
-      __addObject( child );
-    }
-
-  }
-
-
-  struct Remove : public Visitor {
-    Remove( Scene& s, Object3D::Ptr& o ) : s( s ), object( o ) { }
-    void operator()( Object3D& o ) {
-      if ( erase( s.__objects, &o ) ) {
-        s.__objectsRemoved.push_back( object );
-        erase( s.__objectsAdded, object );
-      }
-    }
-
-    void operator()( Scene& s ) { fallback( s ); }
-    void operator()( Light& l ) { erase( s.__lights, &l ); }
-    void operator()( Bone& ) { }
-    void operator()( Camera& ) { }
-
-    Scene& s;
-    Object3D::Ptr& object;
-  };
-
-  virtual void __removeObject( Object3D::Ptr& object ) {
-    if ( !object )
-      return;
-
-    Remove objectRemove( *this, object );
-    object->visit( objectRemove );
-
-    for ( auto& child : object->children ) {
-      __removeObject( child );
-    }
-
-  }
+  THREE_DECL virtual void __addObject( Object3D::Ptr& object );
+  THREE_DECL virtual void __removeObject( Object3D::Ptr& object );
 
 protected:
 
-  Scene()
-    : Object3D(),
-      overrideMaterial( nullptr ),
-      matrixAutoUpdate( false ) { }
+  THREE_DECL Scene();
 
   virtual THREE::Type type() const { return THREE::Scene; }
 

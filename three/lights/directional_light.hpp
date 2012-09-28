@@ -20,8 +20,6 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  Object3D* target;
-
   float shadowCameraNear;
   float shadowCameraFar;
 
@@ -67,7 +65,6 @@ protected:
 
   DirectionalLight( int hex, float intensity, float distance )
     : Light( hex, intensity, distance ),
-      target( nullptr ),
       shadowCameraNear( 50 ), shadowCameraFar( 5000 ),
       shadowCameraLeft( -500 ), shadowCameraRight( 500 ),
       shadowCameraTop( 500 ), shadowCameraBottom( -500 ),

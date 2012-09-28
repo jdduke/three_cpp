@@ -17,9 +17,8 @@ public:
   };
 
   THREE_DECL Uniform( );
-
   THREE_DECL explicit Uniform( Type type, any value = any(), Texture* texture = nullptr );
-
+  THREE_DECL Uniform& operator=( const Uniform& );
   THREE_DECL void load( int location );
 
   Type type;

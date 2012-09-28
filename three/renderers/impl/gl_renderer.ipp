@@ -305,25 +305,15 @@ void GLRenderer::deallocateObject( Object3D::Ptr object ) {
   auto& geometry = *object->geometry;
 
   if ( object->type() == THREE::Mesh ) {
-
     for ( auto& geometryGroup : geometry.geometryGroups ) {
-
       deleteMeshBuffers( geometryGroup.second );
-
     }
-
   } else if ( object->type() == THREE::Ribbon ) {
-
     deleteRibbonBuffers( geometry );
-
   } else if ( object->type() == THREE::Line ) {
-
     deleteLineBuffers( geometry );
-
   } else if ( object->type() == THREE::ParticleSystem ) {
-
     deleteParticleBuffers( geometry );
-
   }
 
 }
@@ -543,21 +533,15 @@ void GLRenderer::deleteMeshBuffers( GeometryGroup& geometryGroup ) {
   glDeleteBuffer( geometryGroup.__glLineBuffer );
 
   if ( geometryGroup.numMorphTargets > 0 ) {
-
     for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-
       glDeleteBuffer( geometryGroup.__glMorphTargetsBuffers[ m ] );
-
     }
-
   }
 
   if ( geometryGroup.numMorphNormals > 0 ) {
-
     for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
       glDeleteBuffer( geometryGroup.__glMorphNormalsBuffers[ m ] );
     }
-
   }
 
   for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
@@ -576,10 +560,8 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
   const auto nvertices = geometry.vertices.size();
 
   if ( !object.material ) {
-
     console().warn( "Object contains no material" );
     return;
-
   }
 
   auto& material = *object.material;
@@ -3758,19 +3740,14 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, THREE::Ren
         setDepthTest( material->depthTest );
         setDepthWrite( material->depthWrite );
         setPolygonOffset( material->polygonOffset, material->polygonOffsetFactor, material->polygonOffsetUnits );
-
       }
 
       setMaterialFaces( *material );
 
       if ( buffer.type() == THREE::BufferGeometry ) {
-
         renderBufferDirect( camera, lights, fog, *material, static_cast<Geometry&>( buffer ), object );
-
       } else {
-
         renderBuffer( camera, lights, fog, *material, static_cast<GeometryGroup&>( buffer ), object );
-
       }
 
     }
@@ -3824,17 +3801,11 @@ void GLRenderer::renderImmediateObject( Camera& camera, Lights& lights, IFog* fo
   setMaterialFaces( material );
 
   if ( object.immediateRenderCallback ) {
-
-    object.immediateRenderCallback( program, _gl, _frustum );
-
+    object.immediateRenderCallback( &program, _gl, &_frustum );
   } else {
-
     object.render( [this, &program, &material]( Object3D & object ) {
-
       renderBufferImmediate( object, program, material );
-
     } );
-
   }
 
 }
@@ -4350,7 +4321,7 @@ void GLRenderer::removeObject( Object3D& object, Scene& scene ) {
 
 void GLRenderer::removeInstances( RenderList& objlist, Object3D& object ) {
 
-  for ( auto o = objlist.size() - 1; o >= 0; o -- ) {
+  for ( auto o = (int)objlist.size() - 1; o >= 0; o -- ) {
     if ( objlist[ o ].object == &object ) {
       objlist.erase( objlist.begin() + o );
     }
@@ -4360,7 +4331,7 @@ void GLRenderer::removeInstances( RenderList& objlist, Object3D& object ) {
 
 void GLRenderer::removeInstancesDirect( RenderListDirect& objlist, Object3D& object ) {
 
-  for ( auto o = objlist.size() - 1; o >= 0; o -- ) {
+  for ( auto o = (int)objlist.size() - 1; o >= 0; o -- ) {
     if ( objlist[ o ] == &object ) {
       objlist.erase( objlist.begin() + o );
     }
@@ -4407,9 +4378,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   // (not to blow over maxLights budget)
 
   const auto maxLightCount = allocateLights( lights );
-
   const auto maxShadows = allocateShadows( lights );
-
   const auto maxBones = allocateBones( object );
 
   ProgramParameters parameters = {
@@ -4492,13 +4461,9 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   }
 
   for ( auto& a : material.attributes ) {
-
     if ( a.second >= 0 ) {
-
       glEnableVertexAttribArray( a.second );
-
     }
-
   }
 
   if ( material.morphTargets ) {
@@ -4508,16 +4473,11 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     std::string id, base = "morphTarget";
 
     for ( int i = 0; i < maxMorphTargets; i ++ ) {
-
       id = toString( base, i );
-
       if ( attributes[ id ] >= 0 ) {
-
         glEnableVertexAttribArray( attributes[ id ] );
         material.numSupportedMorphTargets ++;
-
       }
-
     }
 
   }
@@ -4529,16 +4489,11 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     const std::string base = "morphNormal";
 
     for ( int i = 0; i < maxMorphNormals; i ++ ) {
-
       auto id = toString( base, i );
-
       if ( attributes[ id ] >= 0 ) {
-
         glEnableVertexAttribArray( attributes[ id ] );
         material.numSupportedMorphNormals ++;
-
       }
-
     }
 
   }
@@ -4546,36 +4501,29 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   material.uniformsList.clear();
 
   for ( auto& u : material.uniforms ) {
-
     material.uniformsList.emplace_back( &u.second, u.first );
-
   }
 
 }
 
 void GLRenderer::setMaterialShaders( Material& material, const Shader& shaders ) {
-
   material.uniforms = shaders.uniforms;
   material.vertexShader = shaders.vertexShader;
   material.fragmentShader = shaders.fragmentShader;
-
 }
 
 Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Material& material, Object3D& object ) {
 
   if ( material.needsUpdate ) {
-
-    if ( material.program ) deallocateMaterial( material );
-
+    if ( material.program ) {
+      deallocateMaterial( material );
+    }
     initMaterial( material, lights, fog, object );
     material.needsUpdate = false;
-
   }
 
   if ( material.morphTargets ) {
-
     object.glData.__glMorphTargetInfluences.resize( maxMorphTargets );
-
   }
 
   auto refreshMaterial = false;
@@ -4585,37 +4533,25 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
   auto& m_uniforms = material.uniforms;
 
   if ( &program != _currentProgram ) {
-
     glUseProgram( program.program );
     _currentProgram = &program;
-
     refreshMaterial = true;
-
   }
 
   if ( material.id != _currentMaterialId ) {
-
     _currentMaterialId = material.id;
     refreshMaterial = true;
-
   }
 
   if ( refreshMaterial || &camera != _currentCamera ) {
-
     glUniformMatrix4fv( p_uniforms["projectionMatrix"], 1, false, camera._projectionMatrixArray.data() );
-
     if ( &camera != _currentCamera ) _currentCamera = &camera;
-
   }
 
   if ( refreshMaterial ) {
-
     // refresh uniforms common to several materials
-
     if ( fog && material.fog ) {
-
       refreshUniformsFog( m_uniforms, *fog );
-
     }
 
     if ( material.type() == THREE::MeshPhongMaterial ||
@@ -4623,58 +4559,39 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
          material.lights ) {
 
       if ( _lightsNeedUpdate ) {
-
         setupLights( program, lights );
         _lightsNeedUpdate = false;
-
       }
 
       refreshUniformsLights( m_uniforms, _lights );
-
     }
 
     if ( material.type() == THREE::MeshBasicMaterial ||
          material.type() == THREE::MeshLambertMaterial ||
          material.type() == THREE::MeshPhongMaterial ) {
-
       refreshUniformsCommon( m_uniforms, material );
-
     }
 
     // refresh single material specific uniforms
 
     if ( material.type() == THREE::LineBasicMaterial ) {
-
       refreshUniformsLine( m_uniforms, material );
-
     } else if ( material.type() == THREE::ParticleBasicMaterial ) {
-
       refreshUniformsParticle( m_uniforms, material );
-
     } else if ( material.type() == THREE::MeshPhongMaterial ) {
-
       refreshUniformsPhong( m_uniforms, material );
-
     } else if ( material.type() == THREE::MeshLambertMaterial ) {
-
       refreshUniformsLambert( m_uniforms, material );
-
     } else if ( material.type() == THREE::MeshDepthMaterial ) {
-
       m_uniforms["mNear"].value = camera.near;
       m_uniforms["mFar"].value = camera.far;
       m_uniforms["opacity"].value = material.opacity;
-
     } else if ( material.type() == THREE::MeshNormalMaterial ) {
-
       m_uniforms["opacity"].value = material.opacity;
-
     }
 
     if ( object.receiveShadow && ! material.shadowPass ) {
-
       refreshUniformsShadow( m_uniforms, lights );
-
     }
 
     // load common uniforms
@@ -4689,10 +4606,8 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
          material.envMap ) {
 
       if ( p_uniforms["cameraPosition"] != 0 ) {
-
         auto position = camera.matrixWorld.getPosition();
         glUniform3f( p_uniforms["cameraPosition"], position.x, position.y, position.z );
-
       }
 
     }
@@ -4703,42 +4618,28 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
          material.skinning ) {
 
       if ( p_uniforms["viewMatrix"] != 0 ) {
-
         glUniformMatrix4fv( p_uniforms["viewMatrix"], 1, false, camera._viewMatrixArray.data() );
-
       }
 
     }
-
   }
 
   if ( material.skinning ) {
-
     if ( _supportsBoneTextures && object.useVertexTexture ) {
-
       if ( p_uniforms["boneTexture"] != 0  && object.boneTexture ) {
-
         // shadowMap texture array starts from 6
         // texture unit 12 should leave space for 6 shadowmaps
-
         auto textureUnit = 12;
-
         glUniform1i( p_uniforms["boneTexture"], textureUnit );
         setTexture( *object.boneTexture, textureUnit );
-
       }
-
     } else {
-
       if ( p_uniforms["boneGlobalMatrices"] != 0 ) {
-
         glUniformMatrix4fv( p_uniforms["boneGlobalMatrices"],
                             ( int )object.boneMatrices.size(),
                             false,
                             reinterpret_cast<const float*>( &object.boneMatrices[0] ) );
-
       }
-
     }
 
   }
@@ -5281,27 +5182,17 @@ void GLRenderer::setFaceCulling( THREE::Side cullFace /*= THREE::NoSide*/, THREE
   if ( cullFace != THREE::NoSide ) {
 
     if ( frontFace == THREE::CCW ) {
-
       glFrontFace( GL_CCW );
-
     } else {
-
       glFrontFace( GL_CW );
-
     }
 
     if ( cullFace == THREE::BackSide ) {
-
       glCullFace( GL_BACK );
-
     } else if ( cullFace == THREE::FrontSide ) {
-
       glCullFace( GL_FRONT );
-
     } else {
-
       glCullFace( GL_FRONT_AND_BACK );
-
     }
 
     glEnable( GL_CULL_FACE );
@@ -5322,13 +5213,9 @@ void GLRenderer::setMaterialFaces( Material& material ) {
   if ( _oldDoubleSided != doubleSided ) {
 
     if ( doubleSided ) {
-
       glDisable( GL_CULL_FACE );
-
     } else {
-
       glEnable( GL_CULL_FACE );
-
     }
 
     _oldDoubleSided = doubleSided;
@@ -5338,13 +5225,9 @@ void GLRenderer::setMaterialFaces( Material& material ) {
   if ( _oldFlipSided != flipSided ) {
 
     if ( flipSided ) {
-
       glFrontFace( GL_CW );
-
     } else {
-
       glFrontFace( GL_CCW );
-
     }
 
     _oldFlipSided = flipSided;
@@ -5358,13 +5241,9 @@ void GLRenderer::setDepthTest( bool depthTest ) {
   if ( _oldDepthTest != toInt( depthTest ) ) {
 
     if ( depthTest ) {
-
       glEnable( GL_DEPTH_TEST );
-
     } else {
-
       glDisable( GL_DEPTH_TEST );
-
     }
 
     _oldDepthTest = toInt( depthTest );
@@ -5376,10 +5255,8 @@ void GLRenderer::setDepthTest( bool depthTest ) {
 void GLRenderer::setDepthWrite( bool depthWrite ) {
 
   if ( _oldDepthWrite != toInt( depthWrite ) ) {
-
     glDepthMask( depthWrite );
     _oldDepthWrite = toInt( depthWrite );
-
   }
 
 }
@@ -5387,11 +5264,8 @@ void GLRenderer::setDepthWrite( bool depthWrite ) {
 void GLRenderer::setLineWidth( float width ) {
 
   if ( width != _oldLineWidth ) {
-
     glLineWidth( width );
-
     _oldLineWidth = width;
-
   }
 
 }
@@ -5401,13 +5275,9 @@ void GLRenderer::setPolygonOffset( bool polygonoffset, float factor, float units
   if ( _oldPolygonOffset != toInt( polygonoffset ) ) {
 
     if ( polygonoffset ) {
-
       glEnable( GL_POLYGON_OFFSET_FILL );
-
     } else {
-
       glDisable( GL_POLYGON_OFFSET_FILL );
-
     }
 
     _oldPolygonOffset = toInt( polygonoffset );
@@ -5415,12 +5285,9 @@ void GLRenderer::setPolygonOffset( bool polygonoffset, float factor, float units
   }
 
   if ( polygonoffset && ( _oldPolygonOffsetFactor != factor || _oldPolygonOffsetUnits != units ) ) {
-
     glPolygonOffset( factor, units );
-
     _oldPolygonOffsetFactor = factor;
     _oldPolygonOffsetUnits = units;
-
   }
 
 }
@@ -5475,20 +5342,14 @@ void GLRenderer::setBlending( THREE::Blending blending,
   if ( blending == THREE::CustomBlending ) {
 
     if ( blendEquation != _oldBlendEquation ) {
-
       glBlendEquation( paramThreeToGL( blendEquation ) );
-
       _oldBlendEquation = blendEquation;
-
     }
 
     if ( blendSrc != _oldBlendSrc || blendDst != _oldBlendDst ) {
-
       glBlendFunc( paramThreeToGL( blendSrc ), paramThreeToGL( blendDst ) );
-
       _oldBlendSrc = blendSrc;
       _oldBlendDst = blendDst;
-
     }
 
   } else {
@@ -5510,20 +5371,16 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
                                        const Attributes& attributes,
                                        ProgramParameters& parameters ) {
 
-  std::stringstream chunks;
 
   // Generate code
   std::hash<std::string> hash;
+  std::stringstream chunks;
 
   if ( !shaderID.empty() ) {
-
     chunks << shaderID;
-
   } else {
-
     chunks << hash( fragmentShader );
     chunks << hash( vertexShader );
-
   }
 
 #ifdef TODO_HASH_PARAMETERS
@@ -5538,24 +5395,18 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
   // Check if code has been already compiled
 
   for ( auto& programInfo : _programs ) {
-
     if ( programInfo.code == code ) {
-
       console().log( "Code already compiled." /*: \n\n" + code*/ );
-
       programInfo.usedTimes ++;
-
       return programInfo.program;
-
     }
-
   }
 
   //console().log( "building new program " );
 
   //
 
-  auto glProgram = glCreateProgram();
+  auto glProgram = GL_CALL( glCreateProgram() );
 
   auto prefix_vertex = [this, &parameters]() -> std::string {
     std::stringstream ss;
@@ -5702,8 +5553,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   }();
 
-  auto glFragmentShader = getShader( "fragment", prefix_fragment + fragmentShader );
-  auto glVertexShader = getShader( "vertex", prefix_vertex + vertexShader );
+  auto glFragmentShader = getShader( THREE::ShaderFragment, prefix_fragment + fragmentShader );
+  auto glVertexShader   = getShader( THREE::ShaderVertex,   prefix_vertex   + vertexShader );
 
   GL_CALL( glAttachShader( glProgram, glVertexShader ) );
   GL_CALL( glAttachShader( glProgram, glFragmentShader ) );
@@ -5850,13 +5701,13 @@ std::string GLRenderer::addLineNumbers( const std::string& string ) {
 
 }
 
-Buffer GLRenderer::getShader( const std::string& type, const std::string& source ) {
+Buffer GLRenderer::getShader( THREE::ShaderType type, const std::string& source ) {
 
   Buffer shader = 0;
 
-  if ( type == "fragment" ) {
+  if ( type == THREE::ShaderFragment ) {
     shader = GL_CALL( glCreateShader( GL_FRAGMENT_SHADER ) );
-  } else if ( type == "vertex" ) {
+  } else if ( type == THREE::ShaderVertex ) {
     shader = GL_CALL( glCreateShader( GL_VERTEX_SHADER ) );
   }
 
@@ -6298,7 +6149,7 @@ int GLRenderer::allocateBones( Object3D& object ) {
     //  - limit here is ANGLE's 254 max uniform vectors
     //    (up to 54 should be safe)
 
-    auto nVertexUniforms = glGetParameteri( GL_MAX_VERTEX_UNIFORM_VECTORS );
+    auto nVertexUniforms = 254;//glGetParameteri( GL_MAX_VERTEX_UNIFORM_VECTORS );
     auto nVertexMatrices = ( int )Math::floor( ( ( float )nVertexUniforms - 20 ) / 4 );
 
     auto maxBones = nVertexMatrices;
@@ -6308,12 +6159,9 @@ int GLRenderer::allocateBones( Object3D& object ) {
       maxBones = Math::min( ( int )object.bones.size(), maxBones );
 
       if ( maxBones < ( int )object.bones.size() ) {
-
         console().warn() << "WebGLRenderer: too many bones - "
                          << object.bones.size() <<
                          ", this GPU supports just " << maxBones << " (try OpenGL instead of ANGLE)";
-
-
       }
 
     }
@@ -6335,15 +6183,13 @@ GLRenderer::LightCount GLRenderer::allocateLights( Lights& lights ) {
       maxSpotLights = 0,
       maxHemiLights = 0;
 
-      for ( const auto& light : lights ) {
-
+  for ( const auto& light : lights ) {
     if ( light->onlyShadow ) continue;
 
     if ( light->type() == THREE::DirectionalLight ) dirLights ++;
     if ( light->type() == THREE::PointLight ) pointLights ++;
     if ( light->type() == THREE::SpotLight ) spotLights ++;
     if ( light->type() == THREE::SpotLight ) hemiLights ++;
-
   }
 
   if ( ( pointLights + spotLights + dirLights ) <= _maxLights ) {
@@ -6375,12 +6221,10 @@ int GLRenderer::allocateShadows( Lights& lights ) {
   int maxShadows = 0;
 
   for ( const auto& light : lights ) {
-
     if ( ! light->castShadow ) continue;
 
     if ( light->type() == THREE::SpotLight ) maxShadows ++;
     if ( light->type() == THREE::DirectionalLight && ! light->shadowCascade ) maxShadows ++;
-
   }
 
   return maxShadows;

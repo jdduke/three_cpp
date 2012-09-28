@@ -20,48 +20,55 @@ Uniform::Uniform( )
 Uniform::Uniform( Type type, any value /*= any()*/, Texture* texture /*= nullptr*/ )
   : type( type ), value( std::move( value ) ), texture( texture ) { }
 
+Uniform& Uniform::operator=( const Uniform& other ) {
+  type = other.type;
+  value = other.value;
+  texture = other.texture;
+  return *this;
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 template < typename T, typename F >
 void load1( const F& f, int location, const any& value ) {
   const auto& t = value.cast<T>();
-  f( location, t );
+  GL_CALL( f( location, t ) );
 }
 template < typename T, typename F >
 void load2( const F& f, int location, const any& value ) {
   const auto& t = value.cast<T>();
-  f( location, t[ 0 ], t[ 1 ] );
+  GL_CALL( f( location, t[ 0 ], t[ 1 ] ) );
 }
 template < typename T, typename F >
 void load3( const F& f, int location, const any& value ) {
   const auto& t = value.cast<T>();
-  f( location, t[ 0 ], t[ 1 ], t[ 2 ] );
+  GL_CALL( f( location, t[ 0 ], t[ 1 ], t[ 2 ] ) );
 }
 template < typename T, typename F >
 void load4( const F& f, int location, const any& value ) {
   const auto& t = value.cast<T>();
-  f( location, t[ 0 ], t[ 1 ], t[ 2 ], t[ 3 ] );
+  GL_CALL( f( location, t[ 0 ], t[ 1 ], t[ 2 ], t[ 3 ] ) );
 }
 template < typename V, typename T, typename F>
 void loadv( const F& f, int location, const any& value, int stride = 1 ) {
   const auto& v = value.cast<V>();
   const int count = ( int )v.size() / stride;
   const auto pv = reinterpret_cast<const T*>( v.data() );
-  f( location, count, pv );
+  GL_CALL( f( location, count, pv ) );
 }
 template < typename T, typename F >
 void loadm( const F& f, int location, const any& value ) {
   const auto& t = value.cast<T>();
   const int count = 1;
   const auto pv = reinterpret_cast<const float*>( &t );
-  f( location, count, false, pv );
+  GL_CALL( f( location, count, false, pv ) );
 }
 template < typename V, typename F>
 void loadmv( const F& f, int location, const any& value ) {
   const auto& v = value.cast<V>();
   const int count = ( int )v.size();
   const auto pv = reinterpret_cast<const float*>( v.data() );
-  f( location, count, false, pv );
+  GL_CALL( f( location, count, false, pv ) );
 }
 
 /////////////////////////////////////////////////////////////////////////

@@ -8,6 +8,7 @@
 #endif
 
 #include <three/core/impl/buffer_geometry.ipp>
+#include <three/core/impl/frustum.ipp>
 #include <three/core/impl/geometry.ipp>
 #include <three/core/impl/matrix4.ipp>
 #include <three/core/impl/matrix3.ipp>
@@ -19,5 +20,6 @@
 #include <three/renderers/impl/gl_shaders.ipp>
 #include <three/renderers/impl/gl_renderer.ipp>
 
+#include <three/scenes/impl/scene.ipp>
 
 #endif

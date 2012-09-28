@@ -509,7 +509,7 @@ public:
   THREE_DECL static void cacheUniformLocations( Program& program, const Identifiers& identifiers );
   THREE_DECL static void cacheAttributeLocations( Program& program, const Identifiers& identifiers );
   THREE_DECL static std::string addLineNumbers( const std::string& string );
-  THREE_DECL Buffer getShader( const std::string& type, const std::string& source );
+  THREE_DECL Buffer getShader( THREE::ShaderType type, const std::string& source );
 
 
   // Textures
