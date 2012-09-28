@@ -57,6 +57,8 @@ void geometry_hierarchy( three::GLRenderer& renderer ) {
 
   auto time = 0.f, mouseX = 0.f, mouseY = 0.f;
 
+  glEnableVSync( false );
+
   anim::gameLoop (
 
     [&]( float dt ) -> bool {
@@ -93,7 +95,7 @@ void geometry_hierarchy( three::GLRenderer& renderer ) {
       sdl::swapBuffers();
       return true;
 
-  } );
+  }, 2000 );
 
 }
 

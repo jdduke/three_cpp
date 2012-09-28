@@ -12,9 +12,12 @@ namespace anim {
 
 class AnimFrameRequest : public NonCopyable {
 public:
-  explicit AnimFrameRequest( float frameRate = 60 )
+  explicit AnimFrameRequest( float frameRate = 60, bool printStats = true )
     : frameTime( 1.f / frameRate ),
-      lastTime( clock.getElapsedTime() ) { }
+      lastTime( clock.getElapsedTime() ),
+      printStats( printStats ),
+      lastStatsTime( lastTime ),
+      statFrames( 0 ) { }
 
   typedef std::function<bool( float )> Callback;
 
@@ -27,6 +30,16 @@ public:
     if ( sleepTime > 0 ) {
       std::this_thread::sleep_for( std::chrono::milliseconds( ( int )( sleepTime * 1000 ) ) );
       deltaTime = frameTime;
+    }
+
+    if ( printStats ) {
+      ++statFrames;
+
+      if ( time - lastStatsTime > 1.f ) {
+        console().log() << "FPS: " << statFrames;
+        statFrames = 0;
+        lastStatsTime = time;
+      }
     }
 
     lastTime = time;
@@ -48,6 +61,9 @@ private:
   Clock clock;
   float frameTime;
   float lastTime;
+  bool printStats;
+  float lastStatsTime;
+  int statFrames;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -55,16 +71,15 @@ private:
 typedef std::function<bool( float )> Update;
 typedef std::function<bool( float )> Render;
 
-void gameLoop( Update update ) {
-  anim::AnimFrameRequest requestAnimFrame;
+void gameLoop( Update update, float frameRate = 60, bool printStats = true ) {
+  anim::AnimFrameRequest requestAnimFrame( frameRate, printStats );
   while ( requestAnimFrame( update ) ) ;
 }
 
-
-void gameLoop( Update update, Render render ) {
+void gameLoop( Update update, Render render, float frameRate = 60, bool printStats = true ) {
   return gameLoop( [&]( float dt ) {
     return update( dt ) && render( dt );
-  });
+  }, frameRate, printStats );
 }
 
 } // namespace anim

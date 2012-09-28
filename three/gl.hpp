@@ -20,6 +20,12 @@
 #elif defined(THREE_GLEW)
 #  define NO_SDL_GLEXT
 #  include <GL/glew.h>
+#  if defined(_WIN32)
+#    define NOMINMAX
+#    include <GL/wglew.h>
+#    undef near
+#    undef far
+#  endif
 #else
 #  include <GL/gl.h>
 #endif
@@ -142,6 +148,16 @@ template < typename C >
 inline void glBindAndBuffer( GLenum target, unsigned buffer, const C& container, GLenum usage ) {
   glBindBuffer( target, buffer );
   glBufferData( target, container.size() * sizeof( container[0] ), container.data(), usage );
+}
+
+inline void glEnableVSync( bool enable ) {
+#if defined (_WIN32)
+  if (wglewIsSupported("WGL_EXT_swap_control")) {
+    // disable vertical sync
+    wglSwapIntervalEXT( enable ? 1 : 0 );
+  }
+#endif
+
 }
 
 } // namespace three
