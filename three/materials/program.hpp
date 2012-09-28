@@ -4,7 +4,7 @@
 #include <three/common.hpp>
 #include <three/utils.hpp>
 
-#include <three/extras/noncopyable.hpp>
+#include <three/utils/noncopyable.hpp>
 
 #include <three/materials/uniform.hpp>
 

@@ -42,6 +42,9 @@ struct Uniform;
 
 class GLRenderer;
 
+template < typename Key, typename Value >
+struct Properties;
+
 } // namespace three
 
 #endif // THREE_FWD_HPP

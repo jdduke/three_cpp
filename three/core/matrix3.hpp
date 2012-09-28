@@ -8,6 +8,7 @@
 namespace three {
 
 class Matrix3 {
+public:
 
   union {
     float elements[9];
@@ -15,31 +16,23 @@ class Matrix3 {
   };
 
   Matrix3() {
-
     identity();
-
   }
 
   Matrix3( float n11, float n12, float n13,
            float n21, float n22, float n23,
            float n31, float n32, float n33 ) {
-
-    set( n11, n12, n13
-         n21, n22, n23
+    set( n11, n12, n13,
+         n21, n22, n23,
          n31, n32, n33 );
-
   }
 
   Matrix3( const Matrix3& other ) {
-
     copy( other );
-
   }
 
   Matrix3& operator= ( const Matrix3& other ) {
-
     return copy( other );
-
   }
 
   THREE_DECL Matrix3& getInverse( const Matrix4& m ) {
@@ -91,7 +84,7 @@ class Matrix3 {
 
   }
 
-  THREE_DECL Matrix3& transposeIntoArray()( float* flat ) const {
+  THREE_DECL const Matrix3& transposeIntoArray( float* r ) const {
 
     r[ 0 ] = te[ 0 ];
     r[ 1 ] = te[ 3 ];
@@ -103,11 +96,11 @@ class Matrix3 {
     r[ 7 ] = te[ 5 ];
     r[ 8 ] = te[ 8 ];
 
-    return &this;
+    return *this;
 
   }
 
-  THREE_DECL Matrix4& set( float n11, float n12, float n13,
+  THREE_DECL Matrix3& set( float n11, float n12, float n13,
                            float n21, float n22, float n23,
                            float n31, float n32, float n33 ) {
 
@@ -115,19 +108,30 @@ class Matrix3 {
     te[1] = n21; te[4] = n22; te[7] = n23;
     te[2] = n31; te[5] = n32; te[8] = n33;
 
-    return &this;
+    return *this;
 
   }
 
-  THREE_DECL Matrix4& identity() {
+  THREE_DECL Matrix3& identity() {
 
-    return this.set( 1, 0, 0,
-                     0, 1, 0,
-                     0, 0, 1 );
+    return set( 1, 0, 0,
+                0, 1, 0,
+                0, 0, 1 );
 
   }
 
-  THREE_DECL Matrix4& copy( const Mat4rix4& m ) {
+  THREE_DECL Matrix3& copy( const Matrix3& m ) {
+
+    const auto& me = m.elements;
+
+    return set( me[0], me[3], me[6],
+                me[1], me[4], me[7],
+                me[2], me[5], me[8] );
+
+  }
+
+
+  THREE_DECL Matrix3& copy( const Matrix4& m ) {
 
     const auto& me = m.elements;
 

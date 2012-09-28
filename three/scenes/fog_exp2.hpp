@@ -5,17 +5,29 @@
 
 #include <three/core/color.hpp>
 
+#include <three/utils/noncopyable.hpp>
+
 namespace three {
 
-class FogExp2 : public IFog {
+class FogExp2 : public IFog, NonCopyable {
 public:
 
-  FogExp2( int hex, float density = 0.00025f )
-    : IFog( hex ), density( density ) { }
+  typedef std::shared_ptr<FogExp2> Ptr;
 
-  THREE::FogType type() const    { return THREE::FogExp2; }
+  static Ptr create( int hex, float density = 0.00025f ) {
+    return three::make_shared<FogExp2>( hex, density );
+  }
+
+  THREE::FogType type() const { return THREE::FogExp2; }
+
+  /////////////////////////////////////////////////////////////////////////
 
   float density;
+
+protected:
+
+   FogExp2( int hex, float density )
+    : IFog( hex ), density( density ) { }
 
 };
 

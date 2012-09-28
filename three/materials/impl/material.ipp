@@ -6,8 +6,6 @@
 namespace three {
 
 typedef std::pair<std::string, any> Parameter;
-typedef std::unordered_map<std::string, any> Parameters;
-
 
 Material& Material::clone( Material& material ) const {
 
@@ -167,11 +165,11 @@ inline bool load( const std::unordered_map<std::string, any>& parameters,
 
 #define PARAM_LOAD(PARAM_NAME) \
   if ( loadAll || keys.count( #PARAM_NAME ) > 0 ) \
-    load ( parameters, #PARAM_NAME, PARAM_NAME )
+    load ( parameters.contents , #PARAM_NAME, PARAM_NAME )
 
 void Material::setParameters( const Parameters& parameters,
                               const ParameterKeys& keys /*= ParameterKeys()*/ ) {
-  if ( parameters.empty() )
+  if ( parameters.contents.empty() )
     return;
 
   bool loadAll = keys.empty();
@@ -228,57 +226,6 @@ void Material::setParameters( const Parameters& parameters,
 }
 
 #undef PARAM_LOAD
-
-#if !THREE_HAS_VARIADIC_TEMPLATES
-
-Parameters parameters( Parameter && p0 ) {
-  Parameters params;
-  params.insert( p0 );
-  return std::move( params );
-}
-Parameters parameters( Parameter && p0, Parameter && p1 ) {
-  Parameters params;
-  params.insert( p0 );
-  params.insert( p1 );
-  return std::move( params );
-}
-Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2 ) {
-  Parameters params;
-  params.insert( p0 );
-  params.insert( p1 );
-  params.insert( p2 );
-  return std::move( params );
-}
-Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2, Parameter && p3 ) {
-  Parameters params;
-  params.insert( p0 );
-  params.insert( p1 );
-  params.insert( p2 );
-  params.insert( p3 );
-  return std::move( params );
-}
-Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2, Parameter && p3, Parameter && p4 ) {
-  Parameters params;
-  params.insert( p0 );
-  params.insert( p1 );
-  params.insert( p2 );
-  params.insert( p3 );
-  params.insert( p4 );
-  return std::move( params );
-}
-Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2, Parameter && p3, Parameter && p4, Parameter && p5 ) {
-  Parameters params;
-  params.insert( p0 );
-  params.insert( p1 );
-  params.insert( p2 );
-  params.insert( p3 );
-  params.insert( p4 );
-  params.insert( p5 );
-  return std::move( params );
-}
-
-#endif
-
 
 } // namespace three
 

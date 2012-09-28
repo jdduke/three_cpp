@@ -14,44 +14,26 @@
 
 using namespace three;
 
-bool gameUpdate( float /* deltaTime */ ) {
-
-  SDL_Event event;
-  while ( SDL_PollEvent( &event ) ) {
-    switch( event.type ) {
-    case SDL_KEYDOWN:
-    case SDL_QUIT:
-      return false;
-    default:
-      break;
-    };
-  }
-  return true;
-
-};
-
-void test0( three::GLRenderer& renderer ) {
+void simple( three::GLRenderer& renderer ) {
 
   // Camera
-  auto camera = PerspectiveCamera::create(
-    50,
-    (float)renderer.width() / renderer.height(),
-    .1f, 1000.f
-  );
+  auto camera = PerspectiveCamera::create( 50,
+                                          ( float )renderer.width() / renderer.height(),
+                                          .1f, 1000.f );
   camera->position.z = 300;
 
   // Scene
   auto scene = Scene::create();
-  scene->add ( camera );
+  scene->add( camera );
 
   // Lights
   auto pointLight = PointLight::create( 0xFFFFFF );
   pointLight->position = Vector3( 10, 50, 130 );
-  scene->add ( pointLight );
+  scene->add( pointLight );
 
   // Materials
   auto sphereMaterial = MeshLambertMaterial::create(
-    parameters( Parameter("color", Color(0xcc0000) ) )
+    Material::Parameters().add( "color", Color( 0xcc0000 ) )
   );
 
   // Geometries
@@ -62,15 +44,28 @@ void test0( three::GLRenderer& renderer ) {
   scene->add( sphere );
 
   // Rendering
-  anim::gameLoop ( gameUpdate, [&](float) -> bool {
+  anim::gameLoop( [&]( float ) -> bool {
+
+    SDL_Event event;
+    while ( SDL_PollEvent( &event ) ) {
+      switch ( event.type ) {
+      case SDL_KEYDOWN:
+      case SDL_QUIT:
+        return false;
+      default:
+        break;
+      };
+    }
+
     renderer.render( *scene, *camera );
     sdl::swapBuffers();
     return true;
+
   } );
 
 }
 
-int main ( int argc, char* argv[] ) {
+int main( int argc, char* argv[] ) {
 
   /*std::ofstream ctt("CON");
   freopen( "CON", "w", stdout );
@@ -93,7 +88,7 @@ int main ( int argc, char* argv[] ) {
     return 0;
   }
 
-  test0( *renderer );
+  simple( *renderer );
 
   return 0;
 }

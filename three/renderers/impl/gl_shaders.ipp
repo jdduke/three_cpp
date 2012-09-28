@@ -33,7 +33,7 @@ const char* ShaderChunk::fog_fragment() {
     "float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\n"
     "fogFactor = 1.0 - clamp( fogFactor 0.0 1.0 );\n"
     "#else\n"
-    "float fogFactor = smoothstep( fogNear fogFar depth );\n"
+    "float fogFactor = smoothstep( fogNear, fogFar, depth );\n"
     "#endif\n"
     "gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n"
     "#endif\n";
@@ -1304,7 +1304,7 @@ Uniforms UniformsLib::common() {
 
   uniforms.emplace( Pair( "morphTargetInfluences", Uniform( Uniform::f, 0 ) ) );
 
-  return std::move( uniforms );
+  return uniforms;
 }
 
 Uniforms UniformsLib::bump() {
@@ -1313,7 +1313,7 @@ Uniforms UniformsLib::bump() {
   uniforms.emplace( Pair( "bumpMap",   Uniform( Uniform::t, 4 ) ) );
   uniforms.emplace( Pair( "bumpScale", Uniform( Uniform::f, 1 ) ) );
 
-  return std::move( uniforms );
+  return uniforms;
 }
 
 Uniforms UniformsLib::fog() {
@@ -1324,7 +1324,7 @@ Uniforms UniformsLib::fog() {
   uniforms.emplace( Pair( "fogFar",     Uniform( Uniform::f, 2000.f ) ) );
   uniforms.emplace( Pair( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) ) );
 
-  return std::move( uniforms );
+  return uniforms;
 }
 
 Uniforms UniformsLib::lights() {
@@ -1346,7 +1346,7 @@ Uniforms UniformsLib::lights() {
   uniforms.emplace( Pair( "spotLightAngle",            Uniform( Uniform::fv1 ) ) );
   uniforms.emplace( Pair( "spotLightExponent",         Uniform( Uniform::fv1 ) ) );
 
-  return std::move( uniforms );
+  return uniforms;
 }
 
 Uniforms UniformsLib::particle() {
@@ -1363,7 +1363,7 @@ Uniforms UniformsLib::particle() {
   uniforms.emplace( Pair( "fogFar",     Uniform( Uniform::f, 2000.f ) ) );
   uniforms.emplace( Pair( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) ) );
 
-  return std::move( uniforms );
+  return uniforms;
 }
 
 Uniforms UniformsLib::shadowmap() {
@@ -1377,7 +1377,7 @@ Uniforms UniformsLib::shadowmap() {
 
   uniforms.emplace( Pair( "shadowMatrix",   Uniform( Uniform::m4v ) ) );
 
-  return std::move( uniforms );
+  return uniforms;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -1435,7 +1435,7 @@ Shader ShaderLib::depthCreate() {
 
     "void main() {\n"
     "float depth = gl_FragCoord.z / gl_FragCoord.w;\n"
-    "float color = 1.0 - smoothstep( mNear mFar depth );\n"
+    "float color = 1.0 - smoothstep( mNear, mFar, depth );\n"
     "gl_FragColor = vec4( vec3( color ), opacity );\n"
     "}\n";
   return Shader( std::move( uniforms ), vertexShader, fragmentShader );

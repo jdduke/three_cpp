@@ -86,6 +86,10 @@ public:
     return ( x < 0 ) ? -1 : ( ( x > 0 ) ? 1 : 0 );
   }
 
+  static bool isPowerOfTwo( int value ) {
+    return ( value != 0 ) && ( ( value & ( value - 1 ) ) == 0 );
+  }
+
 };
 
 } // namespace three

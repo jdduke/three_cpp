@@ -40,22 +40,23 @@ void trails( three::GLRenderer& renderer ) {
 
   // Materials
   auto material = ParticleBasicMaterial::create(
-    parameters( Parameter("color", Color(0xcccccc)),
-                Parameter("size", 1.0f),
-                Parameter("vertexColors", THREE::VertexColors),
-                Parameter("depthTest", false),
-                Parameter("opacity", 0.5f),
-                Parameter("sizeAttenuation", false) )
+    Material::Parameters().add("color", Color(0xcccccc))
+                          .add("size", 1.0f)
+                          .add("vertexColors", THREE::VertexColors)
+                          .add("depthTest", false)
+                          .add("opacity", 0.5f)
+                          .add("sizeAttenuation", false)
   );
 
   auto mesh = ParticleSystem::create( geometry, material );
   scene->add( mesh );
 
+  auto time = 0.f, mouseX = 0.f, mouseY = 0.f;
+
   // Rendering
   anim::gameLoop (
 
     [&](float) -> bool {
-      float mouseX = 0, mouseY = 0;
 
       SDL_Event event;
       while ( SDL_PollEvent( &event ) ) {
@@ -74,9 +75,6 @@ void trails( three::GLRenderer& renderer ) {
       camera->position.x += (  mouseX - camera->position.x ) * .1f;
       camera->position.y += ( -mouseY - camera->position.y ) * .1f;
       camera->lookAt( scene->position );
-      return true;
-
-  }, [&](float) -> bool {
 
       renderer.render( *scene, *camera );
       sdl::swapBuffers();

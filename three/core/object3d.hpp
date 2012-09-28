@@ -7,12 +7,13 @@
 #include <three/core/bone.hpp>
 #include <three/core/vector3.hpp>
 #include <three/core/quaternion.hpp>
+#include <three/core/matrix3.hpp>
 #include <three/core/matrix4.hpp>
 
 #include <three/materials/material.hpp>
 #include <three/core/geometry.hpp>
 
-#include <three/extras/noncopyable.hpp>
+#include <three/utils/noncopyable.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -29,10 +30,12 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
+  static Ptr create() { return three::make_shared<Object3D>(); }
+
   virtual THREE::Type type() const { return THREE::Object3D; }
 
-  virtual void visit( Visitor& v ) = 0;
-  virtual void visit( ConstVisitor& v ) const = 0;
+  virtual void visit( Visitor& v ) { };
+  virtual void visit( ConstVisitor& v ) { };
 
   virtual ~Object3D() { }
 
@@ -98,7 +101,7 @@ public:
     bool __glInit;
     bool __glActive;
     Matrix4 _modelViewMatrix;
-    Matrix4 _normalMatrix;
+    Matrix3 _normalMatrix;
 
     std::vector<float> _normalMatrixArray;
     std::vector<float> _modelViewMatrixArray;
@@ -157,7 +160,7 @@ public:
 protected:
 
   THREE_DECL Object3D( Material::Ptr material = Material::Ptr(),
-            Geometry::Ptr geometry = Geometry::Ptr() );
+                       Geometry::Ptr geometry = Geometry::Ptr() );
 
   THREE_DECL virtual void __addObject( Ptr& object );
   THREE_DECL virtual void __removeObject( Ptr& object );

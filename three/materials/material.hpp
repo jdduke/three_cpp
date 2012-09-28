@@ -3,8 +3,6 @@
 
 #include <three/common.hpp>
 
-#include <three/extras/noncopyable.hpp>
-
 #include <three/materials/attribute.hpp>
 #include <three/materials/custom_attribute.hpp>
 #include <three/materials/program.hpp>
@@ -12,16 +10,20 @@
 
 #include <three/textures/texture.hpp>
 
+#include <three/utils/any.hpp>
+#include <three/utils/noncopyable.hpp>
+#include <three/utils/properties.hpp>
+
+#include <unordered_map>
 #include <unordered_set>
 
 namespace three {
 
-typedef std::pair<std::string, any>          Parameter;
-typedef std::unordered_map<std::string, any> Parameters;
-typedef std::unordered_set<std::string>      ParameterKeys;
-
 class Material : public NonCopyable {
 public:
+
+  typedef Properties<std::string, any> Parameters;
+  typedef std::unordered_set<std::string> ParameterKeys;
 
   typedef std::shared_ptr<Material> Ptr;
 
@@ -138,25 +140,6 @@ private:
   }
 
 };
-
-
-#if THREE_HAS_VARIADIC_TEMPLATES
-
-template < typename... Params >
-Parameters parameters( Params && ... params ) {
-  return Parameters( {std::move( params )...} );
-}
-
-#else
-
-THREE_DECL Parameters parameters( Parameter && p0 );
-THREE_DECL Parameters parameters( Parameter && p0, Parameter && p1 );
-THREE_DECL Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2 );
-THREE_DECL Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2, Parameter && p3 );
-THREE_DECL Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2, Parameter && p3, Parameter && p4 );
-THREE_DECL Parameters parameters( Parameter && p0, Parameter && p1, Parameter && p2, Parameter && p3, Parameter && p4, Parameter && p5 );
-
-#endif
 
 } // namespace three
 

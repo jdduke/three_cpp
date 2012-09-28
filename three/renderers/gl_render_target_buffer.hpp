@@ -1,7 +1,7 @@
 #ifndef THREE_GL_RENDER_TARGET_BUFFER_HPP
 #define THREE_GL_RENDER_TARGET_BUFFER_HPP
 
-#include <three/extras/noncopyable.hpp>
+#include <three/utils/noncopyable.hpp>
 
 namespace three {
 

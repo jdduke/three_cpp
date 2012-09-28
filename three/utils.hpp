@@ -90,7 +90,7 @@ struct Int2Type {
 template < typename T >
 struct Derived : public T {
   template < typename... Args >
-  Derived( Args && ... args ) : T( std::move( args )... ) { }
+  Derived( Args&& ... args ) : T( std::move( args )... ) { }
   template < typename... Args >
   Derived( const Args& ... args ) : T( args... ) { }
 };
@@ -102,7 +102,7 @@ inline std::shared_ptr<T> make_shared( ) {
 }
 
 template < typename T, typename... Args >
-inline std::shared_ptr<T> make_shared( Args && ... args ) {
+inline std::shared_ptr<T> make_shared( Args&& ... args ) {
   return std::make_shared<Derived<T>>( std::move( args )... );
 }
 

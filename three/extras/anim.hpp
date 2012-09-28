@@ -3,7 +3,7 @@
 
 #include <three/core/clock.hpp>
 
-#include <three/extras/noncopyable.hpp>
+#include <three/utils/noncopyable.hpp>
 
 #include <thread>
 
@@ -55,14 +55,16 @@ private:
 typedef std::function<bool( float )> Update;
 typedef std::function<bool( float )> Render;
 
-void gameLoop( Update update, Render render ) {
-
+void gameLoop( Update update ) {
   anim::AnimFrameRequest requestAnimFrame;
+  while ( requestAnimFrame( update ) ) ;
+}
 
-  while ( requestAnimFrame( [&]( float deltaTime ) {
-    return update( deltaTime ) && render( deltaTime );
-  } ) );
 
+void gameLoop( Update update, Render render ) {
+  return gameLoop( [&]( float dt ) {
+    return update( dt ) && render( dt );
+  });
 }
 
 } // namespace anim

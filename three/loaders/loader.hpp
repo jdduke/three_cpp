@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/extras/noncopyable.hpp>
+#include <three/utils/noncopyable.hpp>
 
 #include <iomanip>
 #include <functional>

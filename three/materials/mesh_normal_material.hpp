@@ -6,7 +6,6 @@
 #include <three/materials/material.hpp>
 
 namespace three {
-
 class MeshNormalMaterial : public Material {
 public:
 

@@ -15,6 +15,7 @@
 #include <three/materials/impl/material.ipp>
 
 #include <three/renderers/impl/gl_shaders.ipp>
+#include <three/renderers/impl/gl_renderer.ipp>
 
 
 #endif

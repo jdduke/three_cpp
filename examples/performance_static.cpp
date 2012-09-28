@@ -14,28 +14,24 @@ using namespace three;
 
 void performance_static( three::GLRenderer& renderer ) {
 
-  // Camera
   auto camera = PerspectiveCamera::create(
     60,
     (float)renderer.width() / renderer.height(),
-    1, 10000
+    1, 10000r
   );
   camera->position.z = 3200;
 
-  // Scene
   auto scene = Scene::create();
 
-  // Materials
   auto material = MeshNormalMaterial::create(
-    parameters( Parameter("shading", THREE::SmoothShading) )
+    Material::Parameters().add("shading", THREE::SmoothShading)
   );
 
-  // Geometries
   auto loader = JSONLoader::create();
   loader->load( std::string(THREE_ASSET_DIR) + "/obj/Suzanne.js", [&material]( Geometry::Ptr geometry ) {
     geometry->computeVertexNormals();
 
-    for ( inti = 0; i < 7700; i ++ ) {
+    for ( int = 0; i < 7700; i ++ ) {
 
       auto mesh = Mesh::create( geometry, material );
 
@@ -56,12 +52,12 @@ void performance_static( three::GLRenderer& renderer ) {
   auto mesh = ParticleSystem::create( geometry, material );
   scene->add( mesh );
 
-  // Rendering
+
+  auto mouseX = 0.f, mouseY = 0.f;
+
   anim::gameLoop (
 
-    [&](float) -> bool {
-      float mouseX = 0, mouseY = 0;
-
+    [&]( float ) -> bool {
       SDL_Event event;
       while ( SDL_PollEvent( &event ) ) {
         switch( event.type ) {
@@ -79,9 +75,6 @@ void performance_static( three::GLRenderer& renderer ) {
       camera->position.x += (  mouseX - camera->position.x ) * .1f;
       camera->position.y += ( -mouseY - camera->position.y ) * .1f;
       camera->lookAt( scene->position );
-      return true;
-
-  }, [&](float) -> bool {
 
       renderer.render( *scene, *camera );
       sdl::swapBuffers();

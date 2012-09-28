@@ -88,7 +88,7 @@ struct UniformsUtils {
       }
     }
 
-    return std::move( merged );
+    return merged;
   }
 
 };

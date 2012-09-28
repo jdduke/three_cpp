@@ -9,6 +9,8 @@
 #include <three/objects/line.hpp>
 #include <three/lights/light.hpp>
 
+#include <three/renderers/renderables/renderable_object.hpp>
+
 namespace three {
 
 class Scene : public Object3D {

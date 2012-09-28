@@ -60,9 +60,19 @@ struct big_any_policy : typed_base_any_policy<T> {
   virtual const void* get_value( void* const* src ) const { return *src; }
 };
 
+template <typename T, bool pointer_or_smaller>
+struct choose_policy_impl {
+  typedef small_any_policy<T> type;
+};
+template <typename T>
+struct choose_policy_impl<T,false> {
+  typedef big_any_policy<T> type;
+};
+
 template<typename T>
 struct choose_policy {
-  typedef big_any_policy<T> type;
+  typedef typename choose_policy_impl<T,sizeof(T)<=sizeof(T*)>::type type;
+  //typedef big_any_policy<T> type;
 };
 
 template<typename T>
@@ -98,7 +108,7 @@ SMALL_POLICY( bool );
 
 /// This function will return a different policy for each type.
 template<typename T>
-base_any_policy* get_policy() {
+inline base_any_policy* get_policy() {
   static typename choose_policy<T>::type policy;
   return &policy;
 };
