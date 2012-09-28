@@ -12,12 +12,15 @@
 
 using namespace three;
 
-void trails( three::GLRenderer& renderer ) {
+void trails( GLRenderer::Ptr renderer ) {
+
+  renderer->sortObjects = false;
+  renderer->autoClearColor = false;
 
   // Camera
   auto camera = PerspectiveCamera::create(
     60,
-    (float)renderer.width() / renderer.height(),
+    (float)renderer->width() / renderer->height(),
     1, 10000
   );
   camera->position.set( 100000, 0, 3200 );
@@ -65,18 +68,18 @@ void trails( three::GLRenderer& renderer ) {
           case SDL_QUIT:
             return false;
           case SDL_MOUSEMOTION:
-            mouseX = (float)event.motion.x;
-            mouseY = (float)event.motion.y;
+            mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
+            mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
           default:
           break;
         };
       }
 
-      camera->position.x += (  mouseX - camera->position.x ) * .1f;
-      camera->position.y += ( -mouseY - camera->position.y ) * .1f;
+      camera->position.x += ( 1000.f * mouseX - camera->position.x );
+      camera->position.y += ( 1000.f * mouseY - camera->position.y );
       camera->lookAt( scene->position );
 
-      renderer.render( *scene, *camera );
+      renderer->render( *scene, *camera );
       sdl::swapBuffers();
       return true;
 
@@ -86,15 +89,7 @@ void trails( three::GLRenderer& renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  /*std::ofstream ctt("CON");
-  freopen( "CON", "w", stdout );
-  freopen( "CON", "w", stderr );*/
-
-  struct OnQuit {
-    ~OnQuit() {
-      SDL_Quit();
-    }
-  } onQuit;
+  auto onQuit = defer( SDL_Quit );
 
   GLRenderer::Parameters parameters;
   parameters.preserveDrawingBuffer = true;
@@ -108,10 +103,7 @@ int main ( int argc, char* argv[] ) {
     return 0;
   }
 
-  renderer->sortObjects = false;
-  renderer->autoClearColor = false;
-
-  trails( *renderer );
+  trails( renderer );
 
   return 0;
 }

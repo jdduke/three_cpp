@@ -21,7 +21,9 @@
 #  define NO_SDL_GLEXT
 #  include <GL/glew.h>
 #  if defined(_WIN32)
-#    define NOMINMAX
+#    if !defined(NOMINMAX)
+#      define NOMINMAX
+#    endif
 #    include <GL/wglew.h>
 #    undef near
 #    undef far

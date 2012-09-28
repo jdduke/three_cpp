@@ -35,6 +35,7 @@ public:
   struct Parameters {
     Parameters()
       : width( 1024 ), height( 768 ),
+        vsync ( true ),
         precision( THREE::PrecisionHigh ),
         alpha( true ),
         premultipliedAlpha( true ),
@@ -46,6 +47,7 @@ public:
         maxLights( 4 ) { }
 
     int width, height;
+    bool vsync;
     THREE::PrecisionType precision;
     bool alpha;
     bool premultipliedAlpha;
@@ -66,6 +68,7 @@ protected:
   THREE_DECL GLRenderer( const Parameters& parameters );
 
   int _width, _height;
+  bool _vsync;
   THREE::PrecisionType _precision;
   bool _alpha;
   bool _premultipliedAlpha;

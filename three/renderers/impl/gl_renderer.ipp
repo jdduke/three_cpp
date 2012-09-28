@@ -71,6 +71,7 @@ GLRenderer::Ptr GLRenderer::create( const GLRenderer::Parameters& parameters /*=
 GLRenderer::GLRenderer( const Parameters& parameters )
   : _width( parameters.width ),
     _height( parameters.height ),
+    _vsync ( parameters.vsync ),
     _precision( parameters.precision ),
     _alpha( parameters.alpha ),
     _premultipliedAlpha( parameters.premultipliedAlpha ),
@@ -165,6 +166,8 @@ void GLRenderer::initialize() {
 void GLRenderer::initGL() {
 
   // TODO: Force client to initialize opengl
+  if ( !_vsync )
+    glEnableVSync( false );
 
   /*
   if ( glload::LoadFunctions() == glload::LS_LOAD_FAILED ) {
@@ -3502,13 +3505,6 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 // Rendering
 
 void GLRenderer::render( Scene& scene, Camera& camera, GLRenderTarget::Ptr renderTarget /*= GLRenderTarget::Ptr()*/, bool forceClear /*= false*/ ) {
-
-  /*if ( camera.type() != THREE::Camera ) {
-
-      console().error( 'THREE::WebGLRenderer.render: camera is not an instance of THREE::Camera.' );
-      return;
-
-  }*/
 
   auto& lights = scene.__lights;
   auto  fog = scene.fog.get();

@@ -135,7 +135,7 @@ void Object3D::updateMatrix() {
     matrix.setRotationFromEuler( rotation, eulerOrder );
   }
 
-  if ( scale.x != 1 || scale.y != 1 || scale.z != 1 ) {
+  if ( scale.x != 1.f || scale.y != 1.f || scale.z != 1.f ) {
     matrix.scale( scale );
     boundRadiusScale = std::max( scale.x, std::max( scale.y, scale.z ) );
   }

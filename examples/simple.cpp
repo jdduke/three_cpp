@@ -14,12 +14,12 @@
 
 using namespace three;
 
-void simple( three::GLRenderer& renderer ) {
+void simple( GLRenderer::Ptr renderer ) {
 
   // Camera
-  auto camera = PerspectiveCamera::create( 50,
-                                          ( float )renderer.width() / renderer.height(),
-                                          .1f, 1000.f );
+  auto camera = PerspectiveCamera::create(
+    50, ( float )renderer->width() / renderer->height(), .1f, 1000.f
+  );
   camera->position.z = 300;
 
   // Scene
@@ -43,6 +43,8 @@ void simple( three::GLRenderer& renderer ) {
   auto sphere = Mesh::create( sphereGeometry, sphereMaterial );
   scene->add( sphere );
 
+  float mouseX = 0, mouseY = 0;
+
   // Rendering
   anim::gameLoop( [&]( float ) -> bool {
 
@@ -52,12 +54,20 @@ void simple( three::GLRenderer& renderer ) {
       case SDL_KEYDOWN:
       case SDL_QUIT:
         return false;
+      case SDL_MOUSEMOTION:
+        mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
+        mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+        break;
       default:
         break;
       };
     }
 
-    renderer.render( *scene, *camera );
+    camera->position.x += ( 1000.f * mouseX - camera->position.x );
+    camera->position.y += ( 1000.f * mouseY - camera->position.y );
+    camera->lookAt( scene->position );
+
+    renderer->render( *scene, *camera );
     sdl::swapBuffers();
     return true;
 
@@ -71,11 +81,7 @@ int main( int argc, char* argv[] ) {
   freopen( "CON", "w", stdout );
   freopen( "CON", "w", stderr );*/
 
-  struct OnQuit {
-    ~OnQuit() {
-      SDL_Quit();
-    }
-  } onQuit;
+  auto onQuit = defer( SDL_Quit );
 
   GLRenderer::Parameters parameters;
 
@@ -88,7 +94,7 @@ int main( int argc, char* argv[] ) {
     return 0;
   }
 
-  simple( *renderer );
+  simple( renderer );
 
   return 0;
 }

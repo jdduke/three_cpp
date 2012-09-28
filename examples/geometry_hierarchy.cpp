@@ -14,14 +14,14 @@
 
 using namespace three;
 
-void geometry_hierarchy( three::GLRenderer& renderer ) {
+void geometry_hierarchy( GLRenderer::Ptr renderer ) {
+
+  renderer->sortObjects = false;
 
   auto camera = PerspectiveCamera::create(
-    60,
-    (float)renderer.width() / renderer.height(),
-    1, 10000
+    60, (float)renderer->width() / renderer->height(), 1, 10000
   );
-  camera->position.z = 500;
+  camera->position.z = 1000;
 
   auto scene = Scene::create();
   scene->fog = Fog::create( 0xffffff, 1, 1000 );
@@ -46,18 +46,13 @@ void geometry_hierarchy( three::GLRenderer& renderer ) {
     group->add( mesh );
 
   }
-
   scene->add( group );
 
   auto light = DirectionalLight::create( 0xFFFFFF );
   light->target = group.get();
   scene->add ( light );
 
-  renderer.sortObjects = false;
-
   auto time = 0.f, mouseX = 0.f, mouseY = 0.f;
-
-  glEnableVSync( false );
 
   anim::gameLoop (
 
@@ -72,15 +67,15 @@ void geometry_hierarchy( three::GLRenderer& renderer ) {
           case SDL_QUIT:
             return false;
           case SDL_MOUSEMOTION:
-            mouseX = (float)event.motion.x;
-            mouseY = (float)event.motion.y;
+            mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
+            mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
           default:
           break;
         };
       }
 
-      camera->position.x += (  mouseX - camera->position.x );
-      camera->position.y += (  mouseY - camera->position.y );
+      camera->position.x += ( 1000.f * mouseX - camera->position.x );
+      camera->position.y += ( 1000.f * mouseY - camera->position.y );
       camera->lookAt( scene->position );
 
       auto rx = Math::sin( time * 0.7f ) * 0.5f,
@@ -91,7 +86,7 @@ void geometry_hierarchy( three::GLRenderer& renderer ) {
       group->rotation.y = ry;
       group->rotation.z = rz;
 
-      renderer.render( *scene, *camera );
+      renderer->render( *scene, *camera );
       sdl::swapBuffers();
       return true;
 
@@ -101,15 +96,7 @@ void geometry_hierarchy( three::GLRenderer& renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  /*std::ofstream ctt("CON");
-  freopen( "CON", "w", stdout );
-  freopen( "CON", "w", stderr );*/
-
-  struct OnQuit {
-    ~OnQuit() {
-      SDL_Quit();
-    }
-  } onQuit;
+  auto onQuit = defer( SDL_Quit );
 
   GLRenderer::Parameters parameters;
 
@@ -122,7 +109,7 @@ int main ( int argc, char* argv[] ) {
     return 0;
   }
 
-  geometry_hierarchy( *renderer );
+  geometry_hierarchy( renderer );
 
   return 0;
 }

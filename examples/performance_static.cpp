@@ -12,12 +12,10 @@
 
 using namespace three;
 
-void performance_static( three::GLRenderer& renderer ) {
+void performance_static( GLRenderer::Ptr renderer ) {
 
   auto camera = PerspectiveCamera::create(
-    60,
-    (float)renderer.width() / renderer.height(),
-    1, 10000r
+    60, (float)renderer->width() / renderer->height(), 1, 10000
   );
   camera->position.z = 3200;
 
@@ -76,7 +74,7 @@ void performance_static( three::GLRenderer& renderer ) {
       camera->position.y += ( -mouseY - camera->position.y ) * .1f;
       camera->lookAt( scene->position );
 
-      renderer.render( *scene, *camera );
+      renderer->render( *scene, *camera );
       sdl::swapBuffers();
       return true;
 
@@ -86,15 +84,7 @@ void performance_static( three::GLRenderer& renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  /*std::ofstream ctt("CON");
-  freopen( "CON", "w", stdout );
-  freopen( "CON", "w", stderr );*/
-
-  struct OnQuit {
-    ~OnQuit() {
-      SDL_Quit();
-    }
-  } onQuit;
+  auto onQuit = defer( SDL_Quit );
 
   GLRenderer::Parameters parameters;
 
@@ -109,7 +99,7 @@ int main ( int argc, char* argv[] ) {
 
   renderer->sortObjects = false;
 
-  performance_static( *renderer );
+  performance_static( renderer );
 
   return 0;
 }

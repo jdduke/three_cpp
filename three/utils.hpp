@@ -4,6 +4,7 @@
 #include <three/config.hpp>
 
 #include <algorithm>
+#include <functional>
 #include <unordered_map>
 #include <memory>
 
@@ -47,6 +48,25 @@ inline bool push_unique( C& c, T && elem ) {
     return true;
   }
   return false;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+struct Deferred {
+  typedef std::function<void(void)> DeferredFunc;
+  explicit Deferred( DeferredFunc&& f ) : f ( std::move(f) ) { }
+  Deferred( Deferred&& other ) { std::swap( f, other.f ); }
+private:
+  DeferredFunc f;
+  Deferred();
+  Deferred( const Deferred& );
+  Deferred& operator=( const Deferred& );
+  Deferred& operator=( Deferred&& other );
+};
+
+template < typename F >
+Deferred defer( F&& f ) {
+  return Deferred( std::move(f) );
 }
 
 /////////////////////////////////////////////////////////////////////////
