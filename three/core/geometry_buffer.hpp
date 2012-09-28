@@ -7,7 +7,8 @@
 
 namespace three {
 
-struct GeometryBuffer {
+class GeometryBuffer {
+public:
 
   virtual THREE::GeometryType type() const { return THREE::Geometry; }
 

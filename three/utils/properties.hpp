@@ -6,7 +6,8 @@
 namespace three {
 
 template < typename Key, typename Value >
-struct Properties {
+class Properties {
+public:
 
   Properties() { }
 

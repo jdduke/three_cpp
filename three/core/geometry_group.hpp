@@ -9,7 +9,8 @@
 
 namespace three {
 
-struct GeometryGroup : public GeometryBuffer {
+class GeometryGroup : public GeometryBuffer {
+public:
 
   typedef GeometryBuffer::GLBuffer GLBuffer;
 

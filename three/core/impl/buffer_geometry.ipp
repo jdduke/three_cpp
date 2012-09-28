@@ -4,7 +4,7 @@
 #include <three/common.hpp>
 
 #include <three/core/buffer_geometry.hpp>
-
+#include <three/core/matrix4.hpp>
 #include <three/core/geometry.hpp>
 
 namespace three {

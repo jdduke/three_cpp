@@ -1,6 +1,10 @@
 #ifndef THREE_FWD_HPP
 #define THREE_FWD_HPP
 
+namespace std {
+template < typename T > class shared_ptr;
+}
+
 namespace three {
 
 class Object3D;
@@ -31,19 +35,19 @@ class RenderableVertex;
 class Spline;
 
 class Geometry;
-struct GeometryBuffer;
-struct GeometryGroup;
+class GeometryBuffer;
+class GeometryGroup;
 class Vertex;
 class Material;
 class Program;
 class Texture;
-struct Shader;
-struct Uniform;
+class Shader;
+class Uniform;
 
 class GLRenderer;
 
 template < typename Key, typename Value >
-struct Properties;
+class Properties;
 
 } // namespace three
 

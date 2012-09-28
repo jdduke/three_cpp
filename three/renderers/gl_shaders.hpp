@@ -5,7 +5,8 @@
 
 namespace three {
 
-struct ShaderChunk {
+class ShaderChunk {
+public:
 
   THREE_DECL static const char* fog_pars_fragment();
   THREE_DECL static const char* fog_fragment();
@@ -71,7 +72,8 @@ struct ShaderChunk {
 
 /////////////////////////////////////////////////////////////////////////
 
-struct UniformsUtils {
+class UniformsUtils {
+public:
 
   template < typename UniformsList >
   static Uniforms merge( UniformsList& uniformsList, bool overwrite = false ) {
@@ -93,7 +95,8 @@ struct UniformsUtils {
 
 };
 
-struct UniformsLib {
+class UniformsLib {
+public:
 
   typedef std::pair<std::string, Uniform> Pair;
 
@@ -108,7 +111,8 @@ struct UniformsLib {
 
 /////////////////////////////////////////////////////////////////////////
 
-struct Shader {
+class Shader {
+public:
   Shader( Uniforms uniforms, std::string vs, std::string fs )
     : uniforms( std::move( uniforms ) ), vertexShader( std::move( vs ) ), fragmentShader( std::move( fs ) ) { }
   Uniforms uniforms;
@@ -117,7 +121,8 @@ struct Shader {
 
 /////////////////////////////////////////////////////////////////////////
 
-struct ShaderLib {
+class ShaderLib {
+public:
 
   typedef std::pair<std::string, Uniform> Pair;
 
