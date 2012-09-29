@@ -16,6 +16,8 @@ elseif(MINGW)
 endif()
 
 find_package(SDL REQUIRED)
+find_package(SDL_image REQUIRED)
+find_package(SDL_ttf REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(RapidJSON REQUIRED)
 
@@ -31,12 +33,16 @@ include_directories(${RAPID_JSON_INCLUDE_DIR})
 
 add_definitions(-DGLEW_STATIC -DTHREE_SDL -DTHREE_GLEW)
 
-set(SAMPLE_LIBS ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
+set(SAMPLE_LIBS ${GLEW_LIBRARY}
+                ${SDL_LIBRARY}
+                ${SDLIMAGE_LIBRARY}
+                ${SDLTTF_LIBRARY}
+                ${OPENGL_LIBRARIES})
 
 if (NOT HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
   add_library(three_impl STATIC three.cpp three_extras.cpp)
-  target_link_libraries(three_impl ${OPENGL_LIBRARIES})
+  target_link_libraries(three_impl ${SAMPLE_LIBS})
   set(SAMPLE_LIBS ${SAMPLE_LIBS} three_impl)
 endif()
 

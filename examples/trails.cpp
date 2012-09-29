@@ -55,34 +55,39 @@ void trails( GLRenderer::Ptr renderer ) {
   auto mesh = ParticleSystem::create( geometry, material );
   scene->add( mesh );
 
-  auto time = 0.f, mouseX = 0.f, mouseY = 0.f;
+
+  auto running = true;
+  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
+    running = false;
+  });
+  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
+    running = false;
+  });
+
+  auto mouseX = 0.f, mouseY = 0.f;
+  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
+    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
+    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+  });
+
+  auto time = 0.f;
 
   // Rendering
   anim::gameLoop (
 
     [&]( float dt ) -> bool {
 
-      SDL_Event event;
-      while ( SDL_PollEvent( &event ) ) {
-        switch( event.type ) {
-          case SDL_KEYDOWN:
-          case SDL_QUIT:
-            return false;
-          case SDL_MOUSEMOTION:
-            mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-            mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-          default:
-          break;
-        };
-      }
+      sdl::processEvents();
 
-      camera->position.x += ( 1000.f * mouseX - camera->position.x ) * dt;
-      camera->position.y += ( 1000.f * mouseY - camera->position.y ) * dt;
+      camera->position.x += ( 1000.f * mouseX - camera->position.x ) * 5 * dt;
+      camera->position.y += ( 1000.f * mouseY - camera->position.y ) * 5 * dt;
       camera->lookAt( scene->position );
 
       renderer->render( *scene, *camera );
+
       sdl::swapBuffers();
-      return true;
+
+      return running;
 
   } );
 
@@ -90,7 +95,7 @@ void trails( GLRenderer::Ptr renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( SDL_Quit );
+  auto onQuit = defer( sdl::quit );
 
   RendererParameters parameters;
   parameters.preserveDrawingBuffer = true;

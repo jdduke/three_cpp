@@ -8,5 +8,6 @@
 #endif
 
 #include <three/extras/impl/image_utils.ipp>
+#include <three/extras/impl/sdl.ipp>
 
 #endif

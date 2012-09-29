@@ -54,27 +54,28 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
   light->target = group;
   scene->add( light );
 
-  auto time = 0.f, mouseX = 0.f, mouseY = 0.f;
+  auto running = true;
+  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
+    running = false;
+  });
+  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
+    running = false;
+  });
 
+  auto mouseX = 0.f, mouseY = 0.f;
+  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
+    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
+    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+  });
+
+  auto time = 0.f;
   anim::gameLoop (
 
     [&]( float dt ) -> bool {
 
       time += dt;
 
-      SDL_Event event;
-      while ( SDL_PollEvent( &event ) ) {
-        switch( event.type ) {
-          case SDL_KEYDOWN:
-          case SDL_QUIT:
-            return false;
-          case SDL_MOUSEMOTION:
-            mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-            mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-          default:
-          break;
-        };
-      }
+      sdl::processEvents();
 
       camera->position.x += ( 1000.f * mouseX - camera->position.x ) * dt;
       camera->position.y += ( 1000.f * mouseY - camera->position.y ) * dt;
@@ -89,8 +90,10 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
       group->rotation.z = rz;
 
       renderer->render( *scene, *camera );
+
       sdl::swapBuffers();
-      return true;
+
+      return running;
 
   }, 2000 );
 
@@ -98,7 +101,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( SDL_Quit );
+  auto onQuit = defer( sdl::quit );
 
   RendererParameters parameters;
 
