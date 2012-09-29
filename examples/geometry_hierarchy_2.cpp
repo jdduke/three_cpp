@@ -16,43 +16,46 @@
 
 using namespace three;
 
-void geometry_hierarchy( GLRenderer::Ptr renderer ) {
+void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
 
   renderer->sortObjects = false;
 
   auto camera = PerspectiveCamera::create(
     60, (float)renderer->width() / renderer->height(), 1, 10000
   );
-  camera->position.z = 1000;
+  camera->position.z = 3000;
 
   auto scene = Scene::create();
-  scene->fog = Fog::create( 0xffffff, 1, 1000 );
-
   auto material = MeshNormalMaterial::create();
   auto geometry = CubeGeometry::create( 100, 100, 100 );
 
-  auto group = Object3D::create();
-  for ( int i = 0; i < 1000; i ++ ) {
+  auto root = Object3D::create();
+  root->position.x = 1000;
+  scene->add( root );
 
-    auto mesh = Mesh::create( geometry, material );
-    mesh->position.x = Math::random() * 2000 - 1000;
-    mesh->position.y = Math::random() * 2000 - 1000;
-    mesh->position.z = Math::random() * 2000 - 1000;
+  auto amount = 100;
+  auto parent = root;
 
-    mesh->rotation.x = Math::random() * 2 * Math::PI();
-    mesh->rotation.y = Math::random() * 2 * Math::PI();
+  auto add = [&geometry, &material]( Object3D::Ptr parent,
+                                     int amount,
+                                     Vector3 offset ) {
+    for ( int i = 0; i < amount; i ++ ) {
 
-    mesh->matrixAutoUpdate = false;
-    mesh->updateMatrix();
+      auto object = Mesh::create( geometry, material );
+      object->position = offset;
 
-    group->add( mesh );
+      parent->add( object );
+      parent = object;
 
-  }
-  scene->add( group );
+    }
+  };
 
-  auto light = DirectionalLight::create( 0xFFFFFF );
-  light->target = group;
-  scene->add( light );
+  add( root, amount, Vector3(-100,    0,    0) );
+  add( root, amount, Vector3( 100,    0,    0) );
+  add( root, amount, Vector3(   0, -100,    0) );
+  add( root, amount, Vector3(   0,  100,    0) );
+  add( root, amount, Vector3(   0,    0, -100) );
+  add( root, amount, Vector3(   0,    0,  100) );
 
   auto time = 0.f, mouseX = 0.f, mouseY = 0.f;
 
@@ -76,17 +79,19 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
         };
       }
 
-      camera->position.x += ( 1000.f * mouseX - camera->position.x ) * dt;
-      camera->position.y += ( 1000.f * mouseY - camera->position.y ) * dt;
+      camera->position.x += ( 3000.f * mouseX - camera->position.x ) * dt;
+      camera->position.y += ( 3000.f * mouseY - camera->position.y ) * dt;
       camera->lookAt( scene->position );
 
-      auto rx = Math::sin( time * 0.7f ) * 0.5f,
-           ry = Math::sin( time * 0.3f ) * 0.5f,
-           rz = Math::sin( time * 0.2f ) * 0.5f;
+      auto rx = Math::sin( time * 0.7f ) * 0.2f,
+           ry = Math::sin( time * 0.3f ) * 0.1f,
+           rz = Math::sin( time * 0.2f ) * 0.1f;
 
-      group->rotation.x = rx;
-      group->rotation.y = ry;
-      group->rotation.z = rz;
+      SceneUtils::traverseHierarchy( *root, [rx,ry,rz]( Object3D& object ) {
+        object.rotation.x = rx;
+        object.rotation.y = ry;
+        object.rotation.z = rz;
+      } );
 
       renderer->render( *scene, *camera );
       sdl::swapBuffers();
@@ -111,7 +116,7 @@ int main ( int argc, char* argv[] ) {
     return 0;
   }
 
-  geometry_hierarchy( renderer );
+  geometry_hierarchy_2( renderer );
 
   return 0;
 }

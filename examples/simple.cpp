@@ -5,6 +5,7 @@
 #include <three/objects/mesh.hpp>
 #include <three/extras/geometries/sphere_geometry.hpp>
 #include <three/materials/mesh_lambert_material.hpp>
+#include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
 #include <three/extras.hpp>
@@ -47,7 +48,7 @@ void simple( GLRenderer::Ptr renderer ) {
   float mouseX = 0, mouseY = 0;
 
   // Rendering
-  anim::gameLoop( [&]( float ) -> bool {
+  anim::gameLoop( [&]( float dt ) -> bool {
 
     SDL_Event event;
     while ( SDL_PollEvent( &event ) ) {
@@ -64,8 +65,8 @@ void simple( GLRenderer::Ptr renderer ) {
       };
     }
 
-    camera->position.x += ( 100.f * mouseX - camera->position.x );
-    camera->position.y += ( 100.f * mouseY - camera->position.y );
+    camera->position.x += ( 100.f * mouseX - camera->position.x ) * dt;
+    camera->position.y += ( 100.f * mouseY - camera->position.y ) * dt;
     camera->lookAt( scene->position );
 
     renderer->render( *scene, *camera );
@@ -80,7 +81,7 @@ int main( int argc, char* argv[] ) {
 
   auto onQuit = defer( SDL_Quit );
 
-  GLRenderer::Parameters parameters;
+  RendererParameters parameters;
 
   if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;

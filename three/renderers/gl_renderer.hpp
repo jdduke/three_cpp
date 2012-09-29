@@ -28,44 +28,18 @@ typedef std::vector<Light*>          Lights;
 typedef std::vector<std::string>     Identifiers;
 
 struct ProgramParameters;
+struct RendererParameters;
 
 class GLRenderer {
 public:
 
-  struct Parameters {
-    Parameters()
-      : width( 1024 ), height( 768 ),
-        vsync ( true ),
-        precision( THREE::PrecisionHigh ),
-        alpha( true ),
-        premultipliedAlpha( true ),
-        antialias( false ),
-        stencil( true ),
-        preserveDrawingBuffer( false ),
-        clearColor( 0 ),
-        clearAlpha( 0 ),
-        maxLights( 4 ) { }
-
-    int width, height;
-    bool vsync;
-    THREE::PrecisionType precision;
-    bool alpha;
-    bool premultipliedAlpha;
-    bool antialias;
-    bool stencil;
-    bool preserveDrawingBuffer;
-    Color clearColor;
-    float clearAlpha;
-    int maxLights;
-  };
-
   typedef std::shared_ptr<GLRenderer> Ptr;
 
-  THREE_DECL static Ptr create( const Parameters& parameters = Parameters() );
+  THREE_DECL static Ptr create( const RendererParameters& parameters );
 
 protected:
 
-  THREE_DECL GLRenderer( const Parameters& parameters );
+  THREE_DECL GLRenderer( const RendererParameters& parameters );
 
   int _width, _height;
   bool _vsync;

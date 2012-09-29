@@ -21,6 +21,7 @@
 
 #include <three/renderers/gl_render_target.hpp>
 #include <three/renderers/gl_shaders.hpp>
+#include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/renderables/renderable_object.hpp>
 
 #include <three/scenes/scene.hpp>
@@ -62,13 +63,13 @@ struct ProgramParameters {
   bool doubleSided;
 };
 
-GLRenderer::Ptr GLRenderer::create( const GLRenderer::Parameters& parameters /*= Parameters()*/ ) {
+GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters /*= Parameters()*/ ) {
   auto renderer = make_shared<GLRenderer>( parameters );
   renderer->initialize();
   return renderer;
 }
 
-GLRenderer::GLRenderer( const Parameters& parameters )
+GLRenderer::GLRenderer( const RendererParameters& parameters )
   : _width( parameters.width ),
     _height( parameters.height ),
     _vsync ( parameters.vsync ),
@@ -6106,6 +6107,8 @@ int GLRenderer::paramThreeToGL( int p ) {
   case THREE::AlphaFormat: return GL_ALPHA;
   case THREE::RGBFormat: return GL_RGB;
   case THREE::RGBAFormat: return GL_RGBA;
+  case THREE::BGRFormat: return GL_BGR;
+  case THREE::BGRAFormat: return GL_BGRA;
   case THREE::LuminanceFormat: return GL_LUMINANCE;
   case THREE::LuminanceAlphaFormat: return GL_LUMINANCE_ALPHA;
 

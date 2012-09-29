@@ -103,6 +103,10 @@ inline bool isPowerOfTwo( int value ) {
   return ( value != 0 ) && ( ( value & ( value - 1 ) ) == 0 );
 }
 
+inline int upperPowerOfTwo( int value ) {
+  return (int)pow( 2, ceil( log( value ) / log( 2 ) ) );
+}
+
 }
 
 } // namespace three

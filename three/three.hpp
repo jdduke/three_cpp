@@ -55,6 +55,7 @@
 #include <three/objects/particle.hpp>
 #include <three/objects/particle_system.hpp>
 
+#include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/renderers/gl_shaders.hpp>
 

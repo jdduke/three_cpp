@@ -2,9 +2,9 @@
 #define THREE_TEXTURE_HPP
 
 #include <three/common.hpp>
+#include <three/utils.hpp>
 
 #include <three/core/vector2.hpp>
-#include <three/core/vector3.hpp>
 
 #include <three/textures/texture_buffer.hpp>
 
@@ -13,25 +13,26 @@
 namespace three {
 
 struct Image {
+  Image() : width( 0 ), height ( 0 ), __glTextureCube( 0 ) { }
   Image( std::vector<unsigned char> data, int width, int height )
     : data( std::move( data ) ), width( width ), height( height ), __glTextureCube( 0 ) { }
+  bool valid() const { return data.size() > 0 && width > 0 && height > 0; }
   std::vector<unsigned char> data;
   int width, height;
   unsigned __glTextureCube;
 };
 
 struct TextureDesc {
-
   explicit TextureDesc( Image image,
+                        THREE::PixelFormat format = THREE::RGBAFormat,
                         THREE::Mapping mapping    = THREE::UVMapping,
                         THREE::Wrapping wrapS     = THREE::ClampToEdgeWrapping,
                         THREE::Wrapping wrapT     = THREE::ClampToEdgeWrapping,
                         THREE::Filter magFilter   = THREE::LinearFilter,
                         THREE::Filter minFilter   = THREE::LinearMipMapLinearFilter,
-                        THREE::PixelFormat format = THREE::RGBAFormat,
                         THREE::DataType dataType  = THREE::UnsignedByteType,
-                        float anisotropy            = 1 )
-    : image( image ),
+                        float anisotropy          = 1 )
+    : image( std::move( image ) ),
       wrapS( wrapS ),
       wrapT( wrapT ),
       magFilter( magFilter ),
@@ -54,7 +55,7 @@ public:
 
   typedef std::shared_ptr<Texture> Ptr;
 
-  static Ptr create( const TextureDesc& desc ) { return make_shared<Texture>( desc ); }
+  static Ptr create( const TextureDesc& desc ) { return three::make_shared<Texture>( desc ); }
 
   virtual THREE::TextureType type() const { return THREE::Texture; }
 

@@ -107,7 +107,15 @@ enum PixelFormat {
   RGBFormat            = 1020,
   RGBAFormat           = 1021,
   LuminanceFormat      = 1022,
-  LuminanceAlphaFormat = 1023
+  LuminanceAlphaFormat = 1023,
+  // JD - Added
+  BGRFormat            = 1024,
+  BGRAFormat           = 1025,
+
+  RGB_S3TC_DXT1_Format  = 2001,
+  RGBA_S3TC_DXT1_Format = 2002,
+  RGBA_S3TC_DXT3_Format = 2003,
+  RGBA_S3TC_DXT5_Format = 2004
 };
 
 enum Order {
@@ -117,6 +125,13 @@ enum Order {
   ZYX,
   YZX,
   XZY
+};
+
+enum Index {
+  X = 0,
+  Y,
+  Z,
+  W
 };
 
 enum Type {

@@ -2,6 +2,7 @@
 #include <three/objects/particle_system.hpp>
 #include <three/cameras/perspective_camera.hpp>
 #include <three/materials/particle_basic_material.hpp>
+#include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
 #include <three/extras.hpp>
@@ -59,7 +60,7 @@ void trails( GLRenderer::Ptr renderer ) {
   // Rendering
   anim::gameLoop (
 
-    [&](float) -> bool {
+    [&]( float dt ) -> bool {
 
       SDL_Event event;
       while ( SDL_PollEvent( &event ) ) {
@@ -75,8 +76,8 @@ void trails( GLRenderer::Ptr renderer ) {
         };
       }
 
-      camera->position.x += ( 1000.f * mouseX - camera->position.x );
-      camera->position.y += ( 1000.f * mouseY - camera->position.y );
+      camera->position.x += ( 1000.f * mouseX - camera->position.x ) * dt;
+      camera->position.y += ( 1000.f * mouseY - camera->position.y ) * dt;
       camera->lookAt( scene->position );
 
       renderer->render( *scene, *camera );
@@ -91,7 +92,7 @@ int main ( int argc, char* argv[] ) {
 
   auto onQuit = defer( SDL_Quit );
 
-  GLRenderer::Parameters parameters;
+  RendererParameters parameters;
   parameters.preserveDrawingBuffer = true;
 
   if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
