@@ -10,6 +10,8 @@
 
 #include <three/extras.hpp>
 
+#include <three/extras/utils/font.hpp>
+
 #include <three/extras/anim.hpp>
 #include <three/extras/sdl.hpp>
 #include <three/extras/glew.hpp>
@@ -68,7 +70,9 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
     mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
   });
 
-  auto time = 0.f;
+  auto font = utils::Font::create( "consolas.ttf" );
+
+  auto time = 0.f, lastDt = 0.f;
   anim::gameLoop (
 
     [&]( float dt ) -> bool {
@@ -90,6 +94,16 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
       group->rotation.z = rz;
 
       renderer->render( *scene, *camera );
+
+      auto fps = (int)( 1.f / (.9f * dt + 0.1f * lastDt) );
+      std::stringstream ss; ss << "FPS: " << fps;
+      if ( font ) {
+        /*font->render( ss.str().c_str(),
+                      200, 200,
+                      renderer->width(),
+                      renderer->height(),
+                      Color(0x00FF00) );*/
+      }
 
       sdl::swapBuffers();
 

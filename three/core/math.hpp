@@ -24,7 +24,7 @@ template < typename T > inline T atan( T t ) { return std::atan( t ); }
 template < typename T > inline T cos( T t )  { return std::cos( t ); }
 template < typename T > inline T sin( T t )  { return std::sin( t ); }
 template < typename T > inline T tan( T t )  { return std::tan( t ); }
-template < typename T > inline T log( T t )   { return std::log( t ); }
+template < typename T > inline T log( T t )  { return std::log( t ); }
 template < typename T, typename U > inline T pow( T a, U b )   { return std::pow( a, b ); }
 
 #if defined(_MSC_VER)
@@ -104,7 +104,7 @@ inline bool isPowerOfTwo( int value ) {
 }
 
 inline int upperPowerOfTwo( int value ) {
-  return (int)pow( 2, ceil( log( value ) / log( 2 ) ) );
+  return (int)pow( 2.f, ceil( log( (float)value ) / log( 2.f ) ) );
 }
 
 }

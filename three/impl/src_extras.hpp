@@ -10,4 +10,6 @@
 #include <three/extras/impl/image_utils.ipp>
 #include <three/extras/impl/sdl.ipp>
 
+#include <three/extras/utils/impl/font.ipp>
+
 #endif

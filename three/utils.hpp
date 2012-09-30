@@ -4,6 +4,7 @@
 #include <three/config.hpp>
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <unordered_map>
 #include <memory>

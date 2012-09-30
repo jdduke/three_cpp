@@ -122,7 +122,7 @@ inline DDS parseDDS( const std::vector<unsigned char>& buffer, bool loadMipmaps 
     return dds;
   }
 
-  if ( ! header[ off_pfFlags ] & DDPF_FOURCC ) {
+  if ( (header[ off_pfFlags ] & DDPF_FOURCC) != DDPF_FOURCC ) {
     console().error( "ImageUtils.parseDDS(): Unsupported format, must contain a FourCC code" );
     return dds;
   }
