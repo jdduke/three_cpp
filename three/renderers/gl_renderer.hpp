@@ -310,9 +310,9 @@ public:
 
   // Deallocation
 
-  THREE_DECL void deallocateObject( Object3D::Ptr object );
-  THREE_DECL void deallocateTexture( Texture::Ptr texture );
-  THREE_DECL void deallocateRenderTarget( GLRenderTarget::Ptr renderTarget );
+  THREE_DECL void deallocateObject( Object3D& object );
+  THREE_DECL void deallocateTexture( Texture& texture );
+  THREE_DECL void deallocateRenderTarget( GLRenderTarget& renderTarget );
   THREE_DECL void deallocateMaterial( Material& material );
 
   // Rendering

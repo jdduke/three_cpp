@@ -292,62 +292,62 @@ void GLRenderer::addPrePlugin( IPlugin::Ptr plugin ) {
 
 // Deallocation
 
-void GLRenderer::deallocateObject( Object3D::Ptr object ) {
+void GLRenderer::deallocateObject( Object3D& object ) {
 
-  if ( !object || ! object->glData.__glInit ) return;
+  if ( ! object.glData.__glInit ) return;
 
-  object->glData.clear();
+  object.glData.clear();
 
-  if ( !object->geometry ) {
+  if ( !object.geometry ) {
     console().warn( "Object3D contains no geometry" );
     return;
   }
 
-  auto& geometry = *object->geometry;
+  auto& geometry = *object.geometry;
 
-  if ( object->type() == THREE::Mesh ) {
+  if ( object.type() == THREE::Mesh ) {
     for ( auto& geometryGroup : geometry.geometryGroups ) {
       deleteMeshBuffers( geometryGroup.second );
     }
-  } else if ( object->type() == THREE::Ribbon ) {
+  } else if ( object.type() == THREE::Ribbon ) {
     deleteRibbonBuffers( geometry );
-  } else if ( object->type() == THREE::Line ) {
+  } else if ( object.type() == THREE::Line ) {
     deleteLineBuffers( geometry );
-  } else if ( object->type() == THREE::ParticleSystem ) {
+  } else if ( object.type() == THREE::ParticleSystem ) {
     deleteParticleBuffers( geometry );
   }
 
 }
 
-void GLRenderer::deallocateTexture( Texture::Ptr texture ) {
+void GLRenderer::deallocateTexture( Texture& texture ) {
 
-  if ( !texture || ! texture->__glInit ) return;
+  if ( ! texture.__glInit ) return;
 
-  texture->__glInit = false;
-  glDeleteTexture( texture->__glTexture );
+  texture.__glInit = false;
+  glDeleteTexture( texture.__glTexture );
 
   _info.memory.textures --;
 
 }
 
 
-void GLRenderer::deallocateRenderTarget( GLRenderTarget::Ptr renderTarget ) {
+void GLRenderer::deallocateRenderTarget( GLRenderTarget& renderTarget ) {
 
-  if ( !renderTarget || ! renderTarget->__glTexture ) return;
+  if ( ! renderTarget.__glTexture ) return;
 
-  glDeleteTexture( renderTarget->__glTexture );
+  glDeleteTexture( renderTarget.__glTexture );
 
-  for ( auto& frameBuffer : renderTarget->__glFramebuffer ) {
+  for ( auto& frameBuffer : renderTarget.__glFramebuffer ) {
     glDeleteFramebuffer( frameBuffer );
   }
 
-  renderTarget->__glFramebuffer.clear();
+  renderTarget.__glFramebuffer.clear();
 
-  for ( auto& renderBuffer : renderTarget->__glRenderbuffer ) {
+  for ( auto& renderBuffer : renderTarget.__glRenderbuffer ) {
     glDeleteRenderbuffer( renderBuffer );
   }
 
-  renderTarget->__glRenderbuffer.clear();
+  renderTarget.__glRenderbuffer.clear();
 
 }
 

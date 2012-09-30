@@ -2,7 +2,9 @@
 #include <three/cameras/perspective_camera.hpp>
 #include <three/objects/mesh.hpp>
 #include <three/extras/geometries/sphere_geometry.hpp>
+#include <three/lights/point_light.hpp>
 #include <three/materials/mesh_basic_material.hpp>
+#include <three/materials/mesh_lambert_material.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/scenes/fog.hpp>
@@ -49,10 +51,15 @@ void test_memory( GLRenderer::Ptr renderer ) {
 
   auto camera = PerspectiveCamera::create(
     60, (float)renderer->width() / renderer->height(), 1, 10000
-    );
+  );
   camera->position.z = 200;
 
   auto scene = Scene::create();
+
+  // Lights
+  auto pointLight = PointLight::create( 0xFFFFFF );
+  pointLight->position = Vector3( 10, 50, 130 );
+  scene->add( pointLight );
 
   anim::gameLoop (
 
@@ -67,21 +74,19 @@ void test_memory( GLRenderer::Ptr renderer ) {
       auto texture = Texture::create( TextureDesc( createImage(), THREE::RGBFormat ) );
       texture->needsUpdate = true;
 
-      auto material = MeshBasicMaterial::create(
+      auto material = MeshLambertMaterial::create(//MeshBasicMaterial::create(
         Material::Parameters().add( "map", texture )
-                              .add( "wireframe", true )
-        );
+      );
 
       auto mesh = Mesh::create( geometry, material );
 
       scene->add( mesh );
-
       renderer->render( *scene, *camera );
-
       scene->remove( mesh );
 
-      renderer->deallocateObject( mesh );
-      renderer->deallocateTexture( texture );
+      renderer->deallocateObject( *mesh );
+      renderer->deallocateTexture( *texture );
+      renderer->deallocateMaterial( *material );
 
       sdl::swapBuffers();
 
