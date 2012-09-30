@@ -33,6 +33,7 @@ struct TextureDesc {
                         THREE::DataType dataType  = THREE::UnsignedByteType,
                         float anisotropy          = 1 )
     : image( std::move( image ) ),
+      mapping( mapping ),
       wrapS( wrapS ),
       wrapT( wrapT ),
       magFilter( magFilter ),

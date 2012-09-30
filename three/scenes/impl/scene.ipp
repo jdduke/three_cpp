@@ -20,7 +20,18 @@ Scene::Scene()
 
 namespace detail {
 
-struct Add : public Visitor {
+struct FallbackVisitor : public Visitor {
+  //TODO: virtual void operator()( Bone& o )     { fallback(o); }
+  virtual void operator()( Camera& o )   { fallback(o); }
+  virtual void operator()( Light& o )    { fallback(o); }
+  virtual void operator()( Scene& o )    { fallback(o); }
+  virtual void operator()( Particle& o ) { fallback(o); }
+  //TODO: virtual void operator()( Sprite& o )   { fallback(o); }
+  virtual void operator()( Mesh& o )     { fallback(o); }
+  virtual void operator()( Line& o )     { fallback(o); }
+};
+
+struct Add : public FallbackVisitor {
   Add( Scene& s, Object3D::Ptr& o )
     : s( s ), object( o ) { }
 
@@ -32,7 +43,6 @@ struct Add : public Visitor {
       erase( s.__objectsRemoved, object );
     }
   }
-  void operator()( Scene& s ) { fallback( s ); }
   void operator()( Light& l ) {
     push_unique( s.__lights, &l );
     if ( l.target && l.target->parent == nullptr ) {
@@ -41,16 +51,12 @@ struct Add : public Visitor {
   }
   void operator()( Bone& ) { }
   void operator()( Camera& ) { }
-  void operator()( Particle& p ) { fallback( p ); }
-  //void operator() ( Sprite& s)    { fallback(s); }
-  void operator()( Mesh& m )      { fallback( m ); }
-  void operator()( Line& l )      { fallback( l ); }
 
   Scene& s;
   Object3D::Ptr& object;
 };
 
-struct Remove : public Visitor {
+struct Remove : public FallbackVisitor {
   Remove( Scene& s, Object3D::Ptr& o ) : s( s ), object( o ) { }
   void operator()( Object3D& o ) {
     if ( erase( s.__objects, &o ) ) {
@@ -59,10 +65,8 @@ struct Remove : public Visitor {
     }
   }
 
-  void operator()( Scene& s ) { fallback( s ); }
-  void operator()( Light& l ) { erase( s.__lights, &l ); }
-  void operator()( Bone& ) { }
-  void operator()( Camera& ) { }
+  void operator()( Light& o ) { erase( s.__lights, &o ); }
+  void operator()( Camera& o ) { }
 
   Scene& s;
   Object3D::Ptr& object;

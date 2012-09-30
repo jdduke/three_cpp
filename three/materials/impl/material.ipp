@@ -223,6 +223,12 @@ void Material::setParameters( const Parameters& parameters,
   PARAM_LOAD( fog );
   PARAM_LOAD( lights );
   PARAM_LOAD( shadowPass );
+
+  PARAM_LOAD( map );
+  PARAM_LOAD( specularMap );
+  PARAM_LOAD( envMap );
+  PARAM_LOAD( bumpMap );
+  PARAM_LOAD( lightMap );
 }
 
 #undef PARAM_LOAD

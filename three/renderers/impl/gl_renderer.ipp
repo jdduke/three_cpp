@@ -3948,33 +3948,25 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
 void GLRenderer::initGLObjects( Scene& scene ) {
 
-  /*
-    scene.__glObjects. = [];
-    scene.__glObjectsImmediate = [];
-    scene.__glSprites = [];
-    scene.__glFlares = [];
-    */
+    scene.__glObjects.clear();
+    scene.__glObjectsImmediate.clear();
+    scene.__glSprites.clear();
+    scene.__glFlares.clear();
 
   while ( scene.__objectsAdded.size() ) {
-
     addObject( *scene.__objectsAdded[ 0 ], scene );
     scene.__objectsAdded.erase( scene.__objectsAdded.begin() );
-
   }
 
   while ( scene.__objectsRemoved.size() ) {
-
     removeObject( *scene.__objectsRemoved[ 0 ], scene );
     scene.__objectsRemoved.erase( scene.__objectsRemoved.begin() );
-
   }
 
   // update must be called after objects adding / removal
 
   for ( auto& glObject : scene.__glObjects ) {
-
     updateObject( *glObject.object );
-
   }
 
 }
@@ -4670,40 +4662,28 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
   Texture* uvScaleMap = nullptr;
 
   if ( material.map ) {
-
     uvScaleMap = material.map.get();
-
   } else if ( material.specularMap ) {
-
     uvScaleMap = material.specularMap.get();
-
   } else if ( material.bumpMap ) {
-
     uvScaleMap = material.bumpMap.get();
-
   }
 
   if ( uvScaleMap ) {
-
     const auto& offset = uvScaleMap->offset;
     const auto& repeat = uvScaleMap->repeat;
 
     uniforms["offsetRepeat"].value = Vector4( offset.x, offset.y, repeat.x, repeat.y );
-
   }
 
   uniforms["envMap"].texture = material.envMap.get();
   uniforms["flipEnvMap"].value = ( material.envMap && material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
 
   if ( gammaInput ) {
-
     //uniforms.reflectivity.value = material.reflectivity * material.reflectivity;
     uniforms["reflectivity"].value = material.reflectivity;
-
   } else {
-
     uniforms["reflectivity"].value = material.reflectivity;
-
   }
 
   uniforms["refractionRatio"].value = material.refractionRatio;
@@ -4888,17 +4868,11 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms )
       const auto& value = uniform.value.cast<int>();
 
       if ( texture.image.size() == 6 ) {
-
         setCubeTexture( texture, value );
-
       } else if ( texture.type() == THREE::GLRenderTargetCube ) {
-
         setCubeTextureDynamic( texture, value );
-
       } else {
-
         setTexture( texture, value );
-
       }
 
     }
