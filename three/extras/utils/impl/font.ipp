@@ -1,9 +1,12 @@
 #ifndef THREE_FONT_IPP
 #define THREE_FONT_IPP
 
+#include <three/common.hpp>
+#include <three/utils.hpp>
+
 #include <three/extras/utils/font.hpp>
 
-#include <three/common.hpp>
+#include <three/gl.hpp>
 #include <three/core/color.hpp>
 #include <three/core/vector2.hpp>
 #include <three/core/vector4.hpp>
@@ -209,10 +212,6 @@ void Font::render( const char* text,
     ++text;
   }
 
-  glDisableVertexAttribArray( vertexAttribute );
-  glDisableVertexAttribArray( texcoordAttribute );
-
-  glUseProgram( 0 );
   glBindVertexArray( 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -314,6 +313,7 @@ bool Font::initialize( const std::string& ttf,
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
+  return true;
 }
 
 } // namespace utisln

@@ -18,6 +18,7 @@ class Mesh;
 class Face;
 class Line;
 class Rectangle;
+class Color;
 class Vector2;
 class Vector3;
 class Vector4;

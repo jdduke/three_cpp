@@ -72,7 +72,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
   auto font = utils::Font::create( "consolas.ttf" );
 
-  auto time = 0.f, lastDt = 0.f;
+  auto time = 0.f, lastDt = 0.f, fps = 60.f;
   anim::gameLoop (
 
     [&]( float dt ) -> bool {
@@ -95,14 +95,21 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
       renderer->render( *scene, *camera );
 
-      auto fps = (int)( 1.f / (.9f * dt + 0.1f * lastDt) );
-      std::stringstream ss; ss << "FPS: " << fps;
       if ( font ) {
-        /*font->render( ss.str().c_str(),
-                      200, 200,
-                      renderer->width(),
-                      renderer->height(),
-                      Color(0x00FF00) );*/
+
+        static int count = 0;
+        if ( count++ % 60 == 0 ) {
+          fps = Math::ceil( 1.f / (.5f * dt + 0.5f * lastDt) );
+        }
+        lastDt = dt;
+
+        std::stringstream ss; ss << "FPS: " << (int)fps;
+        font->render( ss.str().c_str(),
+                      10.f, (float)renderer->height() - 30.f,
+                      (float)renderer->width(),
+                      (float)renderer->height(),
+                      Color(0x00FF00) );
+        renderer->resetStates();
       }
 
       sdl::swapBuffers();

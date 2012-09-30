@@ -3666,35 +3666,12 @@ void GLRenderer::renderPlugins( std::vector<IPlugin::Ptr>& plugins, Scene& scene
 
     // reset state for plugin (to start from clean slate)
 
-    _currentProgram = 0;
-    _currentCamera = 0;
-
-    _oldBlending = -1;
-    _oldDepthTest = -1;
-    _oldDepthWrite = -1;
-    _oldDoubleSided = -1;
-    _oldFlipSided = -1;
-    _currentGeometryGroupHash = -1;
-    _currentMaterialId = -1;
-
-    _lightsNeedUpdate = true;
+    resetStates();
 
     plugin->render( scene, camera, _currentWidth, _currentHeight );
 
     // reset state after plugin (anything could have changed)
-
-    _currentProgram = 0;
-    _currentCamera = 0;
-
-    _oldBlending = -1;
-    _oldDepthTest = -1;
-    _oldDepthWrite = -1;
-    _oldDoubleSided = -1;
-    _oldFlipSided = -1;
-    _currentGeometryGroupHash = -1;
-    _currentMaterialId = -1;
-
-    _lightsNeedUpdate = true;
+    resetStates();
 
   }
 
@@ -5361,6 +5338,21 @@ void GLRenderer::setBlending( THREE::Blending blending,
 
   }
 
+}
+
+void GLRenderer::resetStates() {
+  _currentProgram = 0;
+  _currentCamera = 0;
+
+  _oldBlending = -1;
+  _oldDepthTest = -1;
+  _oldDepthWrite = -1;
+  _oldDoubleSided = -1;
+  _oldFlipSided = -1;
+  _currentGeometryGroupHash = -1;
+  _currentMaterialId = -1;
+
+  _lightsNeedUpdate = true;
 }
 
 // Shaders

@@ -466,7 +466,7 @@ public:
                     THREE::BlendEquation blendEquation = THREE::AddEquation,
                     THREE::BlendFactor blendSrc = THREE::OneFactor,
                     THREE::BlendFactor blendDst = THREE::OneFactor );
-
+  THREE_DECL void resetStates();
 
   // Shaders
 

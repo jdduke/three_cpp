@@ -12,7 +12,7 @@ namespace anim {
 
 class AnimFrameRequest : public NonCopyable {
 public:
-  explicit AnimFrameRequest( float frameRate = 60, bool printStats = true )
+  explicit AnimFrameRequest( float frameRate = 60, bool printStats = false )
     : frameTime( 1.f / frameRate ),
       lastTime( clock.getElapsedTime() ),
       printStats( printStats ),
@@ -71,12 +71,12 @@ private:
 typedef std::function<bool( float )> Update;
 typedef std::function<bool( float )> Render;
 
-void gameLoop( Update update, float frameRate = 60, bool printStats = true ) {
+void gameLoop( Update update, float frameRate = 60, bool printStats = false ) {
   anim::AnimFrameRequest requestAnimFrame( frameRate, printStats );
   while ( requestAnimFrame( update ) ) ;
 }
 
-void gameLoop( Update update, Render render, float frameRate = 60, bool printStats = true ) {
+void gameLoop( Update update, Render render, float frameRate = 60, bool printStats = false ) {
   return gameLoop( [&]( float dt ) {
     return update( dt ) && render( dt );
   }, frameRate, printStats );
