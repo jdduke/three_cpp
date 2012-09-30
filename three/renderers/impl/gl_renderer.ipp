@@ -3936,10 +3936,10 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
 void GLRenderer::initGLObjects( Scene& scene ) {
 
-    scene.__glObjects.clear();
+    /*scene.__glObjects.clear();
     scene.__glObjectsImmediate.clear();
     scene.__glSprites.clear();
-    scene.__glFlares.clear();
+    scene.__glFlares.clear();*/
 
   while ( scene.__objectsAdded.size() ) {
     addObject( *scene.__objectsAdded[ 0 ], scene );
