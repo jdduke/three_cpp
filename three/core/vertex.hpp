@@ -7,12 +7,7 @@
 
 namespace three {
 
-class Vertex {
-public:
-
-  Vector3 position;
-
-};
+//typedef Vector3 Vertex;
 
 } // namespace three
 

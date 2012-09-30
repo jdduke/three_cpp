@@ -464,7 +464,7 @@ const char* ShaderChunk::lights_phong_vertex() {
     "if ( pointLightDistance[ i ] > 0.0 )\n"
     "lDistance = 1.0 - min( ( length( lVector ) / pointLightDistance[ i ] ), 1.0 );\n"
 
-    "vPointLight[ i ] = vec4( lVector lDistance );\n"
+    "vPointLight[ i ] = vec4( lVector, lDistance );\n"
     "}\n"
     "#endif\n"
 
@@ -521,7 +521,7 @@ const char* ShaderChunk::lights_phong_pars_fragment() {
     "#else\n"
     "varying vec4 vSpotLight[ MAX_SPOT_LIGHTS ];\n"
     "#endif\n"
-    "#endif"
+    "#endif\n"
 
     "#if MAX_SPOT_LIGHTS > 0 || defined( USE_BUMPMAP )\n"
     "varying vec3 vWorldPosition;\n"
@@ -575,8 +575,8 @@ const char* ShaderChunk::lights_phong_fragment() {
 
     "#else;\n"
 
-    "vec3 lVector = normalize( vPointLight[ i }.xyz );\n"
-    "float lDistance = vPointLight[ i }.w;\n"
+    "vec3 lVector = normalize( vPointLight[ i ].xyz );\n"
+    "float lDistance = vPointLight[ i ].w;\n"
 
     "#endif;\n"
 
@@ -644,8 +644,8 @@ const char* ShaderChunk::lights_phong_fragment() {
 
     "#else\n"
 
-    "vec3 lVector = normalize( vSpotLight[ i }.xyz );\n"
-    "float lDistance = vSpotLight[ i }.w;\n"
+    "vec3 lVector = normalize( vSpotLight[ i ].xyz );\n"
+    "float lDistance = vSpotLight[ i ].w;\n"
 
     "#endif\n"
 
@@ -1085,7 +1085,7 @@ const char* ShaderChunk::shadowmap_fragment() {
 
     "for( int i = 0; i < MAX_SHADOWS; i ++ ) {\n"
 
-    "vec3 shadowCoord = vShadowCoord[ i }.xyz / vShadowCoord[ i }.w;\n"
+    "vec3 shadowCoord = vShadowCoord[ i ].xyz / vShadowCoord[ i ].w;\n"
 
     // "if ( something && something )"     breaks ATI OpenGL shader compiler
     // "if ( all( something something ) )"  using this instead
@@ -1129,7 +1129,7 @@ const char* ShaderChunk::shadowmap_fragment() {
     "vec4 rgbaDepth = texture2D( shadowMap[ i ], vec2( x * xPixelOffset y * yPixelOffset ) + shadowCoord.xy );\n"
 
     // doesn't seem to produce any noticeable visual difference compared to simple "texture2D" lookup
-    //"vec4 rgbaDepth = texture2DProj( shadowMap[ i ], vec4( vShadowCoord[ i }.w * ( vec2( x * xPixelOffset y * yPixelOffset ) + shadowCoord.xy ) 0.05 vShadowCoord[ i }.w ) );\n"
+    //"vec4 rgbaDepth = texture2DProj( shadowMap[ i ], vec4( vShadowCoord[ i ].w * ( vec2( x * xPixelOffset y * yPixelOffset ) + shadowCoord.xy ) 0.05 vShadowCoord[ i ].w ) );\n"
 
     "float fDepth = unpackDepth( rgbaDepth );\n"
 
@@ -1144,8 +1144,8 @@ const char* ShaderChunk::shadowmap_fragment() {
 
     "const float shadowDelta = 1.0 / 9.0;\n"
 
-    "float xPixelOffset = 1.0 / shadowMapSize[ i }.x;\n"
-    "float yPixelOffset = 1.0 / shadowMapSize[ i }.y;\n"
+    "float xPixelOffset = 1.0 / shadowMapSize[ i ].x;\n"
+    "float yPixelOffset = 1.0 / shadowMapSize[ i ].y;\n"
 
     "float dx0 = -1.25 * xPixelOffset;\n"
     "float dy0 = -1.25 * yPixelOffset;\n"

@@ -29,7 +29,7 @@ void Geometry::applyMatrix( const Matrix4& matrix ) {
   matrixRotation.extractRotation( matrix );
 
   for ( auto& vertex : vertices ) {
-    matrix.multiplyVector3( vertex.position );
+    matrix.multiplyVector3( vertex );
   }
 
   for ( auto& face : faces ) {
@@ -53,7 +53,7 @@ void Geometry::computeCentroids() {
     face.centroid.set( 0, 0, 0 );
 
     for ( auto i = 0; i < face.size(); ++i ) {
-      face.centroid.addSelf( vertices[ face.abcd[ i ] ].position );
+      face.centroid.addSelf( vertices[ face.abcd[ i ] ] );
     }
 
     face.centroid.divideScalar( ( float )face.size() );
@@ -70,8 +70,8 @@ void Geometry::computeFaceNormals() {
     auto& vB = vertices[ face.b ];
     auto& vC = vertices[ face.c ];
 
-    auto cb = sub( vC.position, vB.position );
-    auto ab = sub( vA.position, vB.position );
+    auto cb = sub( vC, vB );
+    auto ab = sub( vA, vB );
     cb.crossSelf( ab );
 
     if ( !cb.isZero() ) {
@@ -125,9 +125,9 @@ void Geometry::computeTangents() {
 
   auto handleTriangle = [&, this]( const std::array<UV, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
 
-    const auto& vA = vertices[ a ].position;
-    const auto& vB = vertices[ b ].position;
-    const auto& vC = vertices[ c ].position;
+    const auto& vA = vertices[ a ];
+    const auto& vB = vertices[ b ];
+    const auto& vC = vertices[ c ];
 
     const auto uvA = uv[ ua ];
     const auto uvB = uv[ ub ];
@@ -218,7 +218,7 @@ void Geometry::computeBoundingBox() {
 
   if ( vertices.size() > 0 ) {
 
-    Box bb( vertices[ 0 ].position, vertices[ 0 ].position );
+    Box bb( vertices[ 0 ], vertices[ 0 ] );
 
     for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
       bb.bound( vertices [ v ] );
@@ -236,7 +236,7 @@ void Geometry::computeBoundingSphere() {
   auto radius = 0.f;
 
   for ( const auto& vertex : vertices ) {
-    radius = Math::max( radius, vertex.position.length() );
+    radius = Math::max( radius, vertex.length() );
   }
 
   boundingSphere.radius = radius;
@@ -262,7 +262,7 @@ void Geometry::mergeVertices() {
 
   for ( size_t i = 0, il = vertices.size(); i < il; i ++ ) {
 
-    const auto& v = vertices[ i ].position;
+    const auto& v = vertices[ i ];
     auto key = std::make_tuple( ( int )Math::round( v.x * precision ), ( int )Math::round( v.y * precision ), ( int )Math::round( v.z * precision ) );
 
     auto vertexIter = verticesMap.find( key );

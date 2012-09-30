@@ -35,9 +35,9 @@ void trails( GLRenderer::Ptr renderer ) {
 
   for ( int i = 0; i < 2000; i ++ ) {
     Vertex vertex;
-    vertex.position.x = Math::random(-2000.f, 2000.f);
-    vertex.position.y = Math::random(-2000.f, 2000.f);
-    vertex.position.z = Math::random(-2000.f, 2000.f);
+    vertex.x = Math::random(-2000.f, 2000.f);
+    vertex.y = Math::random(-2000.f, 2000.f);
+    vertex.z = Math::random(-2000.f, 2000.f);
     geometry->vertices.push_back( vertex );
     geometry->colors.push_back( colors[ (int)Math::floor( Math::random() * colors.size() ) ] );
   }

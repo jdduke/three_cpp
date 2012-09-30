@@ -28,7 +28,7 @@ protected:
 
   MeshBasicMaterial( const Parameters& parameters )
     : Material() {
-    fog = true;
+    //fog = true;
     setParameters( parameters, DefaultKeys() );
   }
 

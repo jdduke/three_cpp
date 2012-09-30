@@ -35,10 +35,6 @@ struct Box {
   Box( const Vector3& min, const Vector3& max )
     : min( min ), max( max ) { }
 
-  void bound( const Vertex& vertex ) {
-    bound( vertex.position );
-  }
-
   void bound( const Vector3& pos ) {
     if ( pos.x < min.x ) {
       min.x = pos.x;

@@ -131,9 +131,9 @@ protected:
       for ( int ix = 0; ix < gridX1; ix ++ ) {
 
         Vertex vertex;
-        vertex.position[ u ] = ( ix * segment_width - width_half ) * udir;
-        vertex.position[ v ] = ( iy * segment_height - height_half ) * vdir;
-        vertex.position[ w ] = depth;
+        vertex[ u ] = ( ix * segment_width - width_half ) * udir;
+        vertex[ v ] = ( iy * segment_height - height_half ) * vdir;
+        vertex[ w ] = depth;
         vertices.push_back( vertex );
 
       }

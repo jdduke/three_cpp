@@ -162,9 +162,9 @@ public:
 
           if ( face.type() == THREE::Face3 ) {
 
-            auto a = objMatrix.multiplyVector3( vertices[ face.a ].position );
-            auto b = objMatrix.multiplyVector3( vertices[ face.b ].position );
-            auto c = objMatrix.multiplyVector3( vertices[ face.c ].position );
+            auto a = objMatrix.multiplyVector3( vertices[ face.a ] );
+            auto b = objMatrix.multiplyVector3( vertices[ face.b ] );
+            auto c = objMatrix.multiplyVector3( vertices[ face.c ] );
 
             if ( pointInFace3( intersectPoint, a, b, c ) ) {
 
@@ -175,10 +175,10 @@ public:
 
           } else if ( face.type() == THREE::Face4 ) {
 
-            auto a = objMatrix.multiplyVector3( vertices[ face.a ].position );
-            auto b = objMatrix.multiplyVector3( vertices[ face.b ].position );
-            auto c = objMatrix.multiplyVector3( vertices[ face.c ].position );
-            auto d = objMatrix.multiplyVector3( vertices[ face.d ].position );
+            auto a = objMatrix.multiplyVector3( vertices[ face.a ] );
+            auto b = objMatrix.multiplyVector3( vertices[ face.b ] );
+            auto c = objMatrix.multiplyVector3( vertices[ face.c ] );
+            auto d = objMatrix.multiplyVector3( vertices[ face.d ] );
 
             if ( pointInFace3( intersectPoint, a, b, d ) || pointInFace3( intersectPoint, b, c, d ) ) {
 

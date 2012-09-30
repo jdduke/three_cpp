@@ -4,6 +4,7 @@
 #include <three/extras/geometries/sphere_geometry.hpp>
 #include <three/lights/point_light.hpp>
 #include <three/materials/mesh_basic_material.hpp>
+#include <three/materials/mesh_phong_material.hpp>
 #include <three/materials/mesh_lambert_material.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
@@ -74,8 +75,11 @@ void test_memory( GLRenderer::Ptr renderer ) {
       auto texture = Texture::create( TextureDesc( createImage(), THREE::RGBFormat ) );
       texture->needsUpdate = true;
 
-      auto material = MeshLambertMaterial::create(//MeshBasicMaterial::create(
+      auto material = MeshPhongMaterial::create(
+                      //MeshLambertMaterial::create(
+                      //MeshBasicMaterial::create(
         Material::Parameters().add( "map", texture )
+                              .add( "wireframe", true )
       );
 
       auto mesh = Mesh::create( geometry, material );

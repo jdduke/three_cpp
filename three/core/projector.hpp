@@ -206,7 +206,7 @@ public:
       for ( const auto& v : vertices ) {
 
         auto& vertex = p._vertices.next();
-        vertex.positionWorld.copy( v.position );
+        vertex.positionWorld.copy( v );
 
         modelMatrix.multiplyVector3( vertex.positionWorld );
 
@@ -355,7 +355,7 @@ public:
       auto& vertices = object.geometry->vertices;
 
       auto& v1 = p._vertices.next();
-      v1.positionScreen.copy( vertices[ 0 ].position );
+      v1.positionScreen.copy( vertices[ 0 ] );
       p._modelViewProjectionMatrix.multiplyVector4( v1.positionScreen );
 
       // Handle LineStrip and LinePieces
@@ -364,7 +364,7 @@ public:
       for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
         auto& v1 = p._vertices.next();
-        v1.positionScreen.copy( vertices[ v ].position );
+        v1.positionScreen.copy( vertices[ v ] );
         p._modelViewProjectionMatrix.multiplyVector4( v1.positionScreen );
 
         if ( ( v + 1 ) % step > 0 ) continue;

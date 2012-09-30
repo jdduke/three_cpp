@@ -61,9 +61,9 @@ protected:
         const auto v = ( float )y / segmentsY;
 
         Vertex vertex;
-        vertex.position.x = - radius * Math::cos( phiStart + u * phiLength ) * Math::sin( thetaStart + v * thetaLength );
-        vertex.position.y = radius * Math::cos( thetaStart + v * thetaLength );
-        vertex.position.z = radius * Math::sin( phiStart + u * phiLength ) * Math::sin( thetaStart + v * thetaLength );
+        vertex.x = - radius * Math::cos( phiStart + u * phiLength ) * Math::sin( thetaStart + v * thetaLength );
+        vertex.y = radius * Math::cos( thetaStart + v * thetaLength );
+        vertex.z = radius * Math::sin( phiStart + u * phiLength ) * Math::sin( thetaStart + v * thetaLength );
 
         vertices.push_back( vertex );
 
@@ -86,22 +86,22 @@ protected:
         const auto v3 = indices[ y + 1 ][ x ];
         const auto v4 = indices[ y + 1 ][ x + 1 ];
 
-        const auto n1 = vertices[ v1 ].position.clone().normalize();
-        const auto n2 = vertices[ v2 ].position.clone().normalize();
-        const auto n3 = vertices[ v3 ].position.clone().normalize();
-        const auto n4 = vertices[ v4 ].position.clone().normalize();
+        const auto n1 = vertices[ v1 ].clone().normalize();
+        const auto n2 = vertices[ v2 ].clone().normalize();
+        const auto n3 = vertices[ v3 ].clone().normalize();
+        const auto n4 = vertices[ v4 ].clone().normalize();
 
         const auto& uv1 = uvs[ y ][ x + 1 ];
         const auto& uv2 = uvs[ y ][ x ];
         const auto& uv3 = uvs[ y + 1 ][ x ];
         const auto& uv4 = uvs[ y + 1 ][ x + 1 ];
 
-        if ( Math::abs( vertices[ v1 ].position.y ) == radius ) {
+        if ( Math::abs( vertices[ v1 ].y ) == radius ) {
 
           faces.push_back( Face3( v1, v3, v4, n1, n3, n4 ) );
           faceVertexUvs[ 0 ].push_back( toArray( uv1, uv3, uv4 ) );
 
-        } else if ( Math::abs( vertices[ v3 ].position.y ) ==  radius ) {
+        } else if ( Math::abs( vertices[ v3 ].y ) ==  radius ) {
 
           faces.push_back( Face3( v1, v2, v3, n1, n2, n3 ) );
           faceVertexUvs[ 0 ].push_back( toArray( uv1, uv2, uv3 ) );

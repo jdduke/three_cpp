@@ -365,32 +365,20 @@ void GLRenderer::deallocateMaterial( Material& material ) {
 
   auto deleteProgram = false;
 
-  for ( auto& programInfo : _programs ) {
+  auto programCmp = [&]( const ProgramInfo& programInfo ) {
+    return programInfo.program == program;
+  };
 
-    if ( programInfo.program == program ) {
-      programInfo.usedTimes--;
-      if ( programInfo.usedTimes == 0 ) {
-        deleteProgram = true;
-      }
+  auto programIt = std::find_if( _programs.begin(), _programs.end(), programCmp );
 
-      break;
-    }
+  if ( programIt == _programs.end() )
+    return;
 
-  }
+  if ( --programIt->usedTimes == 0 ) {
 
-  if ( deleteProgram ) {
-
-    decltype( _programs ) newPrograms;
-
-    for ( auto& programInfo : _programs ) {
-      if ( programInfo.program != program ) {
-        newPrograms.push_back( programInfo );
-      }
-    }
-
-    _programs = std::move( newPrograms );
     glDeleteProgram( program->program );
     _info.memory.programs --;
+    _programs.erase( std::remove_if(_programs.begin(), _programs.end(), programCmp) );
 
   }
 
@@ -893,7 +881,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
       const auto& vertex = vertices[ v ];
 
-      _vector3.copy( vertex.position );
+      _vector3.copy( vertex );
       _projScreenMatrixPS.multiplyVector3( _vector3 );
 
       // push_back ?
@@ -911,7 +899,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     for ( int v = 0; v < vl; v ++ ) {
 
-      const auto& vertex = vertices[ sortArray[v].second ].position;
+      const auto& vertex = vertices[ sortArray[v].second ];
 
       offset = v * 3;
 
@@ -1032,7 +1020,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
       for ( int v = 0; v < vl; v ++ ) {
 
-        const auto& vertex = vertices[ v ].position;
+        const auto& vertex = vertices[ v ];
 
         offset = v * 3;
 
@@ -1191,7 +1179,7 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
     for ( v = 0; v < vl; v ++ ) {
 
-      const auto& vertex = vertices[ v ].position;
+      const auto& vertex = vertices[ v ];
 
       offset = v * 3;
 
@@ -1332,7 +1320,7 @@ void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
 
     for ( v = 0; v < vl; v ++ ) {
 
-      const auto& vertex = vertices[ v ].position;
+      const auto& vertex = vertices[ v ];
 
       offset = v * 3;
 
@@ -1450,9 +1438,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& v1 = vertices[ face.a ].position;
-      const auto& v2 = vertices[ face.b ].position;
-      const auto& v3 = vertices[ face.c ].position;
+      const auto& v1 = vertices[ face.a ];
+      const auto& v2 = vertices[ face.b ];
+      const auto& v3 = vertices[ face.c ];
 
       vertexArray[ offset ]     = v1.x;
       vertexArray[ offset + 1 ] = v1.y;
@@ -1474,10 +1462,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& v1 = vertices[ face.a ].position;
-      const auto& v2 = vertices[ face.b ].position;
-      const auto& v3 = vertices[ face.c ].position;
-      const auto& v4 = vertices[ face.d ].position;
+      const auto& v1 = vertices[ face.a ];
+      const auto& v2 = vertices[ face.b ];
+      const auto& v3 = vertices[ face.c ];
+      const auto& v4 = vertices[ face.d ];
 
       vertexArray[ offset ]     = v1.x;
       vertexArray[ offset + 1 ] = v1.y;
@@ -1515,9 +1503,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         // morph positions
 
-        const auto& v1 = morphTargets[ vk ].vertices[ face.a ].position;
-        const auto& v2 = morphTargets[ vk ].vertices[ face.b ].position;
-        const auto& v3 = morphTargets[ vk ].vertices[ face.c ].position;
+        const auto& v1 = morphTargets[ vk ].vertices[ face.a ];
+        const auto& v2 = morphTargets[ vk ].vertices[ face.b ];
+        const auto& v3 = morphTargets[ vk ].vertices[ face.c ];
 
         auto& vka = morphTargetsArrays[ vk ];
 
@@ -1593,21 +1581,21 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         auto& vka = morphTargetsArrays[ vk ];
 
-        vka[ offset_morphTarget ]     = v1.position.x;
-        vka[ offset_morphTarget + 1 ] = v1.position.y;
-        vka[ offset_morphTarget + 2 ] = v1.position.z;
+        vka[ offset_morphTarget ]     = v1.x;
+        vka[ offset_morphTarget + 1 ] = v1.y;
+        vka[ offset_morphTarget + 2 ] = v1.z;
 
-        vka[ offset_morphTarget + 3 ] = v2.position.x;
-        vka[ offset_morphTarget + 4 ] = v2.position.y;
-        vka[ offset_morphTarget + 5 ] = v2.position.z;
+        vka[ offset_morphTarget + 3 ] = v2.x;
+        vka[ offset_morphTarget + 4 ] = v2.y;
+        vka[ offset_morphTarget + 5 ] = v2.z;
 
-        vka[ offset_morphTarget + 6 ] = v3.position.x;
-        vka[ offset_morphTarget + 7 ] = v3.position.y;
-        vka[ offset_morphTarget + 8 ] = v3.position.z;
+        vka[ offset_morphTarget + 6 ] = v3.x;
+        vka[ offset_morphTarget + 7 ] = v3.y;
+        vka[ offset_morphTarget + 8 ] = v3.z;
 
-        vka[ offset_morphTarget + 9 ]  = v4.position.x;
-        vka[ offset_morphTarget + 10 ] = v4.position.y;
-        vka[ offset_morphTarget + 11 ] = v4.position.z;
+        vka[ offset_morphTarget + 9 ]  = v4.x;
+        vka[ offset_morphTarget + 10 ] = v4.y;
+        vka[ offset_morphTarget + 11 ] = v4.z;
 
         // morph normals
 
@@ -4634,13 +4622,9 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
   uniforms["opacity"].value = material.opacity;
 
   if ( gammaInput ) {
-
     uniforms["diffuse"].value = Color().copyGammaToLinear( material.color );
-
   } else {
-
     uniforms["diffuse"].value = material.color;
-
   }
 
   uniforms["map"].texture = material.map.get();
@@ -4648,10 +4632,8 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
   uniforms["specularMap"].texture = material.specularMap.get();
 
   if ( material.bumpMap ) {
-
     uniforms["bumpMap"].texture = material.bumpMap.get();
     uniforms["bumpScale"].value = material.bumpScale;
-
   }
 
   // uv repeat and offset setting priorities
@@ -4732,23 +4714,17 @@ void GLRenderer::refreshUniformsPhong( Uniforms& uniforms, Material& material ) 
   uniforms["shininess"].value = material.shininess;
 
   if ( gammaInput ) {
-
     uniforms["ambient"].value  = Color().copyGammaToLinear( material.ambient );
     uniforms["emissive"].value = Color().copyGammaToLinear( material.emissive );
     uniforms["specular"].value = Color().copyGammaToLinear( material.specular );
-
   } else {
-
     uniforms["ambient"].value  = material.ambient;
     uniforms["emissive"].value = material.emissive;
     uniforms["specular"].value = material.specular;
-
   }
 
   if ( material.wrapAround ) {
-
     uniforms["wrapRGB"].value = material.wrapRGB;
-
   }
 
 }
@@ -4756,21 +4732,15 @@ void GLRenderer::refreshUniformsPhong( Uniforms& uniforms, Material& material ) 
 void GLRenderer::refreshUniformsLambert( Uniforms& uniforms, Material& material ) {
 
   if ( gammaInput ) {
-
     uniforms["ambient"].value = Color().copyGammaToLinear( material.ambient );
     uniforms["emissive"].value = Color().copyGammaToLinear( material.emissive );
-
   } else {
-
     uniforms["ambient"].value  = material.ambient;
     uniforms["emissive"].value = material.emissive;
-
   }
 
   if ( material.wrapAround ) {
-
     uniforms["wrapRGB"].value = material.wrapRGB;
-
   }
 
 }
