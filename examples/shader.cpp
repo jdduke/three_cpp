@@ -10,14 +10,17 @@
 
 const char* vertexShader() {
   return
-"void main() { \
+"\
+void main() { \
   gl_Position = vec4( position, 1.0 ); \
-}";
+}\
+";
 }
 
 const char* fragmentShader() {
   return
-"uniform vec2 resolution; \
+"\
+uniform vec2 resolution; \
 uniform float time; \
 void main() { \
   vec2 p = -1.0 + 2.0 * gl_FragCoord.xy / resolution.xy; \
@@ -43,7 +46,8 @@ void main() { \
   d+=sin(d*d*8.0)*0.52; \
   f=(sin(a*g)+1.0)/2.0; \
   gl_FragColor=vec4(vec3(f*i/1.6,i/2.0+d/13.0,i)*d*p.x+vec3(i/1.3+d/8.0,i/2.0+d/18.0,i)*d*(1.0-p.x),1.0); \
-}";
+}\
+";
 
 }
 
@@ -60,7 +64,8 @@ void shader( GLRenderer::Ptr renderer ) {
 
   Uniforms uniforms;
   uniforms[ "time" ]       = Uniform( Uniform::f, time);
-  uniforms[ "resolution" ] = Uniform( Uniform::v2, Vector2() );
+  uniforms[ "resolution" ] = Uniform( Uniform::v2, Vector2( (float)renderer->width(),
+                                                            (float)renderer->height()) );
 
   auto material = ShaderMaterial::create(
     Material::Parameters().add( "uniforms", uniforms )
@@ -89,7 +94,7 @@ void shader( GLRenderer::Ptr renderer ) {
     sdl::processEvents();
 
     time += dt;
-    uniforms[ "time" ].value = time;
+    material->uniforms[ "time" ].value = time;
 
     renderer->render( *scene, *camera );
 

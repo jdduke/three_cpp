@@ -132,6 +132,28 @@ protected:
   THREE_DECL void setParameters( const Parameters& parameters,
                                  const ParameterKeys& keys = ParameterKeys() );
 
+  static const ParameterKeys& defaultKeys() {
+    static std::array<std::string, 15> sKeys = {
+      "side",
+      "opacity",
+      "transparent",
+      "blending",
+      "blendSrc",
+      "blendDst",
+      "blendEquation",
+      "depthTest",
+      "depthWrite",
+      "polygonOffset",
+      "polygonOffsetFactor",
+      "polygonOffsetUnits",
+      "alphaTest",
+      "overdraw",
+      "visible"
+    };
+    static ParameterKeys sKeysSet( sKeys.begin(), sKeys.end() );
+    return sKeysSet;
+  }
+
 private:
 
   static int& MaterialCount() {

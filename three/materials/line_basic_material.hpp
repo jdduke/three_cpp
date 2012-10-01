@@ -28,11 +28,11 @@ protected:
 
   LineBasicMaterial( const Parameters& parameters )
     : Material() {
-    //fog = true;
-    setParameters( parameters, DefaultKeys() );
+    fog = true;
+    setParameters( parameters, defaultKeys() );
   }
 
-  static const ParameterKeys& DefaultKeys() {
+  static const ParameterKeys& defaultKeys() {
     static std::array<std::string, 6> sKeys = {
       "color",
       "linewidth",

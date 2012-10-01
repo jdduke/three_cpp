@@ -20,12 +20,23 @@ Uniform::Uniform( )
 Uniform::Uniform( Type type, any value /*= any()*/, Texture* texture /*= nullptr*/ )
   : type( type ), value( std::move( value ) ), texture( texture ) { }
 
-Uniform& Uniform::operator=( const Uniform& other ) {
-  type = other.type;
-  value = other.value;
-  texture = other.texture;
+Uniform::Uniform( Uniform&& other )
+  : type( INVALID), texture( nullptr ) { swap( other ); }
+
+Uniform::Uniform( const Uniform& other )
+  : type( other.type ), value( other.value ), texture( other.texture ) { }
+
+Uniform& Uniform::operator=( Uniform other ) {
+  return swap( other );
+}
+
+Uniform& Uniform::swap( Uniform& other ) {
+  std::swap( type,    other.type );
+  std::swap( value,   other.value );
+  std::swap( texture, other.texture );
   return *this;
 }
+
 
 /////////////////////////////////////////////////////////////////////////
 

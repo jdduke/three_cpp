@@ -163,8 +163,12 @@ inline bool load( const std::unordered_map<std::string, any>& parameters,
   return false;
 }
 
-#define PARAM_LOAD(PARAM_NAME) \
+/*#define PARAM_LOAD(PARAM_NAME) \
   if ( loadAll || keys.count( #PARAM_NAME ) > 0 ) \
+    load ( parameters.contents , #PARAM_NAME, PARAM_NAME )*/
+#define PARAM_LOAD(PARAM_NAME) \
+  if ( keys.count( #PARAM_NAME ) > 0 ||    \
+       defaults.count( #PARAM_NAME ) > 0 ) \
     load ( parameters.contents , #PARAM_NAME, PARAM_NAME )
 
 void Material::setParameters( const Parameters& parameters,
@@ -172,7 +176,8 @@ void Material::setParameters( const Parameters& parameters,
   if ( parameters.contents.empty() )
     return;
 
-  bool loadAll = keys.empty();
+  //bool loadAll = keys.empty();
+  const auto& defaults = defaultKeys();
 
   PARAM_LOAD( side );
   PARAM_LOAD( color );

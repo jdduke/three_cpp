@@ -17,13 +17,18 @@ public:
   };
 
   THREE_DECL Uniform( );
+  THREE_DECL Uniform( Uniform&& );
+  THREE_DECL Uniform( const Uniform& );
   THREE_DECL explicit Uniform( Type type, any value = any(), Texture* texture = nullptr );
-  THREE_DECL Uniform& operator=( const Uniform& );
+  THREE_DECL Uniform& operator=( Uniform );
   THREE_DECL void load( int location );
 
   Type type;
   any value;
   Texture* texture;
+
+private:
+  THREE_DECL Uniform& swap( Uniform& other );
 };
 
 typedef std::unordered_map<std::string, Uniform> Uniforms;

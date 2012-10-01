@@ -68,8 +68,6 @@ std::vector<Vector3> hilbert3D( Vector3 center,
 
 void lines_cubes( GLRenderer::Ptr renderer ) {
 
-  renderer->sortObjects = false;
-
   auto scene = Scene::create();
 
   auto camera = PerspectiveCamera::create(
@@ -78,17 +76,9 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
   camera->position.z = 700;
 
   auto geometry  = Geometry::create();
-  geometry->vertices = hilbert3D( Vector3( 0, 0, 0 ), 200.0, 2, 0, 1, 2, 3, 4, 5, 6, 7 );
+  geometry->vertices = hilbert3D( Vector3( 0, 0, 0 ), 200.0, 4, 0, 1, 2, 3, 4, 5, 6, 7 );
 
   /////////////////////////////////////////////////////////////////////////
-
-  auto material = LineBasicMaterial::create(
-    Material::Parameters().add( "color", Color(0xffffff) )
-                          .add( "opacity", 1.f )
-                          .add( "linewidth", 3.f )
-  );
-
-  material->vertexColors = THREE::VertexColors;
 
   auto addLine = [&scene]( Vector3 pos, float scale, Geometry::Ptr geometry, Material::Ptr material ) {
     auto line = Line::create( geometry, material );
@@ -101,17 +91,17 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
   const auto c1 = Color( 0x553300 ), c2 = Color( 0x555555 ), c3 = Color( 0x992800 );
   auto m1 = LineBasicMaterial::create( Material::Parameters()
                                                    .add( "color", c1 )
-                                                   .add( "opacity", 1.f )
+                                                   .add( "opacity", 0.5f )
                                                    .add( "blending", THREE::AdditiveBlending )
                                                    .add( "transparent", true ) );
   auto m2 = LineBasicMaterial::create( Material::Parameters()
                                                    .add( "color", c2 )
-                                                   .add( "opacity", 1.f )
+                                                   .add( "opacity", 0.5f )
                                                    .add( "blending", THREE::AdditiveBlending )
                                                    .add( "transparent", true ) );
   auto m3 = LineBasicMaterial::create( Material::Parameters()
                                                    .add( "color", c3 )
-                                                   .add( "opacity", 1.f )
+                                                   .add( "opacity", 0.5f )
                                                    .add( "blending", THREE::AdditiveBlending )
                                                    .add( "transparent", true ) );
 
