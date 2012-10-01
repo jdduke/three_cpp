@@ -8,10 +8,8 @@ namespace three {
 class IFog {
 public:
     typedef std::shared_ptr<IFog> Ptr;
-    IFog( int hex ) : color ( hex ) { }
     virtual THREE::FogType type() const = 0;
     virtual ~IFog() { }
-    Color color;
 };
 
 class IGeometry {

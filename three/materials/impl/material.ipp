@@ -136,7 +136,6 @@ Material::Material( )
     linewidth( 1 ),
     linecap( THREE::Round ),
     linejoin( THREE::Round ),
-    program( 0 ),
     numSupportedMorphTargets( 0 ),
     numSupportedMorphNormals( 0 ),
     fragmentShader( "void main() { }" ),

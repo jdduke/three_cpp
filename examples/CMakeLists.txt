@@ -1,8 +1,5 @@
 project(three_examples)
 
-set(HEADER_ONLY TRUE CACHE BOOL
-  "Whether to use Three.cpp as a header-only library")
-
 set(CMAKE_PREFIX_PATH ${EXTERNALS_DIR}/rapidjson ${CMAKE_PREFIX_PATH})
 
 set(SDL_ROOT "" CACHE PATH
@@ -37,12 +34,27 @@ set(EXAMPLE_LIBS ${GLEW_LIBRARY}
                 ${SDLTTF_LIBRARY}
                 ${OPENGL_LIBRARIES})
 
-if (NOT HEADER_ONLY)
+
+set(THREE_HEADER_ONLY TRUE CACHE BOOL
+  "Whether to use Three.cpp as a header-only library")
+
+if (NOT THREE_HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
   add_library(three_impl STATIC three.cpp three_extras.cpp)
   target_link_libraries(three_impl ${EXAMPLE_LIBS})
   set(EXAMPLE_LIBS ${EXAMPLE_LIBS} three_impl)
 endif()
+
+
+set(THREE_RELEASE_BUILD FALSE CACHE BOOL
+  "Whether to compile examples for installation")
+
+if (THREE_RELEASE_BUILD)
+  add_definitions(-DTHREE_DATA_DIR=".")
+else()
+  add_definitions(-DTHREE_DATA_DIR="${DATA_DIR}")
+endif()
+
 
 set(examples simple
              trails

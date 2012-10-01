@@ -3,6 +3,7 @@
 
 #include <three/core/matrix3.hpp>
 
+#include <three/core/matrix4.hpp>
 #include <three/core/math.hpp>
 
 namespace three {

@@ -72,19 +72,7 @@ GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters /*= Par
 }
 
 GLRenderer::GLRenderer( const RendererParameters& parameters )
-  : _width( parameters.width ),
-    _height( parameters.height ),
-    _vsync ( parameters.vsync ),
-    _precision( parameters.precision ),
-    _alpha( parameters.alpha ),
-    _premultipliedAlpha( parameters.premultipliedAlpha ),
-    _antialias( parameters.antialias ),
-    _stencil( parameters.stencil ),
-    _preserveDrawingBuffer( parameters.preserveDrawingBuffer ),
-    _clearColor( parameters.clearColor ),
-    _clearAlpha( parameters.clearAlpha ),
-    _maxLights( parameters.maxLights ),
-    context( nullptr ),
+  : context( nullptr ),
     autoClear( true ),
     autoClearColor( true ),
     autoClearDepth( true ),
@@ -104,6 +92,18 @@ GLRenderer::GLRenderer( const RendererParameters& parameters )
     maxMorphTargets( 8 ),
     maxMorphNormals( 4 ),
     autoScaleCubemaps( true ),
+    _width( parameters.width ),
+    _height( parameters.height ),
+    _vsync ( parameters.vsync ),
+    _precision( parameters.precision ),
+    _alpha( parameters.alpha ),
+    _premultipliedAlpha( parameters.premultipliedAlpha ),
+    _antialias( parameters.antialias ),
+    _stencil( parameters.stencil ),
+    _preserveDrawingBuffer( parameters.preserveDrawingBuffer ),
+    _clearColor( parameters.clearColor ),
+    _clearAlpha( parameters.clearAlpha ),
+    _maxLights( parameters.maxLights ),
     _programs_counter( 0 ),
     _currentProgram( 0 ),
     _currentFramebuffer( 0 ),
@@ -360,12 +360,9 @@ void GLRenderer::deallocateMaterial( Material& material ) {
 
   if ( ! program ) return;
 
-
   // only deallocate GL program if this was the last use of shared program
   // assumed there is only single copy of any program in the _programs list
   // (that's how it's constructed)
-
-  auto deleteProgram = false;
 
   auto programCmp = [&]( const ProgramInfo& programInfo ) {
     return programInfo.program == program;
@@ -794,7 +791,9 @@ THREE::Shading GLRenderer::bufferGuessNormalType( const Material* material ) {
 
   // only MeshBasicMaterial and MeshDepthMaterial don't need normals
 
-  if ( material && ( material->type() == THREE::MeshBasicMaterial && !material->envMap ) || material->type() == THREE::MeshDepthMaterial ) {
+  if ( material &&
+      (( material->type() == THREE::MeshBasicMaterial && !material->envMap ) ||
+       ( material->type() == THREE::MeshDepthMaterial )) ) {
     return THREE::NoShading;
   }
 
@@ -855,7 +854,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
   auto& sortArray = geometry.__sortArray;
 
   auto dirtyVertices = geometry.verticesNeedUpdate;
-  auto dirtyElements = geometry.elementsNeedUpdate;
+  //auto dirtyElements = geometry.elementsNeedUpdate;
   auto dirtyColors = geometry.colorsNeedUpdate;
 
   auto& customAttributes = geometry.__glCustomAttributesList;
@@ -1372,8 +1371,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       offset_color = 0,
       offset_skin = 0,
       offset_morphTarget = 0,
-      offset_custom = 0,
-      offset_customSrc = 0;
+      offset_custom = 0;
+      // UNUSED: offset_customSrc = 0;
 
   auto& vertexArray = geometryGroup.__vertexArray;
   auto& uvArray = geometryGroup.__uvArray;
@@ -1413,7 +1412,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   auto& obj_uvs  = geometry.faceVertexUvs[ 0 ];
   auto& obj_uvs2 = geometry.faceVertexUvs[ 1 ];
 
-  auto& obj_colors = geometry.colors;
+  // UNUSED: auto& obj_colors = geometry.colors;
 
   auto& obj_skinVerticesA = geometry.skinVerticesA;
   auto& obj_skinVerticesB = geometry.skinVerticesB;
@@ -2125,7 +2124,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     for ( const auto& fi : chunk_faces3 ) {
 
-      const auto& face = obj_faces[ fi ];
       const auto& uv = obj_uvs[ fi ];
 
       // TODO:?
@@ -2146,7 +2144,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     for ( const auto& fi : chunk_faces4 ) {
 
-      const auto& face = obj_faces[ fi ];
       const auto& uv = obj_uvs[ fi ];
 
       // TODO:
@@ -2177,7 +2174,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     for ( const auto& fi : chunk_faces3 ) {
 
-      const auto& face = obj_faces[ fi ];
       const auto& uv2 = obj_uvs2[ fi ];
 
       // TODO:?
@@ -2198,7 +2194,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     for ( const auto& fi : chunk_faces4 ) {
 
-      const auto& face = obj_faces[ fi ];
       const auto& uv2 = obj_uvs2[ fi ];
 
       // TODO:?
@@ -2227,9 +2222,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
   if ( dirtyElements ) {
 
-    for ( const auto& fi : chunk_faces3 ) {
-
-      const auto& face = obj_faces[ fi ];
+    for ( size_t f = 0; f < chunk_faces3.size(); ++ f ) {
+      //const auto& fi : chunk_faces3 ) {
+      //const auto& face = obj_faces[ fi ];
 
       faceArray[ offset_face ]     = vertexIndex;
       faceArray[ offset_face + 1 ] = vertexIndex + 1;
@@ -2252,9 +2247,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     }
 
-    for ( const auto& fi : chunk_faces4 ) {
-
-      const auto& face = obj_faces[ fi ];
+    for ( size_t f = 0; f < chunk_faces4.size(); ++ f ) {
+      //const auto& fi : chunk_faces4 ) {
+      //const auto& face = obj_faces[ fi ];
 
       faceArray[ offset_face ]     = vertexIndex;
       faceArray[ offset_face + 1 ] = vertexIndex + 1;
@@ -2294,7 +2289,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
     if ( customAttribute.__original && ( ! customAttribute.__original->needsUpdate ) ) continue;
 
     offset_custom = 0;
-    offset_customSrc = 0;
+    //offset_customSrc = 0;
 
     if ( customAttribute.size == 1 ) {
 
@@ -3655,7 +3650,9 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, THREE::Ren
     delta = 1;
   }
 
-  for ( auto& glObject : renderList ) {
+  for ( auto i = start; i != end; i += delta ) {
+
+    auto& glObject = renderList[ i ];
 
     if ( glObject.render ) {
 
@@ -3962,15 +3959,12 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
     if ( object.type() == THREE::Mesh ) {
 
-      Material& material = *object.material;
       Geometry& geometry = *object.geometry;
 
       if ( geometry.type() == THREE::Geometry ) {
 
         if ( geometry.geometryGroups.empty() ) {
-
           sortFacesByMaterial( geometry );
-
         }
 
         // create separate VBOs per geometry chunk
@@ -3997,9 +3991,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
         }
 
       } else if ( geometry.type() == THREE::BufferGeometry ) {
-
         initDirectBuffers( geometry );
-
       }
 
     } else if ( object.type() == THREE::Ribbon ) {
@@ -4577,11 +4569,8 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
   }
 
   loadUniformsMatrices( p_uniforms, object );
-
   if ( p_uniforms["modelMatrix"] != 0 ) {
-
     glUniformMatrix4fv( p_uniforms["modelMatrix"], 1, false, object.matrixWorld.elements );
-
   }
 
   return program;
@@ -4668,16 +4657,18 @@ void GLRenderer::refreshUniformsParticle( Uniforms& uniforms, Material& material
 
 void GLRenderer::refreshUniformsFog( Uniforms& uniforms, IFog& fog ) {
 
-  uniforms["fogColor"].value = fog.color;
-
   if ( fog.type() == THREE::Fog ) {
 
-    uniforms["fogNear"].value = static_cast<Fog&>( fog ).near;
-    uniforms["fogFar"].value = static_cast<Fog&>( fog ).far;
+    auto& f = static_cast<Fog&>(fog);
+    uniforms["fogColor"].value = f.color;
+    uniforms["fogNear"].value  = f.near;
+    uniforms["fogFar"].value   = f.far;
 
   } else if ( fog.type() == THREE::FogExp2 ) {
 
-    uniforms["fogDensity"].value = static_cast<FogExp2&>( fog ).density;
+    auto& f = static_cast<FogExp2&>(fog);
+    uniforms["fogColor"].value   = f.color;
+    uniforms["fogDensity"].value = f.density;
 
   }
 
@@ -4908,7 +4899,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
     } else if ( light.type() == THREE::DirectionalLight ) {
 
-      const auto doffset = dlength * 3;
+      doffset = dlength * 3;
 
       grow( dcolors, doffset + 3 );
       grow( dpositions, doffset + 3 );

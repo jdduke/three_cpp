@@ -14,7 +14,7 @@ namespace three {
 
 struct Image {
   Image() : width( 0 ), height ( 0 ), __glTextureCube( 0 ) { }
-  *Image( unsigned char* buffer, int bufferLength, int width, int height )
+  Image( unsigned char* buffer, int bufferLength, int width, int height )
     : data( buffer, buffer + bufferLength ), width( width ), height( height ), __glTextureCube( 0 ) { }
   Image( std::vector<unsigned char> data, int width, int height )
     : data( std::move( data ) ), width( width ), height( height ), __glTextureCube( 0 ) { }

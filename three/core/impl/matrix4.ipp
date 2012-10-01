@@ -944,17 +944,11 @@ Matrix4& Matrix4::rotateZ( float angle ) {
 Matrix4& Matrix4::rotateByAxis( const Vector3& axis, float angle ) {
 
   if ( axis.x == 1 && axis.y == 0 && axis.z == 0 ) {
-
     return rotateX( angle );
-
   } else if ( axis.x == 0 && axis.y == 1 && axis.z == 0 ) {
-
     return rotateY( angle );
-
   } else if ( axis.x == 0 && axis.y == 0 && axis.z == 1 ) {
-
     return rotateZ( angle );
-
   }
 
   auto x = axis.x, y = axis.y, z = axis.z;
@@ -988,7 +982,7 @@ Matrix4& Matrix4::rotateByAxis( const Vector3& axis, float angle ) {
   auto m11 = te[0], m21 = te[1], m31 = te[2], m41 = te[3];
   auto m12 = te[4], m22 = te[5], m32 = te[6], m42 = te[7];
   auto m13 = te[8], m23 = te[9], m33 = te[10], m43 = te[11];
-  auto m14 = te[12], m24 = te[13], m34 = te[14], m44 = te[15];
+  //auto m14 = te[12], m24 = te[13], m34 = te[14], m44 = te[15];
 
   te[0] = r11 * m11 + r21 * m12 + r31 * m13;
   te[1] = r11 * m21 + r21 * m22 + r31 * m23;

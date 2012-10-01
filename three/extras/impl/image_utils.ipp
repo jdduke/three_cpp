@@ -75,13 +75,6 @@ inline DDS parseDDS( const std::vector<unsigned char>& buffer, bool loadMipmaps 
          DDPF_LUMINANCE = 0x20000
        };
 
-  auto fourCCToInt32 = []( const char * value ) -> int {
-    return ( int )value[0] +
-         ( ( int )value[1] << 8 ) +
-         ( ( int )value[2] << 16 ) +
-         ( ( int )value[3] << 24 );
-  };
-
   auto int32ToFourCC = []( int value ) -> std::string {
     std::string s;
     s += ( ( char )( value & 0xff ) );
@@ -91,9 +84,9 @@ inline DDS parseDDS( const std::vector<unsigned char>& buffer, bool loadMipmaps 
     return s;
   };
 
-  const auto FOURCC_DXT1 = FourCC<'D','X','T','1'>::value;//fourCCToInt32( "DXT1" );
-  const auto FOURCC_DXT3 = FourCC<'D','X','T','3'>::value;//fourCCToInt32( "DXT3" );
-  const auto FOURCC_DXT5 = FourCC<'D','X','T','5'>::value;//fourCCToInt32( "DXT5" );
+  const auto FOURCC_DXT1 = FourCC<'D','X','T','1'>::value;
+  const auto FOURCC_DXT3 = FourCC<'D','X','T','3'>::value;
+  const auto FOURCC_DXT5 = FourCC<'D','X','T','5'>::value;
 
   const auto headerLengthInt = 31; // The header length in 32 bit ints
 

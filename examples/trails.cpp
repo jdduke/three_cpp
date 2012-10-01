@@ -66,8 +66,6 @@ void trails( GLRenderer::Ptr renderer ) {
     mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
   });
 
-  auto time = 0.f;
-
   // Rendering
   anim::gameLoop (
 

@@ -22,12 +22,13 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
+  Color color;
   float near, far;
 
 protected:
 
   Fog( int hex, float near, float far )
-    : IFog( hex ), near( near ), far( far ) { }
+    : IFog(), color( hex ), near( near ), far( far ) { }
 
 };
 

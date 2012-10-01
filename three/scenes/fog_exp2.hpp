@@ -22,12 +22,13 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
+  Color color;
   float density;
 
 protected:
 
    FogExp2( int hex, float density )
-    : IFog( hex ), density( density ) { }
+    : IFog(), color( hex ), density( density ) { }
 
 };
 
