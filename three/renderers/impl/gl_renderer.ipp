@@ -794,8 +794,7 @@ THREE::Shading GLRenderer::bufferGuessNormalType( const Material* material ) {
 
   // only MeshBasicMaterial and MeshDepthMaterial don't need normals
 
-  //if ( material && ( material->type() == THREE::MeshBasicMaterial && !material->envMap ) || material->type() == THREE::MeshDepthMaterial ) {
-  if ( material && ( ( material->type() == THREE::MeshBasicMaterial ) || material->type() == THREE::MeshDepthMaterial ) ) {
+  if ( material && ( material->type() == THREE::MeshBasicMaterial && !material->envMap ) || material->type() == THREE::MeshDepthMaterial ) {
     return THREE::NoShading;
   }
 
@@ -816,8 +815,7 @@ THREE::Colors GLRenderer::bufferGuessVertexColorType( const Material* material )
 
 bool GLRenderer::bufferGuessUVType( const Material* material ) {
   // material must use some texture to require uvs
-  //if ( material && ( material->map || material->lightMap || material->bumpMap || material->specularMap || material->type() == THREE::ShaderMaterial ) ) {
-  if ( material && material->type() == THREE::ShaderMaterial ) {
+  if ( material && ( material->map || material->lightMap || material->bumpMap || material->specularMap || material->type() == THREE::ShaderMaterial ) ) {
     return true;
   }
   return false;
@@ -3522,7 +3520,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, GLRenderTarget::Ptr rende
 
     if ( object.visible ) {
 
-      if ( !( object.type() == THREE::Mesh || object.type() == THREE::ParticleSystem ) || 
+      if ( !( object.type() == THREE::Mesh || object.type() == THREE::ParticleSystem ) ||
            !( object.frustumCulled ) || _frustum.contains( object ) ) {
         //object.matrixWorld.flattenToArray( object._modelMatrixArray );
 
@@ -4529,7 +4527,8 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
     // load common uniforms
 
-    loadUniformsGeneric( program, material.uniformsList );
+    const bool warnOnNotFound = material.type() == THREE::ShaderMaterial;
+    loadUniformsGeneric( program, material.uniformsList, warnOnNotFound );
 
     // load material specific uniforms
     // (shader material also gets them for the sake of genericity)
@@ -4793,13 +4792,17 @@ void GLRenderer::loadUniformsMatrices( UniformsIndices& uniforms, Object3D& obje
 
 }
 
-void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms ) {
+void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, bool warnIfNotFound ) {
 
   for ( size_t j = 0, jl = uniforms.size(); j < jl; j ++ ) {
 
     const auto& location = program.uniforms[ uniforms[ j ].second ];
 
-    if ( location <= 0 ) continue;
+    if ( location < 0 ) {
+      if ( warnIfNotFound )
+        console().warn() << "three::GLRenderer::loadUniformsGeneric: Expected uniform " << uniforms[ j ].second << " location does not exist";
+      continue;
+    }
 
     auto& uniform = *uniforms[ j ].first;
 

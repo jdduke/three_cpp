@@ -1,19 +1,13 @@
-#include <three/core/geometry.hpp>
+#include "common.hpp"
+
 #include <three/cameras/perspective_camera.hpp>
+#include <three/core/geometry.hpp>
 #include <three/lights/point_light.hpp>
-#include <three/objects/line.hpp>
 #include <three/materials/line_basic_material.hpp>
+#include <three/objects/line.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/scenes/fog.hpp>
-
-#include <three/extras.hpp>
-
-#include <three/extras/utils/font.hpp>
-
-#include <three/extras/anim.hpp>
-#include <three/extras/sdl.hpp>
-#include <three/extras/glew.hpp>
 
 #include <array>
 
@@ -72,7 +66,7 @@ std::vector<Vector3> hilbert3D( Vector3 center,
 
 /////////////////////////////////////////////////////////////////////////
 
-void color_lines( GLRenderer::Ptr renderer ) {
+void lines_colors( GLRenderer::Ptr renderer ) {
 
   renderer->sortObjects = false;
 
@@ -116,7 +110,7 @@ void color_lines( GLRenderer::Ptr renderer ) {
   auto material = LineBasicMaterial::create(
     Material::Parameters().add( "color", Color(0xffffff) )
                           .add( "opacity", 1.f )
-                          .add( "linewidth", 3.f )
+                          .add( "linewidth", 1.5f )
   );
 
   material->vertexColors = THREE::VertexColors;
@@ -163,8 +157,8 @@ void color_lines( GLRenderer::Ptr renderer ) {
 
       sdl::processEvents();
 
-      camera->position.x += ( 1000.f * mouseX - camera->position.x ) * dt;
-      camera->position.y += ( 1000.f * mouseY - camera->position.y ) * dt;
+      camera->position.x += ( -500.f * mouseX - camera->position.x ) * 3 * dt;
+      camera->position.y += (  500.f * mouseY - camera->position.y ) * 3 * dt;
       camera->lookAt( scene->position );
 
       for ( size_t i = 0; i < scene->children.size(); i++ ) {
@@ -198,7 +192,7 @@ int main ( int argc, char* argv[] ) {
     return 0;
   }
 
-  color_lines( renderer );
+  lines_colors( renderer );
 
   return 0;
 }

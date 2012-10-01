@@ -49,8 +49,9 @@ set(examples simple
              geometry_hierarchy
              geometry_hierarchy_2
              test_memory
-             color_lines
-             lines_cubes)
+             lines_colors
+             lines_cubes
+             shader)
 
 foreach(example ${examples})
   add_executable(${example} ${example}.cpp)

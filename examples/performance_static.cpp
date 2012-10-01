@@ -1,16 +1,7 @@
-#include <three/three.hpp>
-
-#include <three/extras.hpp>
-
-#include <three/extras/anim.hpp>
-#include <three/extras/sdl.hpp>
-#include <three/extras/glew.hpp>
-
-#ifndef THREE_ASSET_DIR
-#define THREE_ASSET_DIR "."
-#endif
+#include "common.hpp"
 
 using namespace three;
+using namespace three_examples;
 
 void performance_static( GLRenderer::Ptr renderer ) {
 
@@ -26,7 +17,7 @@ void performance_static( GLRenderer::Ptr renderer ) {
   );
 
   auto loader = JSONLoader::create();
-  loader->load( std::string(THREE_ASSET_DIR) + "/obj/Suzanne.js", [&material]( Geometry::Ptr geometry ) {
+  loader->load( threeDataDir() + "/obj/Suzanne.js", [&material]( Geometry::Ptr geometry ) {
     geometry->computeVertexNormals();
 
     for ( int = 0; i < 7700; i ++ ) {

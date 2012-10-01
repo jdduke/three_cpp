@@ -13,6 +13,10 @@ public:
 
   typedef std::shared_ptr<Camera> Ptr;
 
+  static Ptr create() {
+    return three::make_shared<Camera>();
+  }
+
   /////////////////////////////////////////////////////////////////////////
 
   mutable Matrix4 matrixWorldInverse;
@@ -37,7 +41,7 @@ public:
 
 protected:
 
-  Camera( float near, float far )
+  Camera( float near = .1f, float far = 2000.f )
     : Object3D(), near( near ), far( far ) { }
 
   /////////////////////////////////////////////////////////////////////////

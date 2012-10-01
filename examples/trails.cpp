@@ -1,15 +1,11 @@
-#include <three/core/geometry.hpp>
-#include <three/objects/particle_system.hpp>
+#include "common.hpp"
+
 #include <three/cameras/perspective_camera.hpp>
+#include <three/core/geometry.hpp>
 #include <three/materials/particle_basic_material.hpp>
+#include <three/objects/particle_system.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
-
-#include <three/extras.hpp>
-
-#include <three/extras/anim.hpp>
-#include <three/extras/sdl.hpp>
-#include <three/extras/glew.hpp>
 
 using namespace three;
 

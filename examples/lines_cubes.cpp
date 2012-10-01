@@ -1,19 +1,15 @@
-#include <three/core/geometry.hpp>
+#include "common.hpp"
+
 #include <three/cameras/perspective_camera.hpp>
+#include <three/core/geometry.hpp>
 #include <three/lights/point_light.hpp>
-#include <three/objects/line.hpp>
 #include <three/materials/line_basic_material.hpp>
+#include <three/objects/line.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/scenes/fog.hpp>
 
-#include <three/extras.hpp>
-
 #include <three/extras/utils/font.hpp>
-
-#include <three/extras/anim.hpp>
-#include <three/extras/sdl.hpp>
-#include <three/extras/glew.hpp>
 
 #include <array>
 
@@ -163,8 +159,8 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
 
       sdl::processEvents();
 
-      camera->position.x += ( 1000.f * mouseX - camera->position.x ) * dt;
-      camera->position.y += ( 1000.f * mouseY /*+ 200*/ - camera->position.y ) * dt;
+      camera->position.x += (-500.f * mouseX - camera->position.x ) * 3 * dt;
+      camera->position.y += ( 500.f * mouseY + 200 - camera->position.y ) * 3 * dt;
       camera->lookAt( scene->position );
 
       for ( size_t i = 0; i < scene->children.size(); i++ ) {

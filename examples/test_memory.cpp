@@ -1,22 +1,17 @@
-#include <three/core/geometry.hpp>
+#include "common.hpp"
+
 #include <three/cameras/perspective_camera.hpp>
-#include <three/objects/mesh.hpp>
-#include <three/extras/geometries/sphere_geometry.hpp>
+#include <three/core/geometry.hpp>
 #include <three/lights/point_light.hpp>
 #include <three/materials/mesh_basic_material.hpp>
 #include <three/materials/mesh_phong_material.hpp>
 #include <three/materials/mesh_lambert_material.hpp>
+#include <three/objects/mesh.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/scenes/fog.hpp>
 
-#include <three/extras.hpp>
-
-#include <three/extras/utils/font.hpp>
-
-#include <three/extras/anim.hpp>
-#include <three/extras/sdl.hpp>
-#include <three/extras/glew.hpp>
+#include <three/extras/geometries/sphere_geometry.hpp>
 
 using namespace three;
 

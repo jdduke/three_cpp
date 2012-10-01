@@ -66,20 +66,21 @@ Matrix4& Matrix4::copy( const Matrix4& m ) {
 Matrix4& Matrix4::lookAt( const Vector3& eye, const Vector3& target, const Vector3& up ) {
 
   auto z = sub( eye, target ).normalize();
-  if ( z.length() == 0.f ) {
+  //auto z = sub( target, eye ).normalize();
+  if ( z.isZero() ) {
     z.z = 1;
   }
 
   auto x = cross( up, z ).normalize();
-  if ( x.length() == 0 ) {
+  if ( x.isZero() ) {
     z.x += 0.0001f;
     x = cross( up, z ).normalize();
   }
 
   auto y = cross( z, x );
 
-  te[0] = x.x; te[4] = y.x; te[8] = z.x;
-  te[1] = x.y; te[5] = y.y; te[9] = z.y;
+  te[0] = x.x; te[4] = y.x; te[8]  = z.x;
+  te[1] = x.y; te[5] = y.y; te[9]  = z.y;
   te[2] = x.z; te[6] = y.z; te[10] = z.z;
 
   return *this;
@@ -360,11 +361,7 @@ Vector3 Matrix4::getEulerRotation( THREE::Order order /*= THREE::XYZ*/ ) const {
   // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
   // clamp, to handle numerical problems
-  auto clamp = []( float x ) {
-    return Math::min( Math::max( x, -1.f ), 1.f );
-  };
-
-  Vector3 euler;
+  auto clamp = []( float x ) { return Math::clamp( x, -1.f, 1.f ); };
 
   auto m11 = te[0], m12 = te[4], m13 = te[8];
   auto m21 = te[1], m22 = te[5], m23 = te[9];
@@ -470,7 +467,7 @@ Vector3 Matrix4::getEulerRotation( THREE::Order order /*= THREE::XYZ*/ ) const {
 
   }
 
-  return euler;
+  return Vector3( x, y, z );
 
 }
 

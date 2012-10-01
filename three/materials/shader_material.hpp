@@ -32,9 +32,11 @@ protected:
   }
 
   static const ParameterKeys& DefaultKeys() {
-    static std::array<std::string, 13> sKeys = {
+    static std::array<std::string, 15> sKeys = {
       "fragmentShader",
       "vertexShader",
+      "uniforms",
+      "attributes",
       "shading",
       "blending",
       "depthTest",

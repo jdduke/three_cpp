@@ -3,6 +3,8 @@
 
 #include <three/common.hpp>
 
+#include <three/core/vector4.hpp>
+
 #include <array>
 
 namespace three {

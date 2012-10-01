@@ -1,18 +1,16 @@
-#include <three/core/geometry.hpp>
+#include "common.hpp"
+
 #include <three/cameras/perspective_camera.hpp>
+#include <three/core/geometry.hpp>
 #include <three/lights/directional_light.hpp>
-#include <three/objects/mesh.hpp>
-#include <three/extras/geometries/cube_geometry.hpp>
 #include <three/materials/mesh_normal_material.hpp>
+#include <three/objects/mesh.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/scenes/fog.hpp>
 
-#include <three/extras.hpp>
-
-#include <three/extras/anim.hpp>
-#include <three/extras/sdl.hpp>
-#include <three/extras/glew.hpp>
+#include <three/extras/geometries/cube_geometry.hpp>
+#include <three/extras/scene_utils.hpp>
 
 using namespace three;
 
@@ -81,13 +79,15 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
 
       sdl::processEvents();
 
-      camera->position.x += ( 3000.f * mouseX - camera->position.x ) * dt;
-      camera->position.y += ( 3000.f * mouseY - camera->position.y ) * dt;
+      camera->position.x += (-3000.f * mouseX - camera->position.x ) * 3 * dt;
+      camera->position.y += ( 3000.f * mouseY - camera->position.y ) * 3 * dt;
       camera->lookAt( scene->position );
 
       auto rx = Math::sin( time * 0.7f ) * 0.2f,
            ry = Math::sin( time * 0.3f ) * 0.1f,
            rz = Math::sin( time * 0.2f ) * 0.1f;
+
+      root->position.x = Math::sin( time ) * 1000;
 
       SceneUtils::traverseHierarchy( *root, [rx,ry,rz]( Object3D& object ) {
         object.rotation.x = rx;

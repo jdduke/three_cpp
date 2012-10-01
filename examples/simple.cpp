@@ -1,4 +1,5 @@
-//#include <three/three.hpp>
+#include "common.hpp"
+
 #include <three/core/geometry.hpp>
 #include <three/cameras/perspective_camera.hpp>
 #include <three/lights/point_light.hpp>
@@ -8,11 +9,6 @@
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
-#include <three/extras.hpp>
-
-#include <three/extras/anim.hpp>
-#include <three/extras/sdl.hpp>
-#include <three/extras/glew.hpp>
 
 using namespace three;
 
@@ -64,8 +60,8 @@ void simple( GLRenderer::Ptr renderer ) {
 
     sdl::processEvents();
 
-    camera->position.x += ( 100.f * mouseX - camera->position.x ) * dt;
-    camera->position.y += ( 100.f * mouseY - camera->position.y ) * dt;
+    camera->position.x += (-100.f * mouseX - camera->position.x ) * 3 * dt;
+    camera->position.y += ( 100.f * mouseY - camera->position.y ) * 3 * dt;
     camera->lookAt( scene->position );
 
     renderer->render( *scene, *camera );

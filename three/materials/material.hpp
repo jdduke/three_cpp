@@ -98,8 +98,8 @@ public:
 
   std::string fragmentShader;
   std::string vertexShader;
-  Uniforms uniforms;
 
+  Uniforms uniforms;
   UniformsList uniformsList;
 
   Texture::Ptr map, envMap, lightMap, bumpMap, specularMap;

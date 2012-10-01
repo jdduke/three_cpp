@@ -218,6 +218,8 @@ void Material::setParameters( const Parameters& parameters,
   PARAM_LOAD( numSupportedMorphNormals );
   PARAM_LOAD( fragmentShader );
   PARAM_LOAD( vertexShader );
+  PARAM_LOAD( uniforms );
+  PARAM_LOAD( attributes );
   PARAM_LOAD( bumpScale );
   PARAM_LOAD( normalScale );
   PARAM_LOAD( fog );
