@@ -806,28 +806,19 @@ THREE::Shading GLRenderer::bufferGuessNormalType( const Material* material ) {
 }
 
 THREE::Colors GLRenderer::bufferGuessVertexColorType( const Material* material ) {
-
   if ( material ) {
-
     return material->vertexColors;
-
   }
-
   return THREE::NoColors;
-
 }
 
 bool GLRenderer::bufferGuessUVType( const Material* material ) {
-
   // material must use some texture to require uvs
-
   //if ( material && ( material->map || material->lightMap || material->bumpMap || material->specularMap || material->type() == THREE::ShaderMaterial ) ) {
   if ( material && material->type() == THREE::ShaderMaterial ) {
     return true;
   }
-
   return false;
-
 }
 
 //
@@ -1880,11 +1871,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
     if ( offset_skin > 0 ) {
 
       glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer, skinVertexAArray, hint );
-
       glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer, skinVertexBArray, hint );
-
       glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer, skinIndexArray, hint );
-
       glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer, skinWeightArray, hint );
 
     }

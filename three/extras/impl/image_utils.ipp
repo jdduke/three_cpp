@@ -3,9 +3,7 @@
 
 #include <three/extras/image_utils.hpp>
 
-#ifdef THREE_SDL
-#include <three/extras/sdl.hpp>
-#endif
+#include <three/extras/utils/impl/stb_image.h>
 
 #include <vector>
 
@@ -297,19 +295,24 @@ inline getNormalMap: function( image, depth ) {
 
 Texture::Ptr ImageUtils::loadTexture( const std::string& url,
                                       THREE::Mapping mapping /*= THREE::UVMapping*/ ) {
-  Texture::Ptr texture;
 
-#if defined(THREE_SDL)
-  auto image = sdl::loadImage( url );
-  if (image.first.valid()) {
-    texture = Texture::create( TextureDesc( image.first, image.second, mapping ) );
-    texture->needsUpdate = true;
+  typedef std::unique_ptr<unsigned char, void(*)(unsigned char*)> stbi_ptr;
+
+  int w, h, n;
+  stbi_ptr data( stbi_load( url.c_str(), &w, &h, &n, 0), []( unsigned char* data ) {
+    if ( data ) stbi_image_free( data );
+  } );
+
+  if ( !data ) {
+    console().error() << "three::ImageUtils::loadTexture: Error loading " << url;
+    return Texture::Ptr();
   }
-#else
-  console().error( "three::ImageUtils::loadTexture: Texture loading currently valid only with SDL" );
-#endif
 
-  return texture;
+  return Texture::create(
+    TextureDesc( Image(data.get(), w * h * n, w, h),
+                 n == 3 ? THREE::RGBFormat : THREE::RGBAFormat )
+  );
+
 }
 
 #ifdef TODO_LOAD_COMPRESSED_TEXTURE

@@ -2,6 +2,7 @@
 #define THREE_SDL_HPP
 
 #include <three/core/color.hpp>
+#include <three/utils/noncopyable.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 
 #include <SDL_events.h>
@@ -11,10 +12,9 @@
 namespace three {
 namespace sdl {
 
-typedef SDL_Event Event;
-typedef SDL_Rect  Rect;
-typedef SDL_EventType EventType;
-typedef std::pair<SDL_EventType, int> EventKey;
+typedef SDL_Event                         Event;
+typedef SDL_EventType                     EventType;
+typedef std::pair<SDL_EventType, int>     EventKey;
 typedef std::function<void(const Event&)> EventListener;
 
 /////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,6 @@ typedef std::function<void(const Event&)> EventListener;
 THREE_DECL bool init( RendererParameters& parameters );
 THREE_DECL bool swapBuffers();
 THREE_DECL void quit();
-THREE_DECL std::pair<Image, THREE::PixelFormat> loadImage( const std::string& path );
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -30,6 +29,16 @@ THREE_DECL EventKey addEventListener( EventType, EventListener );
 THREE_DECL void removeEventListener( EventKey );
 THREE_DECL void clearEventListeners();
 THREE_DECL void processEvents();
+
+/////////////////////////////////////////////////////////////////////////
+
+class ScopedEventListener : public NonCopyable {
+public:
+  THREE_DECL ScopedEventListener( EventType, EventListener );
+  THREE_DECL ~ScopedEventListener();
+private:
+  EventKey eventKey;
+};
 
 } // namespace sdl
 } // namespace three

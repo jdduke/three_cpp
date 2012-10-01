@@ -16,8 +16,6 @@ elseif(MINGW)
 endif()
 
 find_package(SDL REQUIRED)
-find_package(SDL_image REQUIRED)
-find_package(SDL_ttf REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(RapidJSON REQUIRED)
 
@@ -33,7 +31,7 @@ include_directories(${RAPID_JSON_INCLUDE_DIR})
 
 add_definitions(-DGLEW_STATIC -DTHREE_SDL -DTHREE_GLEW)
 
-set(SAMPLE_LIBS ${GLEW_LIBRARY}
+set(EXAMPLE_LIBS ${GLEW_LIBRARY}
                 ${SDL_LIBRARY}
                 ${SDLIMAGE_LIBRARY}
                 ${SDLTTF_LIBRARY}
@@ -42,18 +40,18 @@ set(SAMPLE_LIBS ${GLEW_LIBRARY}
 if (NOT HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
   add_library(three_impl STATIC three.cpp three_extras.cpp)
-  target_link_libraries(three_impl ${SAMPLE_LIBS})
-  set(SAMPLE_LIBS ${SAMPLE_LIBS} three_impl)
+  target_link_libraries(three_impl ${EXAMPLE_LIBS})
+  set(EXAMPLE_LIBS ${EXAMPLE_LIBS} three_impl)
 endif()
 
-add_executable(simple simple.cpp)
-add_executable(trails trails.cpp)
-add_executable(geometry_hierarchy geometry_hierarchy.cpp)
-add_executable(geometry_hierarchy_2 geometry_hierarchy_2.cpp)
-add_executable(test_memory test_memory.cpp)
+set(examples simple
+             trails
+             geometry_hierarchy
+             geometry_hierarchy_2
+             test_memory
+             color_lines)
 
-target_link_libraries(simple ${SAMPLE_LIBS})
-target_link_libraries(trails ${SAMPLE_LIBS})
-target_link_libraries(geometry_hierarchy ${SAMPLE_LIBS})
-target_link_libraries(geometry_hierarchy_2 ${SAMPLE_LIBS})
-target_link_libraries(test_memory ${SAMPLE_LIBS})
+foreach(example ${examples})
+  add_executable(${example} ${example}.cpp)
+  target_link_libraries(${example} ${EXAMPLE_LIBS})
+endforeach()

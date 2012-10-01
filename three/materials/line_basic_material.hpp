@@ -16,6 +16,8 @@ public:
     return three::make_shared<LineBasicMaterial>( parameters );
   }
 
+  virtual THREE::MaterialType type() const { return THREE::LineBasicMaterial; }
+
   /////////////////////////////////////////////////////////////////////////
 
   Ptr clone( ) {
