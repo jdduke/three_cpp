@@ -24,7 +24,6 @@ inline void concat( std::vector<T>& a, const std::vector<T>& b ) {
   a.insert( a.end(), b.begin(), b.end() );
 }
 
-
 std::vector<Vector3> hilbert3D( Vector3 center,
                                 float side,
                                 int iterations,
@@ -70,46 +69,20 @@ std::vector<Vector3> hilbert3D( Vector3 center,
   return std::vector<Vector3>(vec.begin(), vec.end());
 }
 
-/////////////////////////////////////////////////////////////////////////
 
-void color_lines( GLRenderer::Ptr renderer ) {
+void lines_cubes( GLRenderer::Ptr renderer ) {
 
   renderer->sortObjects = false;
+
+  auto scene = Scene::create();
 
   auto camera = PerspectiveCamera::create(
     33, (float)renderer->width() / renderer->height(), 1, 10000
   );
   camera->position.z = 700;
 
-  auto geometry  = Geometry::create(),
-       geometry2 = Geometry::create(),
-       geometry3 = Geometry::create();
-
-  auto points = hilbert3D( Vector3( 0, 0, 0 ), 200.0, 2, 0, 1, 2, 3, 4, 5, 6, 7 );
-
-  std::vector<Color> colors, colors2, colors3;
-
-  int i = 0;
-  for ( const auto& point : points ) {
-
-    geometry->vertices.push_back( point );
-
-    colors.push_back( Color( 0xffffff ) );
-    colors.back().setHSV( 0.6f, ( 200.f + point.x ) / 400, 1.f );
-
-    colors2.push_back( Color( 0xffffff ) );
-    colors2.back().setHSV( 0.3f, 1.0f, ( 200.f + point.x ) / 400 );
-
-    colors3.push_back( Color( 0xffffff ) );
-    colors3.back().setHSV( (float)i++ / points.size(), 1.0f, 1.0f );
-
-  }
-
-  geometry2->vertices = geometry3->vertices = geometry->vertices = std::move( points );
-
-  geometry->colors  = std::move( colors );
-  geometry2->colors = std::move( colors2 );
-  geometry3->colors = std::move( colors3 );
+  auto geometry  = Geometry::create();
+  geometry->vertices = hilbert3D( Vector3( 0, 0, 0 ), 200.0, 2, 0, 1, 2, 3, 4, 5, 6, 7 );
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -121,8 +94,6 @@ void color_lines( GLRenderer::Ptr renderer ) {
 
   material->vertexColors = THREE::VertexColors;
 
-  auto scene = Scene::create();
-
   auto addLine = [&scene]( Vector3 pos, float scale, Geometry::Ptr geometry, Material::Ptr material ) {
     auto line = Line::create( geometry, material );
     line->scale.x = line->scale.y = line->scale.z = scale;
@@ -130,10 +101,39 @@ void color_lines( GLRenderer::Ptr renderer ) {
     scene->add( line );
   };
 
-  const auto scale = 0.15f, d = 225.f;
-  addLine( Vector3(-d,0,0), scale, geometry,  material );
-  addLine( Vector3( 0,0,0), scale, geometry2, material );
-  addLine( Vector3( d,0,0), scale, geometry3, material );
+  const auto scale = 0.15f, d = 125.f;
+  const auto c1 = Color( 0x553300 ), c2 = Color( 0x555555 ), c3 = Color( 0x992800 );
+  auto m1 = LineBasicMaterial::create( Material::Parameters()
+                                                   .add( "color", c1 )
+                                                   .add( "opacity", 1.f )
+                                                   .add( "blending", THREE::AdditiveBlending )
+                                                   .add( "transparent", true ) );
+  auto m2 = LineBasicMaterial::create( Material::Parameters()
+                                                   .add( "color", c2 )
+                                                   .add( "opacity", 1.f )
+                                                   .add( "blending", THREE::AdditiveBlending )
+                                                   .add( "transparent", true ) );
+  auto m3 = LineBasicMaterial::create( Material::Parameters()
+                                                   .add( "color", c3 )
+                                                   .add( "opacity", 1.f )
+                                                   .add( "blending", THREE::AdditiveBlending )
+                                                   .add( "transparent", true ) );
+
+  addLine( Vector3(0,0,0),     scale, geometry,  m3);
+  addLine( Vector3(d,0,0),     scale, geometry,  m2);
+  addLine( Vector3(-d,0,0),    scale, geometry,  m2);
+  addLine( Vector3(0,d,0),     scale, geometry,  m2);
+  addLine( Vector3(d,d,0),     scale, geometry,  m2);
+  addLine( Vector3(-d,d,0),    scale, geometry,  m2);
+  addLine( Vector3(0,-d,0),    scale, geometry,  m2);
+  addLine( Vector3(d,-d,0),    scale, geometry,  m2);
+  addLine( Vector3(-d,-d,0),   scale, geometry,  m2);
+  addLine( Vector3(d*2,0,0),   scale, geometry,  m1);
+  addLine( Vector3(-d*2,0,0),  scale, geometry,  m1);
+  addLine( Vector3(d*2,d,0),   scale, geometry,  m1);
+  addLine( Vector3(-d*2,d,0),  scale, geometry,  m1);
+  addLine( Vector3(d*2,-d,0),  scale, geometry,  m1);
+  addLine( Vector3(-d*2,-d,0), scale, geometry,  m1);
 
   //////////////////////////////////////////////////////////////////////////
 
@@ -164,7 +164,7 @@ void color_lines( GLRenderer::Ptr renderer ) {
       sdl::processEvents();
 
       camera->position.x += ( 1000.f * mouseX - camera->position.x ) * dt;
-      camera->position.y += ( 1000.f * mouseY - camera->position.y ) * dt;
+      camera->position.y += ( 1000.f * mouseY /*+ 200*/ - camera->position.y ) * dt;
       camera->lookAt( scene->position );
 
       for ( size_t i = 0; i < scene->children.size(); i++ ) {
@@ -198,7 +198,7 @@ int main ( int argc, char* argv[] ) {
     return 0;
   }
 
-  color_lines( renderer );
+  lines_cubes( renderer );
 
   return 0;
 }

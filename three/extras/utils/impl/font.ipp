@@ -72,7 +72,9 @@ struct Font::Impl {
       program( 0 ),
       vertexShader( 0 ),
       fragmentShader( 0 ),
-      tid( 0 ) { }
+      tid( 0 ),
+      vertexAttrib( 0 ), texcoordAttrib( 0 ),
+      mvpUniform( 0 ), diffuseUniform( 0 ), colorUniform( 0 ) { }
 
   ~Impl() {
     if ( program ) {
@@ -97,6 +99,8 @@ struct Font::Impl {
   int countCharacter;
   unsigned program, vertexShader, fragmentShader;
   unsigned tid;
+  unsigned vertexAttrib, texcoordAttrib;
+  unsigned mvpUniform, diffuseUniform, colorUniform;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -124,8 +128,6 @@ void Font::render( const char* text,
                    float x, float y,
                    float w, float h,
                    const Color& color ) {
- char vertexAttribute   = glGetAttribLocation( impl->program, "POSITION" ),
-      texcoordAttribute = glGetAttribLocation( impl->program, "TEXCOORD0" );
 
   glBindVertexArray( 0 );
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
@@ -140,19 +142,19 @@ void Font::render( const char* text,
 
   Matrix4 m;
   m.makeOrthographic( 0, w, h, 0, -1, 1 );
-  glUniformMatrix4fv( glGetUniformLocation( impl->program, "MODELVIEWPROJECTIONMATRIX"),
+  glUniformMatrix4fv( impl->mvpUniform,
                       1,
                       GL_FALSE,
                       m.elements );//( float * )GFX_get_modelview_projection_matrix() );
 
   Vector4 rgba(color.r, color.g, color.b, 1.f);
-  glUniform1i(  glGetUniformLocation( impl->program, "DIFFUSE" ), 0 );
-  glUniform4fv( glGetUniformLocation( impl->program, "COLOR" ), 1, rgba.xyzw );
+  glUniform1i(  impl->diffuseUniform, 0 );
+  glUniform4fv( impl->colorUniform, 1, rgba.xyzw );
 
   glActiveTexture( GL_TEXTURE0 );
   glBindTexture( GL_TEXTURE_2D, impl->tid );
-  glEnableVertexAttribArray( vertexAttribute );
-  glEnableVertexAttribArray( texcoordAttribute );
+  glEnableVertexAttribArray( impl->vertexAttrib );
+  glEnableVertexAttribArray( impl->texcoordAttrib );
 
   while( *text ) {
 
@@ -192,14 +194,14 @@ void Font::render( const char* text,
       vert[ 3 ].x = quad.x0; vert[ 3 ].y = quad.y1;
       uv  [ 3 ].x = quad.s0; uv  [ 3 ].y = quad.t1;
 
-      glVertexAttribPointer( vertexAttribute,
+      glVertexAttribPointer( impl->vertexAttrib,
                             2,
                             GL_FLOAT,
                             GL_FALSE,
                             0,
                             ( float* )&vert[ 0 ] );
 
-      glVertexAttribPointer( texcoordAttribute,
+      glVertexAttribPointer( impl->texcoordAttrib,
                             2,
                             GL_FLOAT,
                             GL_FALSE,
@@ -278,6 +280,14 @@ bool Font::initialize( const std::string& ttf,
 
   if ( !impl->program )
     return false;
+
+  /////////////////////////////////////////////////////////////////////////
+
+  impl->vertexAttrib   = glGetAttribLocation( impl->program, "POSITION" ),
+  impl->texcoordAttrib = glGetAttribLocation( impl->program, "TEXCOORD0" );
+  impl->mvpUniform     = glGetUniformLocation( impl->program, "MODELVIEWPROJECTIONMATRIX");
+  impl->diffuseUniform = glGetUniformLocation( impl->program, "DIFFUSE" );
+  impl->colorUniform   = glGetUniformLocation( impl->program, "COLOR" );
 
   /////////////////////////////////////////////////////////////////////////
 

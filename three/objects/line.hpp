@@ -5,7 +5,7 @@
 
 #include <three/core/object3d.hpp>
 #include <three/core/geometry.hpp>
-#include <three/materials/material.hpp>
+#include <three/materials/line_basic_material.hpp>
 
 namespace three {
 
@@ -14,7 +14,14 @@ public:
 
   typedef std::shared_ptr<Line> Ptr;
 
-  static Ptr create( Geometry::Ptr geometry, Material::Ptr material, THREE::LineType lineType = THREE::LineStrip ) {
+  static Ptr create( Geometry::Ptr geometry, 
+                     Material::Ptr material, 
+                     THREE::LineType lineType = THREE::LineStrip ) {
+    if (!material) {
+      material = LineBasicMaterial::create( 
+        Material::Parameters().add( "color", Color( (int)(Math::random() * 0xFFFFFF) ) )
+      );
+    }
     return three::make_shared<Line>( geometry, material, lineType );
   }
 

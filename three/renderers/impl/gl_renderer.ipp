@@ -19,6 +19,8 @@
 
 #include <three/materials/program.hpp>
 
+#include <three/objects/line.hpp>
+
 #include <three/renderers/gl_render_target.hpp>
 #include <three/renderers/gl_shaders.hpp>
 #include <three/renderers/renderer_parameters.hpp>
@@ -3278,10 +3280,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   } else if ( object.type() == THREE::Line ) {
 
-#ifdef TODO_LINE_RENDERING
-    const auto primitives = ( object.type() == THREE::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
-#endif
-    const auto primitives = GL_LINES;
+    const auto primitives = ( static_cast<Line&>(object).lineType == THREE::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
 
     setLineWidth( material.linewidth );
 
@@ -3508,9 +3507,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, GLRenderTarget::Ptr rende
   setRenderTarget( renderTarget );
 
   if ( autoClear || forceClear ) {
-
     clear( autoClearColor, autoClearDepth, autoClearStencil );
-
   }
 
   // set matrices for regular objects (frustum culled)
@@ -3525,28 +3522,22 @@ void GLRenderer::render( Scene& scene, Camera& camera, GLRenderTarget::Ptr rende
 
     if ( object.visible ) {
 
-      if ( !( object.type() == THREE::Mesh || object.type() == THREE::ParticleSystem ) || !( object.frustumCulled ) || _frustum.contains( object ) ) {
+      if ( !( object.type() == THREE::Mesh || object.type() == THREE::ParticleSystem ) || 
+           !( object.frustumCulled ) || _frustum.contains( object ) ) {
         //object.matrixWorld.flattenToArray( object._modelMatrixArray );
 
         setupMatrices( object, camera );
-
         unrollBufferMaterial( glObject );
-
         glObject.render = true;
 
         if ( sortObjects ) {
 
           if ( object.renderDepth ) {
-
             glObject.z = object.renderDepth;
-
           } else {
-
             _vector3.copy( object.matrixWorld.getPosition() );
             _projScreenMatrix.multiplyVector3( _vector3 );
-
             glObject.z = _vector3.z;
-
           }
 
         }
@@ -3558,9 +3549,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, GLRenderTarget::Ptr rende
   }
 
   if ( sortObjects ) {
-
     std::sort( renderList.begin(), renderList.end(), PainterSort() );
-
   }
 
   // set matrices for immediate objects
@@ -3574,9 +3563,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, GLRenderTarget::Ptr rende
     if ( object.visible ) {
 
       if ( object.matrixAutoUpdate ) {
-
         object.matrixWorld.flattenToArray( object.glData._modelMatrixArray );
-
       }
 
       setupMatrices( object, camera );
@@ -5108,9 +5095,7 @@ void GLRenderer::setFaceCulling( THREE::Side cullFace /*= THREE::NoSide*/, THREE
     glEnable( GL_CULL_FACE );
 
   } else {
-
     glDisable( GL_CULL_FACE );
-
   }
 
 }
