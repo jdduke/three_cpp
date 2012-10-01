@@ -17,7 +17,7 @@ void performance_static( GLRenderer::Ptr renderer ) {
   );
 
   auto loader = JSONLoader::create();
-  loader->load( threeDataDir() + "/obj/Suzanne.js", [&material]( Geometry::Ptr geometry ) {
+  loader->load( threeDataPath("/obj/Suzanne.js"), [&material]( Geometry::Ptr geometry ) {
     geometry->computeVertexNormals();
 
     for ( int = 0; i < 7700; i ++ ) {

@@ -141,7 +141,7 @@ protected:
       generateMipmaps( true ),
       premultiplyAlpha( false ),
       flipY( true ),
-      needsUpdate( false ) { }
+      needsUpdate( true ) { }
 
 private:
 

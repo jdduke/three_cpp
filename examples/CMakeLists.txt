@@ -63,7 +63,9 @@ set(examples simple
              test_memory
              lines_colors
              lines_cubes
-             shader)
+             shader
+             shader_fireball
+             shader_lava)
 
 foreach(example ${examples})
   add_executable(${example} ${example}.cpp)

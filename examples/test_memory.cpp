@@ -70,9 +70,9 @@ void test_memory( GLRenderer::Ptr renderer ) {
       auto texture = Texture::create( TextureDesc( createImage(), THREE::RGBFormat ) );
       texture->needsUpdate = true;
 
-      auto material = MeshPhongMaterial::create(
+      auto material = //MeshPhongMaterial::create(
                       //MeshLambertMaterial::create(
-                      //MeshBasicMaterial::create(
+                      MeshBasicMaterial::create(
         Material::Parameters().add( "map", texture )
                               .add( "wireframe", true )
       );

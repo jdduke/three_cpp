@@ -367,7 +367,7 @@ Vector3 Matrix4::getEulerRotation( THREE::Order order /*= THREE::XYZ*/ ) const {
   auto m21 = te[1], m22 = te[5], m23 = te[9];
   auto m31 = te[2], m32 = te[6], m33 = te[10];
 
-  float x, y, z;
+  auto x = 0.f, y = 0.f, z = 0.f;
 
   if ( order == THREE::XYZ ) {
 

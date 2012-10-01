@@ -13,6 +13,7 @@
 #include <three/extras/utils/font.hpp>
 
 using namespace three;
+using namespace three_examples;
 
 void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
@@ -66,7 +67,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
     mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
   });
 
-  auto font = utils::Font::create( "consolas.ttf" );
+  auto font = utils::Font::create( threeDataPath("fonts/consolas.ttf") );
 
   auto time = 0.f, lastDt = 0.f, fps = 60.f;
   anim::gameLoop (
@@ -92,10 +93,9 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
       renderer->render( *scene, *camera );
 
       if ( font ) {
-
         static int count = 0;
         if ( count++ % 60 == 0 ) {
-          fps = Math::ceil( 1.f / (.5f * dt + 0.5f * lastDt) );
+          fps = Math::round( 1.f / (.9f * dt + 0.1f * lastDt) );
         }
         lastDt = dt;
 
@@ -112,7 +112,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
       return running;
 
-  }, 2000 );
+  } );
 
 }
 

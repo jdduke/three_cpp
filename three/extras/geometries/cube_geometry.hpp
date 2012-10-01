@@ -107,7 +107,7 @@ protected:
 
     int offset = (int)vertices.size();
 
-    Side w;
+    Side w = X;
 
     if ( ( u == X && v == Y ) || ( u == Y && v == X ) ) {
       w = Z;
