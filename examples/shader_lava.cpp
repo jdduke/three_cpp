@@ -71,7 +71,6 @@ void main( void ) {\
 }
 
 using namespace three;
-using namespace three_examples;
 
 void shader_fireball( GLRenderer::Ptr renderer ) {
 
@@ -137,8 +136,8 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    mesh->rotation.y += 0.0375 * dt;
-    mesh->rotation.x += 0.15 * dt;
+    mesh->rotation.y += 0.0375f * dt;
+    mesh->rotation.x += 0.15f * dt;
 
     renderer->render( *scene, *camera );
 

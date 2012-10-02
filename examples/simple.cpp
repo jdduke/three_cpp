@@ -6,9 +6,6 @@
 #include <three/objects/mesh.hpp>
 #include <three/extras/geometries/sphere_geometry.hpp>
 #include <three/materials/mesh_lambert_material.hpp>
-#include <three/renderers/renderer_parameters.hpp>
-#include <three/renderers/gl_renderer.hpp>
-
 
 using namespace three;
 
@@ -76,20 +73,9 @@ void simple( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
+  ExampleSession session;
 
-  RendererParameters parameters;
-
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  simple( renderer );
+  session.run( simple );
 
   return 0;
 }

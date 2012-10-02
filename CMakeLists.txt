@@ -87,7 +87,9 @@ if(MSVC)
     set(THREE_SIZE_TYPE x64)
     set(BUILD_64_BIT TRUE)
   endif()
+
   add_definitions("-D_VARIADIC_MAX=6")
+  add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 
   set(LINK_STATIC_RUNTIME OFF CACHE BOOL "Link statically against C++ runtime")
   if(LINK_STATIC_RUNTIME)

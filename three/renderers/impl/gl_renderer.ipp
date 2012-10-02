@@ -4791,7 +4791,9 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     if ( location < 0 ) {
       if ( warnIfNotFound )
-        console().warn() << "three::GLRenderer::loadUniformsGeneric: Expected uniform " << uniforms[ j ].second << " location does not exist";
+        console().warn() << "three::GLRenderer::loadUniformsGeneric: Expected uniform \"" 
+                         << uniforms[ j ].second 
+                         << "\" location does not exist";
       continue;
     }
 
@@ -5511,19 +5513,13 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     Identifiers identifiers( identifiersArray.begin(), identifiersArray.end() );
 
     if ( parameters.useVertexTexture ) {
-
       identifiers.push_back( "boneTexture" );
-
     } else {
-
       identifiers.push_back( "boneGlobalMatrices" );
-
     }
 
     for ( const auto& u : uniforms ) {
-
       identifiers.push_back( u.first );
-
     }
 
     cacheUniformLocations( *program, identifiers );
@@ -5559,9 +5555,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     }
 
     for ( const auto& a : attributes ) {
-
       identifiers.push_back( a.first );
-
     }
 
     cacheAttributeLocations( *program, identifiers );

@@ -13,7 +13,6 @@
 #include <three/extras/utils/font.hpp>
 
 using namespace three;
-using namespace three_examples;
 
 void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 

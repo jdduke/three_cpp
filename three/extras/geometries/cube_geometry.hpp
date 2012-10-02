@@ -69,15 +69,13 @@ protected:
       } else {
         this->materials.clear();
         for ( int i = 0; i < 6; i ++ ) {
-          materials.push_back( materials[0] );
+          this->materials.push_back( materials[0] );
         }
       }
       mpx = 0; mnx = 1; mpy = 2; mny = 3; mpz = 4; mnz = 5;
 
     } else {
-
       this->materials.clear();
-
     }
 
     this->sides = sides;

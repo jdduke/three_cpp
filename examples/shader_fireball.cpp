@@ -173,8 +173,8 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    mesh->rotation.y += 0.5 * dt;
-    mesh->rotation.x += 0.1 * dt;
+    mesh->rotation.y += 0.5f * dt;
+    mesh->rotation.x += 0.1f * dt;
 
     renderer->render( *scene, *camera );
 

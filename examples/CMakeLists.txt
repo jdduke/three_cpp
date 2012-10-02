@@ -29,10 +29,8 @@ include_directories(${RAPID_JSON_INCLUDE_DIR})
 add_definitions(-DGLEW_STATIC -DTHREE_SDL -DTHREE_GLEW)
 
 set(EXAMPLE_LIBS ${GLEW_LIBRARY}
-                ${SDL_LIBRARY}
-                ${SDLIMAGE_LIBRARY}
-                ${SDLTTF_LIBRARY}
-                ${OPENGL_LIBRARIES})
+                 ${SDL_LIBRARY}
+                 ${OPENGL_LIBRARIES})
 
 
 set(THREE_HEADER_ONLY TRUE CACHE BOOL
@@ -64,6 +62,7 @@ set(examples simple
              lines_colors
              lines_cubes
              shader
+             shader2
              shader_fireball
              shader_lava)
 

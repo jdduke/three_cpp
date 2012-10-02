@@ -338,6 +338,10 @@ extern void stbi_install_YCbCr_to_RGB(stbi_YCbCr_to_RGB_run func);
 #include <string.h> // strcmp, strtok
 #endif
 
+#if defined(_MSC_VER) && _MSC_VER >= 0x1400
+#define _CRT_SECURE_NO_WARNINGS // suppress bogus warnings about fopen()
+#endif
+
 #ifndef STBI_NO_STDIO
 #include <stdio.h>
 #endif
@@ -757,7 +761,7 @@ stbi_inline static uint8 get8u(stbi *s)
 static void skip(stbi *s, int n)
 {
    if (s->io.read) {
-      int blen = s->img_buffer_end - s->img_buffer;
+      int blen = (int)(s->img_buffer_end - s->img_buffer);
       if (blen < n) {
          s->img_buffer = s->img_buffer_end;
          (s->io.skip)(s->io_user_data, n - blen);
@@ -770,7 +774,7 @@ static void skip(stbi *s, int n)
 static int getn(stbi *s, stbi_uc *buffer, int n)
 {
    if (s->io.read) {
-      int blen = s->img_buffer_end - s->img_buffer;
+      int blen = (int)(s->img_buffer_end - s->img_buffer);
       if (blen < n) {
          int res, count;
 
