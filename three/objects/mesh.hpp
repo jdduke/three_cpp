@@ -3,9 +3,8 @@
 
 #include <three/core/object3d.hpp>
 #include <three/core/geometry.hpp>
+#include <three/visitor.hpp>
 #include <three/materials/material.hpp>
-
-//#include <three/common.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -18,7 +17,7 @@ public:
 
   typedef std::shared_ptr<Mesh> Ptr;
 
-  static Ptr create( Geometry::Ptr geometry, Material::Ptr material ) {
+  static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material ) {
     return three::make_shared<Mesh>( geometry, material );
   }
 
@@ -51,7 +50,7 @@ public:
 
 protected:
 
-  Mesh( Geometry::Ptr geometry, Material::Ptr material )
+  Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material )
     : Object3D( material, geometry ),
       boundRadius( 0 ), morphTargetBase( -1 ) {
 

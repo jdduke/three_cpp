@@ -116,7 +116,7 @@ struct Derived : public T {
   Derived( const Args& ... args ) : T( args... ) { }
 };
 
-template < typename T, typename... Args >
+template < typename T >
 inline std::shared_ptr<T> make_shared( ) {
   struct Derived : public T { };
   return std::make_shared<Derived>( );

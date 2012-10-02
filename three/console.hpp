@@ -2,7 +2,6 @@
 #define THREE_CONSOLE_HPP
 
 #include <three/config.hpp>
-#include <three/fwd.hpp>
 
 #include <memory>
 #include <iostream>

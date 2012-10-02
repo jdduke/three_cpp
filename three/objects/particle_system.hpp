@@ -3,6 +3,7 @@
 
 #include <three/common.hpp>
 
+#include <three/visitor.hpp>
 #include <three/core/object3d.hpp>
 #include <three/materials/material.hpp>
 
@@ -13,7 +14,7 @@ public:
 
   typedef std::shared_ptr<ParticleSystem> Ptr;
 
-  static Ptr create( Geometry::Ptr geometry, Material::Ptr material ) {
+  static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material ) {
     return three::make_shared<ParticleSystem> ( geometry, material );
   }
 
@@ -30,7 +31,7 @@ public:
 
 protected:
 
-  ParticleSystem( Geometry::Ptr geometry, Material::Ptr material )
+  ParticleSystem( const Geometry::Ptr& geometry, const Material::Ptr& material )
     : Object3D( material, geometry ), softParticles( false ) {
 
     if ( geometry ) {

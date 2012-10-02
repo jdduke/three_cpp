@@ -13,7 +13,7 @@ public:
 
   typedef std::shared_ptr<Particle> Ptr;
 
-  static Ptr create( Material::Ptr material ) {
+  static Ptr create( const Material::Ptr& material ) {
     return three::make_shared<Particle>( material );
   }
 
@@ -28,7 +28,7 @@ public:
 
 protected:
 
-  Particle( Material::Ptr material )
+  Particle( const Material::Ptr& material )
     : Object3D( material ) { }
 
 };

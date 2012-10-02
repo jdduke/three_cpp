@@ -103,11 +103,11 @@ public:
   float getClearAlpha() const { return _clearAlpha; }
 
   THREE_DECL void clear( bool color = true, bool depth = true, bool stencil = true );
-  THREE_DECL void clearTarget( GLRenderTarget::Ptr renderTarget, bool color = true, bool depth = true, bool stencil = true );
+  THREE_DECL void clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color = true, bool depth = true, bool stencil = true );
 
   // Plugins
-  THREE_DECL void addPostPlugin( IPlugin::Ptr plugin );
-  THREE_DECL void addPrePlugin( IPlugin::Ptr plugin );
+  THREE_DECL void addPostPlugin(const IPlugin::Ptr& plugin );
+  THREE_DECL void addPrePlugin( const IPlugin::Ptr& plugin );
 
   // Deallocation
   THREE_DECL void deallocateObject( Object3D& object );
@@ -116,7 +116,7 @@ public:
   THREE_DECL void deallocateMaterial( Material& material );
 
   // Rendering
-  THREE_DECL void render( Scene& scene, Camera& camera, GLRenderTarget::Ptr renderTarget = GLRenderTarget::Ptr(), bool forceClear = false );
+  THREE_DECL void render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr& renderTarget = GLRenderTarget::Ptr(), bool forceClear = false );
   THREE_DECL void updateShadowMap( const Scene& scene, const Camera& camera );
   THREE_DECL void resetStates();
 
@@ -199,12 +199,12 @@ private:
   THREE_DECL void removeObject( Object3D& object, Scene& scene );
   THREE_DECL void removeInstances( RenderList& objlist, Object3D& object );
   THREE_DECL void removeInstancesDirect( RenderListDirect& objlist, Object3D& object );
-  
+
   // Materials
   THREE_DECL void initMaterial( Material& material, Lights& lights, IFog* fog, Object3D& object );
   THREE_DECL void setMaterialShaders( Material& material, const Shader& shaders );
   Program& setProgram( Camera& camera, Lights& lights, IFog* fog, Material& material, Object3D& object );
-  
+
   // Uniforms (refresh uniforms objects)
   THREE_DECL void refreshUniformsCommon( Uniforms& uniforms, Material& material );
   THREE_DECL void refreshUniformsLine( Uniforms& uniforms, Material& material );
@@ -214,7 +214,7 @@ private:
   THREE_DECL void refreshUniformsLambert( Uniforms& uniforms, Material& material );
   THREE_DECL void refreshUniformsLights( Uniforms& uniforms, InternalLights& lights );
   THREE_DECL void refreshUniformsShadow( Uniforms& uniforms, Lights& lights );
-  
+
   // Uniforms (load to GPU)
   THREE_DECL void loadUniformsMatrices( UniformsIndices& uniforms, Object3D& object );
   THREE_DECL void loadUniformsGeneric( Program& program, UniformsList& uniforms, bool warnOnNotFound );
@@ -291,7 +291,7 @@ private:
   // Render targets
   THREE_DECL void setupFrameBuffer( Buffer framebuffer, GLRenderTarget& renderTarget, GLenum textureTarget );
   THREE_DECL void setupRenderBuffer( Buffer renderbuffer, GLRenderTarget& renderTarget );
-  THREE_DECL void setRenderTarget( GLRenderTarget::Ptr renderTarget );
+  THREE_DECL void setRenderTarget( const GLRenderTarget::Ptr& renderTarget );
   THREE_DECL void updateRenderTargetMipmap( GLRenderTarget& renderTarget );
 
 
@@ -352,7 +352,7 @@ private:
   // internal properties
 
   struct ProgramInfo {
-    ProgramInfo( Program::Ptr program, std::string code, int usedTimes )
+    ProgramInfo( const Program::Ptr& program, std::string code, int usedTimes )
       : program( program ), code( code ), usedTimes( usedTimes ) { }
     ProgramInfo()
       : program( 0 ), usedTimes( 0 ) { }

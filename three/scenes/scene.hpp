@@ -26,11 +26,11 @@ public:
 
   struct GLObject : RenderableObject {
     explicit GLObject( GeometryBuffer* buffer = nullptr,
-                       Object3D* object = nullptr,
-                       bool render = false,
-                       Material* opaque = nullptr,
-                       Material* transparent = nullptr,
-                       float z = 0.f )
+                       Object3D* object       = nullptr,
+                       bool render            = false,
+                       Material* opaque       = nullptr,
+                       Material* transparent  = nullptr,
+                       float z                = 0.f )
       : RenderableObject( object, z ),
         buffer( buffer ),
         render( render ),
@@ -58,8 +58,8 @@ public:
 
 protected:
 
-  THREE_DECL virtual void __addObject( Object3D::Ptr& object );
-  THREE_DECL virtual void __removeObject( Object3D::Ptr& object );
+  THREE_DECL virtual void __addObject( const Object3D::Ptr& object );
+  THREE_DECL virtual void __removeObject( const Object3D::Ptr& object );
 
 protected:
 
@@ -67,8 +67,8 @@ protected:
 
   virtual THREE::Type type() const { return THREE::Scene; }
 
-  virtual void visit( Visitor& v ) { v( *this ); }
-  virtual void visit( ConstVisitor& v ) const { v( *this ); }
+  THREE_DECL virtual void visit( Visitor& v );
+  THREE_DECL virtual void visit( ConstVisitor& v ) const;
 };
 
 } // namespace three

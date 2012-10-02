@@ -60,7 +60,7 @@ protected:
     auto height_half = height / 2;
     auto depth_half  = depth  / 2;
 
-    int mpx = -1, mpy = -1, mpz = -1, mnx = 1, mny = -1, mnz = -1;
+    int mpx = -1, mpy = -1, mpz = -1, mnx = -1, mny = -1, mnz = -1;
 
     if ( !materials.empty() ) {
 

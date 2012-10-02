@@ -16,6 +16,16 @@ public:
     return three::make_shared<ShaderMaterial>( parameters );
   }
 
+  static Ptr create( const std::string& fragmentShader,
+                     const std::string& vertexShader,
+                     const Uniforms& uniforms,
+                     const Parameters& parameters = Parameters() ) {
+    return three::make_shared<ShaderMaterial>( fragmentShader,
+                                               vertexShader,
+                                               uniforms,
+                                               parameters );
+  }
+
   virtual THREE::MaterialType type() const { return THREE::ShaderMaterial; }
 
   /////////////////////////////////////////////////////////////////////////
@@ -28,6 +38,17 @@ protected:
 
   ShaderMaterial( const Parameters& parameters )
     : Material() {
+    setParameters( parameters, DefaultKeys() );
+  }
+
+  ShaderMaterial( const std::string& fragmentShader,
+                  const std::string& vertexShader,
+                  const Uniforms& uniforms,
+                  const Parameters& parameters )
+    : Material() {
+    this->fragmentShader = fragmentShader;
+    this->vertexShader   = vertexShader;
+    this->uniforms       = uniforms;
     setParameters( parameters, DefaultKeys() );
   }
 

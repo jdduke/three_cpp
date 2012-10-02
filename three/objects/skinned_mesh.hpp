@@ -11,7 +11,7 @@ class SkinnedMesh : public Mesh {
 
   typedef std::shared_ptr<SkinnedMesh> Ptr;
 
-  static Ptr create( Geometry::Ptr geometry, Material::Ptr material, bool useVertexTexture = true ) {
+  static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material, bool useVertexTexture = true ) {
     return three::make_shared<SkinnedMesh>( geometry, material, useVertexTexture );
   }
 
@@ -104,7 +104,7 @@ class SkinnedMesh : public Mesh {
 protected:
 
   // init bones
-  SkinnedMesh( Geometry::Ptr geometry, Material::Ptr material, bool useVertexTexture )
+  SkinnedMesh( const Geometry::Ptr& geometry, const Material::Ptr& material, bool useVertexTexture )
     : Mesh( geometry, material ), useVertexTexture( useVertexTexture ) {
 
     Matrix4 identityMatrix;

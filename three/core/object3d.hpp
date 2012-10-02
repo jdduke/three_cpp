@@ -144,8 +144,8 @@ public:
   THREE_DECL void translateZ( float distance );
   THREE_DECL void lookAt( const Vector3& vector );
 
-  THREE_DECL void add( Ptr object );
-  THREE_DECL void remove( Ptr object );
+  THREE_DECL void add( const Ptr& object );
+  THREE_DECL void remove( const Ptr& object );
 
   THREE_DECL Ptr getChildByName( const std::string& name, bool recursive );
 
@@ -159,11 +159,11 @@ public:
 
 protected:
 
-  THREE_DECL Object3D( Material::Ptr material = Material::Ptr(),
-                       Geometry::Ptr geometry = Geometry::Ptr() );
+  THREE_DECL Object3D( const Material::Ptr& material = Material::Ptr(),
+                       const Geometry::Ptr& geometry = Geometry::Ptr() );
 
-  THREE_DECL virtual void __addObject( Ptr& object );
-  THREE_DECL virtual void __removeObject( Ptr& object );
+  THREE_DECL virtual void __addObject( const Ptr& object );
+  THREE_DECL virtual void __removeObject( const Ptr& object );
 
 private:
 

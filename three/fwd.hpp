@@ -27,6 +27,9 @@ class Quaternion;
 class Ray;
 class Frustum;
 
+class Visitor;
+class ConstVisitor;
+
 class RenderableFace;
 class RenderableObject;
 class RenderableLine;

@@ -46,7 +46,7 @@ void Object3D::lookAt( const Vector3& vector ) {
 
 }
 
-void Object3D::add( Object3D::Ptr object ) {
+void Object3D::add( const Object3D::Ptr& object ) {
 
   if ( !object )
     return;
@@ -77,7 +77,7 @@ void Object3D::add( Object3D::Ptr object ) {
 
 }
 
-void Object3D::remove( Object3D::Ptr object ) {
+void Object3D::remove( const Object3D::Ptr& object ) {
 
   auto index = std::find( children.begin(), children.end(), object );
 
@@ -185,8 +185,8 @@ void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
 
 /////////////////////////////////////////////////////////////////////////
 
-Object3D::Object3D( Material::Ptr material /*= Material::Ptr()*/,
-                    Geometry::Ptr geometry /*= Geometry::Ptr()*/ )
+Object3D::Object3D( const Material::Ptr& material /*= Material::Ptr()*/,
+                    const Geometry::Ptr& geometry /*= Geometry::Ptr()*/ )
   : id( Object3DCount()++ ),
     parent( nullptr ),
     up( 0, 1, 0 ),
@@ -211,9 +211,9 @@ Object3D::Object3D( Material::Ptr material /*= Material::Ptr()*/,
     material( material ),
     geometry( geometry ) { }
 
-void Object3D::__addObject( Ptr& object ) { }
+void Object3D::__addObject( const Ptr& object ) { }
 
-void Object3D::__removeObject( Ptr& object ) { }
+void Object3D::__removeObject( const Ptr& object ) { }
 
 } // namespace three
 

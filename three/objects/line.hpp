@@ -14,15 +14,14 @@ public:
 
   typedef std::shared_ptr<Line> Ptr;
 
-  static Ptr create( Geometry::Ptr geometry, 
-                     Material::Ptr material, 
+  static Ptr create( const Geometry::Ptr& geometry,
+                     const Material::Ptr& material,
                      THREE::LineType lineType = THREE::LineStrip ) {
-    if (!material) {
-      material = LineBasicMaterial::create( 
-        Material::Parameters().add( "color", Color( (int)(Math::random() * 0xFFFFFF) ) )
-      );
+    if ( material ) {
+      return three::make_shared<Line>( geometry, material, lineType );
+    } else {
+      return three::make_shared<Line>( geometry, defaultMaterial(), lineType );
     }
-    return three::make_shared<Line>( geometry, material, lineType );
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -38,7 +37,7 @@ public:
 
 protected:
 
-  Line( Geometry::Ptr geometry, Material::Ptr material, THREE::LineType lineType )
+  Line( const Geometry::Ptr& geometry, const Material::Ptr& material, THREE::LineType lineType )
     : Object3D( material, geometry ), lineType( lineType ) {
 
     if ( geometry ) {
@@ -48,6 +47,12 @@ protected:
       }
 
     }
+  }
+
+  static Material::Ptr defaultMaterial() {
+    return LineBasicMaterial::create(
+      Material::Parameters().add( "color", Color( (int)(Math::random() * 0xFFFFFF) ) )
+    );
   }
 };
 

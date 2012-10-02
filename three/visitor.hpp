@@ -6,7 +6,8 @@
 
 namespace three {
 
-struct Visitor {
+class Visitor {
+public:
   virtual void operator()( Object3D& ) { }
   virtual void operator()( Bone& )     { }
   virtual void operator()( Camera& )   { }
@@ -21,7 +22,8 @@ struct Visitor {
   void fallback( T& object ) { ( *this )( static_cast<Object3D&>( object ) ); }
 };
 
-struct ConstVisitor {
+class ConstVisitor {
+public:
   virtual void operator()( const Object3D& ) { }
   virtual void operator()( const Bone& )     { }
   virtual void operator()( const Camera& )   { }

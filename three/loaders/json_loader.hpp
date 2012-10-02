@@ -33,7 +33,7 @@ inline bool readFile( const std::string& fileName, std::string& output ) {
 class JSONLoader : public Loader {
 public:
 
-  typedef std::function<void( Geometry::Ptr )> Callback;
+  typedef std::function<void( const Geometry::Ptr& )> Callback;
 
   JSONLoader( bool showStatus )
     : Loader( showStatus ) { }

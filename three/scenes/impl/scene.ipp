@@ -4,6 +4,7 @@
 #include <three/scenes/scene.hpp>
 
 #include <three/utils.hpp>
+#include <three/visitor.hpp>
 
 #include <three/objects/particle.hpp>
 #include <three/objects/line.hpp>
@@ -15,6 +16,9 @@ Scene::Scene()
   : Object3D(),
     overrideMaterial( nullptr ),
     matrixAutoUpdate( false ) { }
+
+void Scene::visit( Visitor& v )            { v( *this ); }
+void Scene::visit( ConstVisitor& v ) const { v( *this ); }
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +36,7 @@ struct FallbackVisitor : public Visitor {
 };
 
 struct Add : public FallbackVisitor {
-  Add( Scene& s, Object3D::Ptr& o )
+  Add( Scene& s, const Object3D::Ptr& o )
     : s( s ), object( o ) { }
 
   void operator()( Object3D& o ) {
@@ -53,11 +57,11 @@ struct Add : public FallbackVisitor {
   void operator()( Camera& ) { }
 
   Scene& s;
-  Object3D::Ptr& object;
+  const Object3D::Ptr& object;
 };
 
 struct Remove : public FallbackVisitor {
-  Remove( Scene& s, Object3D::Ptr& o ) : s( s ), object( o ) { }
+  Remove( Scene& s, const Object3D::Ptr& o ) : s( s ), object( o ) { }
   void operator()( Object3D& o ) {
     if ( erase( s.__objects, &o ) ) {
       s.__objectsRemoved.push_back( object );
@@ -69,12 +73,12 @@ struct Remove : public FallbackVisitor {
   void operator()( Camera& o ) { }
 
   Scene& s;
-  Object3D::Ptr& object;
+  const Object3D::Ptr& object;
 };
 
 } // namespace detail
 
-void Scene::__addObject( Object3D::Ptr& object ) {
+void Scene::__addObject( const Object3D::Ptr& object ) {
   if ( !object )
     return;
 
@@ -86,7 +90,7 @@ void Scene::__addObject( Object3D::Ptr& object ) {
   }
 }
 
-void Scene::__removeObject( Object3D::Ptr& object ) {
+void Scene::__removeObject( const Object3D::Ptr& object ) {
   if ( !object )
     return;
 

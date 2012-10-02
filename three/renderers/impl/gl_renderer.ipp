@@ -269,7 +269,7 @@ void GLRenderer::clear( bool color /*= true*/, bool depth /*= true*/, bool stenc
   glClear( bits );
 }
 
-void GLRenderer::clearTarget( GLRenderTarget::Ptr renderTarget, bool color /*= true*/, bool depth /*= true*/, bool stencil /*= true*/ ) {
+void GLRenderer::clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color /*= true*/, bool depth /*= true*/, bool stencil /*= true*/ ) {
 
   setRenderTarget( renderTarget );
   clear( color, depth, stencil );
@@ -278,14 +278,14 @@ void GLRenderer::clearTarget( GLRenderTarget::Ptr renderTarget, bool color /*= t
 
 // Plugins
 
-void GLRenderer::addPostPlugin( IPlugin::Ptr plugin ) {
+void GLRenderer::addPostPlugin( const IPlugin::Ptr& plugin ) {
 
   plugin->init( *this );
   renderPluginsPost.push_back( plugin );
 
 }
 
-void GLRenderer::addPrePlugin( IPlugin::Ptr plugin ) {
+void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
 
   plugin->init( *this );
   renderPluginsPre.push_back( plugin );
@@ -3455,7 +3455,7 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
 // Rendering
 
-void GLRenderer::render( Scene& scene, Camera& camera, GLRenderTarget::Ptr renderTarget /*= GLRenderTarget::Ptr()*/, bool forceClear /*= false*/ ) {
+void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr& renderTarget /*= GLRenderTarget::Ptr()*/, bool forceClear /*= false*/ ) {
 
   auto& lights = scene.__lights;
   auto  fog = scene.fog.get();
@@ -4791,8 +4791,8 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     if ( location < 0 ) {
       if ( warnIfNotFound )
-        console().warn() << "three::GLRenderer::loadUniformsGeneric: Expected uniform \"" 
-                         << uniforms[ j ].second 
+        console().warn() << "three::GLRenderer::loadUniformsGeneric: Expected uniform \""
+                         << uniforms[ j ].second
                          << "\" location does not exist";
       continue;
     }
@@ -5832,7 +5832,7 @@ void GLRenderer::setupRenderBuffer( Buffer renderbuffer, GLRenderTarget& renderT
 
 }
 
-void GLRenderer::setRenderTarget( GLRenderTarget::Ptr renderTarget ) {
+void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
 
   auto isCube = false;// TODO: ( renderTarget.type() == THREE::WebglRenderTargetCube );
 

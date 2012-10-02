@@ -3,6 +3,7 @@
 
 #include <three/common.hpp>
 
+#include <three/visitor.hpp>
 #include <three/core/color.hpp>
 #include <three/core/object3d.hpp>
 
