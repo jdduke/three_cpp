@@ -30,7 +30,6 @@ private:
   THREE_DECL Uniform& swap( Uniform& other );
 };
 
-//typedef std::unordered_map<std::string, Uniform> Uniforms;
 typedef Properties<std::string, Uniform> Uniforms;
 typedef std::unordered_map<std::string, int> UniformsIndices;
 typedef std::vector<std::pair<Uniform*, std::string>> UniformsList;

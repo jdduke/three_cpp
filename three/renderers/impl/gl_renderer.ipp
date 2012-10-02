@@ -4777,8 +4777,9 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 void GLRenderer::loadUniformsMatrices( UniformsIndices& uniforms, Object3D& object ) {
 
   glUniformMatrix4fv( uniforms["modelViewMatrix"], 1, false, object.glData._modelViewMatrix.elements );
-  if ( contains( uniforms, "normalMatrix" ) ) {
-    glUniformMatrix3fv( uniforms["normalMatrix"], 1, false, object.glData._normalMatrix.elements );
+  auto normalMatrixIt = uniforms.find( "normalMatrix" );
+  if ( normalMatrixIt != uniforms.end() ) {
+    glUniformMatrix3fv( normalMatrixIt->second, 1, false, object.glData._normalMatrix.elements );
   }
 
 }

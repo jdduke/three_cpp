@@ -70,12 +70,15 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
   });
 
   auto time = 0.f;
+  auto frame = 0;
+  const auto maxFrames = 50000;
 
   anim::gameLoop (
 
     [&]( float dt ) -> bool {
 
       time += dt;
+      ++frame;
 
       sdl::processEvents();
 
@@ -99,7 +102,7 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
 
       sdl::swapBuffers();
 
-      return running;
+      return running && frame < maxFrames;
 
   }, 2000 );
 
@@ -110,6 +113,7 @@ int main ( int argc, char* argv[] ) {
   auto onQuit = defer( sdl::quit );
 
   RendererParameters parameters;
+  parameters.vsync = false;
 
   if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;

@@ -34,14 +34,14 @@ set(EXAMPLE_LIBS ${GLEW_LIBRARY}
 
 
 set(THREE_HEADER_ONLY TRUE CACHE BOOL
-  "Whether to use Three.cpp as a header-only library")
+  "Whether to use Three.cpp as a header-only library" FORCE)
 
-if (NOT THREE_HEADER_ONLY)
+#if (NOT THREE_HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
   add_library(three_impl STATIC three.cpp three_extras.cpp)
   target_link_libraries(three_impl ${EXAMPLE_LIBS})
   set(EXAMPLE_LIBS ${EXAMPLE_LIBS} three_impl)
-endif()
+#endif()
 
 
 set(THREE_RELEASE_BUILD FALSE CACHE BOOL

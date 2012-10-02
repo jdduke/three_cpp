@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <functional>
+#include <map>
 #include <unordered_map>
 #include <memory>
 
@@ -31,6 +32,18 @@ template < typename T >
 inline bool contains( const std::unordered_map<std::string, T>& c, const char* elem ) {
   return contains ( c, std::string( elem ) );
 }
+
+/*
+template < typename T >
+inline bool contains( const std::map<std::string, T>& c, const std::string& elem ) {
+  return c.find( elem ) != c.end();
+}
+
+template < typename T >
+inline bool contains( const std::map<std::string, T>& c, const char* elem ) {
+  return contains ( c, std::string( elem ) );
+}
+*/
 
 template < typename C, typename T >
 inline bool erase( C& c, const T& elem ) {

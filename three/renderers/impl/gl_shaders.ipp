@@ -1289,20 +1289,21 @@ Uniforms UniformsLib::common() {
   Uniforms uniforms;
 
   uniforms.add( "diffuse",               Uniform( Uniform::c, Color( 0xeeeeee ) ) )
-          .add( "opacity",               Uniform( Uniform::f, 1.0f ) ) 
+          //.emplace( "diffuse",           Uniform::c, Color( 0xeeeeee ) )
+          .add( "opacity",               Uniform( Uniform::f, 1.0f ) )
 
-          .add( "map",                   Uniform( Uniform::t, 0 ) ) 
-          .add( "offsetRepeat",          Uniform( Uniform::v4, Vector4( 0, 0, 1, 1 ) ) ) 
+          .add( "map",                   Uniform( Uniform::t, 0 ) )
+          .add( "offsetRepeat",          Uniform( Uniform::v4, Vector4( 0, 0, 1, 1 ) ) )
 
-          .add( "lightMap",              Uniform( Uniform::t, 2 ) ) 
-          .add( "specularMap",           Uniform( Uniform::t, 3 ) ) 
+          .add( "lightMap",              Uniform( Uniform::t, 2 ) )
+          .add( "specularMap",           Uniform( Uniform::t, 3 ) )
 
-          .add( "envMap",                Uniform( Uniform::t, 1 ) ) 
-          .add( "flipEnvMap",            Uniform( Uniform::f, -1 ) ) 
-          .add( "useRefract",            Uniform( Uniform::i, 0 ) ) 
-          .add( "reflectivity",          Uniform( Uniform::f, 1.0f ) ) 
-          .add( "refractionRatio",       Uniform( Uniform::f, 0.98f ) ) 
-          .add( "combine",               Uniform( Uniform::i, 0 ) ) 
+          .add( "envMap",                Uniform( Uniform::t, 1 ) )
+          .add( "flipEnvMap",            Uniform( Uniform::f, -1 ) )
+          .add( "useRefract",            Uniform( Uniform::i, 0 ) )
+          .add( "reflectivity",          Uniform( Uniform::f, 1.0f ) )
+          .add( "refractionRatio",       Uniform( Uniform::f, 0.98f ) )
+          .add( "combine",               Uniform( Uniform::i, 0 ) )
 
           .add( "morphTargetInfluences", Uniform( Uniform::f, 0 ) );
 
@@ -1313,7 +1314,7 @@ Uniforms UniformsLib::bump() {
   Uniforms uniforms;
 
   uniforms.add( "bumpMap",   Uniform( Uniform::t, 4 ) )
-          .add( "bumpScale", Uniform( Uniform::f, 1 ) ); 
+          .add( "bumpScale", Uniform( Uniform::f, 1 ) );
 
   return uniforms;
 }
@@ -1333,19 +1334,19 @@ Uniforms UniformsLib::lights() {
   Uniforms uniforms;
 
   uniforms.add( "ambientLightColor",         Uniform( Uniform::fv ) )
-      
-          .add( "directionalLightDirection", Uniform( Uniform::fv ) ) 
+
+          .add( "directionalLightDirection", Uniform( Uniform::fv ) )
           .add( "directionalLightColor",     Uniform( Uniform::fv ) )
 
           .add( "pointLightColor",           Uniform( Uniform::fv ) )
-          .add( "pointLightPosition",        Uniform( Uniform::fv ) ) 
-          .add( "pointLightDistance",        Uniform( Uniform::fv1 ) ) 
+          .add( "pointLightPosition",        Uniform( Uniform::fv ) )
+          .add( "pointLightDistance",        Uniform( Uniform::fv1 ) )
 
-          .add( "spotLightColor",            Uniform( Uniform::fv ) ) 
-          .add( "spotLightPosition",         Uniform( Uniform::fv ) ) 
-          .add( "spotLightDirection",        Uniform( Uniform::fv ) ) 
-          .add( "spotLightDistance",         Uniform( Uniform::fv1 ) ) 
-          .add( "spotLightAngle",            Uniform( Uniform::fv1 ) ) 
+          .add( "spotLightColor",            Uniform( Uniform::fv ) )
+          .add( "spotLightPosition",         Uniform( Uniform::fv ) )
+          .add( "spotLightDirection",        Uniform( Uniform::fv ) )
+          .add( "spotLightDistance",         Uniform( Uniform::fv1 ) )
+          .add( "spotLightAngle",            Uniform( Uniform::fv1 ) )
           .add( "spotLightExponent",         Uniform( Uniform::fv1 ) );
 
   return uniforms;
@@ -1361,8 +1362,8 @@ Uniforms UniformsLib::particle() {
           .add( "map",        Uniform( Uniform::t, 0 ) )
 
           .add( "fogDensity", Uniform( Uniform::f, 0.00025f ) )
-          .add( "fogNear",    Uniform( Uniform::f, 1.f ) ) 
-          .add( "fogFar",     Uniform( Uniform::f, 2000.f ) ) 
+          .add( "fogNear",    Uniform( Uniform::f, 1.f ) )
+          .add( "fogFar",     Uniform( Uniform::f, 2000.f ) )
           .add( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) );
 
   return uniforms;

@@ -86,7 +86,7 @@ Matrix4& Matrix4::lookAt( const Vector3& eye, const Vector3& target, const Vecto
   return *this;
 }
 
-Matrix4& Matrix4::multiply( const Matrix4& a, const Matrix4& b ) {
+/*Matrix4& Matrix4::multiply( const Matrix4& a, const Matrix4& b ) {
 
   const auto& ae = a.elements;
   const auto& be = b.elements;
@@ -120,6 +120,34 @@ Matrix4& Matrix4::multiply( const Matrix4& a, const Matrix4& b ) {
   te[7] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
   te[11] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
   te[15] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
+
+  return *this;
+}*/
+
+Matrix4& Matrix4::multiply( const Matrix4& am, const Matrix4& bm ) {
+
+  const auto& a = am.elements;
+  const auto& b = bm.elements;
+
+  te[0]  = a[0] * b[0]  + a[4] * b[1]  + a[8] * b[2]  + a[12] * b[3];
+  te[4]  = a[0] * b[4]  + a[4] * b[5]  + a[8] * b[6]  + a[12] * b[7];
+  te[8]  = a[0] * b[8]  + a[4] * b[9]  + a[8] * b[10] + a[12] * b[11];
+  te[12] = a[0] * b[12] + a[4] * b[13] + a[8] * b[14] + a[12] * b[15];
+
+  te[1]  = a[1] * b[0]  + a[5] * b[1]  + a[9] * b[2]  + a[13] * b[3];
+  te[5]  = a[1] * b[4]  + a[5] * b[5]  + a[9] * b[6]  + a[13] * b[7];
+  te[9]  = a[1] * b[8]  + a[5] * b[9]  + a[9] * b[10] + a[13] * b[11];
+  te[13] = a[1] * b[12] + a[5] * b[13] + a[9] * b[14] + a[13] * b[15];
+
+  te[2]  = a[2] * b[0]  + a[6] * b[1]  + a[10] * b[2]  + a[14] * b[3];
+  te[6]  = a[2] * b[4]  + a[6] * b[5]  + a[10] * b[6]  + a[14] * b[7];
+  te[10] = a[2] * b[8]  + a[6] * b[9]  + a[10] * b[10] + a[14] * b[11];
+  te[14] = a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14] * b[15];
+
+  te[3]  = a[3] * b[0]  + a[7] * b[1]  + a[11] * b[2]  + a[15] * b[3];
+  te[7]  = a[3] * b[4]  + a[7] * b[5]  + a[11] * b[6]  + a[15] * b[7];
+  te[11] = a[3] * b[8]  + a[7] * b[9]  + a[11] * b[10] + a[15] * b[11];
+  te[15] = a[3] * b[12] + a[7] * b[13] + a[11] * b[14] + a[15] * b[15];
 
   return *this;
 }

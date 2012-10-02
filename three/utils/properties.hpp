@@ -1,7 +1,10 @@
 #ifndef THREE_PROPERTIES_HPP
 #define THREE_PROPERTIES_HPP
 
+#include <three/config.hpp>
+
 #include <unordered_map>
+//#include <map>
 
 namespace three {
 
@@ -10,6 +13,7 @@ class Properties {
 public:
 
   typedef std::unordered_map<Key, Value> MapType;
+  //typedef std::map<Key, Value> MapType;
 
   Properties() { }
   Properties(Properties&& other) { swap(other); }
@@ -21,6 +25,26 @@ public:
     contents.emplace( std::make_pair(std::move(key), std::move(value)) );
     return *this;
   }
+
+#if THREE_HAS_VARIADIC_TEMPLATES
+  template < typename... T >
+  Properties& emplace( Key key, T&&... ts ) {
+    return add( std::move(key), Value( std::move(ts)...) );
+  }
+#else
+  template < typename T, typename U >
+  Properties& emplace( Key key, T&& t, U&& u ) {
+    return add( std::move(key), Value( std::move(t), std::move(u) ) );
+  }
+  template < typename T, typename U, typename V >
+  Properties& emplace( Key key, T&& t, U&& u, V&& v ) {
+    return add( std::move(key), Value( std::move(t), std::move(u), std::move(v) ) );
+  }
+  template < typename T, typename U, typename V, typename W >
+  Properties& emplace( Key key, T&& t, U&& u, V&& v, W&& w ) {
+    return add( std::move(key), Value( std::move(t), std::move(u), std::move(v), std::move(w) ) );
+  }
+#endif // THREE_HAS_VARIADIC_TEMPLATES
 
   bool contains( const Key& key ) const {
     return contents.find( key ) != contents.end();
