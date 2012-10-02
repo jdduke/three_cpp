@@ -1283,26 +1283,28 @@ const char* ShaderChunk::linear_to_gamma_fragment() {
 
 /////////////////////////////////////////////////////////////////////////
 
+typedef std::pair<std::string, Uniform> Pair;
+
 Uniforms UniformsLib::common() {
   Uniforms uniforms;
 
-  uniforms.emplace( Pair( "diffuse",               Uniform( Uniform::c, Color( 0xeeeeee ) ) ) );
-  uniforms.emplace( Pair( "opacity",               Uniform( Uniform::f, 1.0f ) ) );
+  uniforms.add( "diffuse",               Uniform( Uniform::c, Color( 0xeeeeee ) ) )
+          .add( "opacity",               Uniform( Uniform::f, 1.0f ) ) 
 
-  uniforms.emplace( Pair( "map",                   Uniform( Uniform::t, 0 ) ) );
-  uniforms.emplace( Pair( "offsetRepeat",          Uniform( Uniform::v4, Vector4( 0, 0, 1, 1 ) ) ) );
+          .add( "map",                   Uniform( Uniform::t, 0 ) ) 
+          .add( "offsetRepeat",          Uniform( Uniform::v4, Vector4( 0, 0, 1, 1 ) ) ) 
 
-  uniforms.emplace( Pair( "lightMap",              Uniform( Uniform::t, 2 ) ) );
-  uniforms.emplace( Pair( "specularMap",           Uniform( Uniform::t, 3 ) ) );
+          .add( "lightMap",              Uniform( Uniform::t, 2 ) ) 
+          .add( "specularMap",           Uniform( Uniform::t, 3 ) ) 
 
-  uniforms.emplace( Pair( "envMap",                Uniform( Uniform::t, 1 ) ) );
-  uniforms.emplace( Pair( "flipEnvMap",            Uniform( Uniform::f, -1 ) ) );
-  uniforms.emplace( Pair( "useRefract",            Uniform( Uniform::i, 0 ) ) );
-  uniforms.emplace( Pair( "reflectivity",          Uniform( Uniform::f, 1.0f ) ) );
-  uniforms.emplace( Pair( "refractionRatio",       Uniform( Uniform::f, 0.98f ) ) );
-  uniforms.emplace( Pair( "combine",               Uniform( Uniform::i, 0 ) ) );
+          .add( "envMap",                Uniform( Uniform::t, 1 ) ) 
+          .add( "flipEnvMap",            Uniform( Uniform::f, -1 ) ) 
+          .add( "useRefract",            Uniform( Uniform::i, 0 ) ) 
+          .add( "reflectivity",          Uniform( Uniform::f, 1.0f ) ) 
+          .add( "refractionRatio",       Uniform( Uniform::f, 0.98f ) ) 
+          .add( "combine",               Uniform( Uniform::i, 0 ) ) 
 
-  uniforms.emplace( Pair( "morphTargetInfluences", Uniform( Uniform::f, 0 ) ) );
+          .add( "morphTargetInfluences", Uniform( Uniform::f, 0 ) );
 
   return uniforms;
 }
@@ -1310,8 +1312,8 @@ Uniforms UniformsLib::common() {
 Uniforms UniformsLib::bump() {
   Uniforms uniforms;
 
-  uniforms.emplace( Pair( "bumpMap",   Uniform( Uniform::t, 4 ) ) );
-  uniforms.emplace( Pair( "bumpScale", Uniform( Uniform::f, 1 ) ) );
+  uniforms.add( "bumpMap",   Uniform( Uniform::t, 4 ) )
+          .add( "bumpScale", Uniform( Uniform::f, 1 ) ); 
 
   return uniforms;
 }
@@ -1319,10 +1321,10 @@ Uniforms UniformsLib::bump() {
 Uniforms UniformsLib::fog() {
   Uniforms uniforms;
 
-  uniforms.emplace( Pair( "fogDensity", Uniform( Uniform::f, 0.00025f ) ) );
-  uniforms.emplace( Pair( "fogNear",    Uniform( Uniform::f, 1.f ) ) );
-  uniforms.emplace( Pair( "fogFar",     Uniform( Uniform::f, 2000.f ) ) );
-  uniforms.emplace( Pair( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) ) );
+  uniforms.add( "fogDensity", Uniform( Uniform::f, 0.00025f ) )
+          .add( "fogNear",    Uniform( Uniform::f, 1.f ) )
+          .add( "fogFar",     Uniform( Uniform::f, 2000.f ) )
+          .add( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) );
 
   return uniforms;
 }
@@ -1330,21 +1332,21 @@ Uniforms UniformsLib::fog() {
 Uniforms UniformsLib::lights() {
   Uniforms uniforms;
 
-  uniforms.emplace( Pair( "ambientLightColor",         Uniform( Uniform::fv ) ) );
+  uniforms.add( "ambientLightColor",         Uniform( Uniform::fv ) )
+      
+          .add( "directionalLightDirection", Uniform( Uniform::fv ) ) 
+          .add( "directionalLightColor",     Uniform( Uniform::fv ) )
 
-  uniforms.emplace( Pair( "directionalLightDirection", Uniform( Uniform::fv ) ) );
-  uniforms.emplace( Pair( "directionalLightColor",     Uniform( Uniform::fv ) ) );
+          .add( "pointLightColor",           Uniform( Uniform::fv ) )
+          .add( "pointLightPosition",        Uniform( Uniform::fv ) ) 
+          .add( "pointLightDistance",        Uniform( Uniform::fv1 ) ) 
 
-  uniforms.emplace( Pair( "pointLightColor",           Uniform( Uniform::fv ) ) );
-  uniforms.emplace( Pair( "pointLightPosition",        Uniform( Uniform::fv ) ) );
-  uniforms.emplace( Pair( "pointLightDistance",        Uniform( Uniform::fv1 ) ) );
-
-  uniforms.emplace( Pair( "spotLightColor",            Uniform( Uniform::fv ) ) );
-  uniforms.emplace( Pair( "spotLightPosition",         Uniform( Uniform::fv ) ) );
-  uniforms.emplace( Pair( "spotLightDirection",        Uniform( Uniform::fv ) ) );
-  uniforms.emplace( Pair( "spotLightDistance",         Uniform( Uniform::fv1 ) ) );
-  uniforms.emplace( Pair( "spotLightAngle",            Uniform( Uniform::fv1 ) ) );
-  uniforms.emplace( Pair( "spotLightExponent",         Uniform( Uniform::fv1 ) ) );
+          .add( "spotLightColor",            Uniform( Uniform::fv ) ) 
+          .add( "spotLightPosition",         Uniform( Uniform::fv ) ) 
+          .add( "spotLightDirection",        Uniform( Uniform::fv ) ) 
+          .add( "spotLightDistance",         Uniform( Uniform::fv1 ) ) 
+          .add( "spotLightAngle",            Uniform( Uniform::fv1 ) ) 
+          .add( "spotLightExponent",         Uniform( Uniform::fv1 ) );
 
   return uniforms;
 }
@@ -1352,16 +1354,16 @@ Uniforms UniformsLib::lights() {
 Uniforms UniformsLib::particle() {
   Uniforms uniforms;
 
-  uniforms.emplace( Pair( "psColor",    Uniform( Uniform::c, Color( 0xeeeeee ) ) ) );
-  uniforms.emplace( Pair( "opacity",    Uniform( Uniform::f, 1.0f ) ) );
-  uniforms.emplace( Pair( "size",       Uniform( Uniform::f, 1.0f ) ) );
-  uniforms.emplace( Pair( "scale",      Uniform( Uniform::f, 1.0f ) ) );
-  uniforms.emplace( Pair( "map",        Uniform( Uniform::t, 0 ) ) );
+  uniforms.add( "psColor",    Uniform( Uniform::c, Color( 0xeeeeee ) ) )
+          .add( "opacity",    Uniform( Uniform::f, 1.0f ) )
+          .add( "size",       Uniform( Uniform::f, 1.0f ) )
+          .add( "scale",      Uniform( Uniform::f, 1.0f ) )
+          .add( "map",        Uniform( Uniform::t, 0 ) )
 
-  uniforms.emplace( Pair( "fogDensity", Uniform( Uniform::f, 0.00025f ) ) );
-  uniforms.emplace( Pair( "fogNear",    Uniform( Uniform::f, 1.f ) ) );
-  uniforms.emplace( Pair( "fogFar",     Uniform( Uniform::f, 2000.f ) ) );
-  uniforms.emplace( Pair( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) ) );
+          .add( "fogDensity", Uniform( Uniform::f, 0.00025f ) )
+          .add( "fogNear",    Uniform( Uniform::f, 1.f ) ) 
+          .add( "fogFar",     Uniform( Uniform::f, 2000.f ) ) 
+          .add( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) );
 
   return uniforms;
 }
@@ -1369,59 +1371,49 @@ Uniforms UniformsLib::particle() {
 Uniforms UniformsLib::shadowmap() {
   Uniforms uniforms;
 
-  uniforms.emplace( Pair( "shadowMap",      Uniform( Uniform::tv, 6 ) ) );
-  uniforms.emplace( Pair( "shadowMapSize",  Uniform( Uniform::v2v ) ) );
-
-  uniforms.emplace( Pair( "shadowBias",     Uniform( Uniform::fv1 ) ) );
-  uniforms.emplace( Pair( "shadowDarkness", Uniform( Uniform::fv1 ) ) );
-
-  uniforms.emplace( Pair( "shadowMatrix",   Uniform( Uniform::m4v ) ) );
+  uniforms.add( "shadowMap",      Uniform( Uniform::tv, 6 ) )
+          .add( "shadowMapSize",  Uniform( Uniform::v2v ) )
+          .add( "shadowBias",     Uniform( Uniform::fv1 ) )
+          .add( "shadowDarkness", Uniform( Uniform::fv1 ) )
+          .add( "shadowMatrix",   Uniform( Uniform::m4v ) );
 
   return uniforms;
 }
 
 /////////////////////////////////////////////////////////////////////////
 
-const Shader& ShaderLib::depth() {
-  static Shader sShader = depthCreate();
-  return sShader;
-}
+namespace detail {
 
-const Shader& ShaderLib::normal() {
-  static Shader sShader = normalCreate();
-  return sShader;
-}
+class UniformsUtils {
+public:
 
-const Shader& ShaderLib::basic() {
-  static Shader sShader = basicCreate();
-  return sShader;
-}
+  template < typename UniformsList >
+  static Uniforms merge( UniformsList& uniformsList, bool overwrite = false ) {
 
-const Shader& ShaderLib::lambert() {
-  static Shader sShader = lambertCreate();
-  return sShader;
-}
+    Uniforms merged;
 
-const Shader& ShaderLib::phong() {
-  static Shader sShader = phongCreate();
-  return sShader;
-}
+    for ( auto& uniforms : uniformsList ) {
+      /*if ( overwrite ) {
+        for (auto& uniform : uniforms ) {
+          merged[ uniform.first ] = uniform.second;
+        }
+      } else */{
+        merged.contents.insert( uniforms.begin(), uniforms.end() );
+      }
+    }
 
-const Shader& ShaderLib::particleBasic() {
-  static Shader sShader = particleBasicCreate();
-  return sShader;
-}
+    return merged;
+  }
 
-const Shader& ShaderLib::depthRGBA() {
-  static Shader sShader = depthRGBACreate();
-  return sShader;
-}
+};
 
-Shader ShaderLib::depthCreate() {
+//////////////////////////////////////////////////////////////////////////
+
+static Shader depthCreate() {
   Uniforms uniforms;
-  uniforms.emplace( Pair( "mNear",   Uniform( Uniform::f, 1.0f ) ) );
-  uniforms.emplace( Pair( "mFar",    Uniform( Uniform::f, 2000.0f ) ) );
-  uniforms.emplace( Pair( "opacity", Uniform( Uniform::f, 1.0f ) ) );
+  uniforms.add( "mNear",   Uniform( Uniform::f, 1.0f ) )
+          .add( "mFar",    Uniform( Uniform::f, 2000.0f ) )
+          .add( "opacity", Uniform( Uniform::f, 1.0f ) );
 
   const char* vertexShader =
     "void main() {\n"
@@ -1441,10 +1433,10 @@ Shader ShaderLib::depthCreate() {
   return Shader( std::move( uniforms ), vertexShader, fragmentShader );
 }
 
-Shader ShaderLib::normalCreate() {
+static Shader normalCreate() {
 
   Uniforms uniforms;
-  uniforms.emplace( Pair( "opacity", Uniform( Uniform::f, 1.0f ) ) );
+  uniforms.add( "opacity", Uniform( Uniform::f, 1.0f ) );
 
   const char* vertexShader =
     "varying vec3 vNormal;\n"
@@ -1464,7 +1456,7 @@ Shader ShaderLib::normalCreate() {
   return Shader( std::move( uniforms ), vertexShader, fragmentShader );
 }
 
-Shader ShaderLib::basicCreate() {
+static Shader basicCreate() {
 
   std::array<Uniforms, 3> sourceUniforms = {
     UniformsLib::common(),
@@ -1476,67 +1468,67 @@ Shader ShaderLib::basicCreate() {
 
   std::stringstream vss;
   vss <<
-      ShaderChunk::map_pars_vertex() << std::endl <<
-      ShaderChunk::lightmap_pars_vertex() << std::endl <<
-      ShaderChunk::envmap_pars_vertex() << std::endl <<
-      ShaderChunk::color_pars_vertex() << std::endl <<
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
-      ShaderChunk::morphtarget_pars_vertex() << std::endl <<
-      ShaderChunk::shadowmap_pars_vertex() << std::endl <<
+    ShaderChunk::map_pars_vertex() << std::endl <<
+    ShaderChunk::lightmap_pars_vertex() << std::endl <<
+    ShaderChunk::envmap_pars_vertex() << std::endl <<
+    ShaderChunk::color_pars_vertex() << std::endl <<
+    ShaderChunk::skinning_pars_vertex() << std::endl <<
+    ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+    ShaderChunk::shadowmap_pars_vertex() << std::endl <<
 
-      "void main() {"  << std::endl <<
+    "void main() {"  << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
+    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
 
-      ShaderChunk::map_vertex() << std::endl <<
-      ShaderChunk::lightmap_vertex() << std::endl <<
-      ShaderChunk::envmap_vertex() << std::endl <<
-      ShaderChunk::color_vertex() << std::endl <<
-      ShaderChunk::skinbase_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
-      ShaderChunk::morphtarget_vertex() << std::endl <<
-      ShaderChunk::default_vertex() << std::endl <<
-      ShaderChunk::shadowmap_vertex() << std::endl <<
+    ShaderChunk::map_vertex() << std::endl <<
+    ShaderChunk::lightmap_vertex() << std::endl <<
+    ShaderChunk::envmap_vertex() << std::endl <<
+    ShaderChunk::color_vertex() << std::endl <<
+    ShaderChunk::skinbase_vertex() << std::endl <<
+    ShaderChunk::skinning_vertex() << std::endl <<
+    ShaderChunk::morphtarget_vertex() << std::endl <<
+    ShaderChunk::default_vertex() << std::endl <<
+    ShaderChunk::shadowmap_vertex() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   std::stringstream fss;
 
   fss <<
-      "uniform vec3 diffuse;" << std::endl <<
-      "uniform float opacity;" << std::endl <<
+    "uniform vec3 diffuse;" << std::endl <<
+    "uniform float opacity;" << std::endl <<
 
-      ShaderChunk::color_pars_fragment() << std::endl <<
-      ShaderChunk::map_pars_fragment() << std::endl <<
-      ShaderChunk::lightmap_pars_fragment() << std::endl <<
-      ShaderChunk::envmap_pars_fragment() << std::endl <<
-      ShaderChunk::fog_pars_fragment() << std::endl <<
-      ShaderChunk::shadowmap_pars_fragment() << std::endl <<
-      ShaderChunk::specularmap_pars_fragment() << std::endl <<
+    ShaderChunk::color_pars_fragment() << std::endl <<
+    ShaderChunk::map_pars_fragment() << std::endl <<
+    ShaderChunk::lightmap_pars_fragment() << std::endl <<
+    ShaderChunk::envmap_pars_fragment() << std::endl <<
+    ShaderChunk::fog_pars_fragment() << std::endl <<
+    ShaderChunk::shadowmap_pars_fragment() << std::endl <<
+    ShaderChunk::specularmap_pars_fragment() << std::endl <<
 
-      "void main() {"  << std::endl <<
+    "void main() {"  << std::endl <<
 
-      "gl_FragColor = vec4( diffuse, opacity );" << std::endl <<
+    "gl_FragColor = vec4( diffuse, opacity );" << std::endl <<
 
-      ShaderChunk::map_fragment() << std::endl <<
-      ShaderChunk::alphatest_fragment() << std::endl <<
-      ShaderChunk::specularmap_fragment() << std::endl <<
-      ShaderChunk::lightmap_fragment() << std::endl <<
-      ShaderChunk::color_fragment() << std::endl <<
-      ShaderChunk::envmap_fragment() << std::endl <<
-      ShaderChunk::shadowmap_fragment() << std::endl <<
+    ShaderChunk::map_fragment() << std::endl <<
+    ShaderChunk::alphatest_fragment() << std::endl <<
+    ShaderChunk::specularmap_fragment() << std::endl <<
+    ShaderChunk::lightmap_fragment() << std::endl <<
+    ShaderChunk::color_fragment() << std::endl <<
+    ShaderChunk::envmap_fragment() << std::endl <<
+    ShaderChunk::shadowmap_fragment() << std::endl <<
 
-      ShaderChunk::linear_to_gamma_fragment() << std::endl <<
+    ShaderChunk::linear_to_gamma_fragment() << std::endl <<
 
-      ShaderChunk::fog_fragment() << std::endl <<
+    ShaderChunk::fog_fragment() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   return Shader( std::move( uniforms ), vss.str(), fss.str() );
 
 }
 
-Shader ShaderLib::lambertCreate() {
+static Shader lambertCreate() {
 
   std::array<Uniforms, 4> sourceUniforms = {
     UniformsLib::common(),
@@ -1546,105 +1538,105 @@ Shader ShaderLib::lambertCreate() {
   };
 
   auto uniforms = UniformsUtils::merge( sourceUniforms );
-  uniforms.emplace( Pair( "ambient",  Uniform( Uniform::c, Color( 0xffffff ) ) ) );
-  uniforms.emplace( Pair( "emissive", Uniform( Uniform::c, Color( 0x000000 ) ) ) );
-  uniforms.emplace( Pair( "wrapRGB",  Uniform( Uniform::v3, Vector3( 1, 1, 1 ) ) ) );
+  uniforms.add( "ambient",  Uniform( Uniform::c, Color( 0xffffff ) ) )
+          .add( "emissive", Uniform( Uniform::c, Color( 0x000000 ) ) )
+          .add( "wrapRGB",  Uniform( Uniform::v3, Vector3( 1, 1, 1 ) ) );
 
   std::stringstream vss;
   vss <<
-      "varying vec3 vLightFront;" << std::endl <<
-      "#ifdef DOUBLE_SIDED" << std::endl <<
-      "varying vec3 vLightBack;" << std::endl <<
-      "#endif" << std::endl <<
+    "varying vec3 vLightFront;" << std::endl <<
+    "#ifdef DOUBLE_SIDED" << std::endl <<
+    "varying vec3 vLightBack;" << std::endl <<
+    "#endif" << std::endl <<
 
-      ShaderChunk::map_pars_vertex() << std::endl <<
-      ShaderChunk::lightmap_pars_vertex() << std::endl <<
-      ShaderChunk::envmap_pars_vertex() << std::endl <<
-      ShaderChunk::lights_lambert_pars_vertex() << std::endl <<
-      ShaderChunk::color_pars_vertex() << std::endl <<
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
-      ShaderChunk::morphtarget_pars_vertex() << std::endl <<
-      ShaderChunk::shadowmap_pars_vertex() << std::endl <<
+    ShaderChunk::map_pars_vertex() << std::endl <<
+    ShaderChunk::lightmap_pars_vertex() << std::endl <<
+    ShaderChunk::envmap_pars_vertex() << std::endl <<
+    ShaderChunk::lights_lambert_pars_vertex() << std::endl <<
+    ShaderChunk::color_pars_vertex() << std::endl <<
+    ShaderChunk::skinning_pars_vertex() << std::endl <<
+    ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+    ShaderChunk::shadowmap_pars_vertex() << std::endl <<
 
-      "void main() {"  << std::endl <<
+    "void main() {"  << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
+    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
 
-      ShaderChunk::map_vertex() << std::endl <<
-      ShaderChunk::lightmap_vertex() << std::endl <<
-      ShaderChunk::envmap_vertex() << std::endl <<
-      ShaderChunk::color_vertex() << std::endl <<
+    ShaderChunk::map_vertex() << std::endl <<
+    ShaderChunk::lightmap_vertex() << std::endl <<
+    ShaderChunk::envmap_vertex() << std::endl <<
+    ShaderChunk::color_vertex() << std::endl <<
 
-      ShaderChunk::morphnormal_vertex() << std::endl <<
-      ShaderChunk::skinbase_vertex() << std::endl <<
-      ShaderChunk::skinnormal_vertex() << std::endl <<
-      ShaderChunk::defaultnormal_vertex() << std::endl <<
+    ShaderChunk::morphnormal_vertex() << std::endl <<
+    ShaderChunk::skinbase_vertex() << std::endl <<
+    ShaderChunk::skinnormal_vertex() << std::endl <<
+    ShaderChunk::defaultnormal_vertex() << std::endl <<
 
-      "#ifndef USE_ENVMAP" << std::endl <<
-      "vec4 mPosition = modelMatrix * vec4( position, 1.0 );" << std::endl <<
-      "#endif" << std::endl <<
+    "#ifndef USE_ENVMAP" << std::endl <<
+    "vec4 mPosition = modelMatrix * vec4( position, 1.0 );" << std::endl <<
+    "#endif" << std::endl <<
 
-      ShaderChunk::lights_lambert_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
-      ShaderChunk::morphtarget_vertex() << std::endl <<
-      ShaderChunk::default_vertex() << std::endl <<
-      ShaderChunk::shadowmap_vertex() << std::endl <<
+    ShaderChunk::lights_lambert_vertex() << std::endl <<
+    ShaderChunk::skinning_vertex() << std::endl <<
+    ShaderChunk::morphtarget_vertex() << std::endl <<
+    ShaderChunk::default_vertex() << std::endl <<
+    ShaderChunk::shadowmap_vertex() << std::endl <<
 
-      "}";
+    "}";
 
   std::stringstream fss;
   fss <<
 
-      "uniform float opacity;" << std::endl <<
-      "varying vec3 vLightFront;" << std::endl <<
-      "#ifdef DOUBLE_SIDED" << std::endl <<
-      "varying vec3 vLightBack;" << std::endl <<
-      "#endif" << std::endl <<
+    "uniform float opacity;" << std::endl <<
+    "varying vec3 vLightFront;" << std::endl <<
+    "#ifdef DOUBLE_SIDED" << std::endl <<
+    "varying vec3 vLightBack;" << std::endl <<
+    "#endif" << std::endl <<
 
-      ShaderChunk::color_pars_fragment() << std::endl <<
-      ShaderChunk::map_pars_fragment() << std::endl <<
-      ShaderChunk::lightmap_pars_fragment() << std::endl <<
-      ShaderChunk::envmap_pars_fragment() << std::endl <<
-      ShaderChunk::fog_pars_fragment() << std::endl <<
-      ShaderChunk::shadowmap_pars_fragment() << std::endl <<
-      ShaderChunk::specularmap_pars_fragment() << std::endl <<
+    ShaderChunk::color_pars_fragment() << std::endl <<
+    ShaderChunk::map_pars_fragment() << std::endl <<
+    ShaderChunk::lightmap_pars_fragment() << std::endl <<
+    ShaderChunk::envmap_pars_fragment() << std::endl <<
+    ShaderChunk::fog_pars_fragment() << std::endl <<
+    ShaderChunk::shadowmap_pars_fragment() << std::endl <<
+    ShaderChunk::specularmap_pars_fragment() << std::endl <<
 
-      "void main() {" << std::endl <<
+    "void main() {" << std::endl <<
 
-      "gl_FragColor = vec4( vec3 ( 1.0 ), opacity );" << std::endl <<
+    "gl_FragColor = vec4( vec3 ( 1.0 ), opacity );" << std::endl <<
 
-      ShaderChunk::map_fragment() << std::endl <<
-      ShaderChunk::alphatest_fragment() << std::endl <<
-      ShaderChunk::specularmap_fragment() << std::endl <<
+    ShaderChunk::map_fragment() << std::endl <<
+    ShaderChunk::alphatest_fragment() << std::endl <<
+    ShaderChunk::specularmap_fragment() << std::endl <<
 
-      "#ifdef DOUBLE_SIDED" << std::endl <<
+    "#ifdef DOUBLE_SIDED" << std::endl <<
 
-      //"float isFront = float( gl_FrontFacing );"
-      //"gl_FragColor.xyz *= isFront * vLightFront + ( 1.0 - isFront ) * vLightBack;"
+    //"float isFront = float( gl_FrontFacing );"
+    //"gl_FragColor.xyz *= isFront * vLightFront + ( 1.0 - isFront ) * vLightBack;"
 
-      "if ( gl_FrontFacing )" << std::endl <<
-      "gl_FragColor.xyz *= vLightFront;" << std::endl <<
-      "else" << std::endl <<
-      "gl_FragColor.xyz *= vLightBack;" << std::endl <<
-      "#else" << std::endl <<
-      "gl_FragColor.xyz *= vLightFront;" << std::endl <<
-      "#endif" << std::endl <<
+    "if ( gl_FrontFacing )" << std::endl <<
+    "gl_FragColor.xyz *= vLightFront;" << std::endl <<
+    "else" << std::endl <<
+    "gl_FragColor.xyz *= vLightBack;" << std::endl <<
+    "#else" << std::endl <<
+    "gl_FragColor.xyz *= vLightFront;" << std::endl <<
+    "#endif" << std::endl <<
 
-      ShaderChunk::lightmap_fragment() << std::endl <<
-      ShaderChunk::color_fragment() << std::endl <<
-      ShaderChunk::envmap_fragment() << std::endl <<
-      ShaderChunk::shadowmap_fragment() << std::endl <<
+    ShaderChunk::lightmap_fragment() << std::endl <<
+    ShaderChunk::color_fragment() << std::endl <<
+    ShaderChunk::envmap_fragment() << std::endl <<
+    ShaderChunk::shadowmap_fragment() << std::endl <<
 
-      ShaderChunk::linear_to_gamma_fragment() << std::endl <<
+    ShaderChunk::linear_to_gamma_fragment() << std::endl <<
 
-      ShaderChunk::fog_fragment() << std::endl <<
+    ShaderChunk::fog_fragment() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   return Shader( std::move( uniforms ), vss.str(), fss.str() );
 }
 
-Shader ShaderLib::phongCreate() {
+static Shader phongCreate() {
 
   std::array<Uniforms, 5> sourceUniforms = {
     UniformsLib::common(),
@@ -1655,102 +1647,102 @@ Shader ShaderLib::phongCreate() {
   };
 
   auto uniforms = UniformsUtils::merge( sourceUniforms );
-  uniforms.emplace( Pair( "ambient",   Uniform( Uniform::c, Color( 0xffffff ) ) ) );
-  uniforms.emplace( Pair( "emissive",  Uniform( Uniform::c, Color( 0x000000 ) ) ) );
-  uniforms.emplace( Pair( "specular",  Uniform( Uniform::c, Color( 0x111111 ) ) ) );
-  uniforms.emplace( Pair( "shininess", Uniform( Uniform::f, 30.f ) ) );
-  uniforms.emplace( Pair( "wrapRGB",   Uniform( Uniform::v3, Vector3( 1, 1, 1 ) ) ) );
+  uniforms.add( "ambient",   Uniform( Uniform::c, Color( 0xffffff ) ) )
+          .add( "emissive",  Uniform( Uniform::c, Color( 0x000000 ) ) )
+          .add( "specular",  Uniform( Uniform::c, Color( 0x111111 ) ) )
+          .add( "shininess", Uniform( Uniform::f, 30.f ) )
+          .add( "wrapRGB",   Uniform( Uniform::v3, Vector3( 1, 1, 1 ) ) );
 
   std::stringstream vss;
   vss <<
 
-      "varying vec3 vViewPosition;" << std::endl <<
-      "varying vec3 vNormal;" << std::endl <<
+    "varying vec3 vViewPosition;" << std::endl <<
+    "varying vec3 vNormal;" << std::endl <<
 
-      ShaderChunk::map_pars_vertex() << std::endl <<
-      ShaderChunk::lightmap_pars_vertex() << std::endl <<
-      ShaderChunk::envmap_pars_vertex() << std::endl <<
-      ShaderChunk::lights_phong_pars_vertex() << std::endl <<
-      ShaderChunk::color_pars_vertex() << std::endl <<
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
-      ShaderChunk::morphtarget_pars_vertex() << std::endl <<
-      ShaderChunk::shadowmap_pars_vertex() << std::endl <<
+    ShaderChunk::map_pars_vertex() << std::endl <<
+    ShaderChunk::lightmap_pars_vertex() << std::endl <<
+    ShaderChunk::envmap_pars_vertex() << std::endl <<
+    ShaderChunk::lights_phong_pars_vertex() << std::endl <<
+    ShaderChunk::color_pars_vertex() << std::endl <<
+    ShaderChunk::skinning_pars_vertex() << std::endl <<
+    ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+    ShaderChunk::shadowmap_pars_vertex() << std::endl <<
 
-      "void main() {" << std::endl <<
+    "void main() {" << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
+    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
 
-      ShaderChunk::map_vertex() << std::endl <<
-      ShaderChunk::lightmap_vertex() << std::endl <<
-      ShaderChunk::envmap_vertex() << std::endl <<
-      ShaderChunk::color_vertex() << std::endl <<
+    ShaderChunk::map_vertex() << std::endl <<
+    ShaderChunk::lightmap_vertex() << std::endl <<
+    ShaderChunk::envmap_vertex() << std::endl <<
+    ShaderChunk::color_vertex() << std::endl <<
 
-      "#ifndef USE_ENVMAP" << std::endl <<
-      "vec4 mPosition = modelMatrix * vec4( position, 1.0 );" << std::endl <<
-      "#endif" << std::endl <<
+    "#ifndef USE_ENVMAP" << std::endl <<
+    "vec4 mPosition = modelMatrix * vec4( position, 1.0 );" << std::endl <<
+    "#endif" << std::endl <<
 
-      "vViewPosition = -mvPosition.xyz;" << std::endl <<
+    "vViewPosition = -mvPosition.xyz;" << std::endl <<
 
-      ShaderChunk::morphnormal_vertex() << std::endl <<
-      ShaderChunk::skinbase_vertex() << std::endl <<
-      ShaderChunk::skinnormal_vertex() << std::endl <<
-      ShaderChunk::defaultnormal_vertex() << std::endl <<
+    ShaderChunk::morphnormal_vertex() << std::endl <<
+    ShaderChunk::skinbase_vertex() << std::endl <<
+    ShaderChunk::skinnormal_vertex() << std::endl <<
+    ShaderChunk::defaultnormal_vertex() << std::endl <<
 
-      "vNormal = transformedNormal;" << std::endl <<
+    "vNormal = transformedNormal;" << std::endl <<
 
-      ShaderChunk::lights_phong_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
-      ShaderChunk::morphtarget_vertex() << std::endl <<
-      ShaderChunk::default_vertex() << std::endl <<
-      ShaderChunk::shadowmap_vertex() << std::endl <<
+    ShaderChunk::lights_phong_vertex() << std::endl <<
+    ShaderChunk::skinning_vertex() << std::endl <<
+    ShaderChunk::morphtarget_vertex() << std::endl <<
+    ShaderChunk::default_vertex() << std::endl <<
+    ShaderChunk::shadowmap_vertex() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   std::stringstream fss;
   fss <<
-      "uniform vec3 diffuse;" << std::endl <<
-      "uniform float opacity;" << std::endl <<
+    "uniform vec3 diffuse;" << std::endl <<
+    "uniform float opacity;" << std::endl <<
 
-      "uniform vec3 ambient;" << std::endl <<
-      "uniform vec3 emissive;" << std::endl <<
-      "uniform vec3 specular;" << std::endl <<
-      "uniform float shininess;" << std::endl <<
+    "uniform vec3 ambient;" << std::endl <<
+    "uniform vec3 emissive;" << std::endl <<
+    "uniform vec3 specular;" << std::endl <<
+    "uniform float shininess;" << std::endl <<
 
-      ShaderChunk::color_pars_fragment() << std::endl <<
-      ShaderChunk::map_pars_fragment() << std::endl <<
-      ShaderChunk::lightmap_pars_fragment() << std::endl <<
-      ShaderChunk::envmap_pars_fragment() << std::endl <<
-      ShaderChunk::fog_pars_fragment() << std::endl <<
-      ShaderChunk::lights_phong_pars_fragment() << std::endl <<
-      ShaderChunk::shadowmap_pars_fragment() << std::endl <<
-      ShaderChunk::bumpmap_pars_fragment() << std::endl <<
-      ShaderChunk::specularmap_pars_fragment() << std::endl <<
+    ShaderChunk::color_pars_fragment() << std::endl <<
+    ShaderChunk::map_pars_fragment() << std::endl <<
+    ShaderChunk::lightmap_pars_fragment() << std::endl <<
+    ShaderChunk::envmap_pars_fragment() << std::endl <<
+    ShaderChunk::fog_pars_fragment() << std::endl <<
+    ShaderChunk::lights_phong_pars_fragment() << std::endl <<
+    ShaderChunk::shadowmap_pars_fragment() << std::endl <<
+    ShaderChunk::bumpmap_pars_fragment() << std::endl <<
+    ShaderChunk::specularmap_pars_fragment() << std::endl <<
 
-      "void main() {" << std::endl <<
+    "void main() {" << std::endl <<
 
-      "gl_FragColor = vec4( vec3 ( 1.0 ), opacity );" << std::endl <<
+    "gl_FragColor = vec4( vec3 ( 1.0 ), opacity );" << std::endl <<
 
-      ShaderChunk::map_fragment() << std::endl <<
-      ShaderChunk::alphatest_fragment() << std::endl <<
-      ShaderChunk::specularmap_fragment() << std::endl <<
+    ShaderChunk::map_fragment() << std::endl <<
+    ShaderChunk::alphatest_fragment() << std::endl <<
+    ShaderChunk::specularmap_fragment() << std::endl <<
 
-      ShaderChunk::lights_phong_fragment() << std::endl <<
+    ShaderChunk::lights_phong_fragment() << std::endl <<
 
-      ShaderChunk::lightmap_fragment() << std::endl <<
-      ShaderChunk::color_fragment() << std::endl <<
-      ShaderChunk::envmap_fragment() << std::endl <<
-      ShaderChunk::shadowmap_fragment() << std::endl <<
+    ShaderChunk::lightmap_fragment() << std::endl <<
+    ShaderChunk::color_fragment() << std::endl <<
+    ShaderChunk::envmap_fragment() << std::endl <<
+    ShaderChunk::shadowmap_fragment() << std::endl <<
 
-      ShaderChunk::linear_to_gamma_fragment() << std::endl <<
+    ShaderChunk::linear_to_gamma_fragment() << std::endl <<
 
-      ShaderChunk::fog_fragment() << std::endl <<
+    ShaderChunk::fog_fragment() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   return Shader( std::move( uniforms ), vss.str(), fss.str() );
 }
 
-Shader ShaderLib::particleBasicCreate() {
+static Shader particleBasicCreate() {
 
   std::array<Uniforms, 2> sourceUniforms = {
     UniformsLib::particle(),
@@ -1761,51 +1753,51 @@ Shader ShaderLib::particleBasicCreate() {
 
   std::stringstream vss;
   vss <<
-      "uniform float size;" << std::endl <<
-      "uniform float scale;" << std::endl <<
+    "uniform float size;" << std::endl <<
+    "uniform float scale;" << std::endl <<
 
-      ShaderChunk::color_pars_vertex() << std::endl <<
-      ShaderChunk::shadowmap_pars_vertex() << std::endl <<
+    ShaderChunk::color_pars_vertex() << std::endl <<
+    ShaderChunk::shadowmap_pars_vertex() << std::endl <<
 
-      "void main() {" << std::endl <<
+    "void main() {" << std::endl <<
 
-      ShaderChunk::color_vertex() << std::endl <<
+    ShaderChunk::color_vertex() << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
+    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
 
-      "#ifdef USE_SIZEATTENUATION" << std::endl <<
-      "gl_PointSize = size * ( scale / length( mvPosition.xyz ) );" << std::endl <<
-      "#else" << std::endl <<
-      "gl_PointSize = size;" << std::endl <<
-      "#endif" << std::endl <<
+    "#ifdef USE_SIZEATTENUATION" << std::endl <<
+    "gl_PointSize = size * ( scale / length( mvPosition.xyz ) );" << std::endl <<
+    "#else" << std::endl <<
+    "gl_PointSize = size;" << std::endl <<
+    "#endif" << std::endl <<
 
-      "gl_Position = projectionMatrix * mvPosition;" << std::endl <<
+    "gl_Position = projectionMatrix * mvPosition;" << std::endl <<
 
-      ShaderChunk::shadowmap_vertex() << std::endl <<
+    ShaderChunk::shadowmap_vertex() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   std::stringstream fss;
   fss <<
-      "uniform vec3 psColor;" << std::endl <<
-      "uniform float opacity;" << std::endl <<
+    "uniform vec3 psColor;" << std::endl <<
+    "uniform float opacity;" << std::endl <<
 
-      ShaderChunk::color_pars_fragment() << std::endl <<
-      ShaderChunk::map_particle_pars_fragment() << std::endl <<
-      ShaderChunk::fog_pars_fragment() << std::endl <<
-      ShaderChunk::shadowmap_pars_fragment() << std::endl <<
+    ShaderChunk::color_pars_fragment() << std::endl <<
+    ShaderChunk::map_particle_pars_fragment() << std::endl <<
+    ShaderChunk::fog_pars_fragment() << std::endl <<
+    ShaderChunk::shadowmap_pars_fragment() << std::endl <<
 
-      "void main() {" << std::endl <<
+    "void main() {" << std::endl <<
 
-      "gl_FragColor = vec4( psColor, opacity );" << std::endl <<
+    "gl_FragColor = vec4( psColor, opacity );" << std::endl <<
 
-      ShaderChunk::map_particle_fragment() << std::endl <<
-      ShaderChunk::alphatest_fragment() << std::endl <<
-      ShaderChunk::color_fragment() << std::endl <<
-      ShaderChunk::shadowmap_fragment() << std::endl <<
-      ShaderChunk::fog_fragment() << std::endl <<
+    ShaderChunk::map_particle_fragment() << std::endl <<
+    ShaderChunk::alphatest_fragment() << std::endl <<
+    ShaderChunk::color_fragment() << std::endl <<
+    ShaderChunk::shadowmap_fragment() << std::endl <<
+    ShaderChunk::fog_fragment() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   return Shader( std::move( uniforms ), vss.str(), fss.str() );
 
@@ -1819,53 +1811,90 @@ Shader ShaderLib::particleBasicCreate() {
 //  see also here:
 //    http://aras-p.info/blog/2009/07/30/encoding-floats-to-rgba-the-final/
 
-Shader ShaderLib::depthRGBACreate() {
+static Shader depthRGBACreate() {
 
   Uniforms uniforms;
 
   std::stringstream vss;
   vss <<
 
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
-      ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+    ShaderChunk::skinning_pars_vertex() << std::endl <<
+    ShaderChunk::morphtarget_pars_vertex() << std::endl <<
 
-      "void main() {" << std::endl <<
+    "void main() {" << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
+    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
 
-      ShaderChunk::skinbase_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
-      ShaderChunk::morphtarget_vertex() << std::endl <<
-      ShaderChunk::default_vertex() << std::endl <<
+    ShaderChunk::skinbase_vertex() << std::endl <<
+    ShaderChunk::skinning_vertex() << std::endl <<
+    ShaderChunk::morphtarget_vertex() << std::endl <<
+    ShaderChunk::default_vertex() << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   std::stringstream fss;
   fss <<
 
-      "vec4 pack_depth( const in float depth ) {" << std::endl <<
+    "vec4 pack_depth( const in float depth ) {" << std::endl <<
 
-      "const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );" << std::endl <<
-      "const vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );" << std::endl <<
-      "vec4 res = fract( depth * bit_shift );" << std::endl <<
-      "res -= res.xxyz * bit_mask;" << std::endl <<
-      "return res;" << std::endl <<
+    "const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );" << std::endl <<
+    "const vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );" << std::endl <<
+    "vec4 res = fract( depth * bit_shift );" << std::endl <<
+    "res -= res.xxyz * bit_mask;" << std::endl <<
+    "return res;" << std::endl <<
 
-      "}" << std::endl <<
+    "}" << std::endl <<
 
-      "void main() {" << std::endl <<
+    "void main() {" << std::endl <<
 
-      "gl_FragData[ 0 } = pack_depth( gl_FragCoord.z );" << std::endl <<
+    "gl_FragData[ 0 } = pack_depth( gl_FragCoord.z );" << std::endl <<
 
-      //"gl_FragData[ 0 } = pack_depth( gl_FragCoord.z / gl_FragCoord.w );" << std::endl <<
-      //"float z = ( ( gl_FragCoord.z / gl_FragCoord.w ) - 3.0 ) / ( 4000.0 - 3.0 );" << std::endl <<
-      //"gl_FragData[ 0 } = pack_depth( z );" << std::endl <<
-      //"gl_FragData[ 0 } = vec4( z z z 1.0 );" << std::endl <<
+    //"gl_FragData[ 0 } = pack_depth( gl_FragCoord.z / gl_FragCoord.w );" << std::endl <<
+    //"float z = ( ( gl_FragCoord.z / gl_FragCoord.w ) - 3.0 ) / ( 4000.0 - 3.0 );" << std::endl <<
+    //"gl_FragData[ 0 } = pack_depth( z );" << std::endl <<
+    //"gl_FragData[ 0 } = vec4( z z z 1.0 );" << std::endl <<
 
-      "}" << std::endl;
+    "}" << std::endl;
 
   return Shader( std::move( uniforms ), vss.str(), fss.str() );
 
+}
+
+} // namespace detail
+
+const Shader& ShaderLib::depth() {
+  static Shader sShader = detail::depthCreate();
+  return sShader;
+}
+
+const Shader& ShaderLib::normal() {
+  static Shader sShader = detail::normalCreate();
+  return sShader;
+}
+
+const Shader& ShaderLib::basic() {
+  static Shader sShader = detail::basicCreate();
+  return sShader;
+}
+
+const Shader& ShaderLib::lambert() {
+  static Shader sShader = detail::lambertCreate();
+  return sShader;
+}
+
+const Shader& ShaderLib::phong() {
+  static Shader sShader = detail::phongCreate();
+  return sShader;
+}
+
+const Shader& ShaderLib::particleBasic() {
+  static Shader sShader = detail::particleBasicCreate();
+  return sShader;
+}
+
+const Shader& ShaderLib::depthRGBA() {
+  static Shader sShader = detail::depthRGBACreate();
+  return sShader;
 }
 
 } // namespace three

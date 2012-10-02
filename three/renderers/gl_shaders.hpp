@@ -72,33 +72,8 @@ public:
 
 /////////////////////////////////////////////////////////////////////////
 
-class UniformsUtils {
-public:
-
-  template < typename UniformsList >
-  static Uniforms merge( UniformsList& uniformsList, bool overwrite = false ) {
-
-    Uniforms merged;
-
-    for ( auto& uniforms : uniformsList ) {
-      /*if ( overwrite ) {
-        for (auto& uniform : uniforms ) {
-          merged[ uniform.first ] = uniform.second;
-        }
-      } else */{
-        merged.insert( uniforms.begin(), uniforms.end() );
-      }
-    }
-
-    return merged;
-  }
-
-};
-
 class UniformsLib {
 public:
-
-  typedef std::pair<std::string, Uniform> Pair;
 
   THREE_DECL static Uniforms common();
   THREE_DECL static Uniforms bump();
@@ -124,8 +99,6 @@ public:
 class ShaderLib {
 public:
 
-  typedef std::pair<std::string, Uniform> Pair;
-
   THREE_DECL static const Shader& depth();
   THREE_DECL static const Shader& normal();
   THREE_DECL static const Shader& basic();
@@ -133,16 +106,6 @@ public:
   THREE_DECL static const Shader& phong();
   THREE_DECL static const Shader& particleBasic();
   THREE_DECL static const Shader& depthRGBA();
-
-private:
-
-  THREE_DECL static Shader depthCreate();
-  THREE_DECL static Shader normalCreate();
-  THREE_DECL static Shader basicCreate();
-  THREE_DECL static Shader lambertCreate();
-  THREE_DECL static Shader phongCreate();
-  THREE_DECL static Shader particleBasicCreate();
-  THREE_DECL static Shader depthRGBACreate();
 
 };
 
