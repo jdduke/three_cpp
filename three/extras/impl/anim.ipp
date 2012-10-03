@@ -48,10 +48,10 @@ public:
 
     detail::ScopedTimer onFrameEnd( clock, [this]( float deltaTime ) {
       // Throttle the thread at the end of the frame
-      //auto sleepTime = targetDeltaTime - deltaTime;
-      //if ( sleepTime > 0 ) {
-        //std::this_thread::sleep_for( std::chrono::milliseconds( ( int )( sleepTime * 1000 ) ) );
-      //}
+      auto sleepTime = targetDeltaTime - deltaTime;
+      if ( sleepTime > 0 ) {
+        std::this_thread::sleep_for( std::chrono::milliseconds( ( int )( sleepTime * 1000 ) ) );
+      }
     } );
 
     sdl::processEvents();

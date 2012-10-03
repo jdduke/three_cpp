@@ -18,37 +18,37 @@ struct Stats::Impl : public NonCopyable {
 
   Impl( float reportInterval = 1.f )
     : font( Font::create( threeDataPath( "fonts/consolas.ttf" ) ) ),
-      frames( 0 ),
+      framesSinceReport( 0 ),
       fps( 60 ),
       reportInterval( reportInterval ),
-      time( 0 ),
-      nextReportTime( time + reportInterval ) { }
+      currentTime( 0 ),
+      nextReportTime( currentTime + reportInterval ) { }
 
   Font::Ptr font;
-  int frames, fps;
-  float reportInterval;
-  float time, nextReportTime;
+  int framesSinceReport, fps;
+  float reportInterval, currentTime, nextReportTime;
 
 };
 
 /////////////////////////////////////////////////////////////////////////
 
 Stats::Stats() : impl( new Impl() ) { }
+
 Stats::~Stats() { }
 
 void Stats::update( float deltaTime, GLRenderer& renderer ) {
 
   auto& s = *impl;
 
-  s.time += deltaTime;
+  s.currentTime += deltaTime;
 
   if ( s.font ) {
 
-    ++s.frames;
-    if ( s.time > s.nextReportTime ) {
-      s.nextReportTime = s.time + 1.f;
-      s.fps = (int)s.frames;
-      s.frames = 0;
+    ++s.framesSinceReport;
+    if ( s.currentTime > s.nextReportTime ) {
+      s.nextReportTime = s.currentTime + s.reportInterval;
+      s.fps = s.framesSinceReport;
+      s.framesSinceReport = 0;
    }
 
     std::stringstream ss; ss << "FPS: " << s.fps;

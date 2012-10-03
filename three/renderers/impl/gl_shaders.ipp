@@ -31,7 +31,7 @@ const char* ShaderChunk::fog_fragment() {
     "#ifdef FOG_EXP2\n"
     "const float LOG2 = 1.442695;\n"
     "float fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\n"
-    "fogFactor = 1.0 - clamp( fogFactor 0.0 1.0 );\n"
+    "fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\n"
     "#else\n"
     "float fogFactor = smoothstep( fogNear, fogFar, depth );\n"
     "#endif\n"
@@ -1112,7 +1112,7 @@ const char* ShaderChunk::shadowmap_fragment() {
 
     "if ( frustumTest ) {\n"
     "shadowCoord.z += shadowBias[ i ];\n"
-    "#ifdef SHADOWMAP_SOFT"
+    "#ifdef SHADOWMAP_SOFT\n"
     // Percentage-close filtering
     // (9 pixel kernel)
     // http://fabiensanglard.net/shadowmappingPCF/

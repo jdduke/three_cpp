@@ -61,6 +61,7 @@ set(examples simple
              test_memory
              lines_colors
              lines_cubes
+             particles_random
              shader
              shader2
              shader_fireball

@@ -10,7 +10,7 @@
 
 using namespace three;
 
-void simple( GLRenderer::Ptr renderer ) {
+void simple( const GLRenderer::Ptr& renderer ) {
 
   // Camera
   auto camera = PerspectiveCamera::create(
@@ -80,7 +80,7 @@ void simple( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  ExampleSession session( parameters );
+  ExampleSession session;
 
   session.run( simple );
 

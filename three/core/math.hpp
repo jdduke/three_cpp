@@ -36,6 +36,8 @@ template < typename T > inline T round( T t ) { return std::round( t ); }
 template < typename T > inline T ceil( T t )  { return std::ceil( t ); }
 template < typename T > inline T floor( T t ) { return std::floor( t ); }
 
+template < typename T > inline T fmod( T a, T b ) { return std::fmod( a, b ); }
+
 template < typename T > inline T min( T a, T b ) { return std::min( a, b ); }
 template < typename T > inline T max( T a, T b ) { return std::max( a, b ); }
 
