@@ -6,24 +6,12 @@
 #include <three/extras/anim.hpp>
 #include <three/extras/glew.hpp>
 #include <three/extras/sdl.hpp>
+#include <three/extras/stats.hpp>
 
 #include <three/renderers/gl_renderer.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 
-#ifndef THREE_DATA_DIR
-#define THREE_DATA_DIR "."
-#endif
-
 namespace three {
-
-inline const std::string& threeDataDir() {
-  static std::string sThreeDataDir(THREE_DATA_DIR);
-  return sThreeDataDir;
-}
-
-inline std::string threeDataPath( const std::string& relativePath ) {
-  return threeDataDir() + "/" + relativePath;
-}
 
 struct ExampleSession {
 

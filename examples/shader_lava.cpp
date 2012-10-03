@@ -127,8 +127,6 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
 
   anim::gameLoop( [&]( float dt ) -> bool {
 
-    sdl::processEvents();
-
     camera->position.x += (-2.f * mouseX - camera->position.x ) * 3 * dt;
     camera->position.y += ( 2.f * mouseY - camera->position.y ) * 3 * dt;
     camera->lookAt( scene->position );
@@ -140,8 +138,6 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
     mesh->rotation.x += 0.15f * dt;
 
     renderer->render( *scene, *camera );
-
-    sdl::swapBuffers();
 
     return running;
 

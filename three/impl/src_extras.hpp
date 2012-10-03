@@ -11,6 +11,8 @@
 
 #include <three/extras/impl/image_utils.ipp>
 #include <three/extras/impl/sdl.ipp>
+#include <three/extras/impl/anim.ipp>
+#include <three/extras/impl/stats.ipp>
 
 
 #endif

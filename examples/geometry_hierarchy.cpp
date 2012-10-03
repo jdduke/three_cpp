@@ -10,7 +10,6 @@
 #include <three/scenes/fog.hpp>
 
 #include <three/extras/geometries/cube_geometry.hpp>
-#include <three/extras/utils/font.hpp>
 
 using namespace three;
 
@@ -19,7 +18,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
   renderer->sortObjects = false;
 
   auto camera = PerspectiveCamera::create(
-    60, (float)renderer->width() / renderer->height(), 1, 10000
+    60, ( float )renderer->width() / renderer->height(), 1, 10000
   );
   camera->position.z = 1000;
 
@@ -52,75 +51,68 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
   light->target = group;
   scene->add( light );
 
+  /////////////////////////////////////////////////////////////////////////
+
   auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
+  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& ) {
     running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
+  } );
+  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
     running = false;
-  });
+  } );
 
   auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-  });
-
-  auto font = utils::Font::create( threeDataPath("fonts/consolas.ttf") );
-
-  auto time = 0.f, lastDt = 0.f, fps = 60.f;
-  anim::gameLoop (
-
-    [&]( float dt ) -> bool {
-
-      time += dt;
-
-      sdl::processEvents();
-
-      camera->position.x += (-3000.f * mouseX - camera->position.x ) * 3 * dt;
-      camera->position.y += ( 3000.f * mouseY - camera->position.y ) * 3 * dt;
-      camera->lookAt( scene->position );
-
-      auto rx = Math::sin( time * 0.7f ) * 0.5f,
-           ry = Math::sin( time * 0.3f ) * 0.5f,
-           rz = Math::sin( time * 0.2f ) * 0.5f;
-
-      group->rotation.x = rx;
-      group->rotation.y = ry;
-      group->rotation.z = rz;
-
-      renderer->render( *scene, *camera );
-
-      if ( font ) {
-        static int count = 0;
-        if ( count++ % 60 == 0 ) {
-          fps = Math::round( 1.f / (.9f * dt + 0.1f * lastDt) );
-        }
-        lastDt = dt;
-
-        std::stringstream ss; ss << "FPS: " << (int)fps;
-        font->render( ss.str().c_str(),
-                      10.f, (float)renderer->height() - 30.f,
-                      (float)renderer->width(),
-                      (float)renderer->height(),
-                      Color(0x00FF00) );
-        renderer->resetStates();
-      }
-
-      sdl::swapBuffers();
-
-      return running;
-
+  sdl::addEventListener( SDL_MOUSEMOTION, [&]( const sdl::Event & event ) {
+    mouseX = 2.f * ( ( float )event.motion.x / renderer->width()  - 0.5f );
+    mouseY = 2.f * ( ( float )event.motion.y / renderer->height() - 0.5f );
   } );
+
+  sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
+    camera->aspect = ( float )event.resize.w / event.resize.h;
+    camera->updateProjectionMatrix();
+    renderer->setSize( event.resize.w, event.resize.h );
+  } );
+
+  /////////////////////////////////////////////////////////////////////////
+
+  stats::Stats stats;
+
+  auto time = 0.f;
+
+  anim::gameLoop(
+
+  [&]( float dt ) -> bool {
+
+    time += dt;
+
+    camera->position.x += ( -3000.f * mouseX - camera->position.x ) * 3 * dt;
+    camera->position.y += ( 3000.f * mouseY - camera->position.y ) * 3 * dt;
+    camera->lookAt( scene->position );
+
+    auto rx = Math::sin( time * 0.7f ) * 0.5f,
+    ry = Math::sin( time * 0.3f ) * 0.5f,
+    rz = Math::sin( time * 0.2f ) * 0.5f;
+
+    group->rotation.x = rx;
+    group->rotation.y = ry;
+    group->rotation.z = rz;
+
+    renderer->render( *scene, *camera );
+
+    stats.update( dt, *renderer );
+
+    return running;
+
+  }, 2000 );
 
 }
 
-int main ( int argc, char* argv[] ) {
+int main( int argc, char* argv[] ) {
 
   auto onQuit = defer( sdl::quit );
 
   RendererParameters parameters;
-
+  parameters.vsync = false;
   if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;
   }

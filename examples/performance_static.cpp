@@ -41,32 +41,17 @@ void performance_static( GLRenderer::Ptr renderer ) {
   auto mesh = ParticleSystem::create( geometry, material );
   scene->add( mesh );
 
-
   auto mouseX = 0.f, mouseY = 0.f;
 
   anim::gameLoop (
 
     [&]( float ) -> bool {
-      SDL_Event event;
-      while ( SDL_PollEvent( &event ) ) {
-        switch( event.type ) {
-          case SDL_KEYDOWN:
-          case SDL_QUIT:
-            return false;
-          case SDL_MOUSEMOTION:
-            mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-            mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-          default:
-          break;
-        };
-      }
 
       camera->position.x += ( 100.f * mouseX - camera->position.x ) * dt;
       camera->position.y += ( 100.f * mouseY - camera->position.y ) * dt;
       camera->lookAt( scene->position );
 
       renderer->render( *scene, *camera );
-      sdl::swapBuffers();
 
       return true;
 
@@ -79,7 +64,6 @@ int main ( int argc, char* argv[] ) {
   auto onQuit = defer( SDL_Quit );
 
   GLRenderer::Parameters parameters;
-
   if ( !sdl::initSDL( parameters ) || !glew::initGLEW( parameters ) ) {
     return 0;
   }
@@ -90,7 +74,6 @@ int main ( int argc, char* argv[] ) {
   }
 
   renderer->sortObjects = false;
-
   performance_static( renderer );
 
   return 0;

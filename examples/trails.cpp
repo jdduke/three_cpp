@@ -71,15 +71,11 @@ void trails( GLRenderer::Ptr renderer ) {
 
     [&]( float dt ) -> bool {
 
-      sdl::processEvents();
-
       camera->position.x += ( 1000.f * mouseX - camera->position.x ) * 5 * dt;
       camera->position.y += ( 1000.f * mouseY - camera->position.y ) * 5 * dt;
       camera->lookAt( scene->position );
 
       renderer->render( *scene, *camera );
-
-      sdl::swapBuffers();
 
       return running;
 

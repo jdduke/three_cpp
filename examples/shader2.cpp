@@ -182,8 +182,6 @@ void shader2( GLRenderer::Ptr renderer ) {
 
   anim::gameLoop( [&]( float dt ) -> bool {
 
-    sdl::processEvents();
-
     camera->position.x += (-2.f * mouseX - camera->position.x ) * 3 * dt;
     camera->position.y += ( 2.f * mouseY - camera->position.y ) * 3 * dt;
     camera->lookAt( scene->position );
@@ -194,8 +192,6 @@ void shader2( GLRenderer::Ptr renderer ) {
       material->uniforms[ "time" ].value = time;
 
     renderer->render( *scene, *camera );
-
-    sdl::swapBuffers();
 
     return running;
 

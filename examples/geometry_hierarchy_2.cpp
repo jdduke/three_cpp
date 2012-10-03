@@ -80,8 +80,6 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
       time += dt;
       ++frame;
 
-      sdl::processEvents();
-
       camera->position.x += (-3000.f * mouseX - camera->position.x ) * 3 * dt;
       camera->position.y += ( 3000.f * mouseY - camera->position.y ) * 3 * dt;
       camera->lookAt( scene->position );
@@ -99,8 +97,6 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
       } );
 
       renderer->render( *scene, *camera );
-
-      sdl::swapBuffers();
 
       return running && frame < maxFrames;
 

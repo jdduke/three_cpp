@@ -91,14 +91,10 @@ void shader( GLRenderer::Ptr renderer ) {
 
   anim::gameLoop( [&]( float dt ) -> bool {
 
-    sdl::processEvents();
-
     time += dt;
     material->uniforms[ "time" ].value = time;
 
     renderer->render( *scene, *camera );
-
-    sdl::swapBuffers();
 
     return running;
 

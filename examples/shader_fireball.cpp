@@ -168,8 +168,6 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
 
   anim::gameLoop( [&]( float dt ) -> bool {
 
-    sdl::processEvents();
-
     time += dt;
     material->uniforms[ "time" ].value = time;
 
@@ -177,8 +175,6 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
     mesh->rotation.x += 0.1f * dt;
 
     renderer->render( *scene, *camera );
-
-    sdl::swapBuffers();
 
     return running;
 

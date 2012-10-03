@@ -23,7 +23,10 @@ bool init( RendererParameters& parameters ) {
 
   console().log() << "SDL initialized";
 
-  if ( SDL_SetVideoMode( parameters.width, parameters.height, parameters.precision, SDL_OPENGL ) == NULL ) {
+  if ( SDL_SetVideoMode( parameters.width,
+                         parameters.height,
+                         parameters.precision,
+                         SDL_OPENGL | SDL_RESIZABLE ) == NULL ) {
     console().error() << "Error setting SDL video mode: " << SDL_GetError();
     return false;
   }

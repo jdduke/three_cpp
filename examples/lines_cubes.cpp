@@ -147,8 +147,6 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
 
       time += dt;
 
-      sdl::processEvents();
-
       camera->position.x += (-500.f * mouseX - camera->position.x ) * 3 * dt;
       camera->position.y += ( 500.f * mouseY + 200 - camera->position.y ) * 3 * dt;
       camera->lookAt( scene->position );
@@ -159,8 +157,6 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
       }
 
       renderer->render( *scene, *camera );
-
-      sdl::swapBuffers();
 
       return running;
 

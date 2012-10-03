@@ -155,8 +155,6 @@ void lines_colors( GLRenderer::Ptr renderer ) {
 
       time += dt;
 
-      sdl::processEvents();
-
       camera->position.x += ( -500.f * mouseX - camera->position.x ) * 3 * dt;
       camera->position.y += (  500.f * mouseY - camera->position.y ) * 3 * dt;
       camera->lookAt( scene->position );
@@ -167,8 +165,6 @@ void lines_colors( GLRenderer::Ptr renderer ) {
       }
 
       renderer->render( *scene, *camera );
-
-      sdl::swapBuffers();
 
       return running;
 

@@ -12,6 +12,17 @@
 
 namespace three {
 
+inline const std::string& threeDataDir() {
+  static std::string sThreeDataDir(THREE_DATA_DIR);
+  return sThreeDataDir;
+}
+
+inline std::string threeDataPath( const std::string& relativePath ) {
+  return threeDataDir() + "/" + relativePath;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 template < typename C >
 inline void grow( C& c, size_t size, float factor = 1.5f ) {
   if ( c.size() < size )

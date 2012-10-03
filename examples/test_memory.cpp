@@ -61,8 +61,6 @@ void test_memory( GLRenderer::Ptr renderer ) {
 
     [&]( float ) -> bool {
 
-      sdl::processEvents();
-
       auto geometry = SphereGeometry::create( 50,
                                               Math::random() * 64,
                                               Math::random() * 32 );
@@ -86,8 +84,6 @@ void test_memory( GLRenderer::Ptr renderer ) {
       renderer->deallocateObject( *mesh );
       renderer->deallocateTexture( *texture );
       renderer->deallocateMaterial( *material );
-
-      sdl::swapBuffers();
 
       return running;
 
