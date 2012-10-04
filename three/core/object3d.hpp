@@ -10,7 +10,6 @@
 #include <three/core/matrix4.hpp>
 
 #include <three/materials/material.hpp>
-//#include <three/core/frustum.hpp>
 #include <three/core/geometry.hpp>
 
 #include <three/utils/noncopyable.hpp>
@@ -37,6 +36,7 @@ public:
   virtual void visit( Visitor& v ) { };
   virtual void visit( ConstVisitor& v ) { };
 
+  //virtual ~Object3D() { console().log() << "Object3D::~Object3D: Destroying " << id; }
   virtual ~Object3D() { }
 
   /////////////////////////////////////////////////////////////////////////

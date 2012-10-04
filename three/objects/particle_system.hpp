@@ -22,7 +22,7 @@ public:
 
   virtual THREE::Type type() const { return THREE::ParticleSystem; }
 
-  virtual void visit( Visitor& v ) { v( *this ); }
+  virtual void visit( Visitor& v )            { v( *this ); }
   virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
   /////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ protected:
     : Object3D( material, geometry ), softParticles( false ) {
 
     if ( geometry ) {
-      if ( geometry->boundingSphere.radius == 0 ) {
+      if ( geometry->boundingSphere.radius <= 0.0001f ) {
         geometry->computeBoundingSphere();
       }
       boundRadius = geometry->boundingSphere.radius;

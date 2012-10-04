@@ -2,21 +2,18 @@
 
 #include <three/cameras/perspective_camera.hpp>
 #include <three/core/geometry.hpp>
-#include <three/lights/directional_light.hpp>
 #include <three/materials/particle_basic_material.hpp>
 #include <three/objects/particle_system.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/scenes/fog_exp2.hpp>
 
-#include <three/extras/geometries/cube_geometry.hpp>
-
 using namespace three;
 
 void particles_random( const GLRenderer::Ptr& renderer ) {
 
   auto camera = PerspectiveCamera::create(
-    75, ( float )renderer->width() / renderer->height(), 1, 3000
+    75, ( float )renderer->width() / renderer->height(), 1.f, 3000
   );
   camera->position.z = 1000;
 
@@ -25,8 +22,9 @@ void particles_random( const GLRenderer::Ptr& renderer ) {
 
   auto geometry = Geometry::create();
 
-  geometry->vertices.reserve( 20000 );
-  std::generate_n( std::back_inserter( geometry->vertices ), 20000,
+  const auto particles = 20000;
+  geometry->vertices.reserve( particles );
+  std::generate_n( std::back_inserter( geometry->vertices ), particles,
                    [] { return Vector3( Math::random(-1000.f, 1000.f),
                                         Math::random(-1000.f, 1000.f),
                                         Math::random(-1000.f, 1000.f) ); } );
@@ -35,12 +33,14 @@ void particles_random( const GLRenderer::Ptr& renderer ) {
   auto addParticleSystem = [&]( const Vector3& color, float size ) {
 
     //materials[i] = new THREE.ParticleBasicMaterial( { color: color, size: size } );
-    materials.push_back( ParticleBasicMaterial::create( 
-      Material::Parameters().add( "size", size * 3 ) ) 
+    auto material = ParticleBasicMaterial::create(
+      Material::Parameters().add( "size", size * .5f )
     );
-    materials.back()->color.setHSV( color[0], color[1], color[2] );
 
-    auto particles = ParticleSystem::create( geometry, materials.back() );
+    materials.push_back( material );
+    material->color.setHSV( color[0], color[1], color[2] );
+
+    auto particles = ParticleSystem::create( geometry, material );
 
     particles->rotation.x = Math::random() * 6;
     particles->rotation.y = Math::random() * 6;
@@ -94,13 +94,12 @@ void particles_random( const GLRenderer::Ptr& renderer ) {
 
   [&]( float dt ) -> bool {
 
-    time += dt * .005f;
+    time += dt * .05f;
 
     camera->position.x += ( -1000.f * mouseX - camera->position.x ) * 3 * dt;
     camera->position.y += (  1000.f * mouseY - camera->position.y ) * 3 * dt;
     camera->lookAt( scene->position );
 
-    
     for ( size_t i = 0; i < scene->children.size(); ++i ) {
       auto& object = *scene->children[ i ];
       if ( object.type() == THREE::ParticleSystem ) {
@@ -116,11 +115,11 @@ void particles_random( const GLRenderer::Ptr& renderer ) {
 
     renderer->render( *scene, *camera );
 
-    stats.update( dt, *renderer );
+    //stats.update( dt, *renderer );
 
     return running;
 
-  }, 2000 );
+  } );
 
 }
 

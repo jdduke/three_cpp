@@ -32,6 +32,8 @@
 
 #include <three/textures/texture.hpp>
 
+#include <three/utils/hash.hpp>
+
 namespace three {
 
 struct ProgramParameters {
@@ -58,7 +60,7 @@ struct ProgramParameters {
   bool shadowMapDebug;
   bool shadowMapCascade;
 
-  float alphaTest;
+  bool alphaTest;
   bool metal;
   bool perPixel;
   bool wrapAround;
@@ -866,6 +868,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     _projScreenMatrixPS.copy( _projScreenMatrix );
     _projScreenMatrixPS.multiplySelf( object.matrixWorld );
+    sortArray.resize( vl );
 
     for ( int v = 0; v < vl; v ++ ) {
 
@@ -883,7 +886,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     std::sort( sortArray.begin(),
                sortArray.end(),
-    []( const SortPair & a, const SortPair & b ) {
+               []( const SortPair & a, const SortPair & b ) {
       return a.first > b.first;
     } );
 
@@ -1127,11 +1130,11 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
   }
 
-  if ( dirtyVertices || object.sortParticles ) {
+  if ( vl > 0 && ( dirtyVertices || object.sortParticles ) ) {
     glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
   }
 
-  if ( dirtyColors || object.sortParticles ) {
+  if ( cl > 0 && ( dirtyColors || object.sortParticles ) ) {
     glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
   }
 
@@ -3286,6 +3289,9 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   } else if ( object.type() == THREE::ParticleSystem ) {
 
+    // TODO: Move this somewhere else... necessary for non GLES
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
     glDrawArrays( GL_POINTS, 0, geometryGroup.__glParticleCount );
 
     _info.render.calls ++;
@@ -4104,8 +4110,8 @@ void GLRenderer::updateObject( Object3D& object ) {
     if ( geometry.type() == THREE::BufferGeometry ) {
 
       if ( geometry.verticesNeedUpdate || geometry.elementsNeedUpdate ||
-           geometry.uvsNeedUpdate || geometry.normalsNeedUpdate ||
-           geometry.colorsNeedUpdate || geometry.tangentsNeedUpdate ) {
+           geometry.uvsNeedUpdate      || geometry.normalsNeedUpdate ||
+           geometry.colorsNeedUpdate   || geometry.tangentsNeedUpdate ) {
 
         setDirectBuffers( geometry, GL_DYNAMIC_DRAW, !geometry.dynamic );
 
@@ -4130,9 +4136,10 @@ void GLRenderer::updateObject( Object3D& object ) {
 
         const auto customAttributesDirty = material->customAttributes.size() > 0 && areCustomAttributesDirty( *material );
 
-        if ( geometry.verticesNeedUpdate || geometry.morphTargetsNeedUpdate || geometry.elementsNeedUpdate ||
-             geometry.uvsNeedUpdate || geometry.normalsNeedUpdate ||
-             geometry.colorsNeedUpdate || geometry.tangentsNeedUpdate || customAttributesDirty ) {
+        if ( geometry.verticesNeedUpdate || geometry.morphTargetsNeedUpdate ||
+             geometry.uvsNeedUpdate      || geometry.normalsNeedUpdate      ||
+             geometry.colorsNeedUpdate   || geometry.tangentsNeedUpdate     ||
+             geometry.elementsNeedUpdate  || customAttributesDirty ) {
 
           setMeshBuffers( *geometryGroup, object, GL_DYNAMIC_DRAW, !geometry.dynamic, material );
 
@@ -4343,7 +4350,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     shadowMapDebug,
     shadowMapCascade,
 
-    material.alphaTest,
+    material.alphaTest > 0.0001f,
     material.metal,
     material.perPixel,
     material.wrapAround,
@@ -5289,13 +5296,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     chunks << hash( fragmentShader );
     chunks << hash( vertexShader );
   }
-
-#ifdef TODO_HASH_PARAMETERS
-  for ( const auto& p : parameters ) {
-    chunks << p.first;
-    chunks << p.second;
-  }
-#endif
+  chunks << jenkins_hash( &parameters );
 
   auto code = chunks.str();
 
