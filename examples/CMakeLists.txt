@@ -63,6 +63,7 @@ set(examples simple
              lines_cubes
              particles_random
              particles_sprites
+             particles_billboards
              particles_billboards_colors
              shader
              shader2
