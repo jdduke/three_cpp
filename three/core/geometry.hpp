@@ -81,7 +81,7 @@ public:
   std::vector<Color> colors; // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
 
   std::vector<Material::Ptr> materials;
-  CustomAttributes attributes;
+  Attributes attributes;
 
   std::vector<Face> faces;
 
@@ -108,7 +108,7 @@ public:
   bool hasTangents;
   bool dynamic;
 
-  std::unordered_map<std::string, GeometryGroup> geometryGroups;
+  std::unordered_map<std::string, GeometryGroup::Ptr> geometryGroups;
   std::vector<GeometryGroup*> geometryGroupsList;
 
   bool verticesNeedUpdate;

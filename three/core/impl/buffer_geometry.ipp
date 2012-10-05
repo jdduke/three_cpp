@@ -82,7 +82,7 @@ void BufferGeometry::computeVertexNormals() {
 
     if ( !contains( attributes, "normal" ) ) {
 
-      attributes[ "normal" ] = CustomAttribute( THREE::V3, nVertexElements );
+      attributes[ "normal" ] = Attribute( THREE::v3, nVertexElements );
 
     } else {
 
@@ -191,11 +191,8 @@ void BufferGeometry::computeTangents() {
   const auto nVertices = ( int )positions.size() / 3;
 
   if ( !contains( attributes, "tangent" ) ) {
-
     const auto nTangentElements = 4 * nVertices;
-
-    attributes[ "tangent" ] = CustomAttribute( THREE::V4, nTangentElements );
-
+    attributes[ "tangent" ] = Attribute( THREE::v4, nTangentElements );
   }
 
   auto& tangents = attributes[ "tangent" ].array;

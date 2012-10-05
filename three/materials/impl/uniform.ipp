@@ -15,13 +15,13 @@
 namespace three {
 
 Uniform::Uniform( )
-  : type( INVALID ), value( ) { }
+  : type( THREE::INVALID_UNIFORM ), value( ) { }
 
-Uniform::Uniform( Type type, any value /*= any()*/ )
+Uniform::Uniform( THREE::UniformType type, any value /*= any()*/ )
   : type( type ), value( std::move( value ) ) { }
 
 Uniform::Uniform( Uniform&& other )
-  : type( INVALID) { swap( other ); }
+  : type( THREE::INVALID_UNIFORM ) { swap( other ); }
 
 Uniform::Uniform( const Uniform& other )
   : type( other.type ), value( other.value ) { }
@@ -86,14 +86,14 @@ void loadmv( const F& f, int location, const any& value ) {
 template < int UniformType > struct UniformToType { };
 
 #define DECLARE_UNIFORM(UNIFORM_TYPE, TYPE, FUNC, FUNC_IMPL) \
-  template <> struct UniformToType<Uniform:: UNIFORM_TYPE>   { \
+  template <> struct UniformToType<THREE:: UNIFORM_TYPE>   { \
     static void load( int location, const any& value ) {     \
       FUNC_IMPL < TYPE > ( FUNC, location, value );        \
     }                                                        \
   };
 
 #define DECLARE_UNIFORM_V(UNIFORM_TYPE, TYPE, ELEM_TYPE, FUNC, STRIDE) \
-  template <> struct UniformToType<Uniform:: UNIFORM_TYPE>   {         \
+  template <> struct UniformToType<THREE:: UNIFORM_TYPE>   {         \
     static void load( int location, const any& value ) {             \
       loadv < TYPE, ELEM_TYPE > ( FUNC, location, value, STRIDE ); \
     }                                                                \
@@ -128,41 +128,41 @@ void Uniform::load( int location ) {
 
     switch ( type ) {
 
-    case Uniform::i: // single integer
-      UniformToType<Uniform::i>::load( location, value ); break;
-    case Uniform::f: // single float
-      UniformToType<Uniform::f>::load( location, value ); break;
-    case Uniform::v2: // single THREE::Vector2
-      UniformToType<Uniform::v2>::load( location, value ); break;
-    case Uniform::v3: // single THREE::Vector3
-      UniformToType<Uniform::v3>::load( location, value ); break;
-    case Uniform::v4: // single THREE::Vector4
-      UniformToType<Uniform::v4>::load( location, value ); break;
-    case Uniform::c: // single THREE::Color
-      UniformToType<Uniform::c>::load( location, value ); break;
-    case Uniform::iv1: // flat array of integers (JS or typed array)
-      UniformToType<Uniform::iv1>::load( location, value ); break;
-    case Uniform::iv: // flat array of integers with 3 x N size (JS or typed array)
-      UniformToType<Uniform::iv>::load( location, value ); break;
-    case Uniform::fv1: // flat array of floats (JS or typed array)
-      UniformToType<Uniform::fv1>::load( location, value ); break;
-    case Uniform::fv: // flat array of floats with 3 x N size (JS or typed array)
-      UniformToType<Uniform::fv>::load( location, value ); break;
-    case Uniform::v2v: // array of THREE::Vector2
-      UniformToType<Uniform::v2v>::load( location, value ); break;
-    case Uniform::v3v: // array of THREE::Vector3
-      UniformToType<Uniform::v3v>::load( location, value ); break;
-    case Uniform::v4v: // array of THREE::Vector4
-      UniformToType<Uniform::v4v>::load( location, value ); break;
-    case Uniform::m4: // single THREE::Matrix4
-      UniformToType<Uniform::m4>::load( location, value ); break;
-    case Uniform::m4v: // array of THREE::Matrix4
-      UniformToType<Uniform::m4v>::load( location, value ); break;
-    case Uniform::t: // single THREE::Texture (2d or cube)
+    case THREE::i: // single integer
+      UniformToType<THREE::i>::load( location, value ); break;
+    case THREE::f: // single float
+      UniformToType<THREE::f>::load( location, value ); break;
+    case THREE::v2: // single THREE::Vector2
+      UniformToType<THREE::v2>::load( location, value ); break;
+    case THREE::v3: // single THREE::Vector3
+      UniformToType<THREE::v3>::load( location, value ); break;
+    case THREE::v4: // single THREE::Vector4
+      UniformToType<THREE::v4>::load( location, value ); break;
+    case THREE::c: // single THREE::Color
+      UniformToType<THREE::c>::load( location, value ); break;
+    case THREE::iv1: // flat array of integers (JS or typed array)
+      UniformToType<THREE::iv1>::load( location, value ); break;
+    case THREE::iv: // flat array of integers with 3 x N size (JS or typed array)
+      UniformToType<THREE::iv>::load( location, value ); break;
+    case THREE::fv1: // flat array of floats (JS or typed array)
+      UniformToType<THREE::fv1>::load( location, value ); break;
+    case THREE::fv: // flat array of floats with 3 x N size (JS or typed array)
+      UniformToType<THREE::fv>::load( location, value ); break;
+    case THREE::v2v: // array of THREE::Vector2
+      UniformToType<THREE::v2v>::load( location, value ); break;
+    case THREE::v3v: // array of THREE::Vector3
+      UniformToType<THREE::v3v>::load( location, value ); break;
+    case THREE::v4v: // array of THREE::Vector4
+      UniformToType<THREE::v4v>::load( location, value ); break;
+    case THREE::m4: // single THREE::Matrix4
+      UniformToType<THREE::m4>::load( location, value ); break;
+    case THREE::m4v: // array of THREE::Matrix4
+      UniformToType<THREE::m4v>::load( location, value ); break;
+    case THREE::t: // single THREE::Texture (2d or cube)
       break;
-      //UniformToType<Uniform::t>::load( location, value ); break;
+      //UniformToType<THREE::t>::load( location, value ); break;
 #ifdef TODO_TEXTURE_ARRAY
-    case Uniform::tv: // array of THREE::Texture (2d)
+    case THREE::tv: // array of THREE::Texture (2d)
       std::vector<int> _array( uniform.texture.size() );
       for ( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
         _array[ i ] = value + i;

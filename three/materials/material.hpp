@@ -6,7 +6,7 @@
 #include <three/core/color.hpp>
 
 #include <three/materials/attribute.hpp>
-#include <three/materials/custom_attribute.hpp>
+#include <three/materials/attribute.hpp>
 #include <three/materials/program.hpp>
 #include <three/materials/uniform.hpp>
 
@@ -39,8 +39,8 @@ public:
 
   std::string name;
 
-  CustomAttributes customAttributes;
   Attributes attributes;
+  //AttributeLocations attributeLocations;
 
   THREE::Side side;
 

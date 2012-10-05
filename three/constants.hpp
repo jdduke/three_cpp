@@ -219,14 +219,31 @@ enum PrecisionType {
   PrecisionLow = 8
 };
 
-enum AttributeType {
-  I = 0,
-  C,
-  F,
-  V2,
-  V3,
-  V4
+enum UniformType {
+  c = 0,
+  i,
+  iv,
+  iv1,
+  f,
+  fv,
+  fv1,
+  v2,
+  v3,
+  v4,
+  v2v,
+  v3v,
+  v4v,
+  t,
+  tv,
+  m4,
+  m4v,
+  INVALID_UNIFORM,
+  INVALID_ATTRIBUTE = INVALID_UNIFORM
 };
+
+typedef UniformType AttributeType;
+
+/////////////////////////////////////////////////////////////////////////
 
 // TODO: Implement?
 typedef void ( *Mapping ) ( void );

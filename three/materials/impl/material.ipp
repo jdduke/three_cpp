@@ -14,7 +14,6 @@ Material& Material::clone( Material& material ) const {
   material.side                = side;
 
   material.attributes          = material.attributes;
-  material.customAttributes    = material.customAttributes;
 
   material.color               = color;
   material.ambient             = ambient;

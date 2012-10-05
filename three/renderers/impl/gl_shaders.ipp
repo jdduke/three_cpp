@@ -1284,24 +1284,24 @@ typedef std::pair<std::string, Uniform> Pair;
 Uniforms UniformsLib::common() {
   Uniforms uniforms;
 
-  uniforms.add( "diffuse",               Uniform( Uniform::c, Color( 0xeeeeee ) ) )
-          //.emplace( "diffuse",           Uniform::c, Color( 0xeeeeee ) )
-          .add( "opacity",               Uniform( Uniform::f, 1.0f ) )
+  uniforms.add( "diffuse",               Uniform( THREE::c, Color( 0xeeeeee ) ) )
+          //.emplace( "diffuse",           THREE::c, Color( 0xeeeeee ) )
+          .add( "opacity",               Uniform( THREE::f, 1.0f ) )
 
-          .add( "map",                   Uniform( Uniform::t, 0 ) )
-          .add( "offsetRepeat",          Uniform( Uniform::v4, Vector4( 0, 0, 1, 1 ) ) )
+          .add( "map",                   Uniform( THREE::t, 0 ) )
+          .add( "offsetRepeat",          Uniform( THREE::v4, Vector4( 0, 0, 1, 1 ) ) )
 
-          .add( "lightMap",              Uniform( Uniform::t, 2 ) )
-          .add( "specularMap",           Uniform( Uniform::t, 3 ) )
+          .add( "lightMap",              Uniform( THREE::t, 2 ) )
+          .add( "specularMap",           Uniform( THREE::t, 3 ) )
 
-          .add( "envMap",                Uniform( Uniform::t, 1 ) )
-          .add( "flipEnvMap",            Uniform( Uniform::f, -1 ) )
-          .add( "useRefract",            Uniform( Uniform::i, 0 ) )
-          .add( "reflectivity",          Uniform( Uniform::f, 1.0f ) )
-          .add( "refractionRatio",       Uniform( Uniform::f, 0.98f ) )
-          .add( "combine",               Uniform( Uniform::i, 0 ) )
+          .add( "envMap",                Uniform( THREE::t, 1 ) )
+          .add( "flipEnvMap",            Uniform( THREE::f, -1 ) )
+          .add( "useRefract",            Uniform( THREE::i, 0 ) )
+          .add( "reflectivity",          Uniform( THREE::f, 1.0f ) )
+          .add( "refractionRatio",       Uniform( THREE::f, 0.98f ) )
+          .add( "combine",               Uniform( THREE::i, 0 ) )
 
-          .add( "morphTargetInfluences", Uniform( Uniform::f, 0 ) );
+          .add( "morphTargetInfluences", Uniform( THREE::f, 0 ) );
 
   return uniforms;
 }
@@ -1309,8 +1309,8 @@ Uniforms UniformsLib::common() {
 Uniforms UniformsLib::bump() {
   Uniforms uniforms;
 
-  uniforms.add( "bumpMap",   Uniform( Uniform::t, 4 ) )
-          .add( "bumpScale", Uniform( Uniform::f, 1 ) );
+  uniforms.add( "bumpMap",   Uniform( THREE::t, 4 ) )
+          .add( "bumpScale", Uniform( THREE::f, 1 ) );
 
   return uniforms;
 }
@@ -1318,10 +1318,10 @@ Uniforms UniformsLib::bump() {
 Uniforms UniformsLib::fog() {
   Uniforms uniforms;
 
-  uniforms.add( "fogDensity", Uniform( Uniform::f, 0.00025f ) )
-          .add( "fogNear",    Uniform( Uniform::f, 1.f ) )
-          .add( "fogFar",     Uniform( Uniform::f, 2000.f ) )
-          .add( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) );
+  uniforms.add( "fogDensity", Uniform( THREE::f, 0.00025f ) )
+          .add( "fogNear",    Uniform( THREE::f, 1.f ) )
+          .add( "fogFar",     Uniform( THREE::f, 2000.f ) )
+          .add( "fogColor",   Uniform( THREE::c, Color( 0xffffff ) ) );
 
   return uniforms;
 }
@@ -1329,21 +1329,21 @@ Uniforms UniformsLib::fog() {
 Uniforms UniformsLib::lights() {
   Uniforms uniforms;
 
-  uniforms.add( "ambientLightColor",         Uniform( Uniform::fv ) )
+  uniforms.add( "ambientLightColor",         Uniform( THREE::fv ) )
 
-          .add( "directionalLightDirection", Uniform( Uniform::fv ) )
-          .add( "directionalLightColor",     Uniform( Uniform::fv ) )
+          .add( "directionalLightDirection", Uniform( THREE::fv ) )
+          .add( "directionalLightColor",     Uniform( THREE::fv ) )
 
-          .add( "pointLightColor",           Uniform( Uniform::fv ) )
-          .add( "pointLightPosition",        Uniform( Uniform::fv ) )
-          .add( "pointLightDistance",        Uniform( Uniform::fv1 ) )
+          .add( "pointLightColor",           Uniform( THREE::fv ) )
+          .add( "pointLightPosition",        Uniform( THREE::fv ) )
+          .add( "pointLightDistance",        Uniform( THREE::fv1 ) )
 
-          .add( "spotLightColor",            Uniform( Uniform::fv ) )
-          .add( "spotLightPosition",         Uniform( Uniform::fv ) )
-          .add( "spotLightDirection",        Uniform( Uniform::fv ) )
-          .add( "spotLightDistance",         Uniform( Uniform::fv1 ) )
-          .add( "spotLightAngle",            Uniform( Uniform::fv1 ) )
-          .add( "spotLightExponent",         Uniform( Uniform::fv1 ) );
+          .add( "spotLightColor",            Uniform( THREE::fv ) )
+          .add( "spotLightPosition",         Uniform( THREE::fv ) )
+          .add( "spotLightDirection",        Uniform( THREE::fv ) )
+          .add( "spotLightDistance",         Uniform( THREE::fv1 ) )
+          .add( "spotLightAngle",            Uniform( THREE::fv1 ) )
+          .add( "spotLightExponent",         Uniform( THREE::fv1 ) );
 
   return uniforms;
 }
@@ -1351,16 +1351,16 @@ Uniforms UniformsLib::lights() {
 Uniforms UniformsLib::particle() {
   Uniforms uniforms;
 
-  uniforms.add( "psColor",    Uniform( Uniform::c, Color( 0xeeeeee ) ) )
-          .add( "opacity",    Uniform( Uniform::f, 1.0f ) )
-          .add( "size",       Uniform( Uniform::f, 1.0f ) )
-          .add( "scale",      Uniform( Uniform::f, 1.0f ) )
-          .add( "map",        Uniform( Uniform::t, 0 ) )
+  uniforms.add( "psColor",    Uniform( THREE::c, Color( 0xeeeeee ) ) )
+          .add( "opacity",    Uniform( THREE::f, 1.0f ) )
+          .add( "size",       Uniform( THREE::f, 1.0f ) )
+          .add( "scale",      Uniform( THREE::f, 1.0f ) )
+          .add( "map",        Uniform( THREE::t, 0 ) )
 
-          .add( "fogDensity", Uniform( Uniform::f, 0.00025f ) )
-          .add( "fogNear",    Uniform( Uniform::f, 1.f ) )
-          .add( "fogFar",     Uniform( Uniform::f, 2000.f ) )
-          .add( "fogColor",   Uniform( Uniform::c, Color( 0xffffff ) ) );
+          .add( "fogDensity", Uniform( THREE::f, 0.00025f ) )
+          .add( "fogNear",    Uniform( THREE::f, 1.f ) )
+          .add( "fogFar",     Uniform( THREE::f, 2000.f ) )
+          .add( "fogColor",   Uniform( THREE::c, Color( 0xffffff ) ) );
 
   return uniforms;
 }
@@ -1368,11 +1368,11 @@ Uniforms UniformsLib::particle() {
 Uniforms UniformsLib::shadowmap() {
   Uniforms uniforms;
 
-  uniforms.add( "shadowMap",      Uniform( Uniform::tv, 6 ) )
-          .add( "shadowMapSize",  Uniform( Uniform::v2v ) )
-          .add( "shadowBias",     Uniform( Uniform::fv1 ) )
-          .add( "shadowDarkness", Uniform( Uniform::fv1 ) )
-          .add( "shadowMatrix",   Uniform( Uniform::m4v ) );
+  uniforms.add( "shadowMap",      Uniform( THREE::tv, 6 ) )
+          .add( "shadowMapSize",  Uniform( THREE::v2v ) )
+          .add( "shadowBias",     Uniform( THREE::fv1 ) )
+          .add( "shadowDarkness", Uniform( THREE::fv1 ) )
+          .add( "shadowMatrix",   Uniform( THREE::m4v ) );
 
   return uniforms;
 }
@@ -1408,9 +1408,9 @@ public:
 
 static Shader depthCreate() {
   Uniforms uniforms;
-  uniforms.add( "mNear",   Uniform( Uniform::f, 1.0f ) )
-          .add( "mFar",    Uniform( Uniform::f, 2000.0f ) )
-          .add( "opacity", Uniform( Uniform::f, 1.0f ) );
+  uniforms.add( "mNear",   Uniform( THREE::f, 1.0f ) )
+          .add( "mFar",    Uniform( THREE::f, 2000.0f ) )
+          .add( "opacity", Uniform( THREE::f, 1.0f ) );
 
   const char* vertexShader =
     "void main() {\n"
@@ -1433,7 +1433,7 @@ static Shader depthCreate() {
 static Shader normalCreate() {
 
   Uniforms uniforms;
-  uniforms.add( "opacity", Uniform( Uniform::f, 1.0f ) );
+  uniforms.add( "opacity", Uniform( THREE::f, 1.0f ) );
 
   const char* vertexShader =
     "varying vec3 vNormal;\n"
@@ -1535,9 +1535,9 @@ static Shader lambertCreate() {
   };
 
   auto uniforms = UniformsUtils::merge( sourceUniforms );
-  uniforms.add( "ambient",  Uniform( Uniform::c, Color( 0xffffff ) ) )
-          .add( "emissive", Uniform( Uniform::c, Color( 0x000000 ) ) )
-          .add( "wrapRGB",  Uniform( Uniform::v3, Vector3( 1, 1, 1 ) ) );
+  uniforms.add( "ambient",  Uniform( THREE::c, Color( 0xffffff ) ) )
+          .add( "emissive", Uniform( THREE::c, Color( 0x000000 ) ) )
+          .add( "wrapRGB",  Uniform( THREE::v3, Vector3( 1, 1, 1 ) ) );
 
   std::stringstream vss;
   vss <<
@@ -1644,11 +1644,11 @@ static Shader phongCreate() {
   };
 
   auto uniforms = UniformsUtils::merge( sourceUniforms );
-  uniforms.add( "ambient",   Uniform( Uniform::c, Color( 0xffffff ) ) )
-          .add( "emissive",  Uniform( Uniform::c, Color( 0x000000 ) ) )
-          .add( "specular",  Uniform( Uniform::c, Color( 0x111111 ) ) )
-          .add( "shininess", Uniform( Uniform::f, 30.f ) )
-          .add( "wrapRGB",   Uniform( Uniform::v3, Vector3( 1, 1, 1 ) ) );
+  uniforms.add( "ambient",   Uniform( THREE::c, Color( 0xffffff ) ) )
+          .add( "emissive",  Uniform( THREE::c, Color( 0x000000 ) ) )
+          .add( "specular",  Uniform( THREE::c, Color( 0x111111 ) ) )
+          .add( "shininess", Uniform( THREE::f, 30.f ) )
+          .add( "wrapRGB",   Uniform( THREE::v3, Vector3( 1, 1, 1 ) ) );
 
   std::stringstream vss;
   vss <<

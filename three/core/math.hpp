@@ -10,9 +10,9 @@ namespace three {
 
 namespace Math {
 
-inline const float PI()  { return 3.1415926535897932384f; }//std::atan(1.f)/4;
-inline const float LN2() { return 0.6931471805599453094f; }
-inline const float INF() { return std::numeric_limits<float>::max(); }//std::numeric_limits<float>::infinity();
+inline const float PI()   { return 3.1415926535897932384f; }//std::atan(1.f)/4;
+inline const float LN2()  { return 0.6931471805599453094f; }
+inline const float INF()  { return std::numeric_limits<float>::max(); }//std::numeric_limits<float>::infinity();
 
 template < typename T > inline T sqrt( T t ) { return std::sqrt( t ); }
 template < typename T > inline T abs( T t )  { return std::abs( t ); }
@@ -106,15 +106,15 @@ inline bool isPowerOfTwo( int value ) {
 }
 
 inline int upperPowerOfTwo( int value ) {
-  return (int)pow( 2.f, ceil( log( (float)value ) / log( 2.f ) ) );
+  return (int)pow( 2.f, ceil( log( (float)value ) / LN2() ) );
 }
 
 inline int lowerPowerOfTwo( int value ) {
-  return (int)pow( 2.f, floor( log( (float)value ) / log( 2.f ) ) );
+  return (int)pow( 2.f, floor( log( (float)value ) / LN2() ) );
 }
 
 inline int nearestPowerOfTwo( int value ) {
-  return (int)pow( 2.f, round( log( (float)value ) / log( 2.f ) ) );
+  return (int)pow( 2.f, round( log( (float)value ) / LN2() ) );
 }
 
 }

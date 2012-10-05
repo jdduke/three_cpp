@@ -3,11 +3,13 @@
 
 #include <three/core/face.hpp>
 
-#include <three/materials/custom_attribute.hpp>
+#include <three/materials/attribute.hpp>
+
+#include <three/utils/noncopyable.hpp>
 
 namespace three {
 
-class GeometryBuffer {
+class GeometryBuffer : NonCopyable {
 public:
 
   virtual THREE::GeometryType type() const { return THREE::Geometry; }
@@ -23,7 +25,16 @@ public:
   bool hasTangents;
   bool dynamic;
 
-  std::vector<CustomAttribute> __glCustomAttributesList;
+  // Only delete if the buffer has created a new attribute
+  //      from an original...
+  struct AttributeDeleter {
+    void operator()( Attribute* a ) {
+      if ( a && a->__original != nullptr )
+        delete a;
+    }
+  };
+  typedef std::unique_ptr<Attribute, AttributeDeleter> AttributePtr;
+  std::vector<AttributePtr> __glCustomAttributesList;
 
   GLBuffer __glColorBuffer;
   GLBuffer __glFaceBuffer;

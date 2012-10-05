@@ -54,21 +54,6 @@ else()
 endif()
 
 file(GLOB examples "*.cpp")
-#set(examples simple
-#             trails
-#             geometry_hierarchy
-#             geometry_hierarchy_2
-#             test_memory
-#             lines_colors
-#             lines_cubes
-#             particles_random
-#             particles_sprites
-#             particles_billboards
-#             particles_billboards_colors
-#             shader
-#             shader2
-#             shader_fireball
-#             shader_lava)
 
 foreach(example ${examples})
   get_filename_component(example_name ${example} NAME_WE)

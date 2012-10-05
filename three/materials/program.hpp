@@ -6,14 +6,13 @@
 
 #include <three/utils/noncopyable.hpp>
 
+#include <three/materials/attribute.hpp>
 #include <three/materials/uniform.hpp>
 
 #include <map>
 #include <string>
 
 namespace three {
-
-typedef Properties<std::string, int> AttributeLocations;
 
 class Program : public NonCopyable {
 public:

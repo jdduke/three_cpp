@@ -313,7 +313,7 @@ void GLRenderer::deallocateObject( Object3D& object ) {
 
   if ( object.type() == THREE::Mesh ) {
     for ( auto& geometryGroup : geometry.geometryGroups ) {
-      deleteMeshBuffers( geometryGroup.second );
+      deleteMeshBuffers( *geometryGroup.second );
     }
   } else if ( object.type() == THREE::Ribbon ) {
     deleteRibbonBuffers( geometry );
@@ -537,7 +537,7 @@ void GLRenderer::deleteMeshBuffers( GeometryGroup& geometryGroup ) {
   }
 
   for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
-    glDeleteBuffer( attribute.buffer );
+    glDeleteBuffer( attribute->buffer );
   }
 
   _info.memory.geometries --;
@@ -558,11 +558,11 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
   auto& material = *object.material;
 
-  if ( material.customAttributes.size() > 0 ) {
+  if ( material.attributes.size() > 0 ) {
 
     geometry.__glCustomAttributesList.clear();
 
-    for ( auto& namedAttribute : material.customAttributes ) {
+    for ( auto& namedAttribute : material.attributes ) {
 
       auto& a = namedAttribute.first;
       auto& attribute = namedAttribute.second;
@@ -573,10 +573,10 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
         auto size = 1;      // "f" and "i"
 
-        if ( attribute.type == THREE::V2 ) size = 2;
-        else if ( attribute.type == THREE::V3 ) size = 3;
-        else if ( attribute.type == THREE::V4 ) size = 4;
-        else if ( attribute.type == THREE::C ) size = 3;
+        if      ( attribute.type == THREE::v2 ) size = 2;
+        else if ( attribute.type == THREE::v3 ) size = 3;
+        else if ( attribute.type == THREE::v4 ) size = 4;
+        else if ( attribute.type == THREE::c  ) size = 3;
 
         attribute.size = size;
 
@@ -589,7 +589,7 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
       }
 
-      geometry.__glCustomAttributesList.push_back( attribute );
+      geometry.__glCustomAttributesList.emplace_back( &attribute );
 
     }
 
@@ -720,18 +720,18 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
   // custom attributes
 
-  if ( material && material->customAttributes.size() > 0 ) {
+  if ( material && material->attributes.size() > 0 ) {
 
     geometryGroup.__glCustomAttributesList.clear();
 
-    for ( auto& a : material->customAttributes ) {
+    for ( auto& a : material->attributes ) {
 
       // Do a shallow copy of the attribute object soe different geometryGroup chunks use different
       // attribute buffers which are correctly indexed in the setMeshBuffers function
 
       auto& originalAttribute = a.second;
 
-      CustomAttribute attribute( originalAttribute );
+      GeometryBuffer::AttributePtr attribute( new Attribute(originalAttribute) );
 
       /*for ( auto& property : originalAttribute ) {
 
@@ -739,30 +739,30 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
       }*/
 
-      if ( !attribute.__glInitialized || attribute.createUniqueBuffers ) {
+      if ( !attribute->__glInitialized || attribute->createUniqueBuffers ) {
 
-        attribute.__glInitialized = true;
+        attribute->__glInitialized = true;
 
         auto size = 1;      // "f" and "i"
 
-        if ( attribute.type == THREE::V2 ) size = 2;
-        else if ( attribute.type == THREE::V3 ) size = 3;
-        else if ( attribute.type == THREE::V4 ) size = 4;
-        else if ( attribute.type == THREE::C ) size = 3;
+        if ( attribute->type == THREE::v2 ) size = 2;
+        else if ( attribute->type == THREE::v3 ) size = 3;
+        else if ( attribute->type == THREE::v4 ) size = 4;
+        else if ( attribute->type == THREE::c ) size = 3;
 
-        attribute.size = size;
+        attribute->size = size;
 
-        attribute.array.resize( nvertices * size );
+        attribute->array.resize( nvertices * size );
 
-        attribute.buffer = glCreateBuffer();
-        attribute.belongsToAttribute = a.first;
+        attribute->buffer = glCreateBuffer();
+        attribute->belongsToAttribute = a.first;
 
         originalAttribute.needsUpdate = true;
-        attribute.__original = &originalAttribute;
+        attribute->__original = &originalAttribute;
 
       }
 
-      geometryGroup.__glCustomAttributesList.push_back( attribute );
+      geometryGroup.__glCustomAttributesList.push_back( std::move(attribute) );
 
     }
 
@@ -918,93 +918,22 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
-      auto& customAttribute = customAttributes[ i ];
+      auto& customAttribute = *customAttributes[ i ];
 
       if ( !( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) ) continue;
 
-      offset = 0;
-
-      const auto cal = customAttribute.value.size();
-
       if ( customAttribute.size == 1 ) {
-
-        for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-          const auto& index = sortArray[ ca ].second;
-
-          //customAttribute.array[ ca ] = customAttribute.value[ index ];
-          customAttribute.array[ ca ] = customAttribute.value[ index ][ 0 ];
-
-        }
-
+        fill<float>( customAttribute.value, sortArray, customAttribute.array );
       } else if ( customAttribute.size == 2 ) {
-
-        for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-          const auto& index = sortArray[ ca ].second;
-
-          const auto& value = customAttribute.value[ index ];
-
-          customAttribute.array[ offset ]     = value[ 0 ];
-          customAttribute.array[ offset + 1 ] = value[ 1 ];
-
-          offset += 2;
-
-        }
-
+        fill<Vector2>( customAttribute.value, sortArray, customAttribute.array );
       } else if ( customAttribute.size == 3 ) {
-
-        if ( customAttribute.type == THREE::C ) {
-
-          for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-            const auto index = sortArray[ ca ].second;
-
-            const auto& value = customAttribute.value[ index ];
-
-            customAttribute.array[ offset ]     = value[ 0 ];
-            customAttribute.array[ offset + 1 ] = value[ 1 ];
-            customAttribute.array[ offset + 2 ] = value[ 2 ];
-
-            offset += 3;
-
-          }
-
+        if ( customAttribute.type == THREE::c ) {
+          fill<Color>( customAttribute.value, sortArray, customAttribute.array );
         } else {
-
-          for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-            const auto index = sortArray[ ca ].second;
-
-            const auto& value = customAttribute.value[ index ];
-
-            customAttribute.array[ offset ]     = value[ 0 ];
-            customAttribute.array[ offset + 1 ] = value[ 1 ];
-            customAttribute.array[ offset + 2 ] = value[ 2 ];
-
-            offset += 3;
-
-          }
-
+          fill<Vector3>( customAttribute.value, sortArray, customAttribute.array );
         }
-
       } else if ( customAttribute.size == 4 ) {
-
-        for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-          const auto index = sortArray[ ca ].second;
-
-          const auto& value = customAttribute.value[ index ];
-
-          customAttribute.array[ offset ]      = value[ 0 ];
-          customAttribute.array[ offset + 1  ] = value[ 1 ];
-          customAttribute.array[ offset + 2  ] = value[ 2 ];
-          customAttribute.array[ offset + 3  ] = value[ 3 ];
-
-          offset += 4;
-
-        }
-
+        fill<Vector4>( customAttribute.value, sortArray, customAttribute.array );
       }
 
     }
@@ -1045,85 +974,24 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
-      auto& customAttribute = customAttributes[ i ];
+      auto& customAttribute = *customAttributes[ i ];
 
       if ( customAttribute.needsUpdate &&
            ( customAttribute.boundTo.empty() ||
              customAttribute.boundTo == "vertices" ) ) {
 
-        const auto cal = customAttribute.value.size();
-
-        offset = 0;
-
         if ( customAttribute.size == 1 ) {
-
-          for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-            //customAttribute.array[ ca ] = customAttribute.value[ ca ];
-            customAttribute.array[ ca ] = customAttribute.value[ ca ][ 0 ];
-
-          }
-
+          fill<float>( customAttribute.value, customAttribute.array );
         } else if ( customAttribute.size == 2 ) {
-
-          for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-            const auto& value = customAttribute.value[ ca ];
-
-            customAttribute.array[ offset ]     = value[ 0 ];
-            customAttribute.array[ offset + 1 ] = value[ 1 ];
-
-            offset += 2;
-
-          }
-
+          fill<Vector2>( customAttribute.value, customAttribute.array );
         } else if ( customAttribute.size == 3 ) {
-
-          if ( customAttribute.type == THREE::C ) {
-
-            for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-              const auto& value = customAttribute.value[ ca ];
-
-              customAttribute.array[ offset ]     = value[ 0 ];
-              customAttribute.array[ offset + 1 ] = value[ 1 ];
-              customAttribute.array[ offset + 2 ] = value[ 2 ];
-
-              offset += 3;
-
-            }
-
+          if ( customAttribute.type == THREE::c ) {
+            fill<Color>( customAttribute.value, customAttribute.array );
           } else {
-
-            for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-              const auto& value = customAttribute.value[ ca ];
-
-              customAttribute.array[ offset ]     = value[ 0 ];
-              customAttribute.array[ offset + 1 ] = value[ 1 ];
-              customAttribute.array[ offset + 2 ] = value[ 2 ];
-
-              offset += 3;
-
-            }
-
+            fill<Vector3>( customAttribute.value, customAttribute.array );
           }
-
         } else if ( customAttribute.size == 4 ) {
-
-          for ( size_t ca = 0; ca < cal; ca ++ ) {
-
-            const auto& value = customAttribute.value[ ca ];
-
-            customAttribute.array[ offset ]      = value[ 0 ];
-            customAttribute.array[ offset + 1  ] = value[ 1 ];
-            customAttribute.array[ offset + 2  ] = value[ 2 ];
-            customAttribute.array[ offset + 3  ] = value[ 3 ];
-
-            offset += 4;
-
-          }
-
+          fill<Vector4>( customAttribute.value, customAttribute.array );
         }
 
       }
@@ -1142,7 +1010,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
   for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
-    auto& customAttribute = customAttributes[ i ];
+    auto& customAttribute = *customAttributes[ i ];
 
     if ( customAttribute.needsUpdate || object.sortParticles ) {
       glBindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
@@ -1168,11 +1036,11 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   auto& customAttributes = geometry.__glCustomAttributesList;
 
-  int i, il, ca, cal, v, c, offset;
+  int offset = 0;
 
   if ( dirtyVertices ) {
 
-    for ( v = 0; v < vl; v ++ ) {
+    for ( int v = 0; v < vl; v ++ ) {
 
       const auto& vertex = vertices[ v ];
 
@@ -1190,7 +1058,7 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   if ( dirtyColors ) {
 
-    for ( c = 0; c < cl; c ++ ) {
+    for ( int c = 0; c < cl; c ++ ) {
 
       const auto& color = colors[ c ];
 
@@ -1206,85 +1074,26 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   }
 
-  for ( i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
+  for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
-    auto& customAttribute = customAttributes[ i ];
+    auto& customAttribute = *customAttributes[ i ];
 
     if ( customAttribute.needsUpdate &&
          ( customAttribute.boundTo.empty() ||
            customAttribute.boundTo == "vertices" ) ) {
 
-      offset = 0;
-
-      cal = ( int )customAttribute.value.size();
-
       if ( customAttribute.size == 1 ) {
-
-        for ( ca = 0; ca < cal; ca ++ ) {
-
-          customAttribute.array[ ca ] = customAttribute.value[ ca ][ 0 ];
-
-        }
-
+        fill<float>( customAttribute.value, customAttribute.array );
       } else if ( customAttribute.size == 2 ) {
-
-        for ( ca = 0; ca < cal; ca ++ ) {
-
-          const auto& value = customAttribute.value[ ca ];
-
-          customAttribute.array[ offset ]     = value[ 0 ];
-
-          offset += 2;
-
-        }
-
+        fill<Vector2>( customAttribute.value, customAttribute.array );
       } else if ( customAttribute.size == 3 ) {
-
-        if ( customAttribute.type == THREE::C ) {
-
-          for ( ca = 0; ca < cal; ca ++ ) {
-
-            const auto& value = customAttribute.value[ ca ];
-
-            customAttribute.array[ offset ]     = value[ 0 ];
-            customAttribute.array[ offset + 1 ] = value[ 1 ];
-            customAttribute.array[ offset + 2 ] = value[ 2 ];
-
-            offset += 3;
-
-          }
-
+        if ( customAttribute.type == THREE::c ) {
+          fill<Color>( customAttribute.value, customAttribute.array );
         } else {
-
-          for ( ca = 0; ca < cal; ca ++ ) {
-
-            const auto& value = customAttribute.value[ ca ];
-
-            customAttribute.array[ offset ]     = value[ 0 ];
-            customAttribute.array[ offset + 1 ] = value[ 1 ];
-            customAttribute.array[ offset + 2 ] = value[ 2 ];
-
-            offset += 3;
-
-          }
-
+          fill<Vector3>( customAttribute.value, customAttribute.array );
         }
-
       } else if ( customAttribute.size == 4 ) {
-
-        for ( ca = 0; ca < cal; ca ++ ) {
-
-          const auto& value = customAttribute.value[ ca ];
-
-          customAttribute.array[ offset ]      = value[ 0 ];
-          customAttribute.array[ offset + 1  ] = value[ 1 ];
-          customAttribute.array[ offset + 2  ] = value[ 2 ];
-          customAttribute.array[ offset + 3  ] = value[ 3 ];
-
-          offset += 4;
-
-        }
-
+        fill<Vector4>( customAttribute.value, customAttribute.array );
       }
 
       glBindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
@@ -1298,8 +1107,6 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
 void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
 
-  int v, c, offset;
-
   const auto& vertices = geometry.vertices;
   const auto& colors = geometry.colors;
   const auto vl = ( int )vertices.size();
@@ -1311,9 +1118,11 @@ void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
   const auto dirtyVertices = geometry.verticesNeedUpdate;
   const auto dirtyColors = geometry.colorsNeedUpdate;
 
+  int offset = 0;
+
   if ( dirtyVertices ) {
 
-    for ( v = 0; v < vl; v ++ ) {
+    for ( int v = 0; v < vl; v ++ ) {
 
       const auto& vertex = vertices[ v ];
 
@@ -1331,7 +1140,7 @@ void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
 
   if ( dirtyColors ) {
 
-    for ( c = 0; c < cl; c ++ ) {
+    for ( int c = 0; c < cl; c++ ) {
 
       const auto& color = colors[ c ];
 
@@ -2289,7 +2098,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
   }
 
-  for ( auto& customAttribute : customAttributes ) {
+  for ( auto& customAttributePtr : customAttributes ) {
+
+    auto& customAttribute = *customAttributePtr;
 
     if ( customAttribute.__original && ( ! customAttribute.__original->needsUpdate ) ) continue;
 
@@ -2298,15 +2109,17 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     if ( customAttribute.size == 1 ) {
 
+      const auto& values = customAttribute.value.cast<std::vector<float>>();
+
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
         for ( const auto& fi : chunk_faces3 ) {
 
           const auto& face = obj_faces[ fi ];
 
-          customAttribute.array[ offset_custom ]     = customAttribute.value[ face.a ].x;
-          customAttribute.array[ offset_custom + 1 ] = customAttribute.value[ face.b ].x;
-          customAttribute.array[ offset_custom + 2 ] = customAttribute.value[ face.c ].x;
+          customAttribute.array[ offset_custom ]     = values[ face.a ];
+          customAttribute.array[ offset_custom + 1 ] = values[ face.b ];
+          customAttribute.array[ offset_custom + 2 ] = values[ face.c ];
 
           offset_custom += 3;
 
@@ -2316,10 +2129,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          customAttribute.array[ offset_custom ]     = customAttribute.value[ face.a ].x;
-          customAttribute.array[ offset_custom + 1 ] = customAttribute.value[ face.b ].x;
-          customAttribute.array[ offset_custom + 2 ] = customAttribute.value[ face.c ].x;
-          customAttribute.array[ offset_custom + 3 ] = customAttribute.value[ face.d ].x;
+          customAttribute.array[ offset_custom ]     = values[ face.a ];
+          customAttribute.array[ offset_custom + 1 ] = values[ face.b ];
+          customAttribute.array[ offset_custom + 2 ] = values[ face.c ];
+          customAttribute.array[ offset_custom + 3 ] = values[ face.d ];
 
           offset_custom += 4;
 
@@ -2329,11 +2142,11 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces3 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
-          customAttribute.array[ offset_custom ]     = value.x;
-          customAttribute.array[ offset_custom + 1 ] = value.x;
-          customAttribute.array[ offset_custom + 2 ] = value.x;
+          customAttribute.array[ offset_custom ]     = value;
+          customAttribute.array[ offset_custom + 1 ] = value;
+          customAttribute.array[ offset_custom + 2 ] = value;
 
           offset_custom += 3;
 
@@ -2341,12 +2154,12 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces4 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
-          customAttribute.array[ offset_custom ]     = value.x;
-          customAttribute.array[ offset_custom + 1 ] = value.x;
-          customAttribute.array[ offset_custom + 2 ] = value.x;
-          customAttribute.array[ offset_custom + 3 ] = value.x;
+          customAttribute.array[ offset_custom ]     = value;
+          customAttribute.array[ offset_custom + 1 ] = value;
+          customAttribute.array[ offset_custom + 2 ] = value;
+          customAttribute.array[ offset_custom + 3 ] = value;
 
           offset_custom += 4;
 
@@ -2356,15 +2169,18 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     } else if ( customAttribute.size == 2 ) {
 
+      // TODO: Determine the proper data type here...
+      const auto& values = customAttribute.value.cast<std::vector<Vector2>>();
+
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
         for ( const auto& fi : chunk_faces3 ) {
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = customAttribute.value[ face.a ];
-          const auto& v2 = customAttribute.value[ face.b ];
-          const auto& v3 = customAttribute.value[ face.c ];
+          const auto& v1 = values[ face.a ];
+          const auto& v2 = values[ face.b ];
+          const auto& v3 = values[ face.c ];
 
           customAttribute.array[ offset_custom ]     = v1.x;
           customAttribute.array[ offset_custom + 1 ] = v1.y;
@@ -2383,10 +2199,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = customAttribute.value[ face.a ];
-          const auto& v2 = customAttribute.value[ face.b ];
-          const auto& v3 = customAttribute.value[ face.c ];
-          const auto& v4 = customAttribute.value[ face.d ];
+          const auto& v1 = values[ face.a ];
+          const auto& v2 = values[ face.b ];
+          const auto& v3 = values[ face.c ];
+          const auto& v4 = values[ face.d ];
 
           customAttribute.array[ offset_custom ]     = v1.x;
           customAttribute.array[ offset_custom + 1 ] = v1.y;
@@ -2408,7 +2224,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces3 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
           const auto& v1 = value;
           const auto& v2 = value;
@@ -2429,7 +2245,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces4 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
           const auto& v1 = value;
           const auto& v2 = value;
@@ -2456,15 +2272,18 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     } else if ( customAttribute.size == 3 ) {
 
+      // TODO: Support colors!
+      const auto& values = customAttribute.value.cast<std::vector<Vector3>>();
+
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
         for ( const auto& fi : chunk_faces3 ) {
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = customAttribute.value[ face.a ];
-          const auto& v2 = customAttribute.value[ face.b ];
-          const auto& v3 = customAttribute.value[ face.c ];
+          const auto& v1 = values[ face.a ];
+          const auto& v2 = values[ face.b ];
+          const auto& v3 = values[ face.c ];
 
           customAttribute.array[ offset_custom ]     = v1[ 0 ];
           customAttribute.array[ offset_custom + 1 ] = v1[ 1 ];
@@ -2486,10 +2305,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = customAttribute.value[ face.a ];
-          const auto& v2 = customAttribute.value[ face.b ];
-          const auto& v3 = customAttribute.value[ face.c ];
-          const auto& v4 = customAttribute.value[ face.d ];
+          const auto& v1 = values[ face.a ];
+          const auto& v2 = values[ face.b ];
+          const auto& v3 = values[ face.c ];
+          const auto& v4 = values[ face.d ];
 
           customAttribute.array[ offset_custom  ]     = v1[ 0 ];
           customAttribute.array[ offset_custom + 1  ] = v1[ 1 ];
@@ -2515,7 +2334,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces3 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
           const auto& v1 = value;
           const auto& v2 = value;
@@ -2539,7 +2358,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces4 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
           const auto& v1 = value;
           const auto& v2 = value;
@@ -2566,14 +2385,13 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         }
 
-      }
+      } else if ( customAttribute.boundTo == "faceVertices" ) {
 
-#ifdef TODO_CHUNK_FACE_VERTICES
-      else if ( customAttribute.boundTo == "faceVertices" ) {
+        const auto& face_values = customAttribute.value.cast<std::vector<std::array<Vector3, 4>>>();
 
         for ( const auto& fi : chunk_faces3 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = face_values[ fi ];
 
           const auto& v1 = value[ 0 ];
           const auto& v2 = value[ 1 ];
@@ -2597,7 +2415,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces4 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = face_values[ fi ];
 
           const auto& v1 = value[ 0 ];
           const auto& v2 = value[ 1 ];
@@ -2624,19 +2442,20 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         }
       }
-#endif
 
     } else if ( customAttribute.size == 4 ) {
 
+      const auto& values = customAttribute.value.cast<std::vector<Vector4>>();
+
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
         for ( const auto& fi : chunk_faces3 ) {
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = customAttribute.value[ face.a ];
-          const auto& v2 = customAttribute.value[ face.b ];
-          const auto& v3 = customAttribute.value[ face.c ];
+          const auto& v1 = values[ face.a ];
+          const auto& v2 = values[ face.b ];
+          const auto& v3 = values[ face.c ];
 
           customAttribute.array[ offset_custom  ]     = v1.x;
           customAttribute.array[ offset_custom + 1  ] = v1.y;
@@ -2661,10 +2480,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = customAttribute.value[ face.a ];
-          const auto& v2 = customAttribute.value[ face.b ];
-          const auto& v3 = customAttribute.value[ face.c ];
-          const auto& v4 = customAttribute.value[ face.d ];
+          const auto& v1 = values[ face.a ];
+          const auto& v2 = values[ face.b ];
+          const auto& v3 = values[ face.c ];
+          const auto& v4 = values[ face.d ];
 
           customAttribute.array[ offset_custom  ]     = v1.x;
           customAttribute.array[ offset_custom + 1  ] = v1.y;
@@ -2694,7 +2513,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces3 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
           const auto& v1 = value;
           const auto& v2 = value;
@@ -2721,7 +2540,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces4 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = values[ fi ];
 
           const auto& v1 = value;
           const auto& v2 = value;
@@ -2752,13 +2571,13 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         }
 
-      }
-#ifdef TODO_CHUNK_FACE_VERTICES
-      else if ( customAttribute.boundTo == "faceVertices" ) {
+      } else if ( customAttribute.boundTo == "faceVertices" ) {
+
+        const auto& face_values = customAttribute.value.cast<std::vector<std::array<Vector4, 4>>>();
 
         for ( const auto& fi : chunk_faces3 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = face_values[ fi ];
 
           const auto& v1 = value[ 0 ];
           const auto& v2 = value[ 1 ];
@@ -2785,7 +2604,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         for ( const auto& fi : chunk_faces4 ) {
 
-          const auto& value = customAttribute.value[ fi ];
+          const auto& value = face_values[ fi ];
 
           const auto& v1 = value[ 0 ];
           const auto& v2 = value[ 1 ];
@@ -2817,8 +2636,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
         }
 
       }
-
-#endif // TODO_CHUNK_FACE_VERTICES
 
     }
 
@@ -3154,12 +2971,11 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
 
-      // TODO: Fix this?
-      auto attributeIt = attributes.find( attribute.belongsToAttribute );
+      auto attributeIt = attributes.find( attribute->belongsToAttribute );
       if ( attributeIt != attributes.end() ) {
 
-        glBindBuffer( GL_ARRAY_BUFFER, attribute.buffer );
-        glVertexAttribPointer( attributeIt->second, attribute.size, GL_FLOAT, false, 0, 0 );
+        glBindBuffer( GL_ARRAY_BUFFER, attribute->buffer );
+        glVertexAttribPointer( attributeIt->second, attribute->size, GL_FLOAT, false, 0, 0 );
 
       }
 
@@ -3868,48 +3684,39 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
     auto groupHash = toString( hash_map[ materialHash ] );
 
     if ( geometry.geometryGroups.count( groupHash ) == 0 ) {
-
-      geometry.geometryGroups[ groupHash ] = GeometryGroup( materialIndex, numMorphTargets, numMorphNormals );
-
+      geometry.geometryGroups[ groupHash ] = GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals );
     }
 
     const auto vertices = face.type() == THREE::Face3 ? 3 : 4;
 
-    if ( geometry.geometryGroups[ groupHash ].vertices + vertices > 65535 ) {
+    if ( geometry.geometryGroups[ groupHash ]->vertices + vertices > 65535 ) {
 
       hash_map[ materialHash ].second += 1;
       groupHash = toString( hash_map[ materialHash ] );
 
       if ( geometry.geometryGroups.count( groupHash ) == 0 ) {
 
-        geometry.geometryGroups[ groupHash ] =  GeometryGroup( materialIndex, numMorphTargets, numMorphNormals );
+        geometry.geometryGroups[ groupHash ] = GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals );
 
       }
 
     }
 
     if ( face.type() == THREE::Face3 ) {
-
-      geometry.geometryGroups[ groupHash ].faces3.push_back( f );
-
+      geometry.geometryGroups[ groupHash ]->faces3.push_back( f );
     } else {
-
-      geometry.geometryGroups[ groupHash ].faces4.push_back( f );
-
+      geometry.geometryGroups[ groupHash ]->faces4.push_back( f );
     }
 
-    geometry.geometryGroups[ groupHash ].vertices += vertices;
+    geometry.geometryGroups[ groupHash ]->vertices += vertices;
 
   }
 
   geometry.geometryGroupsList.clear();
 
   for ( auto& geometryGroup : geometry.geometryGroups ) {
-
-    geometryGroup.second.id = _geometryGroupCounter ++;
-
-    geometry.geometryGroupsList.push_back( &geometryGroup.second );
-
+    geometryGroup.second->id = _geometryGroupCounter ++;
+    geometry.geometryGroupsList.push_back( geometryGroup.second.get() );
   }
 
 }
@@ -3985,10 +3792,10 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
           // initialise VBO on the first access
 
-          if ( ! geometryGroup.second.__glVertexBuffer ) {
+          if ( ! geometryGroup.second->__glVertexBuffer ) {
 
-            createMeshBuffers( geometryGroup.second );
-            initMeshBuffers( geometryGroup.second, static_cast<Mesh&>( object ) );
+            createMeshBuffers( *geometryGroup.second );
+            initMeshBuffers( *geometryGroup.second, static_cast<Mesh&>( object ) );
 
             geometry.verticesNeedUpdate     = true;
             geometry.morphTargetsNeedUpdate = true;
@@ -4066,7 +3873,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
         for ( auto& geometryGroup : geometry.geometryGroups ) {
 
-          addBuffer( scene.__glObjects, geometryGroup.second, object );
+          addBuffer( scene.__glObjects, *geometryGroup.second, object );
 
         }
 
@@ -4140,7 +3947,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
         if ( !material ) continue;
 
-        const auto customAttributesDirty = material->customAttributes.size() > 0 && areCustomAttributesDirty( *material );
+        const auto customAttributesDirty = material->attributes.size() > 0 && areCustomAttributesDirty( *material );
 
         if ( geometry.verticesNeedUpdate || geometry.morphTargetsNeedUpdate ||
              geometry.uvsNeedUpdate      || geometry.normalsNeedUpdate      ||
@@ -4151,8 +3958,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
         }
 
-        if ( material->customAttributes.size() > 0 )
-          clearCustomAttributes( *material );
+        clearCustomAttributes( *material );
 
       }
 
@@ -4182,7 +3988,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
     if ( !material ) return;
 
-    const auto customAttributesDirty = material->customAttributes.size() > 0 && areCustomAttributesDirty( *material );
+    const auto customAttributesDirty = material->attributes.size() > 0 && areCustomAttributesDirty( *material );
 
     if ( geometry.verticesNeedUpdate ||  geometry.colorsNeedUpdate || customAttributesDirty ) {
       setLineBuffers( geometry, GL_DYNAMIC_DRAW );
@@ -4191,7 +3997,7 @@ void GLRenderer::updateObject( Object3D& object ) {
     geometry.verticesNeedUpdate = false;
     geometry.colorsNeedUpdate = false;
 
-    if ( material->customAttributes.size() > 0 ) clearCustomAttributes( *material );
+    clearCustomAttributes( *material );
 
   } else if ( object.type() == THREE::ParticleSystem ) {
 
@@ -4199,7 +4005,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
     if ( !material ) return;
 
-    const auto customAttributesDirty = material->customAttributes.size() > 0 && areCustomAttributesDirty( *material );
+    const auto customAttributesDirty = material->attributes.size() > 0 && areCustomAttributesDirty( *material );
 
     if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate || object.sortParticles || customAttributesDirty ) {
       setParticleBuffers( geometry, GL_DYNAMIC_DRAW, object );
@@ -4208,7 +4014,7 @@ void GLRenderer::updateObject( Object3D& object ) {
     geometry.verticesNeedUpdate = false;
     geometry.colorsNeedUpdate = false;
 
-    if ( material->customAttributes.size() > 0 ) clearCustomAttributes( *material );
+    clearCustomAttributes( *material );
 
   }
 
@@ -4218,7 +4024,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
 bool GLRenderer::areCustomAttributesDirty( const Material& material ) {
 
-  for ( const auto& attribute : material.customAttributes ) {
+  for ( const auto& attribute : material.attributes ) {
     if ( attribute.second.needsUpdate ) return true;
   }
 
@@ -4228,7 +4034,7 @@ bool GLRenderer::areCustomAttributesDirty( const Material& material ) {
 
 void GLRenderer::clearCustomAttributes( Material& material ) {
 
-  for ( auto& attribute : material.customAttributes ) {
+  for ( auto& attribute : material.attributes ) {
     attribute.second.needsUpdate = false;
   }
 
@@ -4396,9 +4202,10 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
   }
 
-  for ( auto& a : material.attributes ) {
-    if ( a.second >= 0 ) {
-      glEnableVertexAttribArray( a.second );
+  for ( const auto& a : material.attributes ) {
+    auto attributeIt = attributes.find( a.first );
+    if ( attributeIt != attributes.end() && attributeIt->second >= 0 ) {
+      glEnableVertexAttribArray( attributeIt->second );
     }
   }
 
@@ -4833,7 +4640,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     uniform.load( location );
 
-    if ( uniform.type == Uniform::t ) { // single THREE::Texture (2d or cube)
+    if ( uniform.type == THREE::t ) { // single THREE::Texture (2d or cube)
 
       const auto& texture = uniform.value.cast<Texture*>();
       const auto  textureUnit = getTextureUnit();
@@ -4850,7 +4657,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
         setTexture( *texture, textureUnit );
       }
 
-    } else if ( uniform.type == Uniform::tv ) {
+    } else if ( uniform.type == THREE::tv ) {
 
       const auto& textures = uniform.value.cast<std::vector<Texture*>>();
 
@@ -5470,6 +5277,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
 #if defined(THREE_GLES)
     ss << "precision " << _precision << " float;" << std::endl;
+#else
+    ss << "#version 140" << std::endl;
 #endif
 
     if ( parameters.bumpMap ) ss << "#extension GL_OES_standard_derivatives : enable" << std::endl;

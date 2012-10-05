@@ -89,12 +89,12 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
   texture2->wrapS = texture2->wrapT = THREE::RepeatWrapping;
 
   Uniforms uniforms;
-  uniforms[ "fogDensity" ] = Uniform( Uniform::f, .45f );
-  uniforms[ "fogColor" ]   = Uniform( Uniform::v3, Vector3(0, 0, 0) );
-  uniforms[ "time" ]       = Uniform( Uniform::f, time );
-  uniforms[ "uvScale" ]    = Uniform( Uniform::v2, Vector2( 3.f, 1.f ) );
-  uniforms[ "texture1" ]   = Uniform( Uniform::t, texture1.get() );
-  uniforms[ "texture2" ]   = Uniform( Uniform::t, texture2.get() );
+  uniforms[ "fogDensity" ] = Uniform( THREE::f, .45f );
+  uniforms[ "fogColor" ]   = Uniform( THREE::v3, Vector3(0, 0, 0) );
+  uniforms[ "time" ]       = Uniform( THREE::f, time );
+  uniforms[ "uvScale" ]    = Uniform( THREE::v2, Vector2( 3.f, 1.f ) );
+  uniforms[ "texture1" ]   = Uniform( THREE::t, texture1.get() );
+  uniforms[ "texture2" ]   = Uniform( THREE::t, texture2.get() );
 
   auto material = ShaderMaterial::create(
     Material::Parameters().add( "uniforms", uniforms )

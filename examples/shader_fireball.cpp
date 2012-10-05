@@ -139,8 +139,8 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
   float time = 1;
 
   Uniforms uniforms;
-  uniforms[ "time" ]  = Uniform( Uniform::f, time);
-  uniforms[ "scale" ] = Uniform( Uniform::f, 1.5f);
+  uniforms[ "time" ]  = Uniform( THREE::f, time);
+  uniforms[ "scale" ] = Uniform( THREE::f, 1.5f);
 
   auto material = ShaderMaterial::create(
     Material::Parameters().add( "uniforms", uniforms )

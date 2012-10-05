@@ -53,7 +53,7 @@ protected:
   }
 
   static const ParameterKeys& DefaultKeys() {
-    static std::array<std::string, 15> sKeys = {
+    static std::array<std::string, 16> sKeys = {
       "fragmentShader",
       "vertexShader",
       "uniforms",
@@ -61,6 +61,7 @@ protected:
       "shading",
       "blending",
       "depthTest",
+      "transparent",
       "wireframe",
       "wireframeLinewidth",
       "lights",

@@ -125,11 +125,11 @@ void shader2( GLRenderer::Ptr renderer ) {
   texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
 
   Uniforms uniforms1;
-  uniforms1.add( "time", Uniform( Uniform::f, time) );
+  uniforms1.add( "time", Uniform( THREE::f, time) );
 
   Uniforms uniforms2;
-  uniforms2.add( "time", Uniform( Uniform::f, time) )
-           .add( "texture", Uniform( Uniform::t, texture.get() ) );
+  uniforms2.add( "time", Uniform( THREE::f, time) )
+           .add( "texture", Uniform( THREE::t, texture.get() ) );
 
   std::vector<Material::Ptr> mlib;
   std::vector<Mesh::Ptr> meshes;

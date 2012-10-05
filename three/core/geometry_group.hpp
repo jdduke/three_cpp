@@ -5,12 +5,20 @@
 
 #include <three/core/geometry_buffer.hpp>
 
+#include <three/utils.hpp>
+
 #include <vector>
 
 namespace three {
 
 class GeometryGroup : public GeometryBuffer {
 public:
+
+  typedef std::shared_ptr<GeometryGroup> Ptr;
+
+  static Ptr create( int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0 ) {
+    return three::make_shared<GeometryGroup>( materialIndex, numMorphTargets, numMorphNormals );
+  }
 
   typedef GeometryBuffer::GLBuffer GLBuffer;
 
@@ -31,6 +39,8 @@ public:
   GLBuffer vertexUvBuffer;
 
   int vertices;
+
+protected:
 
   explicit GeometryGroup( int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0 )
     : GeometryBuffer( numMorphTargets, numMorphNormals, materialIndex ),
