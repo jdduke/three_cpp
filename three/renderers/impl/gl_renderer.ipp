@@ -60,7 +60,7 @@ struct ProgramParameters {
   bool shadowMapDebug;
   bool shadowMapCascade;
 
-  bool alphaTest;
+  float alphaTest;
   bool metal;
   bool perPixel;
   bool wrapAround;
@@ -113,6 +113,7 @@ GLRenderer::GLRenderer( const RendererParameters& parameters )
     _currentGeometryGroupHash( -1 ),
     _currentCamera( nullptr ),
     _geometryGroupCounter( 0 ),
+    _usedTextureUnits( 0 ),
     _oldDoubleSided( -1 ),
     _oldFlipSided( -1 ),
     _oldBlending( -1 ),
@@ -157,6 +158,7 @@ void GLRenderer::initialize() {
 
   // GPU capabilities
 
+  _maxTextures       = glGetParameteri( GL_MAX_TEXTURE_IMAGE_UNITS );
   _maxVertexTextures = glGetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
   _maxTextureSize    = glGetParameteri( GL_MAX_TEXTURE_SIZE ),
   _maxCubemapSize    = glGetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
@@ -887,7 +889,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
     std::sort( sortArray.begin(),
                sortArray.end(),
                []( const SortPair & a, const SortPair & b ) {
-      return a.first > b.first;
+      return a.first < b.first;
     } );
 
     for ( int v = 0; v < vl; v ++ ) {
@@ -3289,8 +3291,11 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   } else if ( object.type() == THREE::ParticleSystem ) {
 
-    // TODO: Move this somewhere else... necessary for non GLES
+#ifndef THREE_GLES
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_POINT_SPRITE);
+    glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+#endif
 
     glDrawArrays( GL_POINTS, 0, geometryGroup.__glParticleCount );
 
@@ -4350,7 +4355,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     shadowMapDebug,
     shadowMapCascade,
 
-    material.alphaTest > 0.0001f,
+    material.alphaTest,
     material.metal,
     material.perPixel,
     material.wrapAround,
@@ -4444,6 +4449,8 @@ void GLRenderer::setMaterialShaders( Material& material, const Shader& shaders )
 
 Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Material& material, Object3D& object ) {
 
+  _usedTextureUnits = 0;
+
   if ( material.needsUpdate ) {
     if ( material.program ) {
       deallocateMaterial( material );
@@ -4536,9 +4543,10 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
          material.type() == THREE::MeshPhongMaterial ||
          material.envMap ) {
 
-      if ( p_uniforms["cameraPosition"] != 0 ) {
+      const auto cameraPositionLocation = uniformLocation( p_uniforms, "cameraPosition" );
+      if ( validUniformLocation( cameraPositionLocation ) ) {
         auto position = camera.matrixWorld.getPosition();
-        glUniform3f( p_uniforms["cameraPosition"], position.x, position.y, position.z );
+        glUniform3f( cameraPositionLocation, position.x, position.y, position.z );
       }
 
     }
@@ -4548,8 +4556,9 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
          material.type() == THREE::ShaderMaterial ||
          material.skinning ) {
 
-      if ( p_uniforms["viewMatrix"] != 0 ) {
-        glUniformMatrix4fv( p_uniforms["viewMatrix"], 1, false, camera._viewMatrixArray.data() );
+      const auto viewMatrixLocation = uniformLocation( p_uniforms, "viewMatrix" );
+      if ( validUniformLocation( viewMatrixLocation ) ) {
+        glUniformMatrix4fv( viewMatrixLocation, 1, false, camera._viewMatrixArray.data() );
       }
 
     }
@@ -4557,16 +4566,16 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
   if ( material.skinning ) {
     if ( _supportsBoneTextures && object.useVertexTexture ) {
-      if ( p_uniforms["boneTexture"] != 0  && object.boneTexture ) {
-        // shadowMap texture array starts from 6
-        // texture unit 12 should leave space for 6 shadowmaps
-        auto textureUnit = 12;
-        glUniform1i( p_uniforms["boneTexture"], textureUnit );
+      const auto boneTextureLocation = uniformLocation( p_uniforms, "boneTexture" );
+      if ( validUniformLocation( boneTextureLocation ) ) {
+        auto textureUnit = getTextureUnit();
+        glUniform1i( boneTextureLocation, textureUnit );
         setTexture( *object.boneTexture, textureUnit );
       }
     } else {
-      if ( p_uniforms["boneGlobalMatrices"] != 0 ) {
-        glUniformMatrix4fv( p_uniforms["boneGlobalMatrices"],
+      const auto boneMatricesLocation = uniformLocation( p_uniforms, "boneGlobalMatrices" );
+      if ( validUniformLocation( boneMatricesLocation ) ) {
+        glUniformMatrix4fv( boneMatricesLocation,
                             ( int )object.boneMatrices.size(),
                             false,
                             reinterpret_cast<const float*>( &object.boneMatrices[0] ) );
@@ -4576,8 +4585,10 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
   }
 
   loadUniformsMatrices( p_uniforms, object );
-  if ( p_uniforms["modelMatrix"] != 0 ) {
-    glUniformMatrix4fv( p_uniforms["modelMatrix"], 1, false, object.matrixWorld.elements );
+
+  const auto modelMatrixLocation = uniformLocation( p_uniforms, "modelMatrix" );
+  if ( validUniformLocation( modelMatrixLocation ) ) {
+    glUniformMatrix4fv( modelMatrixLocation, 1, false, object.matrixWorld.elements );
   }
 
   return program;
@@ -4597,12 +4608,12 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
     uniforms["diffuse"].value = material.color;
   }
 
-  uniforms["map"].texture = material.map.get();
-  uniforms["lightMap"].texture = material.lightMap.get();
-  uniforms["specularMap"].texture = material.specularMap.get();
+  uniforms["map"].value         = material.map.get();
+  uniforms["lightMap"].value    = material.lightMap.get();
+  uniforms["specularMap"].value = material.specularMap.get();
 
   if ( material.bumpMap ) {
-    uniforms["bumpMap"].texture = material.bumpMap.get();
+    uniforms["bumpMap"].value   = material.bumpMap.get();
     uniforms["bumpScale"].value = material.bumpScale;
   }
 
@@ -4628,7 +4639,7 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
     uniforms["offsetRepeat"].value = Vector4( offset.x, offset.y, repeat.x, repeat.y );
   }
 
-  uniforms["envMap"].texture = material.envMap.get();
+  uniforms["envMap"].value     = material.envMap.get();
   uniforms["flipEnvMap"].value = ( material.envMap && material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
 
   if ( gammaInput ) {
@@ -4658,7 +4669,7 @@ void GLRenderer::refreshUniformsParticle( Uniforms& uniforms, Material& material
   uniforms["size"].value    = material.size;
   uniforms["scale"].value   = _height / 2.0f; // TODO: Cache
 
-  uniforms["map"].texture = material.map.get();
+  uniforms["map"].value = material.map.get();
 
 }
 
@@ -4704,7 +4715,7 @@ void GLRenderer::refreshUniformsPhong( Uniforms& uniforms, Material& material ) 
 void GLRenderer::refreshUniformsLambert( Uniforms& uniforms, Material& material ) {
 
   if ( gammaInput ) {
-    uniforms["ambient"].value = Color().copyGammaToLinear( material.ambient );
+    uniforms["ambient"].value  = Color().copyGammaToLinear( material.ambient );
     uniforms["emissive"].value = Color().copyGammaToLinear( material.emissive );
   } else {
     uniforms["ambient"].value  = material.ambient;
@@ -4760,13 +4771,13 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 
       if ( light.type() == THREE::SpotLight || ( light.type() == THREE::DirectionalLight && ! light.shadowCascade ) ) {
 
-        uniforms["shadowMap"].texture[ j ] = light.shadowMap;
+        uniforms["shadowMap"].texture[ j ]   = light.shadowMap;
         uniforms["shadowMapSize"].value[ j ] = light.shadowMapSize;
 
         uniforms["shadowMatrix"].value[ j ] = light.shadowMatrix;
 
         uniforms["shadowDarkness"].value[ j ] = light.shadowDarkness;
-        uniforms["shadowBias"].value[ j ] = light.shadowBias;
+        uniforms["shadowBias"].value[ j ]     = light.shadowBias;
 
         j ++;
 
@@ -4781,47 +4792,82 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 
 // Uniforms (load to GPU)
 
-void GLRenderer::loadUniformsMatrices( UniformsIndices& uniforms, Object3D& object ) {
+void GLRenderer::loadUniformsMatrices( UniformLocations& uniforms, Object3D& object ) {
 
   glUniformMatrix4fv( uniforms["modelViewMatrix"], 1, false, object.glData._modelViewMatrix.elements );
-  auto normalMatrixIt = uniforms.find( "normalMatrix" );
-  if ( normalMatrixIt != uniforms.end() ) {
-    glUniformMatrix3fv( normalMatrixIt->second, 1, false, object.glData._normalMatrix.elements );
+  const auto normalMatrixLocation = uniformLocation( uniforms, "normalMatrix" );
+  if ( validUniformLocation( normalMatrixLocation ) ) {
+    glUniformMatrix3fv( normalMatrixLocation, 1, false, object.glData._normalMatrix.elements );
   }
+
+}
+
+int GLRenderer::getTextureUnit() {
+
+  auto textureUnit = _usedTextureUnits;
+  if ( textureUnit >= _maxTextures ) {
+    console().warn() << "Trying to use " << textureUnit << " texture units while this GPU supports only " << _maxTextures;
+  }
+  _usedTextureUnits += 1;
+
+  return textureUnit;
 
 }
 
 void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, bool warnIfNotFound ) {
 
-  for ( size_t j = 0, jl = uniforms.size(); j < jl; j ++ ) {
+  for ( const auto& uniformAndKey: uniforms ) {//( size_t j = 0, jl = uniforms.size(); j < jl; j ++ ) {
 
-    const auto& location = program.uniforms[ uniforms[ j ].second ];
+    const auto& location = program.uniforms[ uniformAndKey.second ];
 
     if ( location < 0 ) {
       if ( warnIfNotFound )
         console().warn() << "three::GLRenderer::loadUniformsGeneric: Expected uniform \""
-                         << uniforms[ j ].second
+                         << uniformAndKey.second
                          << "\" location does not exist";
       continue;
     }
 
-    auto& uniform = *uniforms[ j ].first;
+    auto& uniform = *uniformAndKey.first;
 
     uniform.load( location );
 
     if ( uniform.type == Uniform::t ) { // single THREE::Texture (2d or cube)
 
-      if ( !uniform.texture ) continue;
+      const auto& texture = uniform.value.cast<Texture*>();
+      const auto  textureUnit = getTextureUnit();
 
-      auto& texture = *uniform.texture;
-      const auto& value = uniform.value.cast<int>();
+      glUniform1i( location, textureUnit );
 
-      if ( texture.image.size() == 6 ) {
-        setCubeTexture( texture, value );
-      } else if ( texture.type() == THREE::GLRenderTargetCube ) {
-        setCubeTextureDynamic( texture, value );
+      if ( !texture ) continue;
+
+      if ( texture->image.size() == 6 ) {
+        setCubeTexture( *texture, textureUnit );
+      } else if ( texture->type() == THREE::GLRenderTargetCube ) {
+        setCubeTextureDynamic( *texture, textureUnit );
       } else {
-        setTexture( texture, value );
+        setTexture( *texture, textureUnit );
+      }
+
+    } else if ( uniform.type == Uniform::tv ) {
+
+      const auto& textures = uniform.value.cast<std::vector<Texture*>>();
+
+      std::vector<int> textureUnits;
+      for ( size_t i = 0; i < textures.size(); ++i ) {
+        textureUnits.push_back( getTextureUnit() );
+      }
+
+      glUniform1iv( location, textureUnits.size(), textureUnits.data() );
+
+      for ( size_t i = 0; i < textures.size(); ++i ) {
+
+        const auto& texture = textures[ i ];
+        const auto textureUnit = textureUnits[ i ];
+
+        if ( !texture ) continue;
+
+        setTexture( *texture, textureUnit );
       }
 
     }
@@ -5319,7 +5365,9 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
   auto prefix_vertex = [this, &parameters]() -> std::string {
     std::stringstream ss;
 
-    //ss << "precision " << _precision << " float;" << std::endl;
+#if defined(THREE_GLES)
+    ss << "precision " << _precision << " float;" << std::endl;
+#endif
 
     if ( _supportsVertexTextures ) ss << "#define VERTEX_TEXTURES" << std::endl;
 
@@ -5419,7 +5467,9 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
   auto prefix_fragment = [this, &parameters]() -> std::string {
     std::stringstream ss;
 
-    //ss << "precision " << _precision << " float;" << std::endl;
+#if defined(THREE_GLES)
+    ss << "precision " << _precision << " float;" << std::endl;
+#endif
 
     if ( parameters.bumpMap ) ss << "#extension GL_OES_standard_derivatives : enable" << std::endl;
 
@@ -5455,7 +5505,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" <<  std::endl;
 
     ss << "uniform mat4 viewMatrix;" << std::endl <<
-    "uniform vec3 cameraPosition;" << std::endl;
+          "uniform vec3 cameraPosition;" << std::endl;
 
     return ss.str();
 
@@ -5631,7 +5681,7 @@ Buffer GLRenderer::getShader( THREE::ShaderType type, const std::string& source 
 
 // Textures
 
-void GLRenderer::setTexture( Texture& texture, int slot ) {
+void GLRenderer::setTexture( const Texture& texture, int slot ) {
 
   if ( texture.needsUpdate ) {
 
@@ -5718,7 +5768,7 @@ Image& GLRenderer::clampToMaxSize( Image& image, int maxSize ) {
 
 }
 
-void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
+void GLRenderer::setCubeTexture( const Texture& texture, int slot ) {
 
   if ( texture.image.size() == 6 ) {
 
@@ -5762,16 +5812,12 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
       setTextureParameters( GL_TEXTURE_CUBE_MAP, texture, isImagePowerOfTwo );
 
       for ( auto i = 0; i < 6; i ++ ) {
-
         //glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
         glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, cubeImage[ 0 ].width, cubeImage[ 0 ].height, 0, glFormat, glType, cubeImage[ i ].data.data() );
-
       }
 
       if ( texture.generateMipmaps && isImagePowerOfTwo ) {
-
         glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
-
       }
 
       texture.needsUpdate = false;
@@ -5779,17 +5825,15 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
       if ( texture.onUpdate ) texture.onUpdate();
 
     } else {
-
       glActiveTexture( GL_TEXTURE0 + slot );
       glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTextureCube );
-
     }
 
   }
 
 }
 
-void GLRenderer::setCubeTextureDynamic( Texture& texture, int slot ) {
+void GLRenderer::setCubeTextureDynamic( const Texture& texture, int slot ) {
 
   glActiveTexture( GL_TEXTURE0 + slot );
   glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTexture );

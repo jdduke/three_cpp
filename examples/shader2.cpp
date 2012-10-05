@@ -129,7 +129,7 @@ void shader2( GLRenderer::Ptr renderer ) {
 
   Uniforms uniforms2;
   uniforms2.add( "time", Uniform( Uniform::f, time) )
-           .add( "texture", Uniform( Uniform::t, 0, texture.get() ) );
+           .add( "texture", Uniform( Uniform::t, texture.get() ) );
 
   std::vector<Material::Ptr> mlib;
   std::vector<Mesh::Ptr> meshes;

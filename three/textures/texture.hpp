@@ -87,7 +87,7 @@ public:
   bool premultiplyAlpha;
   bool flipY;
 
-  bool needsUpdate;
+  mutable bool needsUpdate;
 
   std::function<void( void )> onUpdate;
 

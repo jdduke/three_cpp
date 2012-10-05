@@ -24,8 +24,8 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  UniformsIndices uniforms;
-  UniformsIndices attributes;
+  UniformLocations uniforms;
+  UniformLocations attributes;
 
   Buffer program;
   int id;

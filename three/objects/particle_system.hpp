@@ -27,12 +27,10 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  bool softParticles;
-
 protected:
 
   ParticleSystem( const Geometry::Ptr& geometry, const Material::Ptr& material )
-    : Object3D( material, geometry ), softParticles( false ) {
+    : Object3D( material, geometry ) {
 
     if ( geometry ) {
       if ( geometry->boundingSphere.radius <= 0.0001f ) {

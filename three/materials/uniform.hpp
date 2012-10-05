@@ -20,7 +20,7 @@ public:
   THREE_DECL Uniform( );
   THREE_DECL Uniform( Uniform&& );
   THREE_DECL Uniform( const Uniform& );
-  THREE_DECL explicit Uniform( Type type, any value = any(), Texture* texture = nullptr );
+  THREE_DECL explicit Uniform( Type type, any value = any() );
   THREE_DECL Uniform& operator=( Uniform );
 
   THREE_DECL void load( int location );
@@ -29,18 +29,112 @@ public:
 
   Type type;
   any value;
-  Texture* texture;
 
 private:
   THREE_DECL Uniform& swap( Uniform& other );
 };
 
+/////////////////////////////////////////////////////////////////////////
+
 typedef Properties<std::string, Uniform> Uniforms;
-typedef std::unordered_map<std::string, int> UniformsIndices;
+typedef std::unordered_map<std::string, int> UniformLocations;
 typedef std::vector<std::pair<Uniform*, std::string>> UniformsList;
 
-} // namespace three
+/////////////////////////////////////////////////////////////////////////
 
+inline int uniformLocation( const UniformLocations& uniforms, const std::string& name ) {
+  auto uniformIndexIt = uniforms.find( name );
+  if ( uniformIndexIt != uniforms.end() ) {
+    return uniformIndexIt->second;
+  } else {
+    return -1;
+  }
+}
+
+inline bool validUniformLocation( int index ) {
+  return index != -1;
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+namespace CommonUniforms {
+
+enum CommonUniform {
+
+  modelMatrix = 0,
+  modelViewMatrix,
+  normalMatrix,
+  projectionMatrix,
+  viewMatrix,
+  cameraPosition,
+
+  morphTargetInfluence,
+  boneTexture,
+  boneGlobalMatrices,
+
+  near,
+  far,
+
+  map,
+  envMap,
+  flipEnvMap,
+  nreflectivity,
+  refractionRatio,
+  reflectivity,
+  combine,
+  useRefract,
+  lightMap,
+  bumpMap,
+  bumpScale,
+
+  offsetRepeat,
+
+  psColor,
+  size,
+  scale,
+
+  fogColor,
+  fogNear,
+  fogFar,
+  fogDensity,
+
+  ambient,
+  diffuse,
+  opacity,
+  emissive,
+  shininess,
+  specular,
+  wrapRGB,
+
+  ambientLightColor,
+  directionalLightColor,
+  directionalLightDirection,
+  pointLightColor,
+  pointLightPosition,
+  pointLightDistance,
+  spotLightColor,
+  spotLightPosition,
+  spotLightDistance,
+  spotLightDirection,
+  spotLightAngle,
+  spotLightExponent,
+  hemisphereLightSkyColor,
+  hemisphereLightGroundColor,
+  hemisphereLightPosition,
+
+  shadowMatrix,
+  shadowMap,
+  shadowSize,
+  shadowDarkness,
+  shadowBias,
+
+  CommonUniformCount
+};
+
+} // namespace CommonUniforms
+
+
+} // namespace three
 
 #if defined(THREE_HEADER_ONLY)
 # include <three/materials/impl/uniform.ipp>

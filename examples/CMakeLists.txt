@@ -62,6 +62,7 @@ set(examples simple
              lines_colors
              lines_cubes
              particles_random
+             particles_billboards_colors
              shader
              shader2
              shader_fireball

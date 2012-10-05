@@ -15,16 +15,16 @@
 namespace three {
 
 Uniform::Uniform( )
-  : type( INVALID ), value( ), texture( nullptr ) { }
+  : type( INVALID ), value( ) { }
 
-Uniform::Uniform( Type type, any value /*= any()*/, Texture* texture /*= nullptr*/ )
-  : type( type ), value( std::move( value ) ), texture( texture ) { }
+Uniform::Uniform( Type type, any value /*= any()*/ )
+  : type( type ), value( std::move( value ) ) { }
 
 Uniform::Uniform( Uniform&& other )
-  : type( INVALID), texture( nullptr ) { swap( other ); }
+  : type( INVALID) { swap( other ); }
 
 Uniform::Uniform( const Uniform& other )
-  : type( other.type ), value( other.value ), texture( other.texture ) { }
+  : type( other.type ), value( other.value ) { }
 
 Uniform& Uniform::operator=( Uniform other ) {
   return swap( other );
@@ -33,7 +33,6 @@ Uniform& Uniform::operator=( Uniform other ) {
 Uniform& Uniform::swap( Uniform& other ) {
   std::swap( type,    other.type );
   std::swap( value,   other.value );
-  std::swap( texture, other.texture );
   return *this;
 }
 
@@ -160,7 +159,8 @@ void Uniform::load( int location ) {
     case Uniform::m4v: // array of THREE::Matrix4
       UniformToType<Uniform::m4v>::load( location, value ); break;
     case Uniform::t: // single THREE::Texture (2d or cube)
-      UniformToType<Uniform::t>::load( location, value ); break;
+      break;
+      //UniformToType<Uniform::t>::load( location, value ); break;
 #ifdef TODO_TEXTURE_ARRAY
     case Uniform::tv: // array of THREE::Texture (2d)
       std::vector<int> _array( uniform.texture.size() );

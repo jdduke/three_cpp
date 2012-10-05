@@ -5,21 +5,20 @@
 
 namespace three {
 
+// TODO: Make this a member of Texture, rather than a parent...
 struct TextureBuffer : NonCopyable {
 
   typedef unsigned GLBuffer;
 
-  GLBuffer __glTexture;
-  GLBuffer __glTextureCube;
-
-  bool __glInit;
-
+  mutable bool __glInit;
+  mutable GLBuffer __glTexture;
+  mutable GLBuffer __glTextureCube;
   mutable float __oldAnisotropy;
 
   TextureBuffer()
-    : __glTexture( 0 ),
+    : __glInit( false ),
+      __glTexture( 0 ),
       __glTextureCube( 0 ),
-      __glInit( false ),
       __oldAnisotropy( -1 ) { }
 
 };

@@ -216,7 +216,8 @@ private:
   THREE_DECL void refreshUniformsShadow( Uniforms& uniforms, Lights& lights );
 
   // Uniforms (load to GPU)
-  THREE_DECL void loadUniformsMatrices( UniformsIndices& uniforms, Object3D& object );
+  THREE_DECL void loadUniformsMatrices( UniformLocations& uniforms, Object3D& object );
+  THREE_DECL  int getTextureUnit();
   THREE_DECL void loadUniformsGeneric( Program& program, UniformsList& uniforms, bool warnOnNotFound );
   THREE_DECL void setupMatrices( Object3D& object, Camera& camera );
   THREE_DECL void setColorGamma( std::vector<float>& array, size_t offset, const Color& color, float intensitySq );
@@ -282,10 +283,10 @@ private:
 
   }
 
-  THREE_DECL void setTexture( Texture& texture, int slot );
+  THREE_DECL void setTexture( const Texture& texture, int slot );
   THREE_DECL static Image& clampToMaxSize( Image& image, int maxSize );
-  THREE_DECL void setCubeTexture( Texture& texture, int slot );
-  THREE_DECL void setCubeTextureDynamic( Texture& texture, int slot );
+  THREE_DECL void setCubeTexture( const Texture& texture, int slot );
+  THREE_DECL void setCubeTextureDynamic( const Texture& texture, int slot );
 
 
   // Render targets
@@ -372,6 +373,7 @@ private:
   int _currentGeometryGroupHash;
   Camera* _currentCamera;
   int _geometryGroupCounter;
+  int _usedTextureUnits;
 
   // GL state cache
 
@@ -454,6 +456,7 @@ private:
 
   // GPU capabilities
 
+  int _maxTextures;
   int _maxVertexTextures;
   int _maxTextureSize;
   int _maxCubemapSize;

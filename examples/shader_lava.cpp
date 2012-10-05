@@ -93,8 +93,8 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
   uniforms[ "fogColor" ]   = Uniform( Uniform::v3, Vector3(0, 0, 0) );
   uniforms[ "time" ]       = Uniform( Uniform::f, time );
   uniforms[ "uvScale" ]    = Uniform( Uniform::v2, Vector2( 3.f, 1.f ) );
-  uniforms[ "texture1" ]   = Uniform( Uniform::t, 0, texture1.get() );
-  uniforms[ "texture2" ]   = Uniform( Uniform::t, 1, texture2.get() );
+  uniforms[ "texture1" ]   = Uniform( Uniform::t, texture1.get() );
+  uniforms[ "texture2" ]   = Uniform( Uniform::t, texture2.get() );
 
   auto material = ShaderMaterial::create(
     Material::Parameters().add( "uniforms", uniforms )
