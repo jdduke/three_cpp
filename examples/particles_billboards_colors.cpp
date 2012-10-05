@@ -12,7 +12,7 @@
 
 using namespace three;
 
-void particles_random( const GLRenderer::Ptr& renderer ) {
+void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
 
   auto camera = PerspectiveCamera::create(
     50, ( float )renderer->width() / renderer->height(), 1.f, 3000
@@ -125,7 +125,7 @@ int main( int argc, char* argv[] ) {
     return 0;
   }
 
-  particles_random( renderer );
+  particles_billboards_colors( renderer );
 
   return 0;
 }
