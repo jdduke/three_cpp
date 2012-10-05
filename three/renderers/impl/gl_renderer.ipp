@@ -2906,8 +2906,8 @@ void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Mate
   if ( object.glImmediateData.hasPositions ) {
 
     glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glVertexBuffer, object.glImmediateData.positionArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes["position"] );
-    glVertexAttribPointer( program.attributes["position"], 3, GL_FLOAT, false, 0, 0 );
+    glEnableVertexAttribArray( program.attributes[AttributeKey::position()] );
+    glVertexAttribPointer( program.attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
@@ -2952,24 +2952,24 @@ void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Mate
     }
 
     glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glNormalBuffer, object.glImmediateData.normalArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes["normal"] );
-    glVertexAttribPointer( program.attributes["normal"], 3, GL_FLOAT, false, 0, 0 );
+    glEnableVertexAttribArray( program.attributes[AttributeKey::normal()] );
+    glVertexAttribPointer( program.attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
   if ( object.glImmediateData.hasUvs && material.map ) {
 
     glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glUvBuffer, object.glImmediateData.uvArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes["uv"] );
-    glVertexAttribPointer( program.attributes["uv"], 2, GL_FLOAT, false, 0, 0 );
+    glEnableVertexAttribArray( program.attributes[AttributeKey::uv()] );
+    glVertexAttribPointer( program.attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
 
   }
 
   if ( object.glImmediateData.hasColors && material.vertexColors != THREE::NoColors ) {
 
     glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glColorBuffer, object.glImmediateData.colorArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes["color"] );
-    glVertexAttribPointer( program.attributes["color"], 3, GL_FLOAT, false, 0, 0 );
+    glEnableVertexAttribArray( program.attributes[AttributeKey::color()] );
+    glVertexAttribPointer( program.attributes[AttributeKey::color()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
@@ -3022,23 +3022,23 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
         const auto positionSize = position.itemSize;
 
         glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
-        glVertexAttribPointer( attributes["position"], positionSize, GL_FLOAT, false, 0, toOffset( startIndex * positionSize * 4 ) ); // 4 bytes per Float32
+        glVertexAttribPointer( attributes[AttributeKey::position()], positionSize, GL_FLOAT, false, 0, toOffset( startIndex * positionSize * 4 ) ); // 4 bytes per Float32
 
         // normals
 
-        if ( attributes["normal"] >= 0 && contains( geometry.attributes, "normal" ) ) {
+        if ( attributes[AttributeKey::normal()] >= 0 && contains( geometry.attributes, "normal" ) ) {
 
           auto& normal = geometry.attributes[ "normal" ];
           auto normalSize = normal.itemSize;
 
           glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
-          glVertexAttribPointer( attributes["normal"], normalSize, GL_FLOAT, false, 0, toOffset( startIndex * normalSize * 4 ) );
+          glVertexAttribPointer( attributes[AttributeKey::normal()], normalSize, GL_FLOAT, false, 0, toOffset( startIndex * normalSize * 4 ) );
 
         }
 
         // uvs
 
-        if ( attributes["uv"] >= 0 && contains( geometry.attributes, "uv" ) ) {
+        if ( attributes[AttributeKey::uv()] >= 0 && contains( geometry.attributes, "uv" ) ) {
 
           const auto& uv = geometry.attributes[ "uv" ];
 
@@ -3047,13 +3047,13 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
             const auto uvSize = uv.itemSize;
 
             glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
-            glVertexAttribPointer( attributes["uv"], uvSize, GL_FLOAT, false, 0, toOffset( startIndex * uvSize * 4 ) );
+            glVertexAttribPointer( attributes[AttributeKey::uv()], uvSize, GL_FLOAT, false, 0, toOffset( startIndex * uvSize * 4 ) );
 
-            glEnableVertexAttribArray( attributes["uv"] );
+            glEnableVertexAttribArray( attributes[AttributeKey::uv()] );
 
           } else {
 
-            glDisableVertexAttribArray( attributes["uv"] );
+            glDisableVertexAttribArray( attributes[AttributeKey::uv()] );
 
           }
 
@@ -3061,25 +3061,25 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         // colors
 
-        if ( attributes["color"] >= 0 && contains( geometry.attributes, "color" ) ) {
+        if ( attributes[AttributeKey::color()] >= 0 && contains( geometry.attributes, "color" ) ) {
 
           const auto& color = geometry.attributes[ "color" ];
           const auto colorSize = color.itemSize;
 
           glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
-          glVertexAttribPointer( attributes["color"], colorSize, GL_FLOAT, false, 0, toOffset( startIndex * colorSize * 4 ) );
+          glVertexAttribPointer( attributes[AttributeKey::color()], colorSize, GL_FLOAT, false, 0, toOffset( startIndex * colorSize * 4 ) );
 
         }
 
         // tangents
 
-        if ( attributes["tangent"] >= 0 && contains( geometry.attributes, "tangent" ) ) {
+        if ( attributes[AttributeKey::tangent()] >= 0 && contains( geometry.attributes, "tangent" ) ) {
 
           const auto& tangent = geometry.attributes[ "tangent" ];
           const auto tangentSize = tangent.itemSize;
 
           glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
-          glVertexAttribPointer( attributes["tangent"], tangentSize, GL_FLOAT, false, 0, toOffset( startIndex * tangentSize * 4 ) );
+          glVertexAttribPointer( attributes[AttributeKey::tangent()], tangentSize, GL_FLOAT, false, 0, toOffset( startIndex * tangentSize * 4 ) );
 
         }
 
@@ -3126,12 +3126,12 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   // vertices
 
-  if ( !material.morphTargets && attributes["position"] >= 0 ) {
+  if ( !material.morphTargets && attributes[AttributeKey::position()] >= 0 ) {
 
     if ( updateBuffers ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
-      glVertexAttribPointer( attributes["position"], 3, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -3155,10 +3155,11 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
 
       // TODO: Fix this?
-      if ( contains( attributes, attribute.belongsToAttribute ) ) {
+      auto attributeIt = attributes.find( attribute.belongsToAttribute );
+      if ( attributeIt != attributes.end() ) {
 
         glBindBuffer( GL_ARRAY_BUFFER, attribute.buffer );
-        glVertexAttribPointer( attributes[ attribute.belongsToAttribute ], attribute.size, GL_FLOAT, false, 0, 0 );
+        glVertexAttribPointer( attributeIt->second, attribute.size, GL_FLOAT, false, 0, 0 );
 
       }
 
@@ -3167,82 +3168,82 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     // colors
 
-    if ( attributes["color"] >= 0 ) {
+    if ( attributes[AttributeKey::color()] >= 0 ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
-      glVertexAttribPointer( attributes["color"], 3, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::color()], 3, GL_FLOAT, false, 0, 0 );
 
     }
 
     // normals
 
-    if ( attributes["normal"] >= 0 ) {
+    if ( attributes[AttributeKey::normal()] >= 0 ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer );
-      glVertexAttribPointer( attributes["normal"], 3, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
 
     }
 
     // tangents
 
-    if ( attributes["tangent"] >= 0 ) {
+    if ( attributes[AttributeKey::tangent()] >= 0 ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer );
-      glVertexAttribPointer( attributes["tangent"], 4, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::tangent()], 4, GL_FLOAT, false, 0, 0 );
 
     }
 
     // uvs
 
-    if ( attributes["uv"] >= 0 ) {
+    if ( attributes[AttributeKey::uv()] >= 0 ) {
 
       if ( geometryGroup.__glUVBuffer ) {
 
         glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer );
-        glVertexAttribPointer( attributes["uv"], 2, GL_FLOAT, false, 0, 0 );
+        glVertexAttribPointer( attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
 
-        glEnableVertexAttribArray( attributes["uv"] );
+        glEnableVertexAttribArray( attributes[AttributeKey::uv()] );
 
       } else {
 
-        glDisableVertexAttribArray( attributes["uv"] );
+        glDisableVertexAttribArray( attributes[AttributeKey::uv()] );
 
       }
 
     }
 
-    if ( attributes["uv2"] >= 0 ) {
+    if ( attributes[AttributeKey::uv2()] >= 0 ) {
 
       if ( geometryGroup.__glUV2Buffer ) {
 
         glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer );
-        glVertexAttribPointer( attributes["uv2"], 2, GL_FLOAT, false, 0, 0 );
+        glVertexAttribPointer( attributes[AttributeKey::uv2()], 2, GL_FLOAT, false, 0, 0 );
 
-        glEnableVertexAttribArray( attributes["uv2"] );
+        glEnableVertexAttribArray( attributes[AttributeKey::uv2()] );
 
       } else {
 
-        glDisableVertexAttribArray( attributes["uv2"] );
+        glDisableVertexAttribArray( attributes[AttributeKey::uv2()] );
 
       }
 
     }
 
     if ( material.skinning &&
-         attributes["skinVertexA"] >= 0 && attributes["skinVertexB"] >= 0 &&
-         attributes["skinIndex"] >= 0 && attributes["skinWeight"] >= 0 ) {
+         attributes[AttributeKey::skinVertexA()] >= 0 && attributes[AttributeKey::skinVertexB()] >= 0 &&
+         attributes[AttributeKey::skinIndex()] >= 0 && attributes[AttributeKey::skinWeight()] >= 0 ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
-      glVertexAttribPointer( attributes["skinVertexA"], 4, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::skinVertexA()], 4, GL_FLOAT, false, 0, 0 );
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer );
-      glVertexAttribPointer( attributes["skinVertexB"], 4, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::skinVertexB()], 4, GL_FLOAT, false, 0, 0 );
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
-      glVertexAttribPointer( attributes["skinIndex"], 4, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::skinIndex()], 4, GL_FLOAT, false, 0, 0 );
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer );
-      glVertexAttribPointer( attributes["skinWeight"], 4, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( attributes[AttributeKey::skinWeight()], 4, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -3338,12 +3339,12 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
   if ( object.morphTargetBase != -1 ) {
 
     glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ object.morphTargetBase ] );
-    glVertexAttribPointer( attributes["position"], 3, GL_FLOAT, false, 0, 0 );
+    glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
-  } else if ( attributes["position" >= 0 ) {
+  } else if ( attributes[AttributeKey::position()] >= 0 ) {
 
   glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
-    glVertexAttribPointer( attributes["position"], 3, GL_FLOAT, false, 0, 0 );
+    glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
@@ -4372,26 +4373,26 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
   auto& attributes = material.program->attributes;
 
-  if ( attributes["position"] >= 0 )
-    glEnableVertexAttribArray( attributes["position"] );
+  if ( attributes[AttributeKey::position()] >= 0 )
+    glEnableVertexAttribArray( attributes[AttributeKey::position()] );
 
-  if ( attributes["color"] >= 0 )
-    glEnableVertexAttribArray( attributes["color"] );
+  if ( attributes[AttributeKey::color()] >= 0 )
+    glEnableVertexAttribArray( attributes[AttributeKey::color()] );
 
-  if ( attributes["normal"] >= 0 )
-    glEnableVertexAttribArray( attributes["normal"] );
+  if ( attributes[AttributeKey::normal()] >= 0 )
+    glEnableVertexAttribArray( attributes[AttributeKey::normal()] );
 
-  if ( attributes["tangent"] >= 0 )
-    glEnableVertexAttribArray( attributes["tangent"] );
+  if ( attributes[AttributeKey::tangent()] >= 0 )
+    glEnableVertexAttribArray( attributes[AttributeKey::tangent()] );
 
   if ( material.skinning &&
-       attributes["skinVertexA"] >= 0 && attributes["skinVertexB"] >= 0 &&
-       attributes["skinIndex"] >= 0 && attributes["skinWeight"] >= 0 ) {
+       attributes[AttributeKey::skinVertexA()] >= 0 && attributes[AttributeKey::skinVertexB()] >= 0 &&
+       attributes[AttributeKey::skinIndex()] >= 0 && attributes[AttributeKey::skinWeight()] >= 0 ) {
 
-    glEnableVertexAttribArray( attributes["skinVertexA"] );
-    glEnableVertexAttribArray( attributes["skinVertexB"] );
-    glEnableVertexAttribArray( attributes["skinIndex"] );
-    glEnableVertexAttribArray( attributes["skinWeight"] );
+    glEnableVertexAttribArray( attributes[AttributeKey::skinVertexA()] );
+    glEnableVertexAttribArray( attributes[AttributeKey::skinVertexB()] );
+    glEnableVertexAttribArray( attributes[AttributeKey::skinIndex()] );
+    glEnableVertexAttribArray( attributes[AttributeKey::skinWeight()] );
 
   }
 
@@ -4481,7 +4482,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
   }
 
   if ( refreshMaterial || &camera != _currentCamera ) {
-    glUniformMatrix4fv( p_uniforms["projectionMatrix"], 1, false, camera._projectionMatrixArray.data() );
+    glUniformMatrix4fv( p_uniforms[UniformKey::projectionMatrix()], 1, false, camera._projectionMatrixArray.data() );
     if ( &camera != _currentCamera ) _currentCamera = &camera;
   }
 
@@ -4520,11 +4521,11 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
     } else if ( material.type() == THREE::MeshLambertMaterial ) {
       refreshUniformsLambert( m_uniforms, material );
     } else if ( material.type() == THREE::MeshDepthMaterial ) {
-      m_uniforms["mNear"].value = camera.near;
-      m_uniforms["mFar"].value = camera.far;
-      m_uniforms["opacity"].value = material.opacity;
+      m_uniforms[UniformKey::mNear()].value = camera.near;
+      m_uniforms[UniformKey::mFar()].value = camera.far;
+      m_uniforms[UniformKey::opacity()].value = material.opacity;
     } else if ( material.type() == THREE::MeshNormalMaterial ) {
-      m_uniforms["opacity"].value = material.opacity;
+      m_uniforms[UniformKey::opacity()].value = material.opacity;
     }
 
     if ( object.receiveShadow && ! material.shadowPass ) {
@@ -4600,21 +4601,21 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
 void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material ) {
 
-  uniforms["opacity"].value = material.opacity;
+  uniforms[UniformKey::opacity()].value = material.opacity;
 
   if ( gammaInput ) {
-    uniforms["diffuse"].value = Color().copyGammaToLinear( material.color );
+    uniforms[UniformKey::diffuse()].value = Color().copyGammaToLinear( material.color );
   } else {
-    uniforms["diffuse"].value = material.color;
+    uniforms[UniformKey::diffuse()].value = material.color;
   }
 
-  uniforms["map"].value         = material.map.get();
-  uniforms["lightMap"].value    = material.lightMap.get();
-  uniforms["specularMap"].value = material.specularMap.get();
+  uniforms[UniformKey::map()].value         = material.map.get();
+  uniforms[UniformKey::lightMap()].value    = material.lightMap.get();
+  uniforms[UniformKey::specularMap()].value = material.specularMap.get();
 
   if ( material.bumpMap ) {
-    uniforms["bumpMap"].value   = material.bumpMap.get();
-    uniforms["bumpScale"].value = material.bumpScale;
+    uniforms[UniformKey::bumpMap()].value   = material.bumpMap.get();
+    uniforms[UniformKey::bumpScale()].value = material.bumpScale;
   }
 
   // uv repeat and offset setting priorities
@@ -4636,40 +4637,40 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
     const auto& offset = uvScaleMap->offset;
     const auto& repeat = uvScaleMap->repeat;
 
-    uniforms["offsetRepeat"].value = Vector4( offset.x, offset.y, repeat.x, repeat.y );
+    uniforms[UniformKey::offsetRepeat()].value = Vector4( offset.x, offset.y, repeat.x, repeat.y );
   }
 
-  uniforms["envMap"].value     = material.envMap.get();
-  uniforms["flipEnvMap"].value = ( material.envMap && material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
+  uniforms[UniformKey::envMap()].value     = material.envMap.get();
+  uniforms[UniformKey::flipEnvMap()].value = ( material.envMap && material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
 
   if ( gammaInput ) {
     //uniforms.reflectivity.value = material.reflectivity * material.reflectivity;
-    uniforms["reflectivity"].value = material.reflectivity;
+    uniforms[UniformKey::reflectivity()].value = material.reflectivity;
   } else {
-    uniforms["reflectivity"].value = material.reflectivity;
+    uniforms[UniformKey::reflectivity()].value = material.reflectivity;
   }
 
-  uniforms["refractionRatio"].value = material.refractionRatio;
-  uniforms["combine"].value         = ( int )material.combine;
-  uniforms["useRefract"].value      = material.envMap && material.envMap->mapping == THREE::CubeRefractionMapping;
+  uniforms[UniformKey::refractionRatio()].value = material.refractionRatio;
+  uniforms[UniformKey::combine()].value         = ( int )material.combine;
+  uniforms[UniformKey::useRefract()].value      = material.envMap && material.envMap->mapping == THREE::CubeRefractionMapping;
 
 }
 
 void GLRenderer::refreshUniformsLine( Uniforms& uniforms, Material& material ) {
 
-  uniforms["diffuse"].value = material.color;
-  uniforms["opacity"].value = material.opacity;
+  uniforms[UniformKey::diffuse()].value = material.color;
+  uniforms[UniformKey::opacity()].value = material.opacity;
 
 }
 
 void GLRenderer::refreshUniformsParticle( Uniforms& uniforms, Material& material ) {
 
-  uniforms["psColor"].value = material.color;
-  uniforms["opacity"].value = material.opacity;
-  uniforms["size"].value    = material.size;
-  uniforms["scale"].value   = _height / 2.0f; // TODO: Cache
+  uniforms[UniformKey::psColor()].value = material.color;
+  uniforms[UniformKey::opacity()].value = material.opacity;
+  uniforms[UniformKey::size()].value    = material.size;
+  uniforms[UniformKey::scale()].value   = _height / 2.0f; // TODO: Cache
 
-  uniforms["map"].value = material.map.get();
+  uniforms[UniformKey::map()].value = material.map.get();
 
 }
 
@@ -4678,15 +4679,15 @@ void GLRenderer::refreshUniformsFog( Uniforms& uniforms, IFog& fog ) {
   if ( fog.type() == THREE::Fog ) {
 
     auto& f = static_cast<Fog&>(fog);
-    uniforms["fogColor"].value = f.color;
-    uniforms["fogNear"].value  = f.near;
-    uniforms["fogFar"].value   = f.far;
+    uniforms[UniformKey::fogColor()].value = f.color;
+    uniforms[UniformKey::fogNear()].value  = f.near;
+    uniforms[UniformKey::fogFar()].value   = f.far;
 
   } else if ( fog.type() == THREE::FogExp2 ) {
 
     auto& f = static_cast<FogExp2&>(fog);
-    uniforms["fogColor"].value   = f.color;
-    uniforms["fogDensity"].value = f.density;
+    uniforms[UniformKey::fogColor()].value   = f.color;
+    uniforms[UniformKey::fogDensity()].value = f.density;
 
   }
 
@@ -4694,20 +4695,20 @@ void GLRenderer::refreshUniformsFog( Uniforms& uniforms, IFog& fog ) {
 
 void GLRenderer::refreshUniformsPhong( Uniforms& uniforms, Material& material ) {
 
-  uniforms["shininess"].value = material.shininess;
+  uniforms[UniformKey::shininess()].value = material.shininess;
 
   if ( gammaInput ) {
-    uniforms["ambient"].value  = Color().copyGammaToLinear( material.ambient );
-    uniforms["emissive"].value = Color().copyGammaToLinear( material.emissive );
-    uniforms["specular"].value = Color().copyGammaToLinear( material.specular );
+    uniforms[UniformKey::ambient()].value  = Color().copyGammaToLinear( material.ambient );
+    uniforms[UniformKey::emissive()].value = Color().copyGammaToLinear( material.emissive );
+    uniforms[UniformKey::specular()].value = Color().copyGammaToLinear( material.specular );
   } else {
-    uniforms["ambient"].value  = material.ambient;
-    uniforms["emissive"].value = material.emissive;
-    uniforms["specular"].value = material.specular;
+    uniforms[UniformKey::ambient()].value  = material.ambient;
+    uniforms[UniformKey::emissive()].value = material.emissive;
+    uniforms[UniformKey::specular()].value = material.specular;
   }
 
   if ( material.wrapAround ) {
-    uniforms["wrapRGB"].value = material.wrapRGB;
+    uniforms[UniformKey::wrapRGB()].value = material.wrapRGB;
   }
 
 }
@@ -4715,40 +4716,40 @@ void GLRenderer::refreshUniformsPhong( Uniforms& uniforms, Material& material ) 
 void GLRenderer::refreshUniformsLambert( Uniforms& uniforms, Material& material ) {
 
   if ( gammaInput ) {
-    uniforms["ambient"].value  = Color().copyGammaToLinear( material.ambient );
-    uniforms["emissive"].value = Color().copyGammaToLinear( material.emissive );
+    uniforms[UniformKey::ambient()].value  = Color().copyGammaToLinear( material.ambient );
+    uniforms[UniformKey::emissive()].value = Color().copyGammaToLinear( material.emissive );
   } else {
-    uniforms["ambient"].value  = material.ambient;
-    uniforms["emissive"].value = material.emissive;
+    uniforms[UniformKey::ambient()].value  = material.ambient;
+    uniforms[UniformKey::emissive()].value = material.emissive;
   }
 
   if ( material.wrapAround ) {
-    uniforms["wrapRGB"].value = material.wrapRGB;
+    uniforms[UniformKey::wrapRGB()].value = material.wrapRGB;
   }
 
 }
 
 void GLRenderer::refreshUniformsLights( Uniforms& uniforms, InternalLights& lights ) {
 
-  uniforms["ambientLightColor"].value         = lights.ambient;
+  uniforms[UniformKey::ambientLightColor()].value         = lights.ambient;
 
-  uniforms["directionalLightColor"].value     = lights.directional.colors;
-  uniforms["directionalLightDirection"].value = lights.directional.positions;
+  uniforms[UniformKey::directionalLightColor()].value     = lights.directional.colors;
+  uniforms[UniformKey::directionalLightDirection()].value = lights.directional.positions;
 
-  uniforms["pointLightColor"].value           = lights.point.colors;
-  uniforms["pointLightPosition"].value        = lights.point.positions;
-  uniforms["pointLightDistance"].value        = lights.point.distances;
+  uniforms[UniformKey::pointLightColor()].value           = lights.point.colors;
+  uniforms[UniformKey::pointLightPosition()].value        = lights.point.positions;
+  uniforms[UniformKey::pointLightDistance()].value        = lights.point.distances;
 
-  uniforms["spotLightColor"].value            = lights.spot.colors;
-  uniforms["spotLightPosition"].value         = lights.spot.positions;
-  uniforms["spotLightDistance"].value         = lights.spot.distances;
-  uniforms["spotLightDirection"].value        = lights.spot.directions;
-  uniforms["spotLightAngle"].value            = lights.spot.angles;
-  uniforms["spotLightExponent"].value         = lights.spot.exponents;
+  uniforms[UniformKey::spotLightColor()].value            = lights.spot.colors;
+  uniforms[UniformKey::spotLightPosition()].value         = lights.spot.positions;
+  uniforms[UniformKey::spotLightDistance()].value         = lights.spot.distances;
+  uniforms[UniformKey::spotLightDirection()].value        = lights.spot.directions;
+  uniforms[UniformKey::spotLightAngle()].value            = lights.spot.angles;
+  uniforms[UniformKey::spotLightExponent()].value         = lights.spot.exponents;
 
-  uniforms["hemisphereLightSkyColor"].value   = lights.hemi.skyColors;
-  uniforms["hemisphereLightGroundColor"].value = lights.hemi.groundColors;
-  uniforms["hemisphereLightPosition"].value   = lights.hemi.positions;
+  uniforms[UniformKey::hemisphereLightSkyColor()].value   = lights.hemi.skyColors;
+  uniforms[UniformKey::hemisphereLightGroundColor()].value = lights.hemi.groundColors;
+  uniforms[UniformKey::hemisphereLightPosition()].value   = lights.hemi.positions;
 
 }
 
@@ -4771,13 +4772,13 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 
       if ( light.type() == THREE::SpotLight || ( light.type() == THREE::DirectionalLight && ! light.shadowCascade ) ) {
 
-        uniforms["shadowMap"].texture[ j ]   = light.shadowMap;
-        uniforms["shadowMapSize"].value[ j ] = light.shadowMapSize;
+        uniforms[UniformKey::shadowMap()].value[ j ]   = light.shadowMap;
+        uniforms[UniformKey::shadowMapSize()].value[ j ] = light.shadowMapSize;
 
-        uniforms["shadowMatrix"].value[ j ] = light.shadowMatrix;
+        uniforms[UniformKey::shadowMatrix()].value[ j ] = light.shadowMatrix;
 
-        uniforms["shadowDarkness"].value[ j ] = light.shadowDarkness;
-        uniforms["shadowBias"].value[ j ]     = light.shadowBias;
+        uniforms[UniformKey::shadowDarkness()].value[ j ] = light.shadowDarkness;
+        uniforms[UniformKey::shadowBias()].value[ j ]     = light.shadowBias;
 
         j ++;
 
@@ -4794,7 +4795,7 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 
 void GLRenderer::loadUniformsMatrices( UniformLocations& uniforms, Object3D& object ) {
 
-  glUniformMatrix4fv( uniforms["modelViewMatrix"], 1, false, object.glData._modelViewMatrix.elements );
+  glUniformMatrix4fv( uniforms[UniformKey::modelViewMatrix()], 1, false, object.glData._modelViewMatrix.elements );
   const auto normalMatrixLocation = uniformLocation( uniforms, "normalMatrix" );
   if ( validUniformLocation( normalMatrixLocation ) ) {
     glUniformMatrix3fv( normalMatrixLocation, 1, false, object.glData._normalMatrix.elements );
@@ -4858,7 +4859,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
         textureUnits.push_back( getTextureUnit() );
       }
 
-      glUniform1iv( location, textureUnits.size(), textureUnits.data() );
+      glUniform1iv( location, (int)textureUnits.size(), textureUnits.data() );
 
       for ( size_t i = 0; i < textures.size(); ++i ) {
 
@@ -5371,37 +5372,37 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     if ( _supportsVertexTextures ) ss << "#define VERTEX_TEXTURES" << std::endl;
 
-    if ( gammaInput ) ss << "#define GAMMA_INPUT" << std::endl;
-    if ( gammaOutput ) ss << "#define GAMMA_OUTPUT" << std::endl;
+    if ( gammaInput )             ss << "#define GAMMA_INPUT" << std::endl;
+    if ( gammaOutput )            ss << "#define GAMMA_OUTPUT" << std::endl;
     if ( physicallyBasedShading ) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
 
-    ss << "#define MAX_DIR_LIGHTS " << parameters.maxDirLights << std::endl <<
-    "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
-    "#define MAX_SPOT_LIGHTS " << parameters.maxSpotLights << std::endl <<
-    "#define MAX_SHADOWS " << parameters.maxShadows << std::endl <<
-    "#define MAX_BONES " << parameters.maxBones << std::endl;
+    ss << "#define MAX_DIR_LIGHTS "   << parameters.maxDirLights << std::endl <<
+          "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
+          "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
+          "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl <<
+          "#define MAX_BONES "        << parameters.maxBones << std::endl;
 
-    if ( parameters.map ) ss << "#define USE_MAP" << std::endl;
-    if ( parameters.envMap ) ss << "#define USE_ENVMAP" << std::endl;
-    if ( parameters.lightMap ) ss << "#define USE_LIGHTMAP" << std::endl;
-    if ( parameters.bumpMap ) ss << "#define USE_BUMPMAP" << std::endl;
-    if ( parameters.specularMap ) ss << "#define USE_SPECULARMAP" << std::endl;
+    if ( parameters.map )          ss << "#define USE_MAP" << std::endl;
+    if ( parameters.envMap )       ss << "#define USE_ENVMAP" << std::endl;
+    if ( parameters.lightMap )     ss << "#define USE_LIGHTMAP" << std::endl;
+    if ( parameters.bumpMap )      ss << "#define USE_BUMPMAP" << std::endl;
+    if ( parameters.specularMap )  ss << "#define USE_SPECULARMAP" << std::endl;
     if ( parameters.vertexColors ) ss << "#define USE_COLOR" << std::endl;
 
-    if ( parameters.skinning ) ss << "#define USE_SKINNING" << std::endl;
-    if ( parameters.useVertexTexture ) ss << "#define BONE_TEXTURE" << std::endl;
-    if ( parameters.boneTextureWidth ) ss << "#define N_BONE_PIXEL_X " << parameters.boneTextureWidth << std::endl;
+    if ( parameters.skinning )          ss << "#define USE_SKINNING" << std::endl;
+    if ( parameters.useVertexTexture )  ss << "#define BONE_TEXTURE" << std::endl;
+    if ( parameters.boneTextureWidth )  ss << "#define N_BONE_PIXEL_X " << parameters.boneTextureWidth << std::endl;
     if ( parameters.boneTextureHeight ) ss << "#define N_BONE_PIXEL_Y " << parameters.boneTextureHeight << std::endl;
 
     if ( parameters.morphTargets ) ss << "#define USE_MORPHTARGETS" << std::endl;
     if ( parameters.morphNormals ) ss << "#define USE_MORPHNORMALS" << std::endl;
-    if ( parameters.perPixel ) ss << "#define PHONG_PER_PIXEL" << std::endl;
-    if ( parameters.wrapAround ) ss << "#define WRAP_AROUND" << std::endl;
-    if ( parameters.doubleSided ) ss << "#define DOUBLE_SIDED" << std::endl;
+    if ( parameters.perPixel )     ss << "#define PHONG_PER_PIXEL" << std::endl;
+    if ( parameters.wrapAround )   ss << "#define WRAP_AROUND" << std::endl;
+    if ( parameters.doubleSided )  ss << "#define DOUBLE_SIDED" << std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" << std::endl;
-    if ( parameters.shadowMapSoft ) ss << "#define SHADOWMAP_SOFT" << std::endl;
-    if ( parameters.shadowMapDebug ) ss << "#define SHADOWMAP_DEBUG" << std::endl;
+    if ( parameters.shadowMapSoft )    ss << "#define SHADOWMAP_SOFT" << std::endl;
+    if ( parameters.shadowMapDebug )   ss << "#define SHADOWMAP_DEBUG" << std::endl;
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" << std::endl;
 
     if ( parameters.sizeAttenuation ) ss << "#define USE_SIZEATTENUATION" << std::endl;
@@ -5473,35 +5474,35 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     if ( parameters.bumpMap ) ss << "#extension GL_OES_standard_derivatives : enable" << std::endl;
 
-    ss << "#define MAX_DIR_LIGHTS " << parameters.maxDirLights << std::endl <<
-    "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
-    "#define MAX_SPOT_LIGHTS " << parameters.maxSpotLights << std::endl <<
-    "#define MAX_SHADOWS " << parameters.maxShadows << std::endl;
+    ss << "#define MAX_DIR_LIGHTS "   << parameters.maxDirLights << std::endl <<
+          "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
+          "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
+          "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl;
 
     if ( parameters.alphaTest ) ss << "#define ALPHATEST " << parameters.alphaTest << std::endl;
 
-    if ( gammaInput ) ss << "#define GAMMA_INPUT" << std::endl;
-    if ( gammaOutput ) ss << "#define GAMMA_OUTPUT" << std::endl;
+    if ( gammaInput )             ss << "#define GAMMA_INPUT" << std::endl;
+    if ( gammaOutput )            ss << "#define GAMMA_OUTPUT" << std::endl;
     if ( physicallyBasedShading ) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
 
     if ( parameters.useFog && parameters.fog != nullptr ) ss << "#define USE_FOG" << std::endl;
     if ( parameters.useFog && parameters.fog != nullptr && parameters.fog->type() == THREE::FogExp2 ) ss << "#define FOG_EXP2" << std::endl;
 
-    if ( parameters.map ) ss << "#define USE_MAP" <<  std::endl;
-    if ( parameters.envMap ) ss << "#define USE_ENVMAP" <<  std::endl;
-    if ( parameters.lightMap ) ss << "#define USE_LIGHTMAP" <<  std::endl;
-    if ( parameters.bumpMap ) ss << "#define USE_BUMPMAP" <<  std::endl;
-    if ( parameters.specularMap ) ss << "#define USE_SPECULARMAP" <<  std::endl;
+    if ( parameters.map )          ss << "#define USE_MAP" <<  std::endl;
+    if ( parameters.envMap )       ss << "#define USE_ENVMAP" <<  std::endl;
+    if ( parameters.lightMap )     ss << "#define USE_LIGHTMAP" <<  std::endl;
+    if ( parameters.bumpMap )      ss << "#define USE_BUMPMAP" <<  std::endl;
+    if ( parameters.specularMap )  ss << "#define USE_SPECULARMAP" <<  std::endl;
     if ( parameters.vertexColors ) ss << "#define USE_COLOR" <<  std::endl;
 
-    if ( parameters.metal ) ss << "#define METAL" <<  std::endl;
-    if ( parameters.perPixel ) ss << "#define PHONG_PER_PIXEL" <<  std::endl;
-    if ( parameters.wrapAround ) ss << "#define WRAP_AROUND" <<  std::endl;
+    if ( parameters.metal )       ss << "#define METAL" <<  std::endl;
+    if ( parameters.perPixel )    ss << "#define PHONG_PER_PIXEL" <<  std::endl;
+    if ( parameters.wrapAround )  ss << "#define WRAP_AROUND" <<  std::endl;
     if ( parameters.doubleSided ) ss << "#define DOUBLE_SIDED" <<  std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" <<  std::endl;
-    if ( parameters.shadowMapSoft ) ss << "#define SHADOWMAP_SOFT" <<  std::endl;
-    if ( parameters.shadowMapDebug ) ss << "#define SHADOWMAP_DEBUG" <<  std::endl;
+    if ( parameters.shadowMapSoft )    ss << "#define SHADOWMAP_SOFT" <<  std::endl;
+    if ( parameters.shadowMapDebug )   ss << "#define SHADOWMAP_DEBUG" <<  std::endl;
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" <<  std::endl;
 
     ss << "uniform mat4 viewMatrix;" << std::endl <<

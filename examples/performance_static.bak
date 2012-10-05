@@ -1,7 +1,16 @@
+#if 0
 #include "common.hpp"
 
+#include <three/cameras/perspective_camera.hpp>
+#include <three/core/geometry.hpp>
+#include <three/loaders/json_loader.hpp>
+#include <three/materials/mesh_normal_material.hpp>
+#include <three/objects/mesh.hpp>
+#include <three/renderers/renderer_parameters.hpp>
+#include <three/renderers/gl_renderer.hpp>
+#include <three/scenes/fog.hpp>
+
 using namespace three;
-using namespace three_examples;
 
 void performance_static( GLRenderer::Ptr renderer ) {
 
@@ -64,7 +73,7 @@ int main ( int argc, char* argv[] ) {
   auto onQuit = defer( SDL_Quit );
 
   GLRenderer::Parameters parameters;
-  if ( !sdl::initSDL( parameters ) || !glew::initGLEW( parameters ) ) {
+  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;
   }
 
@@ -78,3 +87,4 @@ int main ( int argc, char* argv[] ) {
 
   return 0;
 }
+#endif // 0

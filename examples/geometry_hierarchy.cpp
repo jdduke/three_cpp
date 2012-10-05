@@ -78,6 +78,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
   stats::Stats stats;
 
   auto time = 0.f;
+  int benchmarkFrames = 100000;
 
   anim::gameLoop(
 
@@ -101,7 +102,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
     stats.update( dt, *renderer );
 
-    return running;
+    return running && (--benchmarkFrames > 0);
 
   }, 2000 );
 

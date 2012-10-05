@@ -38,7 +38,7 @@ set(THREE_HEADER_ONLY TRUE CACHE BOOL
 
 #if (NOT THREE_HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
-  add_library(three_impl STATIC three.cpp three_extras.cpp)
+  add_library(three_impl STATIC impl/three.cpp impl/three_extras.cpp)
   target_link_libraries(three_impl ${EXAMPLE_LIBS})
   set(EXAMPLE_LIBS ${EXAMPLE_LIBS} three_impl)
 #endif()
@@ -53,24 +53,25 @@ else()
   add_definitions(-DTHREE_DATA_DIR="${DATA_DIR}")
 endif()
 
-
-set(examples simple
-             trails
-             geometry_hierarchy
-             geometry_hierarchy_2
-             test_memory
-             lines_colors
-             lines_cubes
-             particles_random
-             particles_sprites
-             particles_billboards
-             particles_billboards_colors
-             shader
-             shader2
-             shader_fireball
-             shader_lava)
+file(GLOB examples "*.cpp")
+#set(examples simple
+#             trails
+#             geometry_hierarchy
+#             geometry_hierarchy_2
+#             test_memory
+#             lines_colors
+#             lines_cubes
+#             particles_random
+#             particles_sprites
+#             particles_billboards
+#             particles_billboards_colors
+#             shader
+#             shader2
+#             shader_fireball
+#             shader_lava)
 
 foreach(example ${examples})
-  add_executable(${example} ${example}.cpp)
-  target_link_libraries(${example} ${EXAMPLE_LIBS})
+  get_filename_component(example_name ${example} NAME_WE)
+  add_executable(${example_name} ${example})
+  target_link_libraries(${example_name} ${EXAMPLE_LIBS})
 endforeach()

@@ -76,16 +76,6 @@ protected:
 
     Material::Ptr material;
 
-    auto is_pow2 = []( int n ) {
-      const auto l = Math::log( ( float )n ) / Math::LN2();
-      return ( int )Math::floor( l ) == l;
-    };
-
-    auto nearest_pow2 = []( int n ) {
-      const auto l = Math::log( ( float )n ) / Math::LN2();
-      return ( int )Math::pow( ( float )2, Math::round( l ) );
-    };
-
 #ifdef TODO_CREATE_MATERIAL
     function load_image( where, url ) {
 

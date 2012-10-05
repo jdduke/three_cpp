@@ -109,6 +109,14 @@ inline int upperPowerOfTwo( int value ) {
   return (int)pow( 2.f, ceil( log( (float)value ) / log( 2.f ) ) );
 }
 
+inline int lowerPowerOfTwo( int value ) {
+  return (int)pow( 2.f, floor( log( (float)value ) / log( 2.f ) ) );
+}
+
+inline int nearestPowerOfTwo( int value ) {
+  return (int)pow( 2.f, round( log( (float)value ) / log( 2.f ) ) );
+}
+
 }
 
 } // namespace three

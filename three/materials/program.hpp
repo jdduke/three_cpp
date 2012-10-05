@@ -13,6 +13,8 @@
 
 namespace three {
 
+typedef Properties<std::string, int> AttributeLocations;
+
 class Program : public NonCopyable {
 public:
 
@@ -25,7 +27,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   UniformLocations uniforms;
-  UniformLocations attributes;
+  AttributeLocations attributes;
 
   Buffer program;
   int id;
@@ -35,6 +37,36 @@ protected:
   Program( Buffer program, int id )
     : program( program ), id( id ) { }
 };
+
+//////////////////////////////////////////////////////////////////////////
+
+namespace AttributeKey {
+
+#if 1
+#define DECLARE_ATTRIBUTE_KEY(a)                 \
+  inline const std::string& a () {               \
+  static const std::string attributeKey( (#a) ); \
+  return attributeKey;                           \
+}
+#else
+#define DECLARE_ATTRIBUTE_KEY(a) inline const char* a () { return #a; }
+#endif
+
+DECLARE_ATTRIBUTE_KEY(position)
+DECLARE_ATTRIBUTE_KEY(normal)
+DECLARE_ATTRIBUTE_KEY(color)
+DECLARE_ATTRIBUTE_KEY(uv)
+DECLARE_ATTRIBUTE_KEY(uv2)
+DECLARE_ATTRIBUTE_KEY(tangent)
+DECLARE_ATTRIBUTE_KEY(skinVertexA)
+DECLARE_ATTRIBUTE_KEY(skinVertexB)
+DECLARE_ATTRIBUTE_KEY(skinWeight)
+DECLARE_ATTRIBUTE_KEY(skinIndex)
+DECLARE_ATTRIBUTE_KEY(morphTarget)
+
+#undef DECLARE_ATTRIBUTE_KEY
+
+} // namespace AttributeKey
 
 } // namespace three
 

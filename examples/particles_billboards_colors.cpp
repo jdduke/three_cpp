@@ -101,11 +101,11 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
 
     renderer->render( *scene, *camera );
 
-    //stats.update( dt, *renderer );
+    stats.update( dt, *renderer );
 
     return running;
 
-  } );
+  }, 2000 );
 
 }
 
@@ -115,6 +115,7 @@ int main( int argc, char* argv[] ) {
 
   RendererParameters parameters;
   parameters.clearAlpha = 1;
+  parameters.vsync = false;
 
   if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;

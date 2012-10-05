@@ -28,20 +28,20 @@ public:
 
 #if THREE_HAS_VARIADIC_TEMPLATES
   template < typename... T >
-  Properties& emplace( Key key, T&&... ts ) {
+  Properties& emplace( Key&& key, T&&... ts ) {
     return add( std::move(key), Value( std::move(ts)...) );
   }
 #else
   template < typename T, typename U >
-  Properties& emplace( Key key, T&& t, U&& u ) {
+  Properties& emplace( Key&& key, T&& t, U&& u ) {
     return add( std::move(key), Value( std::move(t), std::move(u) ) );
   }
   template < typename T, typename U, typename V >
-  Properties& emplace( Key key, T&& t, U&& u, V&& v ) {
+  Properties& emplace( Key&& key, T&& t, U&& u, V&& v ) {
     return add( std::move(key), Value( std::move(t), std::move(u), std::move(v) ) );
   }
   template < typename T, typename U, typename V, typename W >
-  Properties& emplace( Key key, T&& t, U&& u, V&& v, W&& w ) {
+  Properties& emplace( Key&& key, T&& t, U&& u, V&& v, W&& w ) {
     return add( std::move(key), Value( std::move(t), std::move(u), std::move(v), std::move(w) ) );
   }
 #endif // THREE_HAS_VARIADIC_TEMPLATES
@@ -49,6 +49,10 @@ public:
   bool contains( const Key& key ) const {
     return contents.find( key ) != contents.end();
   }
+
+  typename MapType::iterator       find( const Key& key ) { return contents.find( key ); }
+  typename MapType::const_iterator find( const Key& key ) const { return contents.find( key ); }
+
 
   Value& operator[]( const Key& key ) { return contents[key]; }
 

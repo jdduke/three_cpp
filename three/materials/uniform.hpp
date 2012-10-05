@@ -57,81 +57,80 @@ inline bool validUniformLocation( int index ) {
 
 /////////////////////////////////////////////////////////////////////////
 
-namespace CommonUniforms {
+namespace UniformKey {
 
-enum CommonUniform {
+#if 1
+#define DECLARE_UNIFORM_KEY(a)                   \
+  inline const std::string& a () {               \
+    static const std::string uniformKey( (#a) ); \
+    return uniformKey;                           \
+  }
+#else
+#define DECLARE_UNIFORM_KEY(a) inline const char* a () { return #a; }
+#endif
 
-  modelMatrix = 0,
-  modelViewMatrix,
-  normalMatrix,
-  projectionMatrix,
-  viewMatrix,
-  cameraPosition,
+DECLARE_UNIFORM_KEY(modelMatrix)
+DECLARE_UNIFORM_KEY(modelViewMatrix)
+DECLARE_UNIFORM_KEY(normalMatrix)
+DECLARE_UNIFORM_KEY(projectionMatrix)
+DECLARE_UNIFORM_KEY(viewMatrix)
+DECLARE_UNIFORM_KEY(cameraPosition)
+DECLARE_UNIFORM_KEY(morphTargetInfluence)
+DECLARE_UNIFORM_KEY(boneTexture)
+DECLARE_UNIFORM_KEY(boneGlobalMatrices)
+DECLARE_UNIFORM_KEY(mNear)
+DECLARE_UNIFORM_KEY(mFar)
+DECLARE_UNIFORM_KEY(map)
+DECLARE_UNIFORM_KEY(envMap)
+DECLARE_UNIFORM_KEY(flipEnvMap)
+DECLARE_UNIFORM_KEY(nreflectivity)
+DECLARE_UNIFORM_KEY(refractionRatio)
+DECLARE_UNIFORM_KEY(reflectivity)
+DECLARE_UNIFORM_KEY(combine)
+DECLARE_UNIFORM_KEY(useRefract)
+DECLARE_UNIFORM_KEY(lightMap)
+DECLARE_UNIFORM_KEY(specularMap)
+DECLARE_UNIFORM_KEY(bumpMap)
+DECLARE_UNIFORM_KEY(bumpScale)
+DECLARE_UNIFORM_KEY(offsetRepeat)
+DECLARE_UNIFORM_KEY(psColor)
+DECLARE_UNIFORM_KEY(size)
+DECLARE_UNIFORM_KEY(scale)
+DECLARE_UNIFORM_KEY(fogColor)
+DECLARE_UNIFORM_KEY(fogNear)
+DECLARE_UNIFORM_KEY(fogFar)
+DECLARE_UNIFORM_KEY(fogDensity)
+DECLARE_UNIFORM_KEY(ambient)
+DECLARE_UNIFORM_KEY(diffuse)
+DECLARE_UNIFORM_KEY(opacity)
+DECLARE_UNIFORM_KEY(emissive)
+DECLARE_UNIFORM_KEY(shininess)
+DECLARE_UNIFORM_KEY(specular)
+DECLARE_UNIFORM_KEY(wrapRGB)
+DECLARE_UNIFORM_KEY(ambientLightColor)
+DECLARE_UNIFORM_KEY(directionalLightColor)
+DECLARE_UNIFORM_KEY(directionalLightDirection)
+DECLARE_UNIFORM_KEY(pointLightColor)
+DECLARE_UNIFORM_KEY(pointLightPosition)
+DECLARE_UNIFORM_KEY(pointLightDistance)
+DECLARE_UNIFORM_KEY(spotLightColor)
+DECLARE_UNIFORM_KEY(spotLightPosition)
+DECLARE_UNIFORM_KEY(spotLightDistance)
+DECLARE_UNIFORM_KEY(spotLightDirection)
+DECLARE_UNIFORM_KEY(spotLightAngle)
+DECLARE_UNIFORM_KEY(spotLightExponent)
+DECLARE_UNIFORM_KEY(hemisphereLightSkyColor)
+DECLARE_UNIFORM_KEY(hemisphereLightGroundColor)
+DECLARE_UNIFORM_KEY(hemisphereLightPosition)
+DECLARE_UNIFORM_KEY(shadowMatrix)
+DECLARE_UNIFORM_KEY(shadowMap)
+DECLARE_UNIFORM_KEY(shadowSize)
+DECLARE_UNIFORM_KEY(shadowDarkness)
+DECLARE_UNIFORM_KEY(shadowBias)
 
-  morphTargetInfluence,
-  boneTexture,
-  boneGlobalMatrices,
+#undef DECLARE_UNIFORM_KEY
 
-  near,
-  far,
-
-  map,
-  envMap,
-  flipEnvMap,
-  nreflectivity,
-  refractionRatio,
-  reflectivity,
-  combine,
-  useRefract,
-  lightMap,
-  bumpMap,
-  bumpScale,
-
-  offsetRepeat,
-
-  psColor,
-  size,
-  scale,
-
-  fogColor,
-  fogNear,
-  fogFar,
-  fogDensity,
-
-  ambient,
-  diffuse,
-  opacity,
-  emissive,
-  shininess,
-  specular,
-  wrapRGB,
-
-  ambientLightColor,
-  directionalLightColor,
-  directionalLightDirection,
-  pointLightColor,
-  pointLightPosition,
-  pointLightDistance,
-  spotLightColor,
-  spotLightPosition,
-  spotLightDistance,
-  spotLightDirection,
-  spotLightAngle,
-  spotLightExponent,
-  hemisphereLightSkyColor,
-  hemisphereLightGroundColor,
-  hemisphereLightPosition,
-
-  shadowMatrix,
-  shadowMap,
-  shadowSize,
-  shadowDarkness,
-  shadowBias,
-
-  CommonUniformCount
-};
-
-} // namespace CommonUniforms
+} // namespace UniformKey
 
 
 } // namespace three

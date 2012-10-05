@@ -52,11 +52,18 @@ void Stats::update( float deltaTime, GLRenderer& renderer ) {
    }
 
     std::stringstream ss; ss << "FPS: " << s.fps;
-    s.font->render( ss.str().c_str(),
-                    10.f, ( float )renderer.height() - 30.f,
-                    ( float )renderer.width(),
-                    ( float )renderer.height(),
-                    Color( 0x00FF00 ) );
+
+    if (true) {
+      if (s.framesSinceReport == 0)
+        console().log(ss.str().c_str());
+    }
+    else {
+      s.font->render( ss.str().c_str(),
+        10.f, ( float )renderer.height() - 30.f,
+        ( float )renderer.width(),
+        ( float )renderer.height(),
+        Color( 0x00FF00 ) );
+    }
 
     renderer.resetStates();
 
