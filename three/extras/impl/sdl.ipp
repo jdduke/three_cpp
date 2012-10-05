@@ -16,9 +16,17 @@ namespace sdl {
 
 bool init( RendererParameters& parameters ) {
 
+  //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
   if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
     console().error() << "Error initializing SDL: " << SDL_GetError();
     return false;
+  }
+
+  if ( parameters.antialias ) {
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
   }
 
   console().log() << "SDL initialized";
@@ -30,6 +38,8 @@ bool init( RendererParameters& parameters ) {
     console().error() << "Error setting SDL video mode: " << SDL_GetError();
     return false;
   }
+
+  //SDL_GL_SetSwapInterval( parameters.vsync ? 1 : 0 );
 
   console().log() << "SDL video initialized";
 

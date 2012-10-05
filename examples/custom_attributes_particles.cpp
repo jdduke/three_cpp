@@ -127,6 +127,8 @@ void shader( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
+  stats::Stats stats;
+
   auto time = 0.f;
 
   anim::gameLoop( [&]( float dt ) -> bool {
@@ -136,15 +138,17 @@ void shader( GLRenderer::Ptr renderer ) {
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {
-      sizes[ i ] = 14.f + 13.f * Math::sin( 0.1f * i + time * 3.f );
+      sizes[ i ] = 10.f + 9.f * Math::sin( 0.1f * i + time * 3.f );
     }
     size.needsUpdate = true;
 
     renderer->render( *scene, *camera );
 
+    stats.update( dt, *renderer );
+
     return running;
 
-  } );
+  }, 2000 );
 
 }
 
@@ -155,6 +159,8 @@ int main( int argc, char* argv[] ) {
   RendererParameters parameters;
   parameters.clearColor = Color( 0x000000 );
   parameters.clearAlpha = 1.f;
+  parameters.vsync = false;
+
   if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
     return 0;
   }

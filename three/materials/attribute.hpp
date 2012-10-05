@@ -60,6 +60,9 @@ struct FillerImpl {
   enum { Stride = sizeof(T) / sizeof(float) };
 
   inline void fill( const std::vector<T>& src, std::vector<float>& dst ) {
+    /*const auto srcData = (const float*)src.data();
+    const auto srcDataSize = src.size() * Stride;
+    std::copy( srcData, srcData + srcDataSize, dst.data() );*/
     const auto count = src.size();
     for ( size_t i = 0, offset = 0; i < count; ++i, offset += Stride ) {
       for ( int j = 0; j < Stride; ++j ) {
