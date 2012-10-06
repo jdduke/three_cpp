@@ -145,7 +145,7 @@ public:
     return ( lengthSq() < 0.0001f /* almostZero */ );
   }
 
-  Vector3 clone() {
+  Vector3 clone() const {
     return *this;
   }
 };

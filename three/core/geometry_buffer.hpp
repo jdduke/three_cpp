@@ -16,7 +16,7 @@ public:
 
   typedef Buffer GLBuffer;
 
-  int materialIndex;
+  Index materialIndex;
 
   bool hasPositions;
   bool hasNormals;

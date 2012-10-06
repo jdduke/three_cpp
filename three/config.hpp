@@ -57,6 +57,9 @@
 #  if GCC_VERSION >= 40400
 #    define THREE_HAS_DELETED_FUNCTIONS 1
 #  endif
+#  if GCC_VERSION >= 40400
+#    define THREE_HAS_EXPLICIT_CONVERSION_OPERATORS 1
+#  endif
 #  if GCC_VERSION >= 40600
 #    define THREE_HAS_RANGE_FOR 1
 #  endif
@@ -65,6 +68,7 @@
 #  define THREE_HAS_DELETED_FUNCTIONS  __has_feature(cxx_deleted_functions)
 #  define THREE_HAS_RVALUE_REFERENCES  __has_feature(cxx_rvalue_references)
 #  define THREE_HAS_RANGE_FOR          __has_feature(cxx_range_for)
+#  define THREE_HAS_EXPLICIT_CONVERSION_OPERATORS __has_feature(cxx_explicit_conversions)
 #elif defined(_MSC_VER)
 // No variadics, no deleted functions, no fun :(
 #  if _MSC_VER > 1500
@@ -87,6 +91,10 @@
 #if !defined(THREE_HAS_RANGE_FOR)
 # define THREE_HAS_RANGE_FOR 0
 #endif
+#if !defined(THREE_HAS_EXPLICIT_CONVERSION_OPERATORS)
+# define THREE_HAS_EXPLICIT_CONVERSION_OPERATORS 0
+#endif
+
 
 #if !THREE_HAS_RANGE_FOR
 //#  error Range-based for loop support required
@@ -101,6 +109,12 @@
 #else
 #  define THREE_DECL_DELETE
 #  define THREE_DECL_DEFAULT
+#endif
+
+#if THREE_HAS_EXPLICIT_CONVERSION_OPERATORS
+#  define THREE_EXPLICIT explicit 
+#else
+#  define THREE_EXPLICIT 
 #endif
 
 #endif // THREE_CONFIG_HPP

@@ -21,7 +21,6 @@ public:
   Properties& operator=(Properties other) { return swap(other); }
 
   Properties& add(Key key, Value value) {
-    //contents.insert( std::make_pair(std::move(key), std::move(value)) );
     contents.emplace( std::make_pair(std::move(key), std::move(value)) );
     return *this;
   }
@@ -46,16 +45,32 @@ public:
   }
 #endif // THREE_HAS_VARIADIC_TEMPLATES
 
-  bool contains( const Key& key ) const {
+  THREE_EXPLICIT operator bool() const { return contents.size() > 0; }
+
+  inline bool contains( const Key& key ) const {
     return contents.find( key ) != contents.end();
+  }
+
+  template < typename T >
+  inline bool contains( const T& key ) const {
+    return contains( Key(key) );
+  }
+
+  Value& operator[]( const char* key ) { return contents[ Key(key) ]; }
+  Value& operator[]( const Key& key ) { return contents[key]; }
+
+  const Value* get( const Key& key ) const {
+    auto it = contents.find( key );
+    return it == contents.end() ? nullptr : &it->second;
+  }
+
+  Value* get( const Key& key ) {
+    auto it = contents.find( key );
+    return it == contents.end() ? nullptr : &it->second;
   }
 
   typename MapType::iterator       find( const Key& key ) { return contents.find( key ); }
   typename MapType::const_iterator find( const Key& key ) const { return contents.find( key ); }
-
-
-  Value& operator[]( const Key& key ) { return contents[key]; }
-
   typename MapType::iterator       begin()       { return contents.begin(); }
   typename MapType::const_iterator begin() const { return contents.cbegin(); }
   typename MapType::iterator       end()         { return contents.end(); }

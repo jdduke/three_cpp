@@ -133,7 +133,7 @@ public:
     return ( ( v.x == x ) && ( v.y == y ) && ( v.z == z ) );
   }
 
-  Vector4 clone() {
+  Vector4 clone() const {
     return *this;
   }
 

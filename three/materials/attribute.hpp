@@ -5,6 +5,8 @@
 
 #include <three/utils/any.hpp>
 
+#include <three/utils/index.hpp>
+
 #include <unordered_map>
 
 namespace three {
@@ -31,8 +33,13 @@ public:
 
   THREE::AttributeType type;
 
+  // TODO: Use the union for indices support (rather than casting from float)
+  /*union Value {
+    int i;
+    float f;
+  };
+  std::vector<Value> array;*/
   std::vector<float> array;
-  //std::vector<Vector4> value;
   any value; // This will be a vector, of float/vec2/vec3/color/vec4
   std::string belongsToAttribute;
   std::string boundTo;
@@ -44,12 +51,14 @@ public:
 
   bool __glInitialized;
   Attribute* __original;
+
 };
 
 //////////////////////////////////////////////////////////////////////////
 
-typedef std::unordered_map<std::string, Attribute> Attributes;
-typedef std::unordered_map<std::string, int> AttributeLocations;
+//typedef std::unordered_map<std::string, Attribute> Attributes;
+typedef Properties<std::string, Attribute> Attributes;
+typedef std::unordered_map<std::string, Index> AttributeLocations;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -119,6 +128,37 @@ void fill( const any& src, const SortArray& sortArray, std::vector<float>& dst )
   detail::Filler< T > filler;
   filler.fill( src.cast<std::vector<T>>(), sortArray, dst );
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+namespace AttributeKey {
+
+#if 1
+#define DECLARE_ATTRIBUTE_KEY(a)                 \
+  inline const std::string& a () {               \
+  static const std::string attributeKey( (#a) ); \
+  return attributeKey;                           \
+}
+#else
+#define DECLARE_ATTRIBUTE_KEY(a) inline const char* a () { return #a; }
+#endif
+
+  DECLARE_ATTRIBUTE_KEY(position)
+  DECLARE_ATTRIBUTE_KEY(normal)
+  DECLARE_ATTRIBUTE_KEY(index)
+  DECLARE_ATTRIBUTE_KEY(color)
+  DECLARE_ATTRIBUTE_KEY(uv)
+  DECLARE_ATTRIBUTE_KEY(uv2)
+  DECLARE_ATTRIBUTE_KEY(tangent)
+  DECLARE_ATTRIBUTE_KEY(skinVertexA)
+  DECLARE_ATTRIBUTE_KEY(skinVertexB)
+  DECLARE_ATTRIBUTE_KEY(skinWeight)
+  DECLARE_ATTRIBUTE_KEY(skinIndex)
+  DECLARE_ATTRIBUTE_KEY(morphTarget)
+
+#undef DECLARE_ATTRIBUTE_KEY
+
+} // namespace AttributeKey
 
 
 } // namespace three

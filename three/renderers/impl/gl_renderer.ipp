@@ -558,7 +558,8 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
   auto& material = *object.material;
 
-  if ( material.attributes.size() > 0 ) {
+  //if ( material.attributes.size() > 0 ) 
+  {
 
     geometry.__glCustomAttributesList.clear();
 
@@ -720,7 +721,7 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
   // custom attributes
 
-  if ( material && material->attributes.size() > 0 ) {
+  if ( material ) {//&& material->attributes.size() > 0 ) {
 
     geometryGroup.__glCustomAttributesList.clear();
 
@@ -779,7 +780,7 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
 
   if ( material && !( material->type() == THREE::MeshFaceMaterial ) ) {
     return material;
-  } else if ( geometry && geometryGroup && geometryGroup->materialIndex >= 0 ) {
+  } else if ( geometry && geometryGroup && geometryGroup->materialIndex.valid() ) {
     return geometry->materials[ geometryGroup->materialIndex ].get();
   }
 
@@ -830,7 +831,7 @@ void GLRenderer::initDirectBuffers( Geometry& geometry ) {
 
   for ( auto& a : geometry.attributes ) {
 
-    auto type = a.first == "index" ? GL_ELEMENT_ARRAY_BUFFER
+    auto type = a.first == AttributeKey::index() ? GL_ELEMENT_ARRAY_BUFFER
                 : GL_ARRAY_BUFFER;
 
     auto& attribute = a.second;
@@ -2656,44 +2657,44 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
 
   auto& attributes = geometry.attributes;
 
-  if ( geometry.elementsNeedUpdate && contains( attributes, "index" ) ) {
+  if ( geometry.elementsNeedUpdate && attributes.contains( AttributeKey::index() ) ) {
 
-    auto& index = attributes[ "index" ];
+    auto& index = attributes[ AttributeKey::index() ];
     glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer, index.array, hint );
 
   }
 
-  if ( geometry.verticesNeedUpdate && contains( attributes, "position" ) ) {
+  if ( geometry.verticesNeedUpdate && attributes.contains( AttributeKey::position() ) ) {
 
-    auto& position = attributes[ "position" ];
+    auto& position = attributes[ AttributeKey::position() ];
     glBindAndBuffer( GL_ARRAY_BUFFER, position.buffer, position.array, hint );
 
   }
 
-  if ( geometry.normalsNeedUpdate && contains( attributes, "normals" ) ) {
+  if ( geometry.normalsNeedUpdate && attributes.contains( AttributeKey::normal() ) ) {
 
-    auto& normal   = attributes[ "normal" ];
+    auto& normal   = attributes[ AttributeKey::normal() ];
     glBindAndBuffer( GL_ARRAY_BUFFER, normal.buffer, normal.array, hint );
 
   }
 
-  if ( geometry.uvsNeedUpdate && contains( attributes, "uv" ) ) {
+  if ( geometry.uvsNeedUpdate && attributes.contains( AttributeKey::uv() ) ) {
 
-    auto& uv       = attributes[ "uv" ];
+    auto& uv       = attributes[ AttributeKey::uv() ];
     glBindAndBuffer( GL_ARRAY_BUFFER, uv.buffer, uv.array, hint );
 
   }
 
-  if ( geometry.colorsNeedUpdate && contains( attributes, "color" ) ) {
+  if ( geometry.colorsNeedUpdate && attributes.contains( AttributeKey::color() ) ) {
 
-    auto& color    = attributes[ "color" ];
+    auto& color    = attributes[ AttributeKey::color() ];
     glBindAndBuffer( GL_ARRAY_BUFFER, color.buffer, color.array, hint );
 
   }
 
-  if ( geometry.tangentsNeedUpdate && contains( attributes, "tangent" ) ) {
+  if ( geometry.tangentsNeedUpdate && attributes.contains( AttributeKey::tangent() ) ) {
 
-    auto& tangent  = attributes[ "tangent" ];
+    auto& tangent  = attributes[ AttributeKey::tangent() ];
     glBindAndBuffer( GL_ARRAY_BUFFER, tangent.buffer, tangent.array, hint );
 
   }
@@ -2835,7 +2836,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         // vertices
 
-        auto& position = geometry.attributes[ "position" ];
+        auto& position = geometry.attributes[ AttributeKey::position() ];
         const auto positionSize = position.itemSize;
 
         glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
@@ -2843,9 +2844,9 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         // normals
 
-        if ( attributes[AttributeKey::normal()] >= 0 && contains( geometry.attributes, "normal" ) ) {
+        if ( attributes[AttributeKey::normal()].valid() && geometry.attributes.contains( AttributeKey::normal() ) ) {
 
-          auto& normal = geometry.attributes[ "normal" ];
+          auto& normal = geometry.attributes[ AttributeKey::normal() ];
           auto normalSize = normal.itemSize;
 
           glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
@@ -2855,9 +2856,9 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         // uvs
 
-        if ( attributes[AttributeKey::uv()] >= 0 && contains( geometry.attributes, "uv" ) ) {
+        if ( attributes[AttributeKey::uv()].valid() && geometry.attributes.contains( AttributeKey::uv() ) ) {
 
-          const auto& uv = geometry.attributes[ "uv" ];
+          const auto& uv = geometry.attributes[ AttributeKey::uv() ];
 
           if ( uv.buffer ) {
 
@@ -2878,9 +2879,9 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         // colors
 
-        if ( attributes[AttributeKey::color()] >= 0 && contains( geometry.attributes, "color" ) ) {
+        if ( attributes[AttributeKey::color()].valid() && geometry.attributes.contains( AttributeKey::color() ) ) {
 
-          const auto& color = geometry.attributes[ "color" ];
+          const auto& color = geometry.attributes[ AttributeKey::color() ];
           const auto colorSize = color.itemSize;
 
           glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
@@ -2890,9 +2891,9 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         // tangents
 
-        if ( attributes[AttributeKey::tangent()] >= 0 && contains( geometry.attributes, "tangent" ) ) {
+        if ( attributes[AttributeKey::tangent()].valid() && geometry.attributes.contains( AttributeKey::tangent() ) ) {
 
-          const auto& tangent = geometry.attributes[ "tangent" ];
+          const auto& tangent = geometry.attributes[ AttributeKey::tangent() ];
           const auto tangentSize = tangent.itemSize;
 
           glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
@@ -2902,7 +2903,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         // indices
 
-        const auto& index = geometry.attributes[ "index" ];
+        const auto& index = geometry.attributes[ AttributeKey::index() ];
 
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
 
@@ -2943,7 +2944,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   // vertices
 
-  if ( !material.morphTargets && attributes[AttributeKey::position()] >= 0 ) {
+  if ( !material.morphTargets && attributes[AttributeKey::position()].valid() ) {
 
     if ( updateBuffers ) {
 
@@ -2981,19 +2982,20 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     }
 
+    int index = -1;
 
     // colors
 
-    if ( attributes[AttributeKey::color()] >= 0 ) {
+    if ( (index = attributes[AttributeKey::color()]) >= 0 ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::color()], 3, GL_FLOAT, false, 0, 0 );
+      glVertexAttribPointer( index, 3, GL_FLOAT, false, 0, 0 );
 
     }
 
     // normals
 
-    if ( attributes[AttributeKey::normal()] >= 0 ) {
+    if ( attributes[AttributeKey::normal()].valid() ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer );
       glVertexAttribPointer( attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
@@ -3002,7 +3004,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     // tangents
 
-    if ( attributes[AttributeKey::tangent()] >= 0 ) {
+    if ( attributes[AttributeKey::tangent()].valid() ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer );
       glVertexAttribPointer( attributes[AttributeKey::tangent()], 4, GL_FLOAT, false, 0, 0 );
@@ -3011,7 +3013,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     // uvs
 
-    if ( attributes[AttributeKey::uv()] >= 0 ) {
+    if ( attributes[AttributeKey::uv()].valid() ) {
 
       if ( geometryGroup.__glUVBuffer ) {
 
@@ -3028,7 +3030,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     }
 
-    if ( attributes[AttributeKey::uv2()] >= 0 ) {
+    if ( attributes[AttributeKey::uv2()].valid() ) {
 
       if ( geometryGroup.__glUV2Buffer ) {
 
@@ -3046,8 +3048,8 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     }
 
     if ( material.skinning &&
-         attributes[AttributeKey::skinVertexA()] >= 0 && attributes[AttributeKey::skinVertexB()] >= 0 &&
-         attributes[AttributeKey::skinIndex()] >= 0 && attributes[AttributeKey::skinWeight()] >= 0 ) {
+         attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
+         attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
       glVertexAttribPointer( attributes[AttributeKey::skinVertexA()], 4, GL_FLOAT, false, 0, 0 );
@@ -3157,7 +3159,7 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
     glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ object.morphTargetBase ] );
     glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
-  } else if ( attributes[AttributeKey::position()] >= 0 ) {
+  } else if ( attributes[AttributeKey::position()].valid() ) {
 
   glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
     glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
@@ -3615,7 +3617,7 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
 
     const auto materialIndex = buffer.materialIndex;
 
-    if ( materialIndex >= 0 ) {
+    if ( materialIndex.valid() ) {
 
       auto& material = *object.geometry->materials[ materialIndex ];
 
@@ -3947,7 +3949,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
         if ( !material ) continue;
 
-        const auto customAttributesDirty = material->attributes.size() > 0 && areCustomAttributesDirty( *material );
+        const auto customAttributesDirty = areCustomAttributesDirty( *material );
 
         if ( geometry.verticesNeedUpdate || geometry.morphTargetsNeedUpdate ||
              geometry.uvsNeedUpdate      || geometry.normalsNeedUpdate      ||
@@ -3988,7 +3990,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
     if ( !material ) return;
 
-    const auto customAttributesDirty = material->attributes.size() > 0 && areCustomAttributesDirty( *material );
+    const auto customAttributesDirty = areCustomAttributesDirty( *material );
 
     if ( geometry.verticesNeedUpdate ||  geometry.colorsNeedUpdate || customAttributesDirty ) {
       setLineBuffers( geometry, GL_DYNAMIC_DRAW );
@@ -4005,7 +4007,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
     if ( !material ) return;
 
-    const auto customAttributesDirty = material->attributes.size() > 0 && areCustomAttributesDirty( *material );
+    const auto customAttributesDirty = areCustomAttributesDirty( *material );
 
     if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate || object.sortParticles || customAttributesDirty ) {
       setParticleBuffers( geometry, GL_DYNAMIC_DRAW, object );
@@ -4179,21 +4181,21 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
   auto& attributes = material.program->attributes;
 
-  if ( attributes[AttributeKey::position()] >= 0 )
+  if ( attributes[AttributeKey::position()].valid() )
     glEnableVertexAttribArray( attributes[AttributeKey::position()] );
 
-  if ( attributes[AttributeKey::color()] >= 0 )
+  if ( attributes[AttributeKey::color()].valid() )
     glEnableVertexAttribArray( attributes[AttributeKey::color()] );
 
-  if ( attributes[AttributeKey::normal()] >= 0 )
+  if ( attributes[AttributeKey::normal()].valid() )
     glEnableVertexAttribArray( attributes[AttributeKey::normal()] );
 
-  if ( attributes[AttributeKey::tangent()] >= 0 )
+  if ( attributes[AttributeKey::tangent()].valid() )
     glEnableVertexAttribArray( attributes[AttributeKey::tangent()] );
 
   if ( material.skinning &&
-       attributes[AttributeKey::skinVertexA()] >= 0 && attributes[AttributeKey::skinVertexB()] >= 0 &&
-       attributes[AttributeKey::skinIndex()] >= 0 && attributes[AttributeKey::skinWeight()] >= 0 ) {
+       attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
+       attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
     glEnableVertexAttribArray( attributes[AttributeKey::skinVertexA()] );
     glEnableVertexAttribArray( attributes[AttributeKey::skinVertexB()] );
@@ -4204,7 +4206,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
   for ( const auto& a : material.attributes ) {
     auto attributeIt = attributes.find( a.first );
-    if ( attributeIt != attributes.end() && attributeIt->second >= 0 ) {
+    if ( attributeIt != attributes.end() && attributeIt->second.valid() ) {
       glEnableVertexAttribArray( attributeIt->second );
     }
   }
@@ -4217,7 +4219,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
     for ( int i = 0; i < maxMorphTargets; i ++ ) {
       id = toString( base, i );
-      if ( attributes[ id ] >= 0 ) {
+      if ( attributes[ id ].valid() ) {
         glEnableVertexAttribArray( attributes[ id ] );
         material.numSupportedMorphTargets ++;
       }
@@ -4233,7 +4235,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
     for ( int i = 0; i < maxMorphNormals; i ++ ) {
       auto id = toString( base, i );
-      if ( attributes[ id ] >= 0 ) {
+      if ( attributes[ id ].valid() ) {
         glEnableVertexAttribArray( attributes[ id ] );
         material.numSupportedMorphNormals ++;
       }
@@ -4628,7 +4630,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     const auto& location = program.uniforms[ uniformAndKey.second ];
 
-    if ( location < 0 ) {
+    if ( !location.valid() ) {
       if ( warnIfNotFound )
         console().warn() << "three::GLRenderer::loadUniformsGeneric: Expected uniform \""
                          << uniformAndKey.second
@@ -5393,8 +5395,12 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     std::array<std::string, 10> identifiersArray = {
 
-      "position", "normal", "uv", "uv2", "tangent", "color",
-      "skinVertexA", "skinVertexB", "skinIndex", "skinWeight"
+      AttributeKey::position(), AttributeKey::normal(), 
+      AttributeKey::uv(), AttributeKey::uv2(),
+      AttributeKey::tangent(),
+      AttributeKey::color(),
+      AttributeKey::skinVertexA(), AttributeKey::skinVertexB(), 
+      AttributeKey::skinIndex(), AttributeKey::skinWeight()
 
     };
 

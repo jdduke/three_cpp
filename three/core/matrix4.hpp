@@ -102,7 +102,7 @@ public:
   THREE_DECL Matrix4& makePerspective( float fov, float aspect, float near, float far );
   THREE_DECL Matrix4& makeOrthographic( float left, float right, float top, float bottom, float near, float far );
 
-  Matrix4 clone() {
+  Matrix4 clone() const {
     return Matrix4( *this );
   }
 

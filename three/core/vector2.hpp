@@ -120,7 +120,7 @@ public:
     return ( lengthSq() < 0.0001 /* almostZero */ );
   }
 
-  Vector2 clone() {
+  Vector2 clone() const {
     return *this;
   }
 };

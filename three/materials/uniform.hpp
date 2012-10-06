@@ -4,6 +4,7 @@
 #include <three/common.hpp>
 
 #include <three/utils/any.hpp>
+#include <three/utils/index.hpp>
 #include <three/utils/properties.hpp>
 
 namespace three {
@@ -26,6 +27,8 @@ public:
   THREE::UniformType type;
   any value;
 
+  //////////////////////////////////////////////////////////////////////////
+
 private:
   THREE_DECL Uniform& swap( Uniform& other );
 };
@@ -33,7 +36,7 @@ private:
 /////////////////////////////////////////////////////////////////////////
 
 typedef Properties<std::string, Uniform> Uniforms;
-typedef std::unordered_map<std::string, int> UniformLocations;
+typedef std::unordered_map<std::string, Index> UniformLocations;
 typedef std::vector<std::pair<Uniform*, std::string>> UniformsList;
 
 /////////////////////////////////////////////////////////////////////////

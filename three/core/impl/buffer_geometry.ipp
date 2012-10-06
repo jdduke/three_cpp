@@ -11,16 +11,16 @@ namespace three {
 
 void BufferGeometry::applyMatrix( const Matrix4& matrix ) {
 
-  if ( contains( attributes, "position" ) ) {
-    matrix.multiplyVector3Array( attributes[ "position" ].array );
+  if ( auto positionsP = attributes.get( AttributeKey::position() ) ) {
+    matrix.multiplyVector3Array( positionsP->array );
     verticesNeedUpdate = true;
   }
 
-  if ( contains( attributes, "normal" ) ) {
+  if ( auto normalP = attributes.get( AttributeKey::normal() ) ) {
     Matrix4 matrixRotation;
     matrixRotation.extractRotation( matrix );
 
-    matrixRotation.multiplyVector3Array( attributes[ "normal" ].array );
+    matrixRotation.multiplyVector3Array( normalP->array );
     normalsNeedUpdate = true;
   }
 
@@ -30,9 +30,9 @@ void BufferGeometry::computeBoundingBox() {
 
   Box bb;
 
-  if ( contains( attributes, "positions" ) ) {
+  if ( auto positionsP = attributes.get( AttributeKey::position() ) ) {
 
-    const auto& positions = attributes[ "position" ].array;
+    const auto& positions = positionsP->array;
 
     if ( positions.size() > 2 ) {
 
@@ -51,11 +51,11 @@ void BufferGeometry::computeBoundingBox() {
 
 void BufferGeometry::computeBoundingSphere() {
 
-  if ( contains( attributes, "positions" ) ) {
+  if ( auto positionsP = attributes.get( AttributeKey::position() ) ) {
 
     float maxRadiusSq = 0;
 
-    const auto& positions = attributes[ "position" ].array;
+    const auto& positions = positionsP->array;
 
     for ( size_t i = 0, il = positions.size(); i < il; i += 3 ) {
 
@@ -73,31 +73,33 @@ void BufferGeometry::computeBoundingSphere() {
 
 void BufferGeometry::computeVertexNormals() {
 
-  if ( contains( attributes, "positions" ) && contains( attributes, "index" ) ) {
+  auto positionsP = attributes.get( AttributeKey::position() );
+  auto indicesP   = attributes.get( AttributeKey::index() );
+  if ( positionsP && indicesP ) {
 
-    const auto& indices = attributes[ "index" ].array;
-    const auto& positions = attributes[ "position" ].array;
+    const auto& indices = positionsP->array;
+    const auto& positions = indicesP->array;
 
     const auto nVertexElements = ( int )positions.size();
 
-    if ( !contains( attributes, "normal" ) ) {
-
-      attributes[ "normal" ] = Attribute( THREE::v3, nVertexElements );
-
-    } else {
+    if ( auto normalsP = attributes.get( AttributeKey::normal() ) ) {
 
       // reset existing normals to zero
 
-      auto& normals = attributes[ "normal" ].array;
+      auto& normals = normalsP->array;
       for ( size_t i = 0, il = normals.size(); i < il; i ++ ) {
 
         normals[ i ] = 0;
 
       }
 
+    } else {
+
+      attributes.add( AttributeKey::normal(), Attribute( THREE::v3, nVertexElements ) );
+
     }
 
-    auto& normals = attributes[ "normal" ].array;
+    auto& normals = attributes[ AttributeKey::normal() ].array;
 
     Vector3 pA, pB, pC, cb, ab;
 
@@ -173,29 +175,29 @@ void BufferGeometry::computeTangents() {
   // based on http://www.terathon.com/code/tangent.html
   // (per vertex tangents)
 
-  if ( !contains( attributes, "index" ) ||
-       !contains( attributes, "position" ) ||
-       !contains( attributes, "normal" ) ||
-       !contains( attributes, "uv" ) ) {
+  if ( !attributes.contains( AttributeKey::index() ) ||
+       !attributes.contains( AttributeKey::position() ) ||
+       !attributes.contains( AttributeKey::normal() ) ||
+       !attributes.contains( AttributeKey::uv() ) ) {
 
     console().warn( "Missing required attributes (index, position, normal or uv) in BufferGeometry.computeTangents()" );
     return;
 
   }
 
-  const auto& indices   = attributes[ "index" ].array;
-  const auto& positions = attributes[ "position" ].array;
-  const auto& normals   = attributes[ "normal" ].array;
-  const auto& uvs       = attributes[ "uv" ].array;
+  const auto& indices   = attributes[ AttributeKey::index() ].array;
+  const auto& positions = attributes[ AttributeKey::position() ].array;
+  const auto& normals   = attributes[ AttributeKey::normal() ].array;
+  const auto& uvs       = attributes[ AttributeKey::uv() ].array;
 
   const auto nVertices = ( int )positions.size() / 3;
 
-  if ( !contains( attributes, "tangent" ) ) {
+  if ( !attributes.contains( AttributeKey::tangent() ) ) {
     const auto nTangentElements = 4 * nVertices;
-    attributes[ "tangent" ] = Attribute( THREE::v4, nTangentElements );
+    attributes[ AttributeKey::tangent() ] = Attribute( THREE::v4, nTangentElements );
   }
 
-  auto& tangents = attributes[ "tangent" ].array;
+  auto& tangents = attributes[ AttributeKey::tangent() ].array;
 
   std::vector<Vector3> tan1( nVertices ), tan2( nVertices );
 
