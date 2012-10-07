@@ -24,6 +24,12 @@ inline std::string threeDataPath( const std::string& relativePath ) {
 /////////////////////////////////////////////////////////////////////////
 
 template < typename C >
+inline C& concat( C& a, const C& b ) {
+  a.insert( a.end(), b.begin(), b.end() );
+  return a;
+}
+
+template < typename C >
 inline void grow( C& c, size_t size, float factor = 1.5f ) {
   if ( c.size() < size )
     c.resize( ( int )( factor * size ) );

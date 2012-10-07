@@ -182,7 +182,7 @@ Matrix4& Matrix4::multiplyScalar( float s ) {
 
 }
 
-Vector3 Matrix4::multiplyVector3( Vector3 v ) const {
+Vector3& Matrix4::multiplyVector3( Vector3& v ) const {
 
   auto vx = v.x, vy = v.y, vz = v.z;
   auto d = 1.f / ( te[3] * vx + te[7] * vy + te[11] * vz + te[15] );
@@ -195,7 +195,7 @@ Vector3 Matrix4::multiplyVector3( Vector3 v ) const {
 
 }
 
-Vector4 Matrix4::multiplyVector4( Vector4 v ) const {
+Vector4& Matrix4::multiplyVector4( Vector4& v ) const {
 
   float vx = v.x, vy = v.y, vz = v.z, vw = v.w;
 
@@ -229,7 +229,7 @@ std::vector<float>& Matrix4::multiplyVector3Array( std::vector<float>& a ) const
   return a;
 }
 
-Vector3 Matrix4::rotateAxis( Vector3 v ) const {
+Vector3& Matrix4::rotateAxis( Vector3& v ) const {
 
   auto vx = v.x, vy = v.y, vz = v.z;
 

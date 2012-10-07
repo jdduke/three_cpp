@@ -4179,6 +4179,11 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
                                    material.attributes,
                                    parameters );
 
+  if ( !material.program ) {
+    console().error() << "Aborting material initialization";
+    return;
+  }
+
   auto& attributes = material.program->attributes;
 
   if ( attributes[AttributeKey::position()].valid() )
@@ -5332,13 +5337,13 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
   GL_CALL( glLinkProgram( glProgram ) );
 
   if ( !glTrue( glGetProgramParameter( glProgram, GL_LINK_STATUS ) ) ) {
-
-    console().error() << "Could not initialise shader\n"
-                      << "VALIDATE_STATUS: " << glGetProgramParameter( glProgram, GL_VALIDATE_STATUS ) << ", gl error [" << glGetError() << "]";
-
+    int loglen;
+    char logbuffer[1000];
+    glGetProgramInfoLog( glProgram, sizeof( logbuffer ), &loglen, logbuffer );
+    console().error( logbuffer );
+    //console().error() << addLineNumbers( source );
     glDeleteProgram( glProgram );
     glProgram = 0;
-
   }
 
   // clean up

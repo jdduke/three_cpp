@@ -13,12 +13,6 @@
 
 using namespace three;
 
-template < typename T >
-inline void concat( std::vector<T>& a, const std::vector<T>& b ) {
-  a.insert( a.end(), b.begin(), b.end() );
-}
-
-
 std::vector<Vector3> hilbert3D( Vector3 center,
                                 float side,
                                 int iterations,

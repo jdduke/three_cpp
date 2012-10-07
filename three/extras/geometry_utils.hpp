@@ -6,127 +6,124 @@ namespace three {
 class GeometryUtils {
 public:
 
-	static void merge( Geometry& geometry1, Object3D& object2 ) {
+  static void merge( Geometry& geometry1, Object3D& object2 ) {
 
-		if ( object2.type() == THREE::Mesh ) {
+    if ( object2.type() == THREE::Mesh ) {
 
-			if ( object2.matrixAutoUpdate )
-				object2.updateMatrix();
+      if ( object2.matrixAutoUpdate )
+        object2.updateMatrix();
 
-			Matrix4 matrix, matrixRotation;
+      Matrix4 matrix, matrixRotation;
 
-			matrix = object2.matrix;
-			matrixRotation.extractRotation( matrix );//, object2.scale );
+      matrix = object2.matrix;
+      matrixRotation.extractRotation( matrix );//, object2.scale );
 
-			merge( geometry1, *object2.geometry, &matrix, &matrixRotation );
+      merge( geometry1, *object2.geometry, &matrix, &matrixRotation );
 
-		} else {
+    } else {
 
-			merge( geometry1, *object2.geometry );
+      merge( geometry1, *object2.geometry );
 
-		}
+    }
 
-	}
+  }
 
-	static void merge( Geometry& geometry1,
-	                   Geometry& geometry2,
-	                   const Matrix4* matrix = nullptr,
-	                   const Matrix4* matrixRotation = nullptr ) {
+  static void merge( Geometry& geometry1,
+                     Geometry& geometry2,
+                     const Matrix4* matrix = nullptr,
+                     const Matrix4* matrixRotation = nullptr ) {
 
-		auto vertexOffset = (int)geometry1.vertices.size();
+    auto vertexOffset = (int)geometry1.vertices.size();
 
-		auto& vertices1 = geometry1.vertices;
-		auto& vertices2 = geometry2.vertices;
-		auto& faces1 = geometry1.faces;
-		auto& faces2 = geometry2.faces;
-		auto& uvs1 = geometry1.faceVertexUvs[ 0 ];
-		auto& uvs2 = geometry2.faceVertexUvs[ 0 ];
+    auto& vertices1 = geometry1.vertices;
+    auto& vertices2 = geometry2.vertices;
+    auto& faces1 = geometry1.faces;
+    auto& faces2 = geometry2.faces;
+    auto& uvs1 = geometry1.faceVertexUvs[ 0 ];
+    auto& uvs2 = geometry2.faceVertexUvs[ 0 ];
 
-		std::unordered_map<int, int> geo1MaterialsMap;
+    std::unordered_map<int, int> geo1MaterialsMap;
 
-		for ( int i = 0; i < (int)geometry1.materials.size(); i ++ ) {
-			const auto& id = geometry1.materials[ i ]->id;
-			geo1MaterialsMap[ id ] = i;
-		}
+    for ( int i = 0; i < (int)geometry1.materials.size(); i ++ ) {
+      const auto& id = geometry1.materials[ i ]->id;
+      geo1MaterialsMap[ id ] = i;
+    }
 
-		// vertices
+    // vertices
+    concat( vertices1, vertices2 );
 
-		for ( size_t i = 0, il = vertices2.size(); i < il; i ++ ) {
+    if ( matrix ) {
+      std::for_each( vertices1.begin() + vertexOffset, vertices1.end(),
+        [&matrix] ( Vertex& v ) { matrix->multiplyVector3( v ); }
+      );
+    }
 
-			auto vertexCopy = vertices2[ i ].clone();
+    // faces
 
-			if ( matrix ) matrix->multiplyVector3( vertexCopy );
+    for ( size_t i = 0, il = faces2.size(); i < il; i ++ ) {
 
-			vertices1.push_back( vertexCopy );
+      const auto& face = faces2[ i ];
 
-		}
+      Face faceCopy( 0, 0, 0 );//, normal, color,
+      const auto& faceVertexNormals = face.vertexNormals;
+      const auto& faceVertexColors = face.vertexColors;
 
-		// faces
+      if ( face.type() == THREE::Face3 ) {
+        faceCopy = Face3( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset );
+      } else if ( face.type() == THREE::Face4 ) {
+        faceCopy = Face4( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset, face.d + vertexOffset );
+      }
 
-		for ( size_t i = 0, il = faces2.size(); i < il; i ++ ) {
+      faceCopy.normal.copy( face.normal );
 
-			const auto& face = faces2[ i ];
+      if ( matrixRotation ) matrixRotation->multiplyVector3( faceCopy.normal );
 
-			Face faceCopy( 0, 0, 0 );//, normal, color,
-			const auto& faceVertexNormals = face.vertexNormals;
-			const auto& faceVertexColors = face.vertexColors;
+      for ( size_t j = 0, jl = faceVertexNormals.size(); j < jl; j ++ ) {
 
-			if ( face.type() == THREE::Face3 ) {
-				faceCopy = Face3( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset );
-			} else if ( face.type() == THREE::Face4 ) {
-				faceCopy = Face4( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset, face.d + vertexOffset );
-			}
+        auto normal = faceVertexNormals[ j ].clone();
 
-			faceCopy.normal.copy( face.normal );
+        if ( matrixRotation ) matrixRotation->multiplyVector3( normal );
 
-			if ( matrixRotation ) matrixRotation->multiplyVector3( faceCopy.normal );
+        faceCopy.vertexNormals[ j ] = normal;
 
-			for ( size_t j = 0, jl = faceVertexNormals.size(); j < jl; j ++ ) {
+      }
 
-				auto normal = faceVertexNormals[ j ].clone();
+      faceCopy.color.copy( face.color );
 
-				if ( matrixRotation ) matrixRotation->multiplyVector3( normal );
+      faceCopy.vertexColors = faceVertexColors;
 
-				faceCopy.vertexNormals[ j ] = normal;
+      if ( face.materialIndex != -1 ) {
 
-			}
+        auto material2 = geometry2.materials[ face.materialIndex ];
+        auto materialId2 = material2->id;
+        int materialIndex = 0;
 
-			faceCopy.color.copy( face.color );
+        auto materialIndexIt = geo1MaterialsMap.find( materialId2 );
+        if ( materialIndexIt == geo1MaterialsMap.end() ) {
 
-			faceCopy.vertexColors = faceVertexColors;
+          materialIndex = (int)geometry1.materials.size();
+          geo1MaterialsMap[ materialId2 ] = materialIndex;
 
-			if ( face.materialIndex != -1 ) {
+          geometry1.materials.push_back( material2 );
 
-				auto material2 = geometry2.materials[ face.materialIndex ];
-				auto materialId2 = material2->id;
-				int materialIndex = 0;
+        }
 
-				auto materialIndexIt = geo1MaterialsMap.find( materialId2 );
-				if ( materialIndexIt == geo1MaterialsMap.end() ) {
+        faceCopy.materialIndex = materialIndex;
 
-					materialIndex = (int)geometry1.materials.size();
-					geo1MaterialsMap[ materialId2 ] = materialIndex;
+      }
 
-					geometry1.materials.push_back( material2 );
+      faceCopy.centroid.copy( face.centroid );
+      if ( matrix ) matrix->multiplyVector3( faceCopy.centroid );
 
-				}
+      faces1.push_back( faceCopy );
 
-				faceCopy.materialIndex = materialIndex;
+    }
 
-			}
+    // uvs
 
-			faceCopy.centroid.copy( face.centroid );
-			if ( matrix ) matrix->multiplyVector3( faceCopy.centroid );
+    concat( uvs1, uvs2 );
 
-			faces1.push_back( faceCopy );
-
-		}
-
-		// uvs
-
-		uvs1.insert( uvs1.end(), uvs2.begin(), uvs2.end() );
-
-	}
+  }
 
 }; // GeometryUtils
 

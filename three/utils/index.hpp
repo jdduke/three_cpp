@@ -14,10 +14,11 @@ struct IndexT {
   //THREE_EXPLICIT operator bool() const { return value != invalid; }
   bool valid() const { return value != invalid; }
 
+  struct IncompleteType;
+
   operator T() const { return value; }
-  //operator int() const { return (int)value; }
   operator unsigned() const { return (unsigned)value; }
-  //operator size_t() const { return (size_t)value; }
+  operator typename std::conditional<sizeof(size_t)!=sizeof(unsigned),size_t,IncompleteType>::type () const { return (size_t)value; }
 
   T value;
 };

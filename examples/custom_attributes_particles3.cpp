@@ -5,6 +5,7 @@
 #include <three/extras/image_utils.hpp>
 #include <three/objects/mesh.hpp>
 #include <three/materials/shader_material.hpp>
+#include <three/materials/mesh_face_material.hpp>
 #include <three/objects/particle_system.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
@@ -16,12 +17,12 @@
 const char* vertexShader() {
   return
 "attribute float size;\n"
-"attribute vec3 ca;\n"
-"varying vec3 vColor;\n"
+"attribute vec4 ca;\n"
+"varying vec4 vColor;\n"
 "void main() {\n"
 "  vColor = ca;\n"
 "  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
-"  gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );\n"
+"  gl_PointSize = size * ( 150.0 / length( mvPosition.xyz ) );\n"
 "  gl_Position = projectionMatrix * mvPosition;\n"
 "}\n";
 }
@@ -30,24 +31,31 @@ const char* fragmentShader() {
   return
 "uniform vec3 color;\n"
 "uniform sampler2D texture;\n"
-"varying vec3 vColor;\n"
+"varying vec4 vColor;\n"
 "void main() {\n"
-"  gl_FragColor = vec4( color * vColor, 1.0 );\n"
-"  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );\n"
+"  vec4 outColor = texture2D( texture, gl_PointCoord );\n"
+"  if ( outColor.a < 0.5 ) discard;\n"
+"  gl_FragColor = outColor * vec4( color * vColor.xyz, 1.0 );\n"
+"  float depth = gl_FragCoord.z / gl_FragCoord.w;\n"
+"  const vec3 fogColor = vec3( 0.0 );\n"
+"  float fogFactor = smoothstep( 200.0, 600.0, depth );\n"
+"  gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n"
 "}\n";
 }
 
 using namespace three;
 
-void shader( GLRenderer::Ptr renderer ) {
+void custom_attributes_particles3( GLRenderer::Ptr renderer ) {
 
  auto camera = PerspectiveCamera::create(
-    45, ( float )renderer->width() / renderer->height(), 1, 10000
+    40, ( float )renderer->width() / renderer->height(), 1, 1000
   );
-  camera->position.z = 300;
+  camera->position.z = 500;
 
   auto scene = Scene::create();
-  auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/disc.png" ) );
+
+  auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/ball.png" ) );
+  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
 
   Attributes attributes;
   attributes[ "size" ] = Attribute( THREE::f );
@@ -57,8 +65,6 @@ void shader( GLRenderer::Ptr renderer ) {
   uniforms[ "color" ]      = Uniform( THREE::c, Color( 0xffffff ) );
   uniforms[ "texture" ]    = Uniform( THREE::t, texture.get() );
 
-  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
-
   auto shaderMaterial = ShaderMaterial::create(
     Material::Parameters().add( "uniforms", uniforms )
                           .add( "attributes", attributes )
@@ -67,18 +73,71 @@ void shader( GLRenderer::Ptr renderer ) {
   );
 
   // Geometries
-  const auto radius = 100.f, segments = 68.f, rings = 38.f;
-  auto geometry = SphereGeometry::create( radius, segments, rings );
+  auto geometry = Geometry::create();
+  
+  geometry->vertices.reserve( 100000 );
+
+  const auto radius = 100.f, inner = 0.6f * radius;
+  for ( auto i = 0; i < 100000; i ++ ) {
+
+    Vector3 vertex( Math::random( -1.f, 1.f ),
+                    Math::random( -1.f, 1.f ),
+                    Math::random( -1.f, 1.f ) );
+    vertex.multiplyScalar( radius );
+
+    if ( ( vertex.x > inner || vertex.x < -inner ) ||
+         ( vertex.y > inner || vertex.y < -inner ) ||
+         ( vertex.z > inner || vertex.z < -inner )  )
+
+      geometry->vertices.push_back( vertex );
+
+  }
   const auto vc1 = geometry->vertices.size();
 
-  auto geometry2 = CubeGeometry::create( 0.8f * radius, 0.8f * radius, 0.8f * radius, 10, 10, 10 );
+  // geometry 2
 
-  GeometryUtils::merge( *geometry, *geometry2 );
+  auto dummyMaterial = MeshFaceMaterial::create();
 
-  auto sphere = ParticleSystem::create( geometry, shaderMaterial );
-  sphere->sortParticles = true;
+  const auto radius2 = 200.f;
+  auto geometry2 = CubeGeometry::create( radius2, 0.1f * radius2, 0.1f * radius2, 50, 5, 5 );
 
-  const auto& vertices = sphere->geometry->vertices;
+  auto addGeo = [&]( const Geometry::Ptr& geo, float x, float y, float z, float ry ) {
+    auto m = Mesh::create( geo, dummyMaterial );
+    m->position.set( x, y, z );
+    m->rotation.y = ry;
+
+    GeometryUtils::merge( *geometry, *m );
+  };
+
+  // side 1
+
+  addGeo( geometry2, 0,  110,  110, 0 );
+  addGeo( geometry2, 0,  110, -110, 0 );
+  addGeo( geometry2, 0, -110,  110, 0 );
+  addGeo( geometry2, 0, -110, -110, 0 );
+
+  // side 2
+
+  addGeo( geometry2,  110,  110, 0, Math::PI()/2 );
+  addGeo( geometry2,  110, -110, 0, Math::PI()/2 );
+  addGeo( geometry2, -110,  110, 0, Math::PI()/2 );
+  addGeo( geometry2, -110, -110, 0, Math::PI()/2 );
+
+  // corner edges
+
+  auto geometry3 = CubeGeometry::create( 0.1f * radius2, radius2 * 1.2f, 0.1f * radius2, 5, 60, 5 );
+
+  addGeo( geometry3,  110, 0,  110, 0 );
+  addGeo( geometry3,  110, 0, -110, 0 );
+  addGeo( geometry3, -110, 0,  110, 0 );
+  addGeo( geometry3, -110, 0, -110, 0 );
+
+  // particle system
+
+  auto object = ParticleSystem::create( geometry, shaderMaterial );
+  object->geometry->dynamic = true;
+
+  const auto& vertices = object->geometry->vertices;
   const auto vertexCount = vertices.size();
 
   std::vector<float> valuesSize( vertexCount );
@@ -90,14 +149,14 @@ void shader( GLRenderer::Ptr renderer ) {
 
     if ( v < vc1 ) {
       valuesSize[ v ] = 10;
-      valuesColor[ v ].setHSV( 0.01f  + 0.1f * ( (float)v / vc1 ),
+      valuesColor[ v ].setHSV( 0.5f  + 0.2f * ( (float)v / vc1 ),
                                0.99f,
-                               ( vertices[ v ].y + radius ) / ( 2.f * radius ) );
+                               1.f );
     } else {
-      valuesSize[ v ] = 40;
-      valuesColor[ v ].setHSV( 0.6f,
-                               0.75f,
-                               ( 0.5f + vertices[ v ].y ) / ( 0.8f * radius ) );
+      valuesSize[ v ] = 55;
+      valuesColor[ v ].setHSV( 0.1f,
+                               0.99f,
+                               1.f );
     }
 
   }
@@ -108,7 +167,7 @@ void shader( GLRenderer::Ptr renderer ) {
   size.value  = std::move(valuesSize);
   color.value = std::move(valuesColor);
 
-  scene->add( sphere );
+  scene->add( object );
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -135,13 +194,12 @@ void shader( GLRenderer::Ptr renderer ) {
   anim::gameLoop( [&]( float dt ) -> bool {
 
     time += dt;
-    sphere->rotation.y = time * .03f;
-    sphere->rotation.z = time * .03f;
+    object->rotation.y = object->rotation.z = time * .3f;
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {
       if ( i < vc1 )
-        sizes[ i ] = 16.f + 12.f * Math::sin( 0.1f * i + time * 3.f );
+        sizes[ i ] = 26.f + 32.f * Math::sin( 0.1f * i + time * 3.f );
     }
     size.needsUpdate = true;
 
@@ -173,7 +231,7 @@ int main( int argc, char* argv[] ) {
     return 0;
   }
 
-  shader( renderer );
+  custom_attributes_particles3( renderer );
 
   return 0;
 }

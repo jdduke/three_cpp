@@ -44,11 +44,11 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL Vector3 multiplyVector3( Vector3 v ) const;
-  THREE_DECL Vector4 multiplyVector4( Vector4 v ) const;
+  THREE_DECL Vector3& multiplyVector3( Vector3& v ) const;
+  THREE_DECL Vector4& multiplyVector4( Vector4& v ) const;
   THREE_DECL std::vector<float>& multiplyVector3Array( std::vector<float>& a ) const;
 
-  THREE_DECL Vector3 rotateAxis( Vector3 v ) const;
+  THREE_DECL Vector3& rotateAxis( Vector3& v ) const;
   THREE_DECL Vector4 crossVector( Vector4 a ) const;
   THREE_DECL float determinant() const;
   THREE_DECL Matrix4& transpose();
