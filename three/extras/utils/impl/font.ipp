@@ -6,6 +6,8 @@
 
 #include <three/extras/utils/font.hpp>
 
+#if !THREE_NEW_FONT
+
 #include <three/gl.hpp>
 #include <three/core/color.hpp>
 #include <three/core/vector2.hpp>
@@ -322,11 +324,13 @@ bool Font::initialize( const std::string& ttf,
                 texels.data() );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
- 
+
   return true;
 }
 
-} // namespace utisln
+} // namespace utils
 } // namespace three
+
+#endif // !THREE_NEW_FONT
 
 #endif // THREE_FONT_IPP

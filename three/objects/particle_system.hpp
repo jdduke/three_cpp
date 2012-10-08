@@ -1,5 +1,5 @@
 #ifndef THREE_PARTICLE_SYSTEM_HPP
-#define THREE_PARTICLE_SYSTEYM_HPP
+#define THREE_PARTICLE_SYSTEM_HPP
 
 #include <three/common.hpp>
 

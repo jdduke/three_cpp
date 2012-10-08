@@ -30,6 +30,8 @@ class Frustum;
 class Visitor;
 class ConstVisitor;
 
+class Font;
+
 class RenderableFace;
 class RenderableObject;
 class RenderableLine;

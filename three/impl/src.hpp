@@ -15,6 +15,7 @@
 #include <three/core/impl/object3d.ipp>
 
 #include <three/materials/impl/material.ipp>
+#include <three/materials/impl/text_2d_material.ipp>
 #include <three/materials/impl/uniform.ipp>
 
 #include <three/renderers/impl/gl_shaders.ipp>

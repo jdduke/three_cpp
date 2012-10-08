@@ -1,21 +1,16 @@
-#ifndef THREE_FONT_HPP
-#define THREE_FONT_HPP
-
-#define THREE_NEW_FONT 1
-#if THREE_NEW_FONT
-
-#include "font2.hpp"
-
-#else
+#ifndef THREE_FONT2_HPP
+#define THREE_FONT2_HPP
 
 #include <three/fwd.hpp>
 
+#include <three/core/uv.hpp>
+#include <three/core/vertex.hpp>
+#include <three/textures/texture.hpp>
 #include <three/utils/noncopyable.hpp>
 
 #include <memory>
 
 namespace three {
-namespace utils {
 
 class Font : NonCopyable {
 public:
@@ -29,10 +24,12 @@ public:
                                 int firstCharacter = 32,
                                 int countCharacter = 96);
 
-  THREE_DECL void render( const char* text,
-                          float x, float y,
-                          float w, float h,
-                          const Color& color );
+  THREE_DECL void generate( const std::string& text,
+                            std::vector<Vertex>& vertices,
+                            std::vector<Face>& faces,
+                            std::vector<std::array<UV,4>>& faceUvs );
+
+  THREE_DECL const Texture::Ptr& texture() const;
 
   THREE_DECL ~Font();
 
@@ -52,13 +49,10 @@ private:
 
 };
 
-} // namespace utils
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/utils/impl/font.ipp>
+# include <three/extras/utils/impl/font2.ipp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // 1
-
-#endif // THREE_FONT_HPP
+#endif // THREE_FONT2_HPP
