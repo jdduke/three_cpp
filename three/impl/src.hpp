@@ -13,6 +13,9 @@
 #include <three/core/impl/matrix4.ipp>
 #include <three/core/impl/matrix3.ipp>
 #include <three/core/impl/object3d.ipp>
+#include <three/core/impl/quaternion.ipp>
+
+#include <three/objects/impl/mesh.ipp>
 
 #include <three/materials/impl/material.ipp>
 #include <three/materials/impl/text_2d_material.ipp>

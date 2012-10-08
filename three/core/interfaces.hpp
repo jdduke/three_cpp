@@ -2,6 +2,7 @@
 #define THREE_INTERFACES_HPP
 
 #include <three/fwd.hpp>
+#include <three/constants.hpp>
 
 namespace three {
 

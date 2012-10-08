@@ -11,6 +11,9 @@
 #include <three/renderers/gl_renderer.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 
+#include <three/utils/conversion.hpp>
+#include <three/utils/template.hpp>
+
 namespace three {
 
 struct ExampleSession {

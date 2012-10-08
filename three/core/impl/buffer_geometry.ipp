@@ -2,6 +2,7 @@
 #define THREE_BUFFER_GEOMETRY_IPP
 
 #include <three/common.hpp>
+#include <three/console.hpp>
 
 #include <three/core/buffer_geometry.hpp>
 #include <three/core/matrix4.hpp>

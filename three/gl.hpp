@@ -32,6 +32,8 @@
 #  include <GL/gl.h>
 #endif
 
+#include <three/console.hpp>
+
 //#if defined(THREE_SDL)
 //#include <SDL_opengl.h>
 //#endif

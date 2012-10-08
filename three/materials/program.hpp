@@ -2,8 +2,8 @@
 #define THREE_PROGRAM_HPP
 
 #include <three/common.hpp>
-#include <three/utils.hpp>
 
+#include <three/utils/memory.hpp>
 #include <three/utils/noncopyable.hpp>
 
 #include <three/materials/attribute.hpp>

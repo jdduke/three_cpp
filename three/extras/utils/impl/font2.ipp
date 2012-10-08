@@ -2,7 +2,6 @@
 #define THREE_FONT2_IPP
 
 #include <three/common.hpp>
-#include <three/utils.hpp>
 
 #include <three/extras/utils/font2.hpp>
 
@@ -131,7 +130,7 @@ void Font::generate( const std::string& text,
       vert[ 3 ].x = quad.x0; vert[ 3 ].y = quad.y1;
       uv  [ 3 ].u = quad.s0; uv  [ 3 ].v = quad.t1;
 
-      const auto offset = vertices.size();
+      const auto offset = (int)vertices.size();
 
       vertices.insert( vertices.end(), vert.data(), vert.data() + 4 );
 

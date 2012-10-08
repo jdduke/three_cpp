@@ -3,6 +3,7 @@
 
 #include <three/extras/image_utils.hpp>
 
+#include <three/console.hpp>
 #include <three/extras/utils/impl/stb_image.h>
 
 #include <vector>

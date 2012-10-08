@@ -3,12 +3,13 @@
 
 #include <three/scenes/scene.hpp>
 
-#include <three/utils.hpp>
 #include <three/visitor.hpp>
 
 #include <three/objects/particle.hpp>
 #include <three/objects/line.hpp>
 #include <three/lights/light.hpp>
+
+#include <three/utils/template.hpp>
 
 namespace three {
 

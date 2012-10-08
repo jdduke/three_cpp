@@ -12,6 +12,7 @@
 #include <three/materials/material.hpp>
 #include <three/core/geometry.hpp>
 
+#include <three/utils/memory.hpp>
 #include <three/utils/noncopyable.hpp>
 
 #include <algorithm>
@@ -19,6 +20,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#define THREE_IMPL_OBJECT(NAME)                                       \
+  virtual THREE::Type type() const override { return THREE:: NAME; }  \
+  virtual void visit( Visitor& v ) override { v( *this ); }           \
+  virtual void visit( ConstVisitor& v ) const override { v( *this ); }
 
 namespace three {
 
@@ -31,12 +37,11 @@ public:
 
   static Ptr create() { return three::make_shared<Object3D>(); }
 
+  //////////////////////////////////////////////////////////////////////////
+
   virtual THREE::Type type() const { return THREE::Object3D; }
-
   virtual void visit( Visitor& v ) { };
-  virtual void visit( ConstVisitor& v ) { };
-
-  //virtual ~Object3D() { console().log() << "Object3D::~Object3D: Destroying " << id; }
+  virtual void visit( ConstVisitor& v ) const { };
   virtual ~Object3D() { }
 
   /////////////////////////////////////////////////////////////////////////
@@ -137,12 +142,12 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
+  THREE_DECL virtual void lookAt( const Vector3& vector );
   THREE_DECL void applyMatrix( const Matrix4& m );
   THREE_DECL void translate( float distance, Vector3 axis );
   THREE_DECL void translateX( float distance );
   THREE_DECL void translateY( float distance );
   THREE_DECL void translateZ( float distance );
-  THREE_DECL void lookAt( const Vector3& vector );
 
   THREE_DECL void add( const Ptr& object );
   THREE_DECL void remove( const Ptr& object );

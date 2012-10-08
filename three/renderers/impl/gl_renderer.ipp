@@ -4,7 +4,7 @@
 #include <three/renderers/gl_renderer.hpp>
 
 #include <three/common.hpp>
-
+#include <three/console.hpp>
 #include <three/gl.hpp>
 
 #include <three/cameras/camera.hpp>
@@ -33,6 +33,8 @@
 #include <three/textures/texture.hpp>
 
 #include <three/utils/hash.hpp>
+#include <three/utils/conversion.hpp>
+#include <three/utils/template.hpp>
 
 namespace three {
 
@@ -558,7 +560,7 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
   auto& material = *object.material;
 
-  //if ( material.attributes.size() > 0 ) 
+  //if ( material.attributes.size() > 0 )
   {
 
     geometry.__glCustomAttributesList.clear();
@@ -5400,11 +5402,11 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     std::array<std::string, 10> identifiersArray = {
 
-      AttributeKey::position(), AttributeKey::normal(), 
+      AttributeKey::position(), AttributeKey::normal(),
       AttributeKey::uv(), AttributeKey::uv2(),
       AttributeKey::tangent(),
       AttributeKey::color(),
-      AttributeKey::skinVertexA(), AttributeKey::skinVertexB(), 
+      AttributeKey::skinVertexA(), AttributeKey::skinVertexB(),
       AttributeKey::skinIndex(), AttributeKey::skinWeight()
 
     };

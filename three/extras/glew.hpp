@@ -1,6 +1,7 @@
 #ifndef THREE_GLEW_HPP
 #define THREE_GLEW_HPP
 
+#include <three/console.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
 namespace three {

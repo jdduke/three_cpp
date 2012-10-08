@@ -3,6 +3,8 @@
 
 #include <three/core/object3d.hpp>
 
+#include <three/console.hpp>
+
 namespace three {
 
 void Object3D::applyMatrix( const Matrix4& m ) {

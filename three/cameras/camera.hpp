@@ -31,7 +31,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL void lookAt( const Vector3& vector ) {
+  THREE_DECL void lookAt( const Vector3& vector ) override {
     matrix.lookAt( position, vector, up );
     if ( rotationAutoUpdate ) {
       rotation = matrix.getEulerRotation( eulerOrder );
@@ -47,10 +47,7 @@ protected:
 
   /////////////////////////////////////////////////////////////////////////
 
-  virtual THREE::Type type() const { return THREE::Camera; }
-
-  virtual void visit( Visitor& v ) { v( *this ); }
-  virtual void visit( ConstVisitor& v ) const { v( *this ); }
+  THREE_IMPL_OBJECT(Camera)
 
 };
 

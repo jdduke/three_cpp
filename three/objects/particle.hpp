@@ -19,10 +19,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  virtual THREE::Type type() const { return THREE::Particle; }
-
-  virtual void visit( Visitor& v ) { v( *this ); }
-  virtual void visit( ConstVisitor& v ) const { v( *this ); }
+  THREE_IMPL_OBJECT(Particle)
 
   /////////////////////////////////////////////////////////////////////////
 

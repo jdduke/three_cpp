@@ -12,72 +12,43 @@
 
 namespace three {
 
-class Mesh : public Object3D {
-public:
+  class Mesh : public Object3D {
+  public:
 
-  typedef std::shared_ptr<Mesh> Ptr;
+    typedef std::shared_ptr<Mesh> Ptr;
 
-  static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material ) {
-    return three::make_shared<Mesh>( geometry, material );
-  }
+    THREE_DECL static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  virtual THREE::Type type() const { return THREE::Mesh; }
+    virtual THREE::Type type() const { return THREE::Mesh; }
+    virtual void visit( Visitor& v ) { v( *this ); }
+    virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
-  virtual void visit( Visitor& v ) { v( *this ); }
-  virtual void visit( ConstVisitor& v ) const { v( *this ); }
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
+    float boundRadius;
+    int morphTargetBase;
 
-  float boundRadius;
-  int morphTargetBase;
+    std::vector<int> morphTargetForcedOrder;
+    std::vector<int> morphTargetInfluences;
+    std::unordered_map<std::string, int> morphTargetDictionary;
 
-  std::vector<int> morphTargetForcedOrder;
-  std::vector<int> morphTargetInfluences;
-  std::unordered_map<std::string, int> morphTargetDictionary;
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
+    THREE_DECL int getMorphTargetIndexByName( const std::string& name );
 
-  int getMorphTargetIndexByName( const std::string& name ) {
-    auto morphTargetIndexIter = morphTargetDictionary.find( name );
-    if ( morphTargetIndexIter != morphTargetDictionary.end() )
-      return morphTargetIndexIter->second;
+  protected:
 
-    console().log( "Three.Mesh.getMorphTargetIndexByName: morph target does not exist, returning 0" );
-    return 0;
-  }
+    THREE_DECL Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material );
 
-protected:
-
-  Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material )
-    : Object3D( material, geometry ),
-      boundRadius( 0 ), morphTargetBase( -1 ) {
-
-    if ( geometry ) {
-
-      if ( geometry->boundingSphere.radius == 0 ) {
-        geometry->computeBoundingSphere();
-      }
-
-      boundRadius = geometry->boundingSphere.radius;
-
-      // setup morph targets
-
-      if ( geometry->morphTargets.size() > 0 ) {
-
-        morphTargetBase = -1;
-        int m = 0;
-
-        for ( const auto& morphTarget : geometry->morphTargets ) {
-          morphTargetInfluences.push_back( 0 );
-          morphTargetDictionary[ morphTarget.name ] = m++;
-        }
-      }
-    }
-  }
-};
+  };
 
 } // namespace three
+
+
+#if defined(THREE_HEADER_ONLY)
+# include <three/objects/impl/mesh.ipp>
+#endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_MESH_HPP

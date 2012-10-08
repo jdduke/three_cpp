@@ -5,7 +5,7 @@
 
 #include <three/core/geometry_buffer.hpp>
 
-#include <three/utils.hpp>
+#include <three/utils/memory.hpp>
 
 #include <vector>
 

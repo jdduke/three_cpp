@@ -13,6 +13,7 @@
 #include <three/textures/texture.hpp>
 
 #include <three/utils/any.hpp>
+#include <three/utils/memory.hpp>
 #include <three/utils/noncopyable.hpp>
 #include <three/utils/properties.hpp>
 

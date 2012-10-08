@@ -63,11 +63,15 @@
 #  if GCC_VERSION >= 40600
 #    define THREE_HAS_RANGE_FOR 1
 #  endif
+#  if GCC_VERSION >= 40700
+#    define THREE_HAS_ALIAS_TEMPLATES 1
+#  endif
 #elif defined(__clang__)
 #  define THREE_HAS_VARIADIC_TEMPLATES __has_feature(cxx_variadic_templates)
 #  define THREE_HAS_DELETED_FUNCTIONS  __has_feature(cxx_deleted_functions)
 #  define THREE_HAS_RVALUE_REFERENCES  __has_feature(cxx_rvalue_references)
 #  define THREE_HAS_RANGE_FOR          __has_feature(cxx_range_for)
+#  define THREE_HAS_ALIAS_TEMPLATES    __has_feature(cxx_alias_templates)
 #  define THREE_HAS_EXPLICIT_CONVERSION_OPERATORS __has_feature(cxx_explicit_conversions)
 #elif defined(_MSC_VER)
 // No variadics, no deleted functions, no fun :(
@@ -94,7 +98,9 @@
 #if !defined(THREE_HAS_EXPLICIT_CONVERSION_OPERATORS)
 # define THREE_HAS_EXPLICIT_CONVERSION_OPERATORS 0
 #endif
-
+#if !defined(THREE_HAS_ALIAS_TEMPLATES)
+# define THREE_HAS_ALIAS_TEMPLATES 0
+#endif
 
 #if !THREE_HAS_RANGE_FOR
 //#  error Range-based for loop support required
@@ -112,9 +118,9 @@
 #endif
 
 #if THREE_HAS_EXPLICIT_CONVERSION_OPERATORS
-#  define THREE_EXPLICIT explicit 
+#  define THREE_EXPLICIT explicit
 #else
-#  define THREE_EXPLICIT 
+#  define THREE_EXPLICIT
 #endif
 
 #endif // THREE_CONFIG_HPP

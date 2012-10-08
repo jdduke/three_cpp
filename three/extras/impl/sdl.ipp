@@ -3,6 +3,7 @@
 
 #include <three/extras/sdl.hpp>
 
+#include <three/console.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 
 #include <SDL.h>

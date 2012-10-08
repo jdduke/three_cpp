@@ -2,9 +2,9 @@
 #define THREE_ATTRIBUTE_HPP
 
 #include <three/common.hpp>
+#include <three/constants.hpp>
 
 #include <three/utils/any.hpp>
-
 #include <three/utils/index.hpp>
 
 #include <unordered_map>

@@ -2,6 +2,7 @@
 #define THREE_FACE_HPP
 
 #include <three/common.hpp>
+#include <three/constants.hpp>
 
 #include <three/core/color.hpp>
 #include <three/core/vector3.hpp>

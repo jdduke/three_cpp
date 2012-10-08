@@ -3,7 +3,7 @@
 
 #include <three/extras/stats.hpp>
 
-#include <three/utils.hpp>
+#include <three/utils/conversion.hpp>
 #include <three/renderers/gl_renderer.hpp>
 #include <three/extras/utils/font2.hpp>
 
