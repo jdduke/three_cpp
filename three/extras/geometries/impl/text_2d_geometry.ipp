@@ -3,12 +3,14 @@
 
 #include <three/extras/geometries/text_2d_geometry.hpp>
 
+#include <three/console.hpp>
+
 namespace three {
 
 Text2DGeometry::Ptr Text2DGeometry::create( const std::string& text,
                                             const Font::Ptr& font ) {
 
-  auto geometry = make_shared<Text2DGeometry>( text, font );
+  auto geometry = three::make_shared<Text2DGeometry>( text, font );
   geometry->update();
 
   return geometry;
@@ -16,10 +18,11 @@ Text2DGeometry::Ptr Text2DGeometry::create( const std::string& text,
 
 /////////////////////////////////////////////////////////////////////////
 
-Text2DGeometry( const std::string& text,
-                const Font::Ptr& font )
+Text2DGeometry::Text2DGeometry( const std::string& text,
+                                const Font::Ptr& font )
  : Geometry(), text( text ), font( font ) { }
 
+#ifdef TODO_THREE_DYNAMIC_GEOMETRY
 void Text2DGeometry::update( const std::string& text ) {
 
   if ( this->text == text )
@@ -30,6 +33,7 @@ void Text2DGeometry::update( const std::string& text ) {
   update();
 
 }
+#endif
 
 void Text2DGeometry::update() {
 
@@ -49,8 +53,6 @@ void Text2DGeometry::update() {
   uvsNeedUpdate      = true;
 
 }
-
-};
 
 } // namespace three
 

@@ -27,4 +27,13 @@ typedef IndexT<int, -1> Index;
 
 } // namespace three
 
+namespace std {
+  template <> 
+  struct hash<three::Index> { 
+    size_t operator()( const three::Index& index ) {
+      return hash<int>()( index.value );
+    }
+  };
+} // namespace std
+
 #endif // THREE_PROPERTIES_HPP

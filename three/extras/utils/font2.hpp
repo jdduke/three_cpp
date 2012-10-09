@@ -8,6 +8,7 @@
 #include <three/textures/texture.hpp>
 #include <three/utils/noncopyable.hpp>
 
+#include <array>
 #include <memory>
 
 namespace three {
@@ -22,7 +23,7 @@ public:
                                 int textureWidth   = 512,
                                 int textureHeight  = 512,
                                 int firstCharacter = 32,
-                                int countCharacter = 96);
+                                int countCharacter = 96 );
 
   THREE_DECL void generate( const std::string& text,
                             std::vector<Vertex>& vertices,

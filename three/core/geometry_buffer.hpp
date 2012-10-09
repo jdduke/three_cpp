@@ -6,6 +6,8 @@
 #include <three/materials/attribute.hpp>
 #include <three/utils/noncopyable.hpp>
 
+#include <memory>
+
 namespace three {
 
 class GeometryBuffer : NonCopyable {

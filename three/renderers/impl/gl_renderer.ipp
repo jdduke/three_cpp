@@ -1170,38 +1170,38 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
   }
 
-  const auto normalType = bufferGuessNormalType( material );
+  const auto normalType      = bufferGuessNormalType( material );
   const auto vertexColorType = bufferGuessVertexColorType( material );
-  const auto uvType = bufferGuessUVType( material );
+  const auto uvType          = bufferGuessUVType( material );
   const auto needsSmoothNormals = ( normalType == THREE::SmoothShading );
 
   Color c1, c2, c3, c4;
 
-  int vertexIndex = 0,
-      offset = 0,
-      offset_uv = 0,
-      offset_uv2 = 0,
-      offset_face = 0,
-      offset_normal = 0,
-      offset_tangent = 0,
-      offset_line = 0,
-      offset_color = 0,
-      offset_skin = 0,
+  int vertexIndex        = 0,
+      offset             = 0,
+      offset_uv          = 0,
+      offset_uv2         = 0,
+      offset_face        = 0,
+      offset_normal      = 0,
+      offset_tangent     = 0,
+      offset_line        = 0,
+      offset_color       = 0,
+      offset_skin        = 0,
       offset_morphTarget = 0,
-      offset_custom = 0;
+      offset_custom      = 0;
       // UNUSED: offset_customSrc = 0;
 
-  auto& vertexArray = geometryGroup.__vertexArray;
-  auto& uvArray = geometryGroup.__uvArray;
-  auto& uv2Array = geometryGroup.__uv2Array;
-  auto& normalArray = geometryGroup.__normalArray;
+  auto& vertexArray  = geometryGroup.__vertexArray;
+  auto& uvArray      = geometryGroup.__uvArray;
+  auto& uv2Array     = geometryGroup.__uv2Array;
+  auto& normalArray  = geometryGroup.__normalArray;
   auto& tangentArray = geometryGroup.__tangentArray;
-  auto& colorArray = geometryGroup.__colorArray;
+  auto& colorArray   = geometryGroup.__colorArray;
 
   auto& skinVertexAArray = geometryGroup.__skinVertexAArray;
   auto& skinVertexBArray = geometryGroup.__skinVertexBArray;
-  auto& skinIndexArray = geometryGroup.__skinIndexArray;
-  auto& skinWeightArray = geometryGroup.__skinWeightArray;
+  auto& skinIndexArray   = geometryGroup.__skinIndexArray;
+  auto& skinWeightArray  = geometryGroup.__skinWeightArray;
 
   auto& morphTargetsArrays = geometryGroup.__morphTargetsArrays;
   auto& morphNormalsArrays = geometryGroup.__morphNormalsArrays;
@@ -1213,18 +1213,18 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
   Geometry& geometry = *object.geometry;
 
-  const bool dirtyVertices = geometry.verticesNeedUpdate,
-             dirtyElements = geometry.elementsNeedUpdate,
-             dirtyUvs = geometry.uvsNeedUpdate,
-             dirtyNormals = geometry.normalsNeedUpdate,
-             dirtyTangents = geometry.tangentsNeedUpdate,
-             dirtyColors = geometry.colorsNeedUpdate,
+  const bool dirtyVertices     = geometry.verticesNeedUpdate,
+             dirtyElements     = geometry.elementsNeedUpdate,
+             dirtyUvs          = geometry.uvsNeedUpdate,
+             dirtyNormals      = geometry.normalsNeedUpdate,
+             dirtyTangents     = geometry.tangentsNeedUpdate,
+             dirtyColors       = geometry.colorsNeedUpdate,
              dirtyMorphTargets = geometry.morphTargetsNeedUpdate;
 
-  auto& vertices = geometry.vertices;
+  auto& vertices     = geometry.vertices;
   auto& chunk_faces3 = geometryGroup.faces3;
   auto& chunk_faces4 = geometryGroup.faces4;
-  auto& obj_faces = geometry.faces;
+  auto& obj_faces    = geometry.faces;
 
   auto& obj_uvs  = geometry.faceVertexUvs[ 0 ];
   auto& obj_uvs2 = geometry.faceVertexUvs[ 1 ];
@@ -1233,8 +1233,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
   auto& obj_skinVerticesA = geometry.skinVerticesA;
   auto& obj_skinVerticesB = geometry.skinVerticesB;
-  auto& obj_skinIndices = geometry.skinIndices;
-  auto& obj_skinWeights = geometry.skinWeights;
+  auto& obj_skinIndices   = geometry.skinIndices;
+  auto& obj_skinWeights   = geometry.skinWeights;
 
   auto& morphTargets = geometry.morphTargets;
   auto& morphNormals = geometry.morphNormals;
@@ -3676,43 +3676,41 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
     const auto& face = geometry.faces[ f ];
 
     const auto materialIndex = face.materialIndex;
-
     const auto materialHash = materialIndex;
 
     if ( hash_map.count( materialHash ) == 0 ) {
-
       hash_map[ materialHash ] = MaterialHashValue( materialHash, 0 );
-
     }
 
     auto groupHash = toString( hash_map[ materialHash ] );
 
     if ( geometry.geometryGroups.count( groupHash ) == 0 ) {
-      geometry.geometryGroups[ groupHash ] = GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals );
+      geometry.geometryGroups.emplace( std::make_pair( groupHash, GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals ) ) );
     }
+
+    auto geometryGroup = geometry.geometryGroups[ groupHash ];
 
     const auto vertices = face.type() == THREE::Face3 ? 3 : 4;
 
-    if ( geometry.geometryGroups[ groupHash ]->vertices + vertices > 65535 ) {
+    if ( geometryGroup->vertices + vertices > 65535 ) {
 
       hash_map[ materialHash ].second += 1;
       groupHash = toString( hash_map[ materialHash ] );
 
       if ( geometry.geometryGroups.count( groupHash ) == 0 ) {
-
-        geometry.geometryGroups[ groupHash ] = GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals );
-
+        geometryGroup = GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals );
+        geometry.geometryGroups.emplace( std::make_pair( groupHash, geometryGroup ) ); 
       }
 
     }
 
     if ( face.type() == THREE::Face3 ) {
-      geometry.geometryGroups[ groupHash ]->faces3.push_back( f );
+      geometryGroup->faces3.push_back( f );
     } else {
-      geometry.geometryGroups[ groupHash ]->faces4.push_back( f );
+      geometryGroup->faces4.push_back( f );
     }
 
-    geometry.geometryGroups[ groupHash ]->vertices += vertices;
+    geometryGroup->vertices += vertices;
 
   }
 
@@ -3953,9 +3951,9 @@ void GLRenderer::updateObject( Object3D& object ) {
 
         const auto customAttributesDirty = areCustomAttributesDirty( *material );
 
-        if ( geometry.verticesNeedUpdate || geometry.morphTargetsNeedUpdate ||
-             geometry.uvsNeedUpdate      || geometry.normalsNeedUpdate      ||
-             geometry.colorsNeedUpdate   || geometry.tangentsNeedUpdate     ||
+        if ( geometry.verticesNeedUpdate  || geometry.morphTargetsNeedUpdate ||
+             geometry.uvsNeedUpdate       || geometry.normalsNeedUpdate      ||
+             geometry.colorsNeedUpdate    || geometry.tangentsNeedUpdate     ||
              geometry.elementsNeedUpdate  || customAttributesDirty ) {
 
           setMeshBuffers( *geometryGroup, object, GL_DYNAMIC_DRAW, !geometry.dynamic, material );

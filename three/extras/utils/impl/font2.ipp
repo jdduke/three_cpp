@@ -100,8 +100,63 @@ void Font::generate( const std::string& text,
       std::array<Vector3, 4> vert;
       std::array<UV,4> uv;
 
-      const auto& bakedchar = impl->characterData[( c - impl->firstCharacter )];
+#if 1
 
+      const auto& bakedchar = impl->characterData[( c - impl->firstCharacter )];
+      float round_x = Math::round( x + bakedchar.xoff);
+      float round_y = Math::round( y - bakedchar.yoff);
+
+      stbtt_aligned_quad quad;
+      quad.x0 = ( float )round_x;
+      quad.y0 = ( float )round_y;
+      quad.x1 = ( float )round_x + bakedchar.x1 - bakedchar.x0;
+      quad.y1 = ( float )round_y - bakedchar.y1 + bakedchar.y0;
+
+      quad.s0 = bakedchar.x0 / ( float )impl->textureWidth;
+      quad.t0 = bakedchar.y0 / ( float )impl->textureWidth;
+      quad.s1 = bakedchar.x1 / ( float )impl->textureHeight;
+      quad.t1 = bakedchar.y1 / ( float )impl->textureHeight;
+
+      x += bakedchar.xadvance;
+
+      vert[ 0 ].x = quad.x1; vert[ 0 ].y = quad.y0;
+      uv  [ 0 ].u = quad.s1; uv  [ 0 ].v = quad.t0;
+
+      vert[ 1 ].x = quad.x0; vert[ 1 ].y = quad.y0;
+      uv  [ 1 ].u = quad.s0; uv  [ 1 ].v = quad.t0;
+
+      vert[ 2 ].x = quad.x0; vert[ 2 ].y = quad.y1;
+      uv  [ 2 ].u = quad.s0; uv  [ 2 ].v = quad.t1;
+
+      vert[ 3 ].x = quad.x1; vert[ 3 ].y = quad.y1;
+      uv  [ 3 ].u = quad.s1; uv  [ 3 ].v = quad.t1;
+
+#elif 1 
+
+      stbtt_aligned_quad quad;
+      stbtt_GetBakedQuad(impl->characterData.data(), 
+                         impl->textureWidth,
+                         impl->textureHeight,
+                         c - impl->firstCharacter, 
+                         &x, &y, 
+                         &quad, 
+                         1);//1=opengl,0=old d3d
+
+      vert[ 0 ].x = quad.x0; vert[ 0 ].y = quad.y0;
+      uv  [ 0 ].u = quad.s0; uv  [ 0 ].v = quad.t1;
+
+      vert[ 1 ].x = quad.x1; vert[ 1 ].y = quad.y0;
+      uv  [ 1 ].u = quad.s1; uv  [ 1 ].v = quad.t1;
+
+      vert[ 2 ].x = quad.x1; vert[ 2 ].y = quad.y1;
+      uv  [ 2 ].u = quad.s1; uv  [ 2 ].v = quad.t0;
+
+      vert[ 3 ].x = quad.x0; vert[ 3 ].y = quad.y1;
+      uv  [ 3 ].u = quad.s0; uv  [ 3 ].v = quad.t0;
+
+#else
+
+      const auto& bakedchar = impl->characterData[( c - impl->firstCharacter )];
       int round_x = STBTT_ifloor( x + bakedchar.xoff );
       int round_y = STBTT_ifloor( y + bakedchar.yoff );
 
@@ -118,17 +173,19 @@ void Font::generate( const std::string& text,
 
       x += bakedchar.xadvance;
 
-      vert[ 0 ].x = quad.x0; vert[ 0 ].y = quad.y0;
-      uv  [ 0 ].u = quad.s0; uv  [ 0 ].v = quad.t0;
+      vert[ 0 ].x = quad.x1; vert[ 0 ].y = quad.y0;
+      uv  [ 0 ].u = quad.s1; uv  [ 0 ].v = quad.t0;
 
-      vert[ 1 ].x = quad.x1; vert[ 1 ].y = quad.y0;
-      uv  [ 1 ].u = quad.s1; uv  [ 1 ].v = quad.t0;
+      vert[ 1 ].x = quad.x0; vert[ 1 ].y = quad.y0;
+      uv  [ 1 ].u = quad.s0; uv  [ 1 ].v = quad.t0;
 
-      vert[ 2 ].x = quad.x1; vert[ 2 ].y = quad.y1;
-      uv  [ 2 ].u = quad.s1; uv  [ 2 ].v = quad.t1;
+      vert[ 2 ].x = quad.x0; vert[ 2 ].y = quad.y1;
+      uv  [ 2 ].u = quad.s0; uv  [ 2 ].v = quad.t1;
 
-      vert[ 3 ].x = quad.x0; vert[ 3 ].y = quad.y1;
-      uv  [ 3 ].u = quad.s0; uv  [ 3 ].v = quad.t1;
+      vert[ 3 ].x = quad.x1; vert[ 3 ].y = quad.y1;
+      uv  [ 3 ].u = quad.s1; uv  [ 3 ].v = quad.t1;
+
+#endif
 
       const auto offset = (int)vertices.size();
 

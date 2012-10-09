@@ -4,7 +4,6 @@
 #include <three/common.hpp>
 
 #include <three/cameras/camera.hpp>
-#include <three/utils.hpp>
 
 namespace three {
 

@@ -2,6 +2,7 @@
 #define THREE_TEXT_2D_GEOMETRY_HPP
 
 #include <three/core/geometry.hpp>
+
 #include <three/extras/utils/font2.hpp>
 
 namespace three {
@@ -14,7 +15,9 @@ public:
   THREE_DECL static Ptr create( const std::string& text,
                                 const Font::Ptr& font );
 
+#ifdef TODO_THREE_DYNAMIC_GEOMETRY
   THREE_DECL void update( const std::string& text );
+#endif 
 
 protected:
 

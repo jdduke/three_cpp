@@ -7,6 +7,8 @@
 #include <three/utils/index.hpp>
 #include <three/utils/properties.hpp>
 
+#include <string>
+
 namespace three {
 
 class Uniform {
