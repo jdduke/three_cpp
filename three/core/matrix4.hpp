@@ -44,8 +44,10 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL Vector3& multiplyVector3( Vector3& v ) const;
-  THREE_DECL Vector4& multiplyVector4( Vector4& v ) const;
+  THREE_DECL Vector3 multiplyVector3( const Vector3& v ) const;
+  THREE_DECL Vector4 multiplyVector4( const Vector4& v ) const;
+  THREE_DECL void multiplyVector3( Vector3& v ) const;
+  THREE_DECL void multiplyVector4( Vector4& v ) const;
   THREE_DECL std::vector<float>& multiplyVector3Array( std::vector<float>& a ) const;
 
   THREE_DECL Vector3& rotateAxis( Vector3& v ) const;

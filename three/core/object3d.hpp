@@ -157,8 +157,11 @@ public:
   THREE_DECL void updateMatrix();
   THREE_DECL void updateMatrixWorld( bool force = false );
 
-  THREE_DECL Vector3& worldToLocal( Vector3& vector );
-  THREE_DECL Vector3& localToWorld( Vector3& vector );
+  THREE_DECL void worldToLocal( Vector3& vector ) const;
+  THREE_DECL void localToWorld( Vector3& vector ) const;
+
+  THREE_DECL Vector3 worldToLocal( const Vector3& vector ) const;
+  THREE_DECL Vector3 localToWorld( const Vector3& vector ) const;
 
   THREE_DECL void render( const std::function<void( Object3D& )> renderCallback );
 

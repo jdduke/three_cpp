@@ -182,7 +182,7 @@ Matrix4& Matrix4::multiplyScalar( float s ) {
 
 }
 
-Vector3& Matrix4::multiplyVector3( Vector3& v ) const {
+void Matrix4::multiplyVector3( Vector3& v ) const {
 
   auto vx = v.x, vy = v.y, vz = v.z;
   auto d = 1.f / ( te[3] * vx + te[7] * vy + te[11] * vz + te[15] );
@@ -191,11 +191,22 @@ Vector3& Matrix4::multiplyVector3( Vector3& v ) const {
   v.y = ( te[1] * vx + te[5] * vy + te[9] * vz + te[13] ) * d;
   v.z = ( te[2] * vx + te[6] * vy + te[10] * vz + te[14] ) * d;
 
-  return v;
+}
+
+Vector3 Matrix4::multiplyVector3( const Vector3& v ) const {
+
+  auto vx = v.x, vy = v.y, vz = v.z;
+  auto d = 1.f / ( te[3] * vx + te[7] * vy + te[11] * vz + te[15] );
+
+  return Vector3(
+    ( te[0] * vx + te[4] * vy + te[8] * vz + te[12] ) * d,
+    ( te[1] * vx + te[5] * vy + te[9] * vz + te[13] ) * d,
+    ( te[2] * vx + te[6] * vy + te[10] * vz + te[14] ) * d
+  );
 
 }
 
-Vector4& Matrix4::multiplyVector4( Vector4& v ) const {
+void Matrix4::multiplyVector4( Vector4& v ) const {
 
   float vx = v.x, vy = v.y, vz = v.z, vw = v.w;
 
@@ -204,7 +215,18 @@ Vector4& Matrix4::multiplyVector4( Vector4& v ) const {
   v.z = te[2] * vx + te[6] * vy + te[10] * vz + te[14] * vw;
   v.w = te[3] * vx + te[7] * vy + te[11] * vz + te[15] * vw;
 
-  return v;
+}
+
+Vector4 Matrix4::multiplyVector4( const Vector4& v ) const {
+
+  float vx = v.x, vy = v.y, vz = v.z, vw = v.w;
+
+  return Vector4(
+    te[0] * vx + te[4] * vy + te[8] * vz + te[12] * vw,
+    te[1] * vx + te[5] * vy + te[9] * vz + te[13] * vw,
+    te[2] * vx + te[6] * vy + te[10] * vz + te[14] * vw,
+    te[3] * vx + te[7] * vy + te[11] * vz + te[15] * vw
+  );
 
 }
 

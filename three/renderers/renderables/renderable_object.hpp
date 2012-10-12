@@ -18,10 +18,10 @@ public:
 
 struct PainterSort {
   bool operator()( const RenderableObject& a, const RenderableObject& b ) const {
-    return b.z < a.z;
+    return b.z > a.z;
   }
   bool operator()( const Renderable* a, const Renderable* b ) const {
-    return b->z < a->z;
+    return b->z > a->z;
   }
 };
 

@@ -171,12 +171,20 @@ void Object3D::updateMatrixWorld( bool force /*= false*/ ) {
 
 }
 
-Vector3& Object3D::worldToLocal( Vector3& vector ) {
+Vector3 Object3D::worldToLocal( const Vector3& vector ) const {
   return Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
 }
 
-Vector3& Object3D::localToWorld( Vector3& vector ) {
+Vector3 Object3D::localToWorld( const Vector3& vector ) const {
   return matrixWorld.multiplyVector3( vector );
+}
+
+void Object3D::worldToLocal( Vector3& vector ) const {
+  Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
+}
+
+void Object3D::localToWorld( Vector3& vector ) const {
+  matrixWorld.multiplyVector3( vector );
 }
 
 void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
