@@ -76,11 +76,12 @@ void shader( GLRenderer::Ptr renderer ) {
 
   std::generate_n( std::back_inserter(vertices),
                    pointCount,
-                   [=] { Vector3 vertex( Math::random(-1.f, 1.f),
-                                         Math::random(-1.f, 1.f),
-                                         Math::random(-1.f, 1.f) );
-                         vertex.multiplyScalar( radius );
-                         return vertex; } );
+                   [=]() -> Vector3 {
+                    Vector3 vertex( Math::random(-1.f, 1.f),
+                                    Math::random(-1.f, 1.f),
+                                    Math::random(-1.f, 1.f) );
+                    vertex.multiplyScalar( radius );
+                    return vertex; } );
 
   auto sphere = ParticleSystem::create( geometry, shaderMaterial );
   sphere->geometry->dynamic = true;

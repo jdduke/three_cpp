@@ -13,6 +13,7 @@ elseif(MINGW)
 endif()
 
 find_package(SDL REQUIRED)
+
 find_package(OpenGL REQUIRED)
 find_package(RapidJSON REQUIRED)
 

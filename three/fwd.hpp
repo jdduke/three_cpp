@@ -1,10 +1,6 @@
 #ifndef THREE_FWD_HPP
 #define THREE_FWD_HPP
 
-namespace std {
-template < typename T > class shared_ptr;
-}
-
 namespace three {
 
 class Object3D;

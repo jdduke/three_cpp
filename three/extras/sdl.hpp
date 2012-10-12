@@ -5,6 +5,7 @@
 #include <three/utils/noncopyable.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 
+#include <SDL_main.h>
 #include <SDL_events.h>
 
 #include <functional>

@@ -926,17 +926,17 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
       if ( !( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) ) continue;
 
       if ( customAttribute.size == 1 ) {
-        fill<float>( customAttribute.value, sortArray, customAttribute.array );
+        fillFromAny<float>( customAttribute.value, sortArray, customAttribute.array );
       } else if ( customAttribute.size == 2 ) {
-        fill<Vector2>( customAttribute.value, sortArray, customAttribute.array );
+        fillFromAny<Vector2>( customAttribute.value, sortArray, customAttribute.array );
       } else if ( customAttribute.size == 3 ) {
         if ( customAttribute.type == THREE::c ) {
-          fill<Color>( customAttribute.value, sortArray, customAttribute.array );
+          fillFromAny<Color>( customAttribute.value, sortArray, customAttribute.array );
         } else {
-          fill<Vector3>( customAttribute.value, sortArray, customAttribute.array );
+          fillFromAny<Vector3>( customAttribute.value, sortArray, customAttribute.array );
         }
       } else if ( customAttribute.size == 4 ) {
-        fill<Vector4>( customAttribute.value, sortArray, customAttribute.array );
+        fillFromAny<Vector4>( customAttribute.value, sortArray, customAttribute.array );
       }
 
     }
@@ -984,17 +984,17 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
              customAttribute.boundTo == "vertices" ) ) {
 
         if ( customAttribute.size == 1 ) {
-          fill<float>( customAttribute.value, customAttribute.array );
+          fillFromAny<float>( customAttribute.value, customAttribute.array );
         } else if ( customAttribute.size == 2 ) {
-          fill<Vector2>( customAttribute.value, customAttribute.array );
+          fillFromAny<Vector2>( customAttribute.value, customAttribute.array );
         } else if ( customAttribute.size == 3 ) {
           if ( customAttribute.type == THREE::c ) {
-            fill<Color>( customAttribute.value, customAttribute.array );
+            fillFromAny<Color>( customAttribute.value, customAttribute.array );
           } else {
-            fill<Vector3>( customAttribute.value, customAttribute.array );
+            fillFromAny<Vector3>( customAttribute.value, customAttribute.array );
           }
         } else if ( customAttribute.size == 4 ) {
-          fill<Vector4>( customAttribute.value, customAttribute.array );
+          fillFromAny<Vector4>( customAttribute.value, customAttribute.array );
         }
 
       }
@@ -1086,17 +1086,17 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
            customAttribute.boundTo == "vertices" ) ) {
 
       if ( customAttribute.size == 1 ) {
-        fill<float>( customAttribute.value, customAttribute.array );
+        fillFromAny<float>( customAttribute.value, customAttribute.array );
       } else if ( customAttribute.size == 2 ) {
-        fill<Vector2>( customAttribute.value, customAttribute.array );
+        fillFromAny<Vector2>( customAttribute.value, customAttribute.array );
       } else if ( customAttribute.size == 3 ) {
         if ( customAttribute.type == THREE::c ) {
-          fill<Color>( customAttribute.value, customAttribute.array );
+          fillFromAny<Color>( customAttribute.value, customAttribute.array );
         } else {
-          fill<Vector3>( customAttribute.value, customAttribute.array );
+          fillFromAny<Vector3>( customAttribute.value, customAttribute.array );
         }
       } else if ( customAttribute.size == 4 ) {
-        fill<Vector4>( customAttribute.value, customAttribute.array );
+        fillFromAny<Vector4>( customAttribute.value, customAttribute.array );
       }
 
       glBindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
@@ -3699,7 +3699,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
       if ( geometry.geometryGroups.count( groupHash ) == 0 ) {
         geometryGroup = GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals );
-        geometry.geometryGroups.emplace( std::make_pair( groupHash, geometryGroup ) ); 
+        geometry.geometryGroups.emplace( std::make_pair( groupHash, geometryGroup ) );
       }
 
     }
@@ -5284,6 +5284,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
 #if defined(THREE_GLES)
     ss << "precision " << _precision << " float;" << std::endl;
+#elif defined(__APPLE__)
+    ss << "#version 120" << std::endl;
 #else
     ss << "#version 140" << std::endl;
 #endif

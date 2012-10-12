@@ -16,6 +16,8 @@
 
 #include <three/materials/material.hpp>
 
+#include <three/utils/memory.hpp>
+
 #include <array>
 #include <unordered_map>
 #include <tuple>

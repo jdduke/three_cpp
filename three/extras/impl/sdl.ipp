@@ -25,17 +25,20 @@ bool init( RendererParameters& parameters ) {
     return false;
   }
 
+  /*
   if ( parameters.antialias ) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
   }
+  */
 
   console().log() << "SDL initialized";
 
+  int videoFlags = SDL_OPENGL | SDL_RESIZABLE;
   if ( SDL_SetVideoMode( parameters.width,
                          parameters.height,
                          parameters.precision,
-                         SDL_OPENGL | SDL_RESIZABLE ) == NULL ) {
+                         videoFlags ) == NULL ) {
     console().error() << "Error setting SDL video mode: " << SDL_GetError();
     return false;
   }

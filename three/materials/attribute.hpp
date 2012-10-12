@@ -118,13 +118,13 @@ struct Filler : public FillerImpl<T, sizeof(T) <= sizeof(float)> { };
 //////////////////////////////////////////////////////////////////////////
 
 template < typename T >
-void fill( const any& src, std::vector<float>& dst ) {
+void fillFromAny( const any& src, std::vector<float>& dst ) {
   detail::Filler< T > filler;
   filler.fill( src.cast<std::vector<T>>(), dst );
 }
 
 template < typename T, typename SortArray >
-void fill( const any& src, const SortArray& sortArray, std::vector<float>& dst ) {
+void fillFromAny( const any& src, const SortArray& sortArray, std::vector<float>& dst ) {
   detail::Filler< T > filler;
   filler.fill( src.cast<std::vector<T>>(), sortArray, dst );
 }
