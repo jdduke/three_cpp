@@ -35,7 +35,7 @@ void Frustum::setFromMatrix( const Matrix4& m ) {
 
 }
 
-bool Frustum::contains( const Object3D& object ) {
+bool Frustum::contains( const Object3D& object ) const {
 
   if ( !object.geometry )
     return false;

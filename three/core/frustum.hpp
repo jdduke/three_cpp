@@ -18,7 +18,7 @@ public:
   Frustum( const Matrix4& m ) { setFromMatrix( m ); }
 
   THREE_DECL void setFromMatrix( const Matrix4& m );
-  THREE_DECL bool contains( const Object3D& object );
+  THREE_DECL bool contains( const Object3D& object ) const;
 
   std::array<Vector4, 6> planes;
 };

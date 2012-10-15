@@ -6,7 +6,6 @@
 #include <array>
 
 namespace three {
-namespace extras {
 
 class ImprovedNoise {
 public:
@@ -93,9 +92,9 @@ private:
          v = h < 4 ? y : h == 12 || h == 14 ? x : z;
     return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
   }
-}
 
-} // namespace extras
+};
+
 } // namespace three
 
 #endif // THREE_IMPROVED_NOISE_HPP

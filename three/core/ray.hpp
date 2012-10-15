@@ -112,7 +112,6 @@ public:
       const auto& vertices = geometry.vertices;
       const auto& geometryMaterials = geometry.materials;
       auto isFaceMaterial = material.type() == THREE::MeshFaceMaterial;
-      auto side = material.side;
 
       object.matrixRotationWorld.extractRotation( object.matrixWorld );
 
@@ -135,8 +134,8 @@ public:
         // determine if ray intersects the plane of the face
         // note: this works regardless of the direction of the face normal
 
-        vector = objMatrix.multiplyVector3( vector.copy( face.centroid ) ).subSelf( originCopy );
-        normal = object.matrixRotationWorld.multiplyVector3( normal.copy( face.normal ) );
+        vector = objMatrix.multiplyVector3( face.centroid ).subSelf( originCopy );
+        normal = object.matrixRotationWorld.multiplyVector3( face.normal );
         auto d = directionCopy.dot( normal );
 
         // bail if ray and plane are parallel
