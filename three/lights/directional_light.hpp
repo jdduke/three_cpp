@@ -78,6 +78,8 @@ protected:
     shadowCascadeWidth.fill( 512 );
     shadowCascadeHeight.fill( 512 );
 
+    target = Object3D::create();
+
     position.set( 0, 1, 0 );
 
   }

@@ -313,7 +313,7 @@ const char* ShaderChunk::lights_lambert_vertex() {
 
     "#if MAX_DIR_LIGHTS > 0\n"
     "for( int i = 0; i < MAX_DIR_LIGHTS; i ++ ) {\n"
-    "  vec4 lDirection = viewMatrix * vec4( directionalLightDirection[ i ] 0.0 );\n"
+    "  vec4 lDirection = viewMatrix * vec4( directionalLightDirection[ i ], 0.0 );\n"
     "  vec3 dirVector = normalize( lDirection.xyz );\n"
     "  float dotProduct = dot( transformedNormal, dirVector );\n"
     "  vec3 directionalLightWeighting = vec3( max( dotProduct, 0.0 ) );\n"
@@ -370,7 +370,7 @@ const char* ShaderChunk::lights_lambert_vertex() {
 
     "#if MAX_SPOT_LIGHTS > 0\n"
     "for( int i = 0; i < MAX_SPOT_LIGHTS; i ++ ) {\n"
-    "  vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ] 1.0 );\n"
+    "  vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ], 1.0 );\n"
     "  vec3 lVector = lPosition.xyz - mvPosition.xyz;\n"
     "  lVector = normalize( lVector );\n"
     "  float spotEffect = dot( spotLightDirection[ i ], normalize( spotLightPosition[ i ] - mPosition.xyz ) );\n"
@@ -470,13 +470,13 @@ const char* ShaderChunk::lights_phong_vertex() {
 
     "#if MAX_SPOT_LIGHTS > 0\n"
     "for( int i = 0; i < MAX_SPOT_LIGHTS; i ++ ) {\n"
-    "  vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ] 1.0 );\n"
+    "  vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ], 1.0 );\n"
     "  vec3 lVector = lPosition.xyz - mvPosition.xyz;\n"
 
     "  float lDistance = 1.0;\n"
     "  if ( spotLightDistance[ i ] > 0.0 )\n"
     "    lDistance = 1.0 - min( ( length( lVector ) / spotLightDistance[ i ] ), 1.0 );\n"
-    "  vSpotLight[ i ] = vec4( lVector lDistance );\n"
+    "  vSpotLight[ i ] = vec4( lVector, lDistance );\n"
     "}\n"
     "#endif\n"
 
@@ -629,7 +629,7 @@ const char* ShaderChunk::lights_phong_fragment() {
 
     "#ifdef PHONG_PER_PIXEL\n"
 
-    "vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ] 1.0 );\n"
+    "vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ], 1.0 );\n"
     "vec3 lVector = lPosition.xyz + vViewPosition.xyz;\n"
 
     "float lDistance = 1.0;\n"

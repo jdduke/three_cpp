@@ -86,7 +86,7 @@ private:
     return a + t * (b - a);
   }
 
-  static int grad( int hash, int x, int y, int z ) {
+  static float grad( int hash, float x, float y, float z ) {
     auto h = hash & 15;
     auto u = h < 8 ? x : y,
          v = h < 4 ? y : h == 12 || h == 14 ? x : z;

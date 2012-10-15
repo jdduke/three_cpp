@@ -22,7 +22,7 @@ public:
   float intensity;
   float distance;
 
-  std::shared_ptr<Object3D> target;
+  Object3D::Ptr target;
 
   bool castShadow, onlyShadow, shadowCascade;
 
