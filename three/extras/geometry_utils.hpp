@@ -109,6 +109,8 @@ public:
 
           geometry1.materials.push_back( material2 );
 
+        } else {
+          materialIndex = materialIndexIt->second;
         }
 
         faceCopy.materialIndex = materialIndex;
