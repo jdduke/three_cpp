@@ -32,7 +32,7 @@ struct Renderables {
   Renderables() : count( 0 ) { }
 
   Renderable& next() {
-    if ( count == pool.size() ) {
+    if ( count == (int)pool.size() ) {
       pool.push_back( Renderable() );
       ++count;
       return pool.back();
