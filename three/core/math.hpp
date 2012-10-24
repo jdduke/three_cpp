@@ -75,7 +75,7 @@ randomT( T low , T high ) {
 
 template< typename T >
 inline T randomT( T low, T high ) {
-  return (T)( low + static_cast<double>(rand())/((unsigned long long)RAND_MAX+1) * ( high - low ));
+  return ( low + static_cast<double>(rand())/((unsigned long long)RAND_MAX+1) * ( high - low ));
 }
 
 #endif // !defined(__MINGW32__)

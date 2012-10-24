@@ -44,6 +44,12 @@ set(THREE_HEADER_ONLY TRUE CACHE BOOL
   set(EXAMPLE_LIBS ${EXAMPLE_LIBS} three_impl)
 #endif()
 
+#add_custom_command(
+#  TARGET three_impl
+#  POST_BUILD
+#  COMMAND ${CMAKE_COMMAND} -E make_directory ${THREE_BINARY_PATH}
+#  COMMAND ${CMAKE_COMMAND} -E copy ${src} ${THREE_BINARY_PATH}/.
+#  COMMENT "Copying ${src}")
 
 set(THREE_RELEASE_BUILD FALSE CACHE BOOL
   "Whether to compile examples for installation")
@@ -61,3 +67,4 @@ foreach(example ${examples})
   add_executable(${example_name} ${example})
   target_link_libraries(${example_name} ${EXAMPLE_LIBS})
 endforeach()
+
