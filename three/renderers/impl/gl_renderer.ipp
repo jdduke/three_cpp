@@ -3685,7 +3685,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
     auto groupHash = toString( hash_map[ materialHash ] );
 
     if ( geometry.geometryGroups.count( groupHash ) == 0 ) {
-      geometry.geometryGroups.emplace( std::make_pair( groupHash, GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals ) ) );
+      geometry.geometryGroups.insert( std::make_pair( groupHash, GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals ) ) );
     }
 
     auto geometryGroup = geometry.geometryGroups[ groupHash ];
@@ -3699,7 +3699,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
       if ( geometry.geometryGroups.count( groupHash ) == 0 ) {
         geometryGroup = GeometryGroup::create( materialIndex, numMorphTargets, numMorphNormals );
-        geometry.geometryGroups.emplace( std::make_pair( groupHash, geometryGroup ) );
+        geometry.geometryGroups.insert( std::make_pair( groupHash, geometryGroup ) );
       }
 
     }

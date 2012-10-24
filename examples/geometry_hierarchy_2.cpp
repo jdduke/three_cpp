@@ -62,6 +62,11 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
   sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
     running = false;
   });
+  sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
+    camera->aspect = ( float )event.resize.w / event.resize.h;
+    camera->updateProjectionMatrix();
+    renderer->setSize( event.resize.w, event.resize.h );
+  } );
 
   auto mouseX = 0.f, mouseY = 0.f;
   sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {

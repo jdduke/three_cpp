@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/core/Vector3.hpp>
+#include <three/core/vector3.hpp>
 
 namespace three {
 

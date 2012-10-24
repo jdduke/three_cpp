@@ -21,7 +21,8 @@ public:
   Properties& operator=(Properties other) { return swap(other); }
 
   Properties& add(Key key, Value value) {
-    contents.emplace( std::make_pair(std::move(key), std::move(value)) );
+    //contents.emplace( std::make_pair(std::move(key), std::move(value)) );
+    contents.insert( std::make_pair(std::move(key), std::move(value)) );
     return *this;
   }
 

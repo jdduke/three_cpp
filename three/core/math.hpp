@@ -53,12 +53,21 @@ inline T mapLinear( T x, T a1, T a2, T b1, T b2 ) {
 // MinGW crashes on std::random_device initialization
 #if !defined(__MINGW32__)
 
-// Random between 0 and 1
 template < typename T >
-inline T randomT( T low , T high ) {
+inline typename std::enable_if<std::is_floating_point<T>::value,T>::type
+randomT( T low , T high ) {
   static std::random_device rd;
   static std::mt19937 rng( rd() );
   std::uniform_real_distribution<T> dis( low, high );
+  return dis( rng );
+}
+
+template < typename T >
+inline typename std::enable_if<!std::is_floating_point<T>::value,T>::type
+randomT( T low , T high ) {
+  static std::random_device rd;
+  static std::mt19937 rng( rd() );
+  std::uniform_int_distribution<T> dis( low, high );
   return dis( rng );
 }
 
