@@ -1,7 +1,7 @@
 three.cpp
 =========
 
-##### A more or less direct port of three.js to C++ ######
+#### A port of three.js to C++ #####
 
 three.js is a popular and accessible 3D library (credits to mdroob and alteredq)
  The goal with three.cpp is to fully implement the relevant portions of the library in native C++11, up to and including revision 50.
@@ -41,7 +41,7 @@ be created in **lib**.  Any code using this library must also define
 **THREE_SEPARATE_COMPILATION** when using three.cpp.
 
 
-# Sample code #
+#### Sample code ####
 
 This code creates a renderer, then a scene and camera, adds the camera and cube to the scene, then
 starts the rendering loop.
