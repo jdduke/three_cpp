@@ -99,13 +99,17 @@ Working examples:
 
 ## Status ##
 
+This is very much a pre-alpha, early stages project.
+
 Much of the core functionality has been implemented to some degree, excepting
-morph targets and animation of any sort. It's not pretty; I tried to preserve
-the style/syntax/structure of the original library while not completely
-obviating the merits of native code . To be sure, this is as direct a port as
-possible; you will find things like public member variables, tight coupling and
-likely other code snippets that may or may not go against all you have come to
-believe in.  C++ is *not* Javascript.
+morph targets and animation of any sort, or shadows.  Only a small subset of
+the `extras` tree has been completed.
+
+It's not pretty; I tried to preserve the style/syntax/structure of the original
+library while not completely obviating the merits of native code . To be sure,
+this is as direct a port as possible; you will find things like public member
+variables, tight coupling and likely other code snippets that may or may not go
+against all you have come to believe in.  C++ is *not* Javascript.
 
 For the examples that have been ported, perf is anywhere from 2x-10x that of
 three.js, average 4-5x, on my i7, GT 650m laptop (with vsync off on both, of course).
