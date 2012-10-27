@@ -6,24 +6,6 @@ three.cpp
 three.js is a popular and accessible 3D library (credits to mdroob and alteredq)
  The goal with three.cpp is to fully implement the relevant portions of the library in native C++11, up to and including revision 50.
 
-## Status ##
-
-Much of the core functionality has been implemented to some degree, excepting
-morph targets and animation of any sort. It's not pretty; I tried to preserve
-the style/syntax/structure of the original library while not completely
-obviating the merits of native code . To be sure, this is as direct a port as
-possible; you will find things like public member variables, tight coupling and
-likely other code snippets that may or may not go against all you have come to
-believe in.  C++ is *not* Javascript.
-
-For the examples that have been ported, perf is anywhere from 2x-10x that of
-three.js, average 4-5x, on my i7, GT 650m laptop (with vsync off on both, of course).
-No thorough profiling or meaningful optimization has been done, and the graphics
-path is more or less identical to that found in three.js.
-
-TODO: Test with GLES (Android/iOS/NACL)
-
-
 ## Usage ##
 
 three.cpp is optionally header-only; you can simply drop the
@@ -108,7 +90,24 @@ Working examples:
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_test_memory.png">
 
 
-## Compatibility ##
+## Status ##
+
+Much of the core functionality has been implemented to some degree, excepting
+morph targets and animation of any sort. It's not pretty; I tried to preserve
+the style/syntax/structure of the original library while not completely
+obviating the merits of native code . To be sure, this is as direct a port as
+possible; you will find things like public member variables, tight coupling and
+likely other code snippets that may or may not go against all you have come to
+believe in.  C++ is *not* Javascript.
+
+For the examples that have been ported, perf is anywhere from 2x-10x that of
+three.js, average 4-5x, on my i7, GT 650m laptop (with vsync off on both, of course).
+No thorough profiling or meaningful optimization has been done, and the graphics
+path is more or less identical to that found in three.js.
+
+TODO: Test with GLES (Android/iOS/NACL)
+
+### Compatibility ###
 
 You'll need a sufficiently modern C++11 compiler; Clang 3.1, GCC 4.6.3+, or
 (debateable) MSVC 2012.
