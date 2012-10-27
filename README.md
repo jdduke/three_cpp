@@ -10,17 +10,17 @@ three.js is a popular and accessible 3D library (credits to mdroob and alteredq)
 
 three.cpp is optionally header-only; you can simply drop the
 "three" folder in your project and get started, or you can compile it into a
-static library (dynamic to come...).  The design is more or less
-that found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html):
+static library (dynamic support to come).  The design is similar to that
+found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html).
 
 ### As header-only library ###
-Checkout.  All relevant files are in the base **three** folder. Include and use.
+Checkout.  All relevant library source files are in the base **three** folder.
+Include and use.
 
 ### As compiled library ###
-Checkout.  Run CMake with **THREE_HEADER_ONLY** set to false.  This will define
-**THREE_SEPARATE_COMPILATION**.  Compile.  A static library `three_impl.{a/lib}` will
-be created in **lib**.  Any code using this library must also define
-**THREE_SEPARATE_COMPILATION** when using three.cpp.
+Checkout.  Run CMake with **THREE_HEADER_ONLY** set to false.  Compile.  A
+static library `three_impl.{a/lib}` will be created in **lib**.  Any code using
+the library must also define **THREE_SEPARATE_COMPILATION** when using three.cpp.
 
 
 ### Sample code ###
