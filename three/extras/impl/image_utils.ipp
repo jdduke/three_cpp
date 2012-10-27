@@ -287,10 +287,10 @@ inline getNormalMap: function( image, depth ) {
 
 /////////////////////////////////////////////////////////////////////////
 
-Texture::Ptr ImageUtils::loadTexture( const std::string& url,
-                                      THREE::Mapping mapping /*= THREE::UVMapping*/ ) {
+Texture::Ptr ImageUtils::loadTexture( const std::string& url ) {
+                                      //,THREE::Mapping mapping /*= THREE::UVMapping*/ ) {
 
-  typedef std::unique_ptr<unsigned char, void(*)(unsigned char*)> stbi_ptr;
+  typedef std::unique_ptr<unsigned char, std::function<void(unsigned char*)>> stbi_ptr;
 
   int w, h, n;
   stbi_ptr data( stbi_load( url.c_str(), &w, &h, &n, 0), []( unsigned char* data ) {

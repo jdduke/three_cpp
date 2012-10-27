@@ -21,6 +21,7 @@ else()
 endif()
 
 #############
+# Clang/GCC
 
 if (CMAKE_CXX_COMPILER MATCHES ".*clang")
   set(CMAKE_COMPILER_IS_CLANGXX 1)
@@ -33,7 +34,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
   if (MINGW)
     set(BUILD_64_BIT FALSE CACHE BOOL "Enable 64-bit build")
   else()
-    set(BUILD_64_BIT TRUE CACHE BOOL "Enable 64-bit build" FORCE)
+    set(BUILD_64_BIT TRUE CACHE BOOL "Enable 64-bit build")
   endif()
 
   if (BUILD_64_BIT)
@@ -83,6 +84,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
 endif()
 
 #############
+# MSVC
 
 if(MSVC)
   if(CMAKE_SIZEOF_VOID_P MATCHES 4)
@@ -114,6 +116,7 @@ if(MSVC)
 endif()
 
 #############
+# Output Dirs
 
 set(THREE_OUTPUT_SUBDIR ${THREE_SIZE_TYPE}${THREE_SUFFIX})
 set(THREE_BINARY_PATH  ${CMAKE_HOME_DIRECTORY}/bin/${THREE_OUTPUT_SUBDIR})
@@ -133,43 +136,94 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
     "Single Directory for all static libraries.")
 
 #############
+# Library config
+
+set(THREE_HEADER_ONLY TRUE CACHE BOOL "Whether to use three.cpp as a header-only library")
 
 set(EXTERNALS_DIR ${CMAKE_HOME_DIRECTORY}/externals)
 set(DATA_DIR      ${CMAKE_HOME_DIRECTORY}/data)
 
 include_directories(.)
 
-file(GLOB THREE_BASE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/three/*.hpp)
-source_group(three FILES ${THREE_BASE_HEADERS})
-set(THREE_HEADERS ${THREE_BASE_HEADERS})
+if (NOT THREE_HEADER_ONLY OR BUILD_THREE_EXAMPLES)
 
-set (THREE_SUBDIRS cameras core extras lights loaders materials objects renderers scenes textures utils)
-foreach(subdir ${THREE_SUBDIRS})
-  file(GLOB THREE_SUBDIR_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/three/${subdir}/*.hpp)
-  source_group(three\\${subdir} FILES ${THREE_SUBDIR_HEADERS})
-  source_group(${subdir} FILES ${THREE_SUBDIR_HEADERS})
-  set(THREE_HEADERS ${THREE_HEADERS} ${THREE_SUBDIR_HEADERS})
-endforeach()
+  # Locate necessary headers/libraries
 
-set(THREE_HEADER_ONLY TRUE CACHE BOOL
-  "Whether to use Three.cpp as a header-only library" FORCE)
+  set(CMAKE_PREFIX_PATH ${EXTERNALS_DIR}/rapidjson ${CMAKE_PREFIX_PATH})
+
+  set(SDL_ROOT "" CACHE PATH
+    "The location of the SDL install prefix (only used if the SDL is not yet found)")
+  if(SDL_ROOT)
+    set(CMAKE_PREFIX_PATH ${SDL_ROOT} ${CMAKE_PREFIX_PATH})
+  elseif(MSVC)
+    set(CMAKE_PREFIX_PATH ${EXTERNALS_DIR}/sdl-1.2.15/msvc ${CMAKE_PREFIX_PATH})
+  elseif(MINGW)
+    set(CMAKE_PREFIX_PATH ${EXTERNALS_DIR}/sdl-1.2.15/mingw ${CMAKE_PREFIX_PATH})
+  endif()
+
+  find_package(SDL REQUIRED)
+  find_package(OpenGL REQUIRED)
+  find_package(RapidJSON REQUIRED)
+
+  if (NOT WIN32)
+    find_package(GLEW REQUIRED)
+  else()
+    # Locating GLEW on Windows isn't worth it... just build it
+    add_subdirectory(externals/glew-1.9.0)
+    set(GLEW_LIBRARY glew)
+  endif()
+
+  include_directories(${GLEW_INCLUDE_DIR})
+  include_directories(${SDL_INCLUDE_DIR})
+  include_directories(${RAPID_JSON_INCLUDE_DIR})
+
+  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
+
+  set(THREE_RELEASE_BUILD FALSE CACHE BOOL
+  "Whether to compile examples for installation")
+
+  if (THREE_RELEASE_BUILD)
+    add_definitions(-DTHREE_DATA_DIR=".")
+  else()
+    add_definitions(-DTHREE_DATA_DIR="${DATA_DIR}")
+  endif()
+
+endif()
+
+#############
 
 if (NOT THREE_HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
   add_library(three_impl STATIC three/impl/src.cpp three/impl/src_extras.cpp)
-  target_link_libraries(three_impl ${EXAMPLE_LIBS})
-  set(EXAMPLE_LIBS ${EXAMPLE_LIBS} three_impl)
+  target_link_libraries(three_impl ${THREE_DEP_LIBS})
+  set(THREE_LIB three_impl)
 endif()
 
+#############
+
+# Add a project containing all headers
 if(MSVC)
+
+  file(GLOB THREE_BASE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/three/*.hpp)
+  source_group("three" FILES ${THREE_BASE_HEADERS})
+  set(THREE_HEADERS ${THREE_BASE_HEADERS})
+
+  set (THREE_SUBDIRS cameras core extras lights loaders materials objects renderers scenes textures utils)
+  foreach(subdir ${THREE_SUBDIRS})
+    file(GLOB THREE_SUBDIR_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/three/${subdir}/*.hpp)
+    source_group("three\\${subdir}" FILES ${THREE_SUBDIR_HEADERS})
+    #source_group(${subdir} FILES ${THREE_SUBDIR_HEADERS})
+    set(THREE_HEADERS ${THREE_HEADERS} ${THREE_SUBDIR_HEADERS})
+    endforeach()
+
   add_library(three STATIC ${THREE_HEADERS})
   set_target_properties(three PROPERTIES LINKER_LANGUAGE CXX)
+
 endif()
 
+#############
+
 if(BUILD_THREE_EXAMPLES)
-  if(WIN32)
-    add_subdirectory(externals/glew-1.9.0)
-  endif()
   add_subdirectory(examples)
 endif()
 

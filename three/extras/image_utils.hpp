@@ -11,8 +11,8 @@ class ImageUtils {
 public:
 
   THREE_DECL static Texture::Ptr loadTexture(
-    const std::string& url,
-    THREE::Mapping mapping = THREE::UVMapping
+    const std::string& url
+    //,THREE::Mapping mapping = THREE::UVMapping
   );
 
   THREE_DECL static Texture::Ptr loadCompressedTexture(
