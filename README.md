@@ -128,10 +128,11 @@ constexpr etc...), and support may be dropped at some point in the future.
 ## FAQ ##
 
 * Why on earth would you do this?
-** It started as an exercise to 1) dive into a popular Javascript library of medium size, 2) play with C++11 and 3) offend as many programmers as possible
+    -It started as an exercise to 1) dive into a popular Javascript library of
+    medium size, 2) play with C++11 and 3) offend as many programmers as possible
 * But, but, C++ is lame!?
-** Totally!
+    -Neat!
 * And Javascript is the devil!
-** Clearly!
+    -Clearly!
 
 
