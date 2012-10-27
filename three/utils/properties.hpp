@@ -21,7 +21,6 @@ public:
   Properties& operator=(Properties other) { return swap(other); }
 
   Properties& add(Key key, Value value) {
-    //contents.emplace( std::make_pair(std::move(key), std::move(value)) );
     contents.insert( std::make_pair(std::move(key), std::move(value)) );
     return *this;
   }
@@ -57,7 +56,7 @@ public:
     return contains( Key(key) );
   }
 
-  Value& operator[]( const char* key ) { return contents[ Key(key) ]; }
+  Value& operator[]( const char* key ) { return contents[Key(key)]; }
   Value& operator[]( const Key& key ) { return contents[key]; }
 
   const Value* get( const Key& key ) const {

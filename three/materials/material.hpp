@@ -6,7 +6,6 @@
 #include <three/core/color.hpp>
 
 #include <three/materials/attribute.hpp>
-#include <three/materials/attribute.hpp>
 #include <three/materials/program.hpp>
 #include <three/materials/uniform.hpp>
 

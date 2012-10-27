@@ -995,6 +995,8 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
           }
         } else if ( customAttribute.size == 4 ) {
           fillFromAny<Vector4>( customAttribute.value, customAttribute.array );
+        } else {
+          console().error("Invalid attribute size");
         }
 
       }
@@ -3964,13 +3966,13 @@ void GLRenderer::updateObject( Object3D& object ) {
 
       }
 
-      geometry.verticesNeedUpdate = false;
+      geometry.verticesNeedUpdate     = false;
       geometry.morphTargetsNeedUpdate = false;
-      geometry.elementsNeedUpdate = false;
-      geometry.uvsNeedUpdate = false;
-      geometry.normalsNeedUpdate = false;
-      geometry.colorsNeedUpdate = false;
-      geometry.tangentsNeedUpdate = false;
+      geometry.elementsNeedUpdate     = false;
+      geometry.uvsNeedUpdate          = false;
+      geometry.normalsNeedUpdate      = false;
+      geometry.colorsNeedUpdate       = false;
+      geometry.tangentsNeedUpdate     = false;
 
 
     }

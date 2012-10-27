@@ -6,12 +6,13 @@
 
 #include <three/utils/any.hpp>
 #include <three/utils/index.hpp>
+#include <three/utils/noncopyable.hpp>
 
 #include <unordered_map>
 
 namespace three {
 
-class Attribute {
+class Attribute /*: public NonCopyable*/ {
 public:
 
   explicit Attribute( THREE::AttributeType type = THREE::v3, int arraySize = 0 )
@@ -37,8 +38,7 @@ public:
   /*union Value {
     int i;
     float f;
-  };
-  std::vector<Value> array;*/
+  };*/
   std::vector<float> array;
   any value; // This will be a vector, of float/vec2/vec3/color/vec4
   std::string belongsToAttribute;
@@ -133,7 +133,7 @@ void fillFromAny( const any& src, const SortArray& sortArray, std::vector<float>
 
 namespace AttributeKey {
 
-#if 1
+#if 0
 #define DECLARE_ATTRIBUTE_KEY(a)                 \
   inline const std::string& a () {               \
   static const std::string attributeKey( (#a) ); \

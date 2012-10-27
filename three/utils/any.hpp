@@ -72,7 +72,6 @@ struct choose_policy_impl<T,false> {
 template<typename T>
 struct choose_policy {
   typedef typename choose_policy_impl<T,sizeof(T)<=sizeof(T*)>::type type;
-  //typedef big_any_policy<T> type;
 };
 
 template<typename T>

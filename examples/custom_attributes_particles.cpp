@@ -74,14 +74,15 @@ void shader( GLRenderer::Ptr renderer ) {
   auto& vertices = geometry->vertices;
   vertices.reserve( pointCount );
 
-  std::generate_n( std::back_inserter(vertices),
-                   pointCount,
-                   [=]() -> Vector3 {
-                    Vector3 vertex( Math::random(-1.f, 1.f),
-                                    Math::random(-1.f, 1.f),
-                                    Math::random(-1.f, 1.f) );
-                    vertex.multiplyScalar( radius );
-                    return vertex; } );
+  std::generate_n(
+    std::back_inserter(vertices),
+    pointCount,
+    [=]() -> Vector3 {
+      return Vector3( Math::random(-1.f, 1.f),
+                      Math::random(-1.f, 1.f),
+                      Math::random(-1.f, 1.f) ).multiplyScalar( radius );
+    }
+  );
 
   auto sphere = ParticleSystem::create( geometry, shaderMaterial );
   sphere->geometry->dynamic = true;

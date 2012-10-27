@@ -61,6 +61,7 @@ else()
 endif()
 
 file(GLOB examples "*.cpp")
+#set(examples custom_attributes_particles.cpp)
 
 foreach(example ${examples})
   get_filename_component(example_name ${example} NAME_WE)
