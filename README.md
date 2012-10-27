@@ -75,6 +75,7 @@ Run CMake with **BUILD_THREE_EXAMPLES** enabled.  Compile and run from **bin**. 
 examples will use either the header-only or compiled library, depending on the
 **THREE_HEADER_ONLY** condition.
 
+<!--
 Working examples:
 
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_custom_attributes_particles.png">
@@ -94,7 +95,7 @@ Working examples:
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_shader2.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_shader_lava.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_test_memory.png">
-
+-->
 
 ## Status ##
 
