@@ -32,13 +32,13 @@ static library (dynamic to come...).  The design is more or less
 that found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html):
 
 # As header-only library #
-Checkout.  All relevant files are in the base "three" folder. Include and use.
+Checkout.  All relevant files are in the base **three** folder. Include and use.
 
 # As compiled library #
-Checkout.  Run CMake with THREE_HEADER_ONLY set to false.  This will define
-"THREE_SEPARATE_COMPILATION".  Compile.  A static library three_impl.{a/lib} will
-be created in lib/*.  Any code using this library must also define
-"THREE_SEPARATE"COMPILATION" when using three.cpp.
+Checkout.  Run CMake with **THREE_HEADER_ONLY** set to false.  This will define
+**THREE_SEPARATE_COMPILATION**.  Compile.  A static library `three_impl.{a/lib}` will
+be created in **lib**.  Any code using this library must also define
+**THREE_SEPARATE_COMPILATION** when using three.cpp.
 
 
 # Sample code #
