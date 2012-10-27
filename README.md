@@ -8,7 +8,7 @@ accessible 3D library (credits to mdroob and alteredq). The goal with three.cpp
 is to fully implement the relevant portions of the library in native C++11, up
 to and including revision 50.
 
-Before you start raging, see the [FAQ][faq].
+Before you start raging, see the [FAQ](#faq).
 
 
 ## Usage ##
@@ -125,7 +125,7 @@ support (no variadics, no initializer lists, no default/deleted functions, no
 constexpr etc...), and support may be dropped at some point in the future.
 
 
-[faq] ## FAQ ##
+## <a id="faq"> </a> FAQ
 
 * Why on earth would you do this?
 ** It started as an exercise to 1) dive into a popular Javascript library of medium size, 2) play with C++11 and 3) offend as many programmers as possible
