@@ -3,8 +3,45 @@ three.cpp
 
 ##### A more or less direct port of three.js to C++ ######
 
-three.js is a popular and accessible 3D library (credits to mdroob and alteredq.)
+three.js is a popular and accessible 3D library (credits to mdroob and alteredq)
  The goal with three.cpp is to fully implement the relevant portions of the library in native C++11, up to and including revision 50.
+
+### Status ###
+
+Much of the core functionality has been implemented to some degree, excepting
+morph targets and animation of any sort. It's not pretty; I tried to preserve
+the style/syntax/structure of the original library while not completely
+obviating the merits of native code . To be sure, this is as direct a port as
+possible; you will find things like public member variables, tight coupling and
+likely other code snippets that may or may not go against all you have come to
+believe in.  C++ is *not* Javascript.
+
+For the examples that have been ported, perf is anywhere from 2x-10x that of
+three.js, average 4-5x, on my i7, GT 650m laptop (with vsync off on both, of course).
+No thorough profiling or meaningful optimization has been done, and the graphics
+path is more or less identical to that found in three.js.
+
+TODO: Test with GLES (Android/iOS/NACL)
+
+
+### Usage ###
+
+three.cpp is optionally header-only; you can simply drop the
+"three" folder in your project and get started, or you can compile it into a
+static library (dynamic to come...).  The design is more or less
+that found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html):
+
+# As header-only library #
+Checkout.  All relevant files are in the base "three" folder. Include and use.
+
+# As compiled library #
+Checkout.  Run CMake with THREE_HEADER_ONLY set to false.  This will define
+"THREE_SEPARATE_COMPILATION".  Compile.  A static library three_impl.{a/lib} will
+be created in lib/*.  Any code using this library must also define
+"THREE_SEPARATE"COMPILATION" when using three.cpp.
+
+
+# Sample code #
 
 This code creates a renderer, then a scene and camera, adds the camera and cube to the scene, then
 starts the rendering loop.
@@ -43,40 +80,6 @@ void scene() {
 }
 
 ```
-
-### Status ###
-
-Much of the core functionality has been implemented to some degree, excepting
-morph targets and animation of any sort. It's not pretty; I tried to preserve
-the style/syntax/structure of the original library while not completely
-obviating the merits of native code . To be sure, this is as direct a port as
-possible; you will find things like public member variables, tight coupling and
-likely other code snippets that may or may not go against all you have come to
-believe in.  C++ is *not* Javascript.
-
-For the examples that have been ported, perf is anywhere from 2x-10x that of
-three.js, average 4-5x, on my i7, GT 650m laptop (with vsync off on both, of course).
-No thorough profiling or meaningful optimization has been done, and the graphics
-path is more or less identical to that found in three.js.
-
-TODO: Test with GLES (Android/iOS/NACL)
-
-
-### Usage ###
-
-three.cpp is optionally header-only; you can simply drop the
-"three" folder in your project and get started, or you can compile it into a
-static library (dynamic to come...).  The design is more or less
-that found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html):
-
-# As header-only library #
-Checkout.  All relevant files are in the base "three" folder. Include and use.
-
-# As compiled library #
-Checkout.  Run CMake with THREE_HEADER_ONLY set to false.  This will define
-"THREE_SEPARATE_COMPILATION".  Compile.  A static library three_impl.{a/lib} will
-be created in lib/*.  Any code using this library must also define
-"THREE_SEPARATE"COMPILATION" when using three.cpp.
 
 
 ### Examples ###
