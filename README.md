@@ -50,7 +50,7 @@ void scene() {
   auto mesh = Mesh::create( geometry, material );
   scene->add( mesh );
 
-  anim::gameLoop( [&]( float dt ) -> bool {
+  anim::gameLoop( [&]( float dt ) {
 
     mesh->rotation.x += 0.01f;
     mesh->rotation.y += 0.02f;
@@ -66,11 +66,12 @@ void scene() {
 
 ## Examples ##
 
-Run CMake with BUILD_THREE_EXAMPLES enabled.  Compile and run from bin/*.  The
+Run CMake with **BUILD_THREE_EXAMPLES** enabled.  Compile and run from **bin**.  The
 examples will use either the header-only or compiled library, depending on the
-THREE_HEADER_ONLY condition.
+**THREE_HEADER_ONLY** condition.
 
 Working examples:
+
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_custom_attributes_particles.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_custom_attributes_particles2.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_custom_attributes_particles3.png">
