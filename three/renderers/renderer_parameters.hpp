@@ -2,6 +2,7 @@
 #define THREE_RENDERER_PARAMETERS_HPP
 
 #include <three/common.hpp>
+#include <three/constants.hpp>
 
 #include <three/core/color.hpp>
 

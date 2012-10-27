@@ -33,17 +33,6 @@ set(EXAMPLE_LIBS ${GLEW_LIBRARY}
                  ${SDL_LIBRARY}
                  ${OPENGL_LIBRARIES})
 
-
-set(THREE_HEADER_ONLY TRUE CACHE BOOL
-  "Whether to use Three.cpp as a header-only library" FORCE)
-
-#if (NOT THREE_HEADER_ONLY)
-  add_definitions(-DTHREE_SEPARATE_COMPILATION)
-  add_library(three_impl STATIC impl/three.cpp impl/three_extras.cpp)
-  target_link_libraries(three_impl ${EXAMPLE_LIBS})
-  set(EXAMPLE_LIBS ${EXAMPLE_LIBS} three_impl)
-#endif()
-
 #add_custom_command(
 #  TARGET three_impl
 #  POST_BUILD

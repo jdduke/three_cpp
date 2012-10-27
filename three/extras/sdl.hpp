@@ -1,6 +1,7 @@
 #ifndef THREE_SDL_HPP
 #define THREE_SDL_HPP
 
+#include <three/gl.hpp>
 #include <three/core/color.hpp>
 #include <three/utils/noncopyable.hpp>
 #include <three/renderers/renderer_parameters.hpp>
