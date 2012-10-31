@@ -38,16 +38,15 @@ cmake-gui is useful if you need to configure SDL/GLEW path dependencies when com
 
 ## Examples ##
 
-Reviewing the examples in **three_cpp/examples** is the best way to learn how to use library. Examples are built by default using the project files generated from CMake. To disable:
+Reviewing the examples in **three_cpp/examples** is probably the best way to learn how to use the library. Examples are built by default using the project files generated from CMake. To disable (assuming you're in **three_cpp/build**:
 
 * `cmake ../ -DBUILD_THREE_EXAMPLES:BOOL=OFF`
 
-Binaries are placed in **three_cpp/bin**.
+Binaries are placed in **three_cpp/bin**.  On Windows, you will likely need to copy the SDL runtime library to the appropriate **three_cpp/bin** dir, assuming it's not in your path already.
 
 ## Sample code ##
 
-This code creates a renderer, then a scene and camera, adds the camera and cube to the scene, then
-starts the rendering loop.
+This code creates a renderer, scene and camera, adds the camera and cube to the scene, then starts the rendering loop.
 
 ```c++
 
@@ -110,18 +109,16 @@ void scene() {
 
 ## Status ##
 
-This is very much a pre-alpha, early stages project.
+This is very much a pre-alpha, early stages project: half-finished at best, with myriad TODO's and the like littered throughout. It's not pretty; effort was made to preserve the style/syntax/structure of the original library while not completely obviating the merits of native code . To be sure, this is as direct a port as possible; you will find things like public member variables, tight coupling and likely other code snippets that may or may not go against all you have come to believe in.  C++ is *not* Javascript.
 
-Much of the core functionality has been implemented to some degree, excepting
-morph targets and animation of any sort, or shadows.  Only a small subset of
-the three.js "extras" tree has been completed.
+* **Core** - 75% complete?
+    * TODO: Morph targets, shadows, plugin support
+* **Extras** - 5-10% complete?
+    * TODO: Pretty much everything
+* **Examples** - 25% complete?
+    * TODO: Examples involving morph targets and/or model/json importing
 
-It's not pretty; I tried to preserve the style/syntax/structure of the original
-library while not completely obviating the merits of native code . To be sure,
-this is as direct a port as possible; you will find things like public member
-variables, tight coupling and likely other code snippets that may or may not go
-against all you have come to believe in.  C++ is *not* Javascript.
-
+### Performance ##
 For the examples that have been ported, perf is anywhere from 2x-10x that of
 three.js, average 4-5x, on my i7, GT 650m laptop (with vsync off on both, of course).
 No thorough profiling or meaningful optimization has been done, and the graphics
@@ -131,7 +128,7 @@ TODO: Test with GLES (Android/iOS/NACL)
 
 ## Dependencies ##
 * CMake
-* SDL and GLEW for the examples (included for Windows)
+* SDL and GLEW for the examples (included for both MSVC and MinGW)
 
 ## Supported Platforms ##
 
@@ -140,7 +137,7 @@ You'll need a sufficiently modern C++11 compiler:
 * >= GCC 4.6.3
 * (debateable) MSVC 2012
 
-Most functionality tested and working on:
+Implemented functionality tested via examples, and working on:
 * Mint 13 with GCC 4.6.3
 * Win 7 with both MSVC 2012 and MinGW (GCC 4.8 and 4.7)
 * OSX with Clang 3.1
