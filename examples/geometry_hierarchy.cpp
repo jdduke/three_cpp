@@ -55,10 +55,15 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
   auto running = true, renderStats = true;
   sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
-    //running = false;
-    if ( e.key.keysym.sym == SDLK_s )
-      renderStats = !renderStats;
+    switch (e.key.keysym.sym) {
+    case SDLK_q:
+    case SDLK_ESCAPE:
+      running = false; break;
+    default:
+      renderStats = !renderStats; break;
+    };
   } );
+
   sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
     running = false;
   } );
@@ -77,8 +82,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  stats::Stats stats;
-
+  stats::Stats stats( *renderer );
   auto time = 0.f;
   int benchmarkFrames = 100000;
 
@@ -102,10 +106,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
     renderer->render( *scene, *camera );
 
-    if ( renderStats )
-      stats.update( dt, *renderer );
-    else
-      stats.update( dt );
+    stats.update( dt, renderStats );
 
     return running && (--benchmarkFrames > 0);
 

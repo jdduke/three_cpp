@@ -3,8 +3,7 @@
 
 #include <three/materials/text_2d_material.hpp>
 
-#include <three/extras/utils/font2.hpp>
-
+#include <three/extras/utils/font.hpp>
 namespace three {
 
 namespace detail {

@@ -31,7 +31,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL void lookAt( const Vector3& vector ) override {
+  void lookAt( const Vector3& vector ) override {
     matrix.lookAt( position, vector, up );
     if ( rotationAutoUpdate ) {
       rotation = matrix.getEulerRotation( eulerOrder );

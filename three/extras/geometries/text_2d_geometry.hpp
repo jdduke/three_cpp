@@ -3,7 +3,7 @@
 
 #include <three/core/geometry.hpp>
 
-#include <three/extras/utils/font2.hpp>
+#include <three/extras/utils/font.hpp>
 
 namespace three {
 
@@ -17,7 +17,7 @@ public:
 
 #ifdef TODO_THREE_DYNAMIC_GEOMETRY
   THREE_DECL void update( const std::string& text );
-#endif 
+#endif
 
 protected:
 

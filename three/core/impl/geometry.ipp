@@ -311,6 +311,8 @@ Geometry::Geometry()
     tangentsNeedUpdate( false ),
     colorsNeedUpdate( false ) { }
 
+Geometry::~Geometry() { }
+
 } // namespace three
 
 #endif // THREE_GEOMETRY_IPP

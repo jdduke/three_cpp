@@ -138,7 +138,8 @@ public:
 
 protected:
 
-  Geometry();
+  THREE_DECL Geometry();
+  THREE_DECL virtual ~Geometry();
 
 private:
 

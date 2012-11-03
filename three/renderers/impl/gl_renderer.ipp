@@ -174,6 +174,11 @@ void GLRenderer::initialize() {
 
 void GLRenderer::initGL() {
 
+  // TODO: Remove this
+#if defined(THREE_DYN_LINK) && defined(THREE_GLEW)
+  glewInit();
+#endif
+
   // TODO: Force client to initialize opengl
   if ( !_vsync )
     glEnableVSync( false );
@@ -2801,7 +2806,7 @@ void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Mate
 
 }
 
-void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, Geometry& geometry, Object3D& object ) {
+void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, BufferGeometry& geometry, Object3D& object ) {
 
   if ( material.visible == false ) return;
 
@@ -3515,7 +3520,7 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, THREE::Ren
       setMaterialFaces( *material );
 
       if ( buffer.type() == THREE::BufferGeometry ) {
-        renderBufferDirect( camera, lights, fog, *material, static_cast<Geometry&>( buffer ), object );
+        renderBufferDirect( camera, lights, fog, *material, static_cast<BufferGeometry&>( buffer ), object );
       } else {
         renderBuffer( camera, lights, fog, *material, static_cast<GeometryGroup&>( buffer ), object );
       }

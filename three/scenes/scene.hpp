@@ -64,6 +64,7 @@ protected:
 protected:
 
   THREE_DECL Scene();
+  THREE_DECL ~Scene();
 
   virtual THREE::Type type() const { return THREE::Scene; }
 

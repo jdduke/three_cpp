@@ -55,13 +55,23 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
   add( root, amount, Vector3(   0,    0, -100) );
   add( root, amount, Vector3(   0,    0,  100) );
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
+  /////////////////////////////////////////////////////////////////////////
+
+  auto running = true, renderStats = true;
+  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
+    switch (e.key.keysym.sym) {
+    case SDLK_q:
+    case SDLK_ESCAPE:
+      running = false; break;
+    default:
+      renderStats = !renderStats; break;
+    };
+  } );
+
+  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
     running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+  } );
+
   sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
     camera->aspect = ( float )event.resize.w / event.resize.h;
     camera->updateProjectionMatrix();
@@ -73,6 +83,8 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
     mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
     mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
   });
+
+  /////////////////////////////////////////////////////////////////////////
 
   auto time = 0.f;
   auto frame = 0;

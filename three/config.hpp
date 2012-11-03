@@ -80,6 +80,11 @@
 #  endif
 #  if _MSC_VER > 1600
 #    define THREE_HAS_RANGE_FOR 1
+#    if MSC_NOV_2012_CTP
+#      define THREE_HAS_VARIADIC_TEMPLATES 1
+#      define THREE_HAS_DELEGATING_CONSTRUCTORS 1
+#      define THREE_HAS_EXPLICIT_CONVERSION_OPERATORS 1
+#    endif
 #  endif
 #endif
 

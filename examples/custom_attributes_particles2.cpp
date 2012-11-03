@@ -112,13 +112,20 @@ void shader( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
+  auto running = true, renderStats = true;
+  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
+    switch (e.key.keysym.sym) {
+    case SDLK_q:
+    case SDLK_ESCAPE:
+      running = false; break;
+    default:
+      renderStats = !renderStats; break;
+    };
+  } );
+
+  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
     running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+  } );
 
   sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
     camera->aspect = ( float )event.resize.w / event.resize.h;
@@ -128,8 +135,7 @@ void shader( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  stats::Stats stats;
-
+  stats::Stats stats( *renderer );
   auto time = 0.f;
 
   anim::gameLoop( [&]( float dt ) -> bool {
@@ -147,7 +153,7 @@ void shader( GLRenderer::Ptr renderer ) {
 
     renderer->render( *scene, *camera );
 
-    stats.update( dt, *renderer );
+    stats.update( dt, renderStats );
 
     return running;
 

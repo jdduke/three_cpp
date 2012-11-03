@@ -61,7 +61,7 @@ void simple( const GLRenderer::Ptr& renderer ) {
 
   // Rendering
 
-  stats::Stats stats;
+  stats::Stats stats( *renderer );
   anim::gameLoop( [&]( float dt ) -> bool {
 
     camera->position.x += (-100.f * mouseX - camera->position.x ) * 3 * dt;
@@ -69,8 +69,6 @@ void simple( const GLRenderer::Ptr& renderer ) {
     camera->lookAt( scene->position );
 
     renderer->render( *scene, *camera );
-
-    stats.update( dt, *renderer );
 
     return running;
 

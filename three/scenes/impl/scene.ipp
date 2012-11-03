@@ -18,6 +18,8 @@ Scene::Scene()
     overrideMaterial( nullptr ),
     matrixAutoUpdate( false ) { }
 
+Scene::~Scene() { }
+
 void Scene::visit( Visitor& v )            { v( *this ); }
 void Scene::visit( ConstVisitor& v ) const { v( *this ); }
 

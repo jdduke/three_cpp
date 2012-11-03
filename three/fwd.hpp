@@ -36,6 +36,7 @@ class RenderableVertex;
 
 class Spline;
 
+class BufferGeometry;
 class Geometry;
 class GeometryBuffer;
 class GeometryGroup;

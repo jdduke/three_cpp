@@ -12,15 +12,12 @@ namespace stats {
 
 class Stats : public NonCopyable {
 public:
-  THREE_DECL Stats();
+  THREE_DECL Stats( GLRenderer& renderer );
   THREE_DECL ~Stats();
-  
-  void update( float deltaTime ) { updateImpl( deltaTime ); }
-  void update( float deltaTime, GLRenderer& renderer ) { updateImpl( deltaTime, &renderer ); }
+
+  THREE_DECL void update( float deltaTime, bool render = true );
 
 private:
-
-  THREE_DECL void updateImpl( float deltaTime, GLRenderer* renderer = nullptr );
 
   struct Impl;
   std::unique_ptr<Impl> impl;

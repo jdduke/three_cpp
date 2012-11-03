@@ -15,7 +15,7 @@ Before you start raging, see the [FAQ](#faq).
 
 three.cpp is optionally header-only; you can simply drop the
 "three" folder in your project and get started, or you can compile it into a
-static library (dynamic support to come).  The design is similar to that
+static and/or dynamic library.  The design is similar to that
 found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html).
 
 ### Setup ###
@@ -31,7 +31,7 @@ found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.h
 * `cmake ../ -DTHREE_HEADER_ONLY:BOOL=OFF`
 * `make` (or compile generated .sln with VC)
 
-This generates the static library `three_impl.{a/lib}` in **three_cpp/lib**.  Any code using the library must also define `THREE_SEPARATE_COMPILATION` when using three.cpp.
+This generates the static library `three.{a/lib}` in **three_cpp/lib**, or the dynamic library `thre.{so/dll}` in **three_cpp/bin**, dependent on the `THREE_LIBRARY_STATIC` CMake flag.  Any code using the library must also define `THREE_SEPARATE_COMPILATION` when using three.cpp, and `THREE_DYN_LINK` if library is dynamic.
 
 cmake-gui is useful if you need to configure SDL/GLEW path dependencies when compiling.
 

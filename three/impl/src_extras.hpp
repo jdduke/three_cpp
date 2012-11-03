@@ -9,8 +9,7 @@
 
 #include <three/extras/geometries/impl/text_2d_geometry.ipp>
 
-//#include <three/extras/utils/impl/font.ipp>
-#include <three/extras/utils/impl/font2.ipp>
+#include <three/extras/utils/impl/font.ipp>
 
 #include <three/extras/impl/image_utils.ipp>
 #include <three/extras/impl/sdl.ipp>

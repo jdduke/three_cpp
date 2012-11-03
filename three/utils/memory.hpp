@@ -31,11 +31,13 @@ struct Derived : public T {
   Derived( const Args& ... args ) : T( args... ) { }
 };
 
+///*
 template < typename T >
 inline shared_ptr<T> make_shared( ) {
   struct Derived : public T { };
   return std::make_shared<Derived>( );
 }
+//*/
 
 template < typename T, typename... Args >
 inline shared_ptr<T> make_shared( Args&& ... args ) {

@@ -154,10 +154,17 @@ void geometry_minecraft( const GLRenderer::Ptr& renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true, renderStats = false;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    renderStats = !renderStats;
+  auto running = true, renderStats = true;
+  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& e ) {
+    switch (e.key.keysym.sym) {
+    case SDLK_q:
+    case SDLK_ESCAPE:
+      running = false; break;
+    default:
+      renderStats = !renderStats; break;
+    };
   });
+
   sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
     running = false;
   });
@@ -170,9 +177,8 @@ void geometry_minecraft( const GLRenderer::Ptr& renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
+  stats::Stats stats( *renderer );
   auto time = 0.f;
-
-  stats::Stats stats;
 
   anim::gameLoop (
 
@@ -186,10 +192,7 @@ void geometry_minecraft( const GLRenderer::Ptr& renderer ) {
 
       renderer->render( *scene, *camera );
 
-      if ( renderStats )
-        stats.update( dt, *renderer );
-      else
-        stats.update( dt );
+      stats.update( dt, renderStats );
 
       return running;
 

@@ -42,7 +42,7 @@ public:
   virtual THREE::Type type() const { return THREE::Object3D; }
   virtual void visit( Visitor& v ) { };
   virtual void visit( ConstVisitor& v ) const { };
-  virtual ~Object3D() { }
+  THREE_DECL virtual ~Object3D();
 
   /////////////////////////////////////////////////////////////////////////
 

@@ -2,26 +2,29 @@ cmake_minimum_required (VERSION 2.6)
 project(three)
 
 set(CMAKE_DEBUG_POSTFIX "d")
-
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-# Treat warnings as errors cmake option
-set(TREAT_WARNINGS_AS_ERRORS TRUE CACHE BOOL "Treat warnings as errors")
-set(BUILD_THREE_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
-#set(BUILD_THREE_TESTS    FALSE CACHE BOOL "Build three.cpp unit tests")
+include(${PROJECT_SOURCE_DIR}/cmake/ThreeTargets.cmake)
 
-#############
+set(THREE_VERSION 0.0.1 CACHE STRING "three.cpp version")
+dissect_version()
 
-if(MSVC10)
-  set(THREE_SUFFIX _vc10)
-elseif(MSVC11)
-  set(THREE_SUFFIX _vc11)
+set(THREE_TREAT_WARNINGS_AS_ERRORS TRUE CACHE BOOL "Treat warnings as errors")
+set(THREE_BUILD_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
+#set(THREE_BUILD_TESTS        FALSE CACHE BOOL "Build three.cpp unit tests")
+set(THREE_HEADER_ONLY        FALSE CACHE BOOL "Whether to use three.cpp as a header-only library")
+set(THREE_LIBRARY_STATIC     TRUE CACHE BOOL "If building three.cpp as a library, build statically")
+
+if (THREE_LIBRARY_STATIC)
+  set(THREE_LIBRARY_TYPE STATIC CACHE INTERNAL "" FORCE)
 else()
-  set(THREE_SUFFIX)
+  set(THREE_LIBRARY_TYPE SHARED CACHE INTERNAL "" FORCE)
 endif()
 
 #############
-# Clang/GCC
+
+#############
+# Clang/GCC Config
 
 if (CMAKE_CXX_COMPILER MATCHES ".*clang")
   set(CMAKE_COMPILER_IS_CLANGXX 1)
@@ -32,38 +35,38 @@ endif ()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
   if (MINGW)
-    set(BUILD_64_BIT FALSE CACHE BOOL "Enable 64-bit build")
+    set(THREE_BUILD_64_BIT FALSE CACHE BOOL "Enable 64-bit build")
   else()
-    set(BUILD_64_BIT TRUE CACHE BOOL "Enable 64-bit build")
+    set(THREE_BUILD_64_BIT TRUE CACHE BOOL "Enable 64-bit build")
   endif()
 
-  if (BUILD_64_BIT)
-    set(COMMON_FLAGS "-m64" CACHE INTERNAL "Common flags" FORCE)
+  if (THREE_BUILD_64_BIT)
+    set(THREE_COMMON_FLAGS "-m64" CACHE INTERNAL "Common flags" FORCE)
     set(THREE_SIZE_TYPE x64 CACHE INTERNAL "" FORCE)
   else()
-    set(COMMON_FLAGS "-m32" CACHE INTERNAL "Common flags" FORCE)
+    set(THREE_COMMON_FLAGS "-m32" CACHE INTERNAL "Common flags" FORCE)
     set(THREE_SIZE_TYPE x86 CACHE INTERNAL "" FORCE)
   endif()
 
-  set(COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wno-missing-braces")
+  set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -Wall -Wno-missing-braces")
 
-  if(TREAT_WARNINGS_AS_ERRORS)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -Werror")
+  if(THREE_TREAT_WARNINGS_AS_ERRORS)
+    set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -Werror")
   endif()
 
   set(STOP_ON_FIRST_ERROR TRUE CACHE BOOL "Stop compilation on first error")
   if (STOP_ON_FIRST_ERROR)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -Wfatal-errors")
+    set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -Wfatal-errors")
   endif()
 
   set(BUILD_DEBUG FALSE CACHE BOOL "Default to debug build")
   if (BUILD_DEBUG)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -g")
+    set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -g")
     add_definitions("-D_DEBUG")
   endif()
 
   if (MINGW)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -static-libstdc++ -static-libgcc -static")
+    set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -static-libstdc++ -static-libgcc -static")
   endif()
 
   if (CMAKE_COMPILER_IS_CLANGXX)
@@ -76,30 +79,38 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
   endif()
 
-  set(CMAKE_C_FLAGS             "${CMAKE_C_FLAGS}             ${COMMON_FLAGS}")
-  set(CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS}           ${COMMON_FLAGS}")
-  set(CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS}    ${COMMON_FLAGS}")
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${COMMON_FLAGS}")
-  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${COMMON_FLAGS}")
+  set(CMAKE_C_FLAGS             "${CMAKE_C_FLAGS}             ${THREE_COMMON_FLAGS}")
+  set(CMAKE_CXX_FLAGS           "${CMAKE_CXX_FLAGS}           ${THREE_COMMON_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS}    ${THREE_COMMON_FLAGS}")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${THREE_COMMON_FLAGS}")
+  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${THREE_COMMON_FLAGS}")
 endif()
 
 #############
-# MSVC
+# MSVC Config
 
 if(MSVC)
+
+  set(THREE_USE_NOV_2012_CTP TRUE CACHE BOOL "Enable usage of the Nov 2012 CTP for MSVC 2012")
+  if (THREE_USE_NOV_2012_CTP)
+    set(THREE_PLATFORM_TOOLSET "v120_CTP_Nov2012" CACHE STRING "Platform toolset" FORCE)
+  else()
+    set(THREE_PLATFORM_TOOLSET "" CACHE STRING "Platform toolset" FORCE)
+  endif()
+
   if(CMAKE_SIZEOF_VOID_P MATCHES 4)
     set(THREE_SIZE_TYPE x86)
-    set(BUILD_64_BIT FALSE)
+    set(THREE_BUILD_64_BIT FALSE)
   else()
     set(THREE_SIZE_TYPE x64)
-    set(BUILD_64_BIT TRUE)
+    set(THREE_BUILD_64_BIT TRUE)
   endif()
 
   add_definitions("-D_VARIADIC_MAX=6")
   add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 
-  set(LINK_STATIC_RUNTIME OFF CACHE BOOL "Link statically against C++ runtime")
-  if(LINK_STATIC_RUNTIME)
+  set(THREE_LINK_STATIC_RUNTIME OFF CACHE BOOL "Link statically against C++ runtime")
+  if(THREE_LINK_STATIC_RUNTIME)
     foreach(flag_var CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO CMAKE_CXX_FLAGS_RELWITHDEBINFO)
         string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
         string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
@@ -118,7 +129,15 @@ endif()
 #############
 # Output Dirs
 
-set(THREE_OUTPUT_SUBDIR ${THREE_SIZE_TYPE}${THREE_SUFFIX})
+if(MSVC10)
+  set(THREE_DIR_SUFFIX _vc10)
+elseif(MSVC11)
+  set(THREE_DIR_SUFFIX _vc11)
+else()
+  set(THREE_DIR_SUFFIX "")
+endif()
+
+set(THREE_OUTPUT_SUBDIR ${THREE_SIZE_TYPE}${THREE_DIR_SUFFIX})
 set(THREE_BINARY_PATH  ${CMAKE_HOME_DIRECTORY}/bin/${THREE_OUTPUT_SUBDIR})
 set(THREE_LIBRARY_PATH ${CMAKE_HOME_DIRECTORY}/lib/${THREE_OUTPUT_SUBDIR})
 
@@ -138,14 +157,12 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 #############
 # Library config
 
-set(THREE_HEADER_ONLY TRUE CACHE BOOL "Whether to use three.cpp as a header-only library")
-
 set(EXTERNALS_DIR ${CMAKE_HOME_DIRECTORY}/externals)
 set(DATA_DIR      ${CMAKE_HOME_DIRECTORY}/data)
 
 include_directories(.)
 
-if (NOT THREE_HEADER_ONLY OR BUILD_THREE_EXAMPLES)
+if (NOT THREE_HEADER_ONLY OR THREE_BUILD_EXAMPLES)
 
   # Locate necessary headers/libraries
 
@@ -165,19 +182,23 @@ if (NOT THREE_HEADER_ONLY OR BUILD_THREE_EXAMPLES)
   find_package(OpenGL REQUIRED)
   find_package(RapidJSON REQUIRED)
 
+  set(THREE_STATIC_GLEW OFF CACHE BOOL "Use static glew library")
+
   if (NOT WIN32)
     find_package(GLEW REQUIRED)
   else()
     # Locating GLEW on Windows isn't worth it... just build it
     add_subdirectory(externals/glew-1.9.0)
-    set(GLEW_LIBRARY glew)
+    if (THREE_STATIC_GLEW)
+      set(GLEW_LIBRARY glews)
+    else()
+      set(GLEW_LIBRARY glew)
+    endif()
   endif()
 
   include_directories(${GLEW_INCLUDE_DIR})
   include_directories(${SDL_INCLUDE_DIR})
   include_directories(${RAPID_JSON_INCLUDE_DIR})
-
-  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
 
   set(THREE_RELEASE_BUILD FALSE CACHE BOOL
   "Whether to compile examples for installation")
@@ -194,40 +215,43 @@ endif()
 
 if (NOT THREE_HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
-  add_library(three_impl STATIC three/impl/src.cpp three/impl/src_extras.cpp)
-  target_link_libraries(three_impl ${THREE_DEP_LIBS})
-  set(THREE_LIB three_impl)
+  if (NOT THREE_LIBRARY_STATIC)
+    add_definitions(-DTHREE_DYN_LINK)
+  endif()
+
+  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
+
+  add_definitions(-DTHREE_SDL -DTHREE_GLEW)
+  if (THREE_STATIC_GLEW)
+    add_definitions(-DGLEW_STATIC)
+  endif()
+
+  three_add_library(three three/impl/src.cpp three/impl/src_extras.cpp)
+  set(THREE_LIB three)
+
+  if (THREE_BUILD_EXAMPLES OR THREE_BUILD_TESTS)
+    # Copy SDL runtime on Windows
+    if (MSVC OR MINGW)
+      get_filename_component(SDL_PATH ${SDLMAIN_LIBRARY} PATH)
+      set(SDL_RUNTIME_LIBRARY "${SDL_PATH}/SDL.dll")
+      message (STATUS "Copying ${SDL_RUNTIME_LIBRARY} to ${THREE_BINARY_PATH} \n")
+      add_custom_command(
+        TARGET three
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${THREE_BINARY_PATH}
+        COMMAND ${CMAKE_COMMAND} -E copy ${SDL_RUNTIME_LIBRARY} "${THREE_BINARY_PATH}/$<CONFIGURATION>"
+      COMMENT "Copying ${SDL_RUNTIME_LIBRARY}")
+    endif()
+  endif()
 endif()
 
 #############
 
-# Add a project containing all headers
-if(MSVC)
-
-  file(GLOB THREE_BASE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/three/*.hpp)
-  source_group("three" FILES ${THREE_BASE_HEADERS})
-  set(THREE_HEADERS ${THREE_BASE_HEADERS})
-
-  set (THREE_SUBDIRS cameras core extras lights loaders materials objects renderers scenes textures utils)
-  foreach(subdir ${THREE_SUBDIRS})
-    file(GLOB THREE_SUBDIR_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/three/${subdir}/*.hpp)
-    source_group("three\\${subdir}" FILES ${THREE_SUBDIR_HEADERS})
-    #source_group(${subdir} FILES ${THREE_SUBDIR_HEADERS})
-    set(THREE_HEADERS ${THREE_HEADERS} ${THREE_SUBDIR_HEADERS})
-    endforeach()
-
-  add_library(three STATIC ${THREE_HEADERS})
-  set_target_properties(three PROPERTIES LINKER_LANGUAGE CXX)
-
-endif()
-
-#############
-
-if(BUILD_THREE_EXAMPLES)
+if(THREE_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
-#if(BUILD_THREE_TESTS)
+#if(THREE_BUILD_TESTS)
 #  include_directories(${THREE_SOURCE_DIR}/tests)
 #  add_subdirectory(externals/googletest)
 #  add_subdirectory(tests)

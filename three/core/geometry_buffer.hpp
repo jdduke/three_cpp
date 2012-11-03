@@ -15,6 +15,8 @@ public:
 
   virtual THREE::GeometryType type() const { return THREE::Geometry; }
 
+  virtual ~GeometryBuffer() { }
+
   typedef Buffer GLBuffer;
 
   Index materialIndex;

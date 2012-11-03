@@ -166,7 +166,7 @@ private:
   // Buffer rendering
   THREE_DECL void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
   THREE_DECL void renderBufferImmediate( Object3D& object, Program& program, Material& material );
-  THREE_DECL void renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, Geometry& geometry, Object3D& object );
+  THREE_DECL void renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, BufferGeometry& geometry, Object3D& object );
 
   // Sorting
   THREE_DECL void setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object );

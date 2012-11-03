@@ -221,6 +221,8 @@ Object3D::Object3D( const Material::Ptr& material /*= Material::Ptr()*/,
     material( material ),
     geometry( geometry ) { }
 
+Object3D::~Object3D() { }
+
 void Object3D::__addObject( const Ptr& object ) { }
 
 void Object3D::__removeObject( const Ptr& object ) { }

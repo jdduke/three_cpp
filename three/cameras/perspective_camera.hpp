@@ -83,7 +83,7 @@ public:
   }
 
 
-  THREE_DECL void updateProjectionMatrix() {
+  void updateProjectionMatrix() {
 
     if ( fullWidth != 0.f ) {
 

@@ -123,13 +123,20 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
 
   //////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
+  auto running = true, renderStats = true;
+  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
+    switch (e.key.keysym.sym) {
+    case SDLK_q:
+    case SDLK_ESCAPE:
+      running = false; break;
+    default:
+      renderStats = !renderStats; break;
+    };
+  } );
+
+  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
     running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+  } );
 
   auto mouseX = 0.f, mouseY = 0.f;
   sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
@@ -139,6 +146,7 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
 
   //////////////////////////////////////////////////////////////////////////
 
+  stats::Stats stats( *renderer );
   auto time = 0.f;
 
   anim::gameLoop(
@@ -157,6 +165,8 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
       }
 
       renderer->render( *scene, *camera );
+
+      stats.update( dt, renderStats );
 
       return running;
 

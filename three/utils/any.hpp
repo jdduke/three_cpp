@@ -2,11 +2,11 @@
 #define THREE_ANY_HPP
 
 #include <stdexcept>
+#include <typeinfo>
 
 namespace three {
 
-// High Performance Heterogeneous Container
-//  http://www.codeproject.com/Articles/23304/High-Performance-Heterogeneous-Container
+//  http://www.codeproject.com/Articles/11250/High-Performance-Dynamic-Typing-in-C-using-a-Repla
 
 namespace detail {
 
@@ -22,11 +22,14 @@ struct base_any_policy {
   virtual void* get_value( void** src ) = 0;
   virtual const void* get_value( void* const* src ) const = 0;
   virtual size_t get_size() = 0;
+  virtual const std::type_info& type() = 0;
+  //virtual void print(std::ostream& out, void* const* src) = 0;
 };
 
 template<typename T>
 struct typed_base_any_policy : base_any_policy {
   virtual size_t get_size() { return sizeof( T ); }
+  virtual const std::type_info& type() { return typeid(T); }
 };
 
 template<typename T>
@@ -38,6 +41,7 @@ struct small_any_policy : typed_base_any_policy<T> {
   virtual void move( void* const* src, void** dest ) { *dest = *src; }
   virtual void* get_value( void** src ) { return reinterpret_cast<void*>( src ); }
   virtual const void* get_value( void* const* src ) const { return reinterpret_cast<const void*>( src ); }
+  //virtual void print(std::ostream& out, void* const* src) { out << *reinterpret_cast<T const*>(src); }
 };
 
 template<typename T>
@@ -58,6 +62,7 @@ struct big_any_policy : typed_base_any_policy<T> {
   }
   virtual void* get_value( void** src ) { return *src; }
   virtual const void* get_value( void* const* src ) const { return *src; }
+  //virtual void print(std::ostream& out, void* const* src) { out << *reinterpret_cast<T const*>(*src); }
 };
 
 template <typename T, bool pointer_or_smaller>
@@ -107,7 +112,7 @@ SMALL_POLICY( bool );
 
 /// This function will return a different policy for each type.
 template < typename T >
-inline base_any_policy* get_policy() {
+base_any_policy* get_policy() {
   static typename choose_policy<T>::type policy;
   return &policy;
 };
@@ -193,8 +198,7 @@ public:
   /// Cast operator. You can only cast to the original type.
   template<typename T>
   T& cast() {
-    if ( policy != detail::get_policy<T>() )
-      throw detail::bad_any_cast();
+    if (policy->type() != typeid(T)) throw detail::bad_any_cast();
     T* r = reinterpret_cast<T*>( policy->get_value( &object ) );
     return *r;
   }
@@ -202,15 +206,15 @@ public:
   /// Cast operator. You can only cast to the original type.
   template<typename T>
   const T& cast() const {
-    if ( policy != detail::get_policy<T>() )
-      throw detail::bad_any_cast();
-    const T* r = reinterpret_cast<const T*>( policy->get_value( &object ) );
+    if (policy->type() != typeid(T)) throw detail::bad_any_cast();
+    void* obj = const_cast<void*>(object);
+    T* r = reinterpret_cast<T*>(policy->get_value(&obj));
     return *r;
   }
 
   /// Returns true if the any contains no value.
   bool empty() const {
-    return policy == detail::get_policy<detail::empty_any>();
+    return policy->type() == typeid(detail::empty_any);
   }
 
   /// Frees any allocated memory, and sets the value to NULL.
@@ -221,9 +225,18 @@ public:
 
   /// Returns true if the two types are the same.
   bool compatible( const any& x ) const {
-    return policy == x.policy;
+    return policy->type() == x.policy->type();
   }
+
+  friend std::ostream& operator <<(std::ostream& out, const any& any_val);
 };
+
+/*
+inline std::ostream& operator <<(std::ostream& out, const any& any_val) {
+  any_val.policy->print(out, &any_val.object);
+  return out;
+}
+*/
 
 } // namespace three
 
