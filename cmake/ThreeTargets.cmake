@@ -20,7 +20,7 @@ macro(LINK_IF_NEEDED _name)
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
   elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+    #set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
   elseif(__COMPILER_PATHSCALE)
     set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
   else()
@@ -33,7 +33,13 @@ endmacro()
 # _name The library name.
 # ARGN The source files for the library.
 macro(THREE_ADD_LIBRARY _name)
-  add_library(${_name} ${THREE_LIBRARY_TYPE} ${ARGN})
+
+  if (THREE_LIBRARY_STATIC)
+    add_library(${_name} STATIC ${ARGN})
+  else()
+    add_library(${_name} SHARED ${ARGN})
+  endif()
+
   target_link_libraries(${_name} ${THREE_DEP_LIBS})
 
   link_if_needed(${_name})

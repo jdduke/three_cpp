@@ -46,6 +46,8 @@ public:
 #endif // THREE_HAS_VARIADIC_TEMPLATES
 
   THREE_EXPLICIT operator bool() const { return contents.size() > 0; }
+  size_t size() const { return contents.size(); }
+  bool empty() const { return contents.empty(); }
 
   inline bool contains( const Key& key ) const {
     return contents.find( key ) != contents.end();

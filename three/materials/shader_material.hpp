@@ -12,17 +12,15 @@ public:
 
   typedef std::shared_ptr<ShaderMaterial> Ptr;
 
-  static Ptr create( const Parameters& parameters = Parameters() ) {
-    return three::make_shared<ShaderMaterial>( parameters );
-  }
-
-  static Ptr create( const std::string& fragmentShader,
-                     const std::string& vertexShader,
-                     const Uniforms& uniforms,
+  static Ptr create( std::string vertexShader,
+                     std::string fragmentShader,
+                     const Uniforms& uniforms = Uniforms(),
+                     const Attributes& attributes = Attributes(),
                      const Parameters& parameters = Parameters() ) {
-    return three::make_shared<ShaderMaterial>( fragmentShader,
-                                               vertexShader,
+    return three::make_shared<ShaderMaterial>( std::move(vertexShader),
+                                               std::move(fragmentShader),
                                                uniforms,
+                                               attributes,
                                                parameters );
   }
 
@@ -31,33 +29,51 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   Ptr clone( ) {
-    return Material::clone( *this );
+    auto material = create();
+    static_cast<const Material&>(*this).clone( *material );
+    return material;
   }
 
 protected:
+
+  friend class Material;
+
+  static Ptr create( const Parameters& parameters = Parameters() ) {
+    return three::make_shared<ShaderMaterial>( parameters );
+  }
 
   ShaderMaterial( const Parameters& parameters )
     : Material() {
     setParameters( parameters, DefaultKeys() );
   }
 
-  ShaderMaterial( const std::string& fragmentShader,
-                  const std::string& vertexShader,
+  ShaderMaterial( std::string vertexShader,
+                  std::string fragmentShader,
                   const Uniforms& uniforms,
+                  const Attributes& attributes,
                   const Parameters& parameters )
     : Material() {
-    this->fragmentShader = fragmentShader;
-    this->vertexShader   = vertexShader;
-    this->uniforms       = uniforms;
+
     setParameters( parameters, DefaultKeys() );
+
+    this->vertexShader   = std::move(vertexShader);
+    this->fragmentShader = std::move(fragmentShader);
+
+    if (!attributes.empty()) {
+      this->attributes = attributes;
+    }
+    if (!uniforms.empty()) {
+      this->uniforms = uniforms;
+    }
+
   }
 
   static const ParameterKeys& DefaultKeys() {
-    static std::array<std::string, 16> sKeys = {
-      "fragmentShader",
-      "vertexShader",
-      "uniforms",
-      "attributes",
+    static std::array<std::string, 12> sKeys = {
+      //"fragmentShader",
+      //"vertexShader",
+      //"uniforms",
+      //"attributes",
       "shading",
       "blending",
       "depthTest",

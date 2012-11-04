@@ -14,8 +14,7 @@
 #include <three/extras/geometries/sphere_geometry.hpp>
 #include <three/extras/geometry_utils.hpp>
 
-const char* vertexShader() {
-  return
+const std::string vertexShader =
 "attribute float size;\n"
 "attribute vec4 ca;\n"
 "varying vec4 vColor;\n"
@@ -25,10 +24,8 @@ const char* vertexShader() {
 "  gl_PointSize = size * ( 150.0 / length( mvPosition.xyz ) );\n"
 "  gl_Position = projectionMatrix * mvPosition;\n"
 "}\n";
-}
 
-const char* fragmentShader() {
-  return
+const std::string fragmentShader =
 "uniform vec3 color;\n"
 "uniform sampler2D texture;\n"
 "varying vec4 vColor;\n"
@@ -41,7 +38,6 @@ const char* fragmentShader() {
 "  float fogFactor = smoothstep( 200.0, 600.0, depth );\n"
 "  gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n"
 "}\n";
-}
 
 using namespace three;
 
@@ -66,10 +62,10 @@ void custom_attributes_particles3( GLRenderer::Ptr renderer ) {
   uniforms[ "texture" ]    = Uniform( THREE::t, texture.get() );
 
   auto shaderMaterial = ShaderMaterial::create(
-    Material::Parameters().add( "uniforms", uniforms )
-                          .add( "attributes", attributes )
-                          .add( "vertexShader", std::string(vertexShader()) )
-                          .add( "fragmentShader", std::string(fragmentShader()) )
+    vertexShader,
+    fragmentShader,
+    uniforms,
+    attributes
   );
 
   // Geometries

@@ -10,8 +10,7 @@
 #include <three/extras/geometries/torus_geometry.hpp>
 #include <three/extras/image_utils.hpp>
 
-const char* vertexShader() {
-  return
+const std::string vertexShader =
 "\
 uniform vec2 uvScale;\
 varying vec2 vUv;\
@@ -21,10 +20,8 @@ void main() {\
   gl_Position = projectionMatrix * mvPosition;\
 }\
 ";
-}
 
-const char* fragmentShader() {
-  return
+const std::string fragmentShader =
 "\
 uniform float time;\
 \
@@ -68,8 +65,6 @@ void main( void ) {\
 }\
 ";
 
-}
-
 using namespace three;
 
 void shader_fireball( GLRenderer::Ptr renderer ) {
@@ -88,18 +83,15 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
   texture1->wrapS = texture1->wrapT = THREE::RepeatWrapping;
   texture2->wrapS = texture2->wrapT = THREE::RepeatWrapping;
 
-  Uniforms uniforms;
-  uniforms[ "fogDensity" ] = Uniform( THREE::f, .45f );
-  uniforms[ "fogColor" ]   = Uniform( THREE::v3, Vector3(0, 0, 0) );
-  uniforms[ "time" ]       = Uniform( THREE::f, time );
-  uniforms[ "uvScale" ]    = Uniform( THREE::v2, Vector2( 3.f, 1.f ) );
-  uniforms[ "texture1" ]   = Uniform( THREE::t, texture1.get() );
-  uniforms[ "texture2" ]   = Uniform( THREE::t, texture2.get() );
-
   auto material = ShaderMaterial::create(
-    Material::Parameters().add( "uniforms", uniforms )
-                          .add( "vertexShader", std::string(vertexShader()) )
-                          .add( "fragmentShader", std::string(fragmentShader()) )
+    vertexShader,
+    fragmentShader,
+    Uniforms().add("fogDensity", Uniform( THREE::f, .45f ))
+              .add("fogColor",   Uniform( THREE::v3, Vector3(0, 0, 0)))
+              .add("time",       Uniform( THREE::f, time ))
+              .add("uvScale",    Uniform( THREE::v2, Vector2( 3.f, 1.f )))
+              .add("texture1",   Uniform( THREE::t, texture1.get()))
+              .add("texture2",   Uniform( THREE::t, texture2.get()))
   );
 
   // Geometries

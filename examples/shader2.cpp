@@ -11,8 +11,7 @@
 #include <three/extras/image_utils.hpp>
 #include <three/extras/geometries/cube_geometry.hpp>
 
-const char* vertexShader() {
-  return
+const std::string vertexShader =
 "\
 varying vec2 vUv;\
 void main() {\
@@ -21,10 +20,8 @@ void main() {\
   gl_Position = projectionMatrix * mvPosition;\
 }\
 ";
-}
 
-const char* fragmentShader1() {
-  return
+const std::string fragmentShader1 =
 "\
 uniform float time;\
 varying vec2 vUv;\
@@ -53,10 +50,9 @@ void main(void) {\
   f=(sin(a*g)+1.0)/2.0;\
   gl_FragColor=vec4(vec3(f*i/1.6,i/2.0+d/13.0,i)*d*p.x+vec3(i/1.3+d/8.0,i/2.0+d/18.0,i)*d*(1.0-p.x),1.0);\
 }\
-";}
+";
 
-const char* fragmentShader2() {
-  return
+const std::string fragmentShader2 =
 "\
 uniform float time;\
 varying vec2 vUv;\
@@ -68,10 +64,8 @@ void main( void ) {\
   gl_FragColor = vec4( red, green, blue, 1.0 );\
 }\
 ";
-}
 
-const char* fragmentShader3() {
-  return
+const std::string fragmentShader3 =
 "\
 uniform float time;\
 varying vec2 vUv;\
@@ -85,10 +79,8 @@ void main( void ) {\
   gl_FragColor = vec4( vec3( color, color * 0.5, sin( color + time / 3.0 ) * 0.75 ), 1.0 );\
 }\
 ";
-}
 
-const char* fragmentShader4() {
-  return
+const std::string fragmentShader4 =
 "\
 uniform float time;\
 uniform sampler2D texture;\
@@ -106,7 +98,6 @@ void main( void ) {\
   gl_FragColor = vec4( color * r * 1.5, 1.0 );\
 }\
 ";
-}
 
 using namespace three;
 
@@ -134,12 +125,15 @@ void shader2( GLRenderer::Ptr renderer ) {
   std::vector<Material::Ptr> mlib;
   std::vector<Mesh::Ptr> meshes;
 
-  auto addCube = [&]( float size, float x, float y, const char* vertexShader, const char* fragmentShader, Uniforms& uniforms ) {
+  auto addCube = [&]( float size, float x, float y,
+                      const std::string& vertexShader,
+                      const std::string& fragmentShader,
+                      Uniforms& uniforms ) {
 
     auto material = ShaderMaterial::create(
-      Material::Parameters().add( "uniforms", uniforms )
-                            .add( "vertexShader", std::string(vertexShader) )
-                            .add( "fragmentShader", std::string(fragmentShader) )
+      vertexShader,
+      fragmentShader,
+      uniforms
     );
 
     mlib.push_back( material );
@@ -156,10 +150,10 @@ void shader2( GLRenderer::Ptr renderer ) {
 
   };
 
-  addCube( .75f, -1.5f, -.5f, vertexShader(), fragmentShader1(), uniforms1 );
-  addCube( .75f, -0.5f,  .5f, vertexShader(), fragmentShader2(), uniforms1 );
-  addCube( .75f,  0.5f, -.5f, vertexShader(), fragmentShader3(), uniforms1 );
-  addCube( .75f,  1.5f,  .5f, vertexShader(), fragmentShader4(), uniforms2 );
+  addCube( .75f, -1.5f, -.5f, vertexShader, fragmentShader1, uniforms1 );
+  addCube( .75f, -0.5f,  .5f, vertexShader, fragmentShader2, uniforms1 );
+  addCube( .75f,  0.5f, -.5f, vertexShader, fragmentShader3, uniforms1 );
+  addCube( .75f,  1.5f,  .5f, vertexShader, fragmentShader4, uniforms2 );
 
 
   /////////////////////////////////////////////////////////////////////////

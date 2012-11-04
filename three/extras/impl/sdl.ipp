@@ -47,7 +47,7 @@ bool init( RendererParameters& parameters ) {
 
   console().log() << "SDL video initialized";
 
-  SDL_WM_SetCaption( "Three.cpp", NULL );
+  SDL_WM_SetCaption( "three.cpp", NULL );
 
   return true;
 }

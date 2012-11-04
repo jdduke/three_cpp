@@ -30,10 +30,10 @@ class ShadowMapPlugin : public IPlugin {
     const auto& depthShader = ShaderLib::depthRGBA();
     Uniforms depthUniforms  = depthShader.uniforms;
 
-    _depthMaterial          = ShaderMaterial::create( depthShader.fragmentShader, depthShader.vertexShader, depthUniforms );
-    _depthMaterialMorph     = ShaderMaterial::create( depthShader.fragmentShader, depthShader.vertexShader, depthUniforms, Material::Parameters().add( "morphTargets", true ) );
-    _depthMaterialSkin      = ShaderMaterial::create( depthShader.fragmentShader, depthShader.vertexShader, depthUniforms, Material::Parameters().add( "skinning", true ) );
-    _depthMaterialMorphSkin = ShaderMaterial::create( depthShader.fragmentShader, depthShader.vertexShader, depthUniforms, Material::Parameters().add( "morphTargets", true ).add( "skinning", true ) );
+    _depthMaterial          = ShaderMaterial::create( depthShader.vertexShader, depthShader.fragmentShader, depthUniforms );
+    _depthMaterialMorph     = ShaderMaterial::create( depthShader.vertexShader, depthShader.fragmentShader, depthUniforms, Attributes(), Material::Parameters().add( "morphTargets", true ) );
+    _depthMaterialSkin      = ShaderMaterial::create( depthShader.vertexShader, depthShader.fragmentShader, depthUniforms, Attributes(), Material::Parameters().add( "skinning", true ) );
+    _depthMaterialMorphSkin = ShaderMaterial::create( depthShader.vertexShader, depthShader.fragmentShader, depthUniforms, Attributes(), Material::Parameters().add( "morphTargets", true ).add( "skinning", true ) );
 
     _depthMaterial._shadowPass          = true;
     _depthMaterialMorph._shadowPass     = true;

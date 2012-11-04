@@ -9,8 +9,7 @@
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
-const char* vertexShader() {
-  return
+const std::string vertexShader =
 "attribute float size;\n"
 "attribute vec3 customColor;\n"
 "varying vec3 vColor;\n"
@@ -21,10 +20,8 @@ const char* vertexShader() {
 "  gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );\n"
 "  gl_Position = projectionMatrix * mvPosition;\n"
 "}\n";
-}
 
-const char* fragmentShader() {
-  return
+const std::string fragmentShader =
 "\n"
 "uniform vec3 color;\n"
 "uniform sampler2D texture;\n"
@@ -33,7 +30,6 @@ const char* fragmentShader() {
 "  gl_FragColor = vec4( color * vColor, 1.0 );\n"
 "  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );\n"
 "}\n";
-}
 
 using namespace three;
 
@@ -47,20 +43,20 @@ void shader( GLRenderer::Ptr renderer ) {
   auto scene = Scene::create();
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/spark1.png" ) );
 
-  Attributes attributes;
-  attributes[ "size" ]        = Attribute( THREE::f );
-  attributes[ "customColor" ] = Attribute( THREE::c );
-
   Uniforms uniforms;
   uniforms[ "color" ]      = Uniform( THREE::c, Color( 0xffffff ) );
   uniforms[ "texture" ]    = Uniform( THREE::t, texture.get() );
 
+  Attributes attributes;
+  attributes[ "size" ]        = Attribute( THREE::f );
+  attributes[ "customColor" ] = Attribute( THREE::c );
+
   auto shaderMaterial = ShaderMaterial::create(
-    Material::Parameters().add( "uniforms", uniforms )
-                          .add( "attributes", attributes )
-                          .add( "vertexShader", std::string(vertexShader()) )
-                          .add( "fragmentShader", std::string(fragmentShader()) )
-                          .add( "blending", THREE::AdditiveBlending )
+    vertexShader,
+    fragmentShader,
+    uniforms,
+    attributes,
+    Material::Parameters().add( "blending", THREE::AdditiveBlending )
                           .add( "depthTest", false )
                           .add( "transparent", true )
   );

@@ -8,17 +8,17 @@
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
-const char* vertexShader() {
-  return
+std::string vertexShader() {
+  return std::string(
 "\
 void main() { \
   gl_Position = vec4( position, 1.0 ); \
 }\
-";
+");
 }
 
-const char* fragmentShader() {
-  return
+std::string fragmentShader() {
+  return std::string(
 "\
 uniform vec2 resolution; \
 uniform float time; \
@@ -47,7 +47,7 @@ void main() { \
   f=(sin(a*g)+1.0)/2.0; \
   gl_FragColor=vec4(vec3(f*i/1.6,i/2.0+d/13.0,i)*d*p.x+vec3(i/1.3+d/8.0,i/2.0+d/18.0,i)*d*(1.0-p.x),1.0); \
 }\
-";
+");
 
 }
 
@@ -65,12 +65,12 @@ void shader( GLRenderer::Ptr renderer ) {
   Uniforms uniforms;
   uniforms[ "time" ]       = Uniform( THREE::f, time);
   uniforms[ "resolution" ] = Uniform( THREE::v2, Vector2( (float)renderer->width(),
-                                                            (float)renderer->height()) );
+                                                          (float)renderer->height()) );
 
   auto material = ShaderMaterial::create(
-    Material::Parameters().add( "uniforms", uniforms )
-                          .add( "vertexShader", std::string(vertexShader()) )
-                          .add( "fragmentShader", std::string(fragmentShader()) )
+    vertexShader(),
+    fragmentShader(),
+    uniforms
   );
 
   // Geometries

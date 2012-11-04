@@ -41,8 +41,8 @@ ShaderMaterial::Ptr Text2DMaterial::create( const Font& font,
                                             float opacity ) {
 
   auto material = ShaderMaterial::create(
-    detail::textFragmentShader(),
-    detail::textVertexShader(),
+    std::string(detail::textVertexShader()),
+    std::string(detail::textFragmentShader()),
     Uniforms().add( UniformKey::diffuse(), Uniform( THREE::c, color ) )
               .add( UniformKey::opacity(), Uniform( THREE::f, opacity ) )
               .add( "texture",             Uniform( THREE::t, font.texture().get() ) )

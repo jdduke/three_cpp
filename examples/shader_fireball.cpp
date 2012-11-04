@@ -8,8 +8,7 @@
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
-const char* vertexShader() {
-  return
+const std::string vertexShader =
 "\
 uniform float time;\
 uniform float scale;\
@@ -24,9 +23,8 @@ void main( void ) {\
   gl_Position = projectionMatrix * mPosition;\
 }\
 ";
-}
 
-const char* fragmentShader() {
+const std::string fragmentShader =
 //
       // Description : Array and textureless GLSL 3D simplex noise function.
       //      Author : Ian McEwan, Ashima Arts.
@@ -35,7 +33,6 @@ const char* fragmentShader() {
       //     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
       //               Distributed under the MIT License. See LICENSE file.
       //
-  return
 "\
 uniform float time;\
 varying vec3 vTexCoord3D;\
@@ -123,8 +120,6 @@ void main( void ) {\
 }\
 ";
 
-}
-
 using namespace three;
 
 void shader_fireball( GLRenderer::Ptr renderer ) {
@@ -138,14 +133,11 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
 
   float time = 1;
 
-  Uniforms uniforms;
-  uniforms[ "time" ]  = Uniform( THREE::f, time);
-  uniforms[ "scale" ] = Uniform( THREE::f, 1.5f);
-
   auto material = ShaderMaterial::create(
-    Material::Parameters().add( "uniforms", uniforms )
-                          .add( "vertexShader", std::string(vertexShader()) )
-                          .add( "fragmentShader", std::string(fragmentShader()) )
+    vertexShader,
+    fragmentShader,
+    Uniforms().add("time",  Uniform( THREE::f, time ))
+              .add("scale", Uniform( THREE::f, 1.5f ))
   );
 
   // Geometries

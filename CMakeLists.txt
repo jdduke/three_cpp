@@ -15,13 +15,11 @@ set(THREE_BUILD_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
 set(THREE_HEADER_ONLY        FALSE CACHE BOOL "Whether to use three.cpp as a header-only library")
 set(THREE_LIBRARY_STATIC     TRUE CACHE BOOL "If building three.cpp as a library, build statically")
 
-if (THREE_LIBRARY_STATIC)
-  set(THREE_LIBRARY_TYPE STATIC CACHE INTERNAL "" FORCE)
-else()
-  set(THREE_LIBRARY_TYPE SHARED CACHE INTERNAL "" FORCE)
-endif()
-
-#############
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+    FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
 
 #############
 # Clang/GCC Config
@@ -71,12 +69,12 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
 
   if (CMAKE_COMPILER_IS_CLANGXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++0x")
-    add_definitions("-DGTEST_USE_OWN_TR1_TUPLE=1")
   elseif (MINGW)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     add_definitions("-D_GLIBCXX_USE_NANOSLEEP")
   else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    add_definitions("-D_GLIBCXX_USE_NANOSLEEP")
   endif()
 
   set(CMAKE_C_FLAGS             "${CMAKE_C_FLAGS}             ${THREE_COMMON_FLAGS}")
@@ -162,7 +160,7 @@ set(DATA_DIR      ${CMAKE_HOME_DIRECTORY}/data)
 
 include_directories(.)
 
-if (NOT THREE_HEADER_ONLY OR THREE_BUILD_EXAMPLES)
+if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES)
 
   # Locate necessary headers/libraries
 
@@ -183,6 +181,7 @@ if (NOT THREE_HEADER_ONLY OR THREE_BUILD_EXAMPLES)
   find_package(RapidJSON REQUIRED)
 
   set(THREE_STATIC_GLEW OFF CACHE BOOL "Use static glew library")
+  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
 
   if (NOT WIN32)
     find_package(GLEW REQUIRED)
@@ -218,8 +217,6 @@ if (NOT THREE_HEADER_ONLY)
   if (NOT THREE_LIBRARY_STATIC)
     add_definitions(-DTHREE_DYN_LINK)
   endif()
-
-  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
 
   add_definitions(-DTHREE_SDL -DTHREE_GLEW)
   if (THREE_STATIC_GLEW)

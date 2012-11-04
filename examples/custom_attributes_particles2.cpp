@@ -13,8 +13,7 @@
 #include <three/extras/geometries/sphere_geometry.hpp>
 #include <three/extras/geometry_utils.hpp>
 
-const char* vertexShader() {
-  return
+const std::string vertexShader =
 "attribute float size;\n"
 "attribute vec3 ca;\n"
 "varying vec3 vColor;\n"
@@ -24,10 +23,8 @@ const char* vertexShader() {
 "  gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );\n"
 "  gl_Position = projectionMatrix * mvPosition;\n"
 "}\n";
-}
 
-const char* fragmentShader() {
-  return
+const std::string fragmentShader =
 "uniform vec3 color;\n"
 "uniform sampler2D texture;\n"
 "varying vec3 vColor;\n"
@@ -35,7 +32,6 @@ const char* fragmentShader() {
 "  gl_FragColor = vec4( color * vColor, 1.0 );\n"
 "  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );\n"
 "}\n";
-}
 
 using namespace three;
 
@@ -49,21 +45,20 @@ void shader( GLRenderer::Ptr renderer ) {
   auto scene = Scene::create();
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/disc.png" ) );
 
+  Uniforms uniforms;
+  uniforms[ "color" ]   = Uniform( THREE::c, Color( 0xffffff ) );
+  uniforms[ "texture" ] = Uniform( THREE::t, texture.get() );
+  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
+
   Attributes attributes;
   attributes[ "size" ] = Attribute( THREE::f );
   attributes[ "ca" ]   = Attribute( THREE::c );
 
-  Uniforms uniforms;
-  uniforms[ "color" ]      = Uniform( THREE::c, Color( 0xffffff ) );
-  uniforms[ "texture" ]    = Uniform( THREE::t, texture.get() );
-
-  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
-
   auto shaderMaterial = ShaderMaterial::create(
-    Material::Parameters().add( "uniforms", uniforms )
-                          .add( "attributes", attributes )
-                          .add( "vertexShader", std::string(vertexShader()) )
-                          .add( "fragmentShader", std::string(fragmentShader()) )
+    vertexShader,
+    fragmentShader,
+    uniforms,
+    attributes
   );
 
   // Geometries

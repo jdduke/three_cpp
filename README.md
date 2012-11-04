@@ -15,7 +15,9 @@ Before you start raging, see the [FAQ](#faq).
 
 three.cpp is optionally header-only; you can simply drop the
 "three" folder in your project and get started, or you can compile it into a
-static and/or dynamic library.  The design is similar to that
+static and/or dynamic library.  For most kinds of development you will want to
+use three.cpp as a library; header-only compiles are prohibitively expensive
+for any kind of dynamic code base. The design is similar to that
 found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html).
 
 ### Setup ###
@@ -31,7 +33,7 @@ found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.h
 * `cmake ../ -DTHREE_HEADER_ONLY:BOOL=OFF`
 * `make` (or compile generated .sln with VC)
 
-This generates the static library `three.{a/lib}` in **three_cpp/lib**, or the dynamic library `thre.{so/dll}` in **three_cpp/bin**, dependent on the `THREE_LIBRARY_STATIC` CMake flag.  Any code using the library must also define `THREE_SEPARATE_COMPILATION` when using three.cpp, and `THREE_DYN_LINK` if library is dynamic.
+This generates the static library `three.{a/lib}` in **three_cpp/lib**, or the dynamic library `thre.{dylib/so/dll}` in **three_cpp/bin**, dependent on the `THREE_LIBRARY_STATIC` CMake flag.  Any code using the library must also define `THREE_SEPARATE_COMPILATION` when using three.cpp, and `THREE_DYN_LINK` if library is dynamic.
 
 cmake-gui is useful if you need to configure SDL/GLEW path dependencies when compiling.
 
@@ -119,10 +121,9 @@ This is very much a pre-alpha, early stages project: half-finished at best, with
     * TODO: Examples involving morph targets and/or model/json importing
 
 ### Performance ##
-For the examples that have been ported, perf is anywhere from 2x-10x that of
-three.js, average 4-5x, on my i7, GT 650m laptop (with vsync off on both, of course).
-No thorough profiling or meaningful optimization has been done, and the graphics
-path is more or less identical to that found in three.js.
+For the examples that have been ported, perf is anywhere from 2x-12x that of
+three.js + WebGL on the latest Chrome version, averaging 4-5x, on my i7, GT 650m laptop (vsync disabled on both, of course). No thorough profiling or meaningful optimization has been done, and the graphics path is more or less identical to
+that found in three.js.
 
 TODO: Test with GLES (Android/iOS/NACL)
 
@@ -135,14 +136,16 @@ TODO: Test with GLES (Android/iOS/NACL)
 You'll need a sufficiently modern C++11 compiler:
 * >= Clang 3.1
 * >= GCC 4.6.3
-* (debateable) MSVC 2012
+* MSVC 2012
 
 Implemented functionality tested via examples, and working on:
 * Mint 13 with GCC 4.6.3
 * Win 7 with both MSVC 2012 and MinGW (GCC 4.8 and 4.7)
-* OSX with Clang 3.1
+* OSX with GCC 4.7.2 and Clang 3.1
 
-Some examples might be a little flaky on any given platform.  MSVC 2012 is really a pain to support (no variadics, no initializer lists, no default/deleted functions, no constexpr etc...), and support may be dropped at some point in the future.
+Some examples might be a little flaky on any given platform.
+* MSVC 2012: This has been just a pain to support (no variadics, no initializer lists, no default/deleted functions, no constexpr etc...), and support may be dropped at some point in the future. Update: With the November 2012 CTP, things have improved a great deal;
+* OSX: VSync is on for all samples, I haven't bothered to take a closer look.
 
 
 ## FAQ ##
@@ -150,6 +153,8 @@ Some examples might be a little flaky on any given platform.  MSVC 2012 is reall
 * Why on earth would you do this?
     * It started as an exercise to 1) dive into a popular Javascript library of
      medium size, 2) play with C++11 and 3) offend as many programmers as possible.
-* But, but, C++ is so... its very existence troubles my spirit... why not target awesome language X?!
+* But, but, C++ is so... its very existence troubles my spirit... why not target awesome language X?! Why, why C++?
     * For the kids.
+
+
 
