@@ -180,9 +180,6 @@ if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES)
   find_package(OpenGL REQUIRED)
   find_package(RapidJSON REQUIRED)
 
-  set(THREE_STATIC_GLEW OFF CACHE BOOL "Use static glew library")
-  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
-
   if (NOT WIN32)
     find_package(GLEW REQUIRED)
   else()
@@ -194,6 +191,9 @@ if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES)
       set(GLEW_LIBRARY glew)
     endif()
   endif()
+
+  set(THREE_STATIC_GLEW OFF CACHE BOOL "Use static glew library")
+  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
 
   include_directories(${GLEW_INCLUDE_DIR})
   include_directories(${SDL_INCLUDE_DIR})
