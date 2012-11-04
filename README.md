@@ -33,7 +33,7 @@ found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.h
 * `cmake ../ -DTHREE_HEADER_ONLY:BOOL=OFF`
 * `make` (or compile generated .sln with VC)
 
-This generates the static library `three.{a/lib}` in **three_cpp/lib**, or the dynamic library `thre.{dylib/so/dll}` in **three_cpp/bin**, dependent on the `THREE_LIBRARY_STATIC` CMake flag.  Any code using the library must also define `THREE_SEPARATE_COMPILATION` when using three.cpp, and `THREE_DYN_LINK` if library is dynamic.
+This generates the static library `three.{a/lib}` in **three_cpp/lib**, or the dynamic library `three.{dylib/so/dll}` in **three_cpp/bin**, dependent on the `THREE_LIBRARY_STATIC` CMake flag.  Any code using the library must also define `THREE_SEPARATE_COMPILATION` when using three.cpp, and `THREE_DYN_LINK` if library is dynamic.
 
 cmake-gui is useful if you need to configure SDL/GLEW path dependencies when compiling.
 
@@ -87,7 +87,6 @@ void scene() {
 
 ```
 
-<!--
 ## Working examples ##
 
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_custom_attributes_particles.png">
@@ -100,14 +99,13 @@ void scene() {
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_lines_cubes.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_lines_sphere.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_particles_billboards.png">
-<img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_particles_billboards_colorspng">
+<img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_particles_billboards_colors.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_particles_random.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_particles_sprites.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_shader.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_shader2.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_shader_lava.png">
 <img src="https://raw.github.com/jdduke/three_cpp/master/data/thumbs/webgl_test_memory.png">
--->
 
 ## Status ##
 
