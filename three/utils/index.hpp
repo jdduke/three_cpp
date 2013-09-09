@@ -17,8 +17,8 @@ struct IndexT {
   struct IncompleteType;
 
   operator T() const { return value; }
-  operator unsigned() const { return (unsigned)value; }
-  operator typename std::conditional<sizeof(size_t)!=sizeof(unsigned),size_t,IncompleteType>::type () const { return (size_t)value; }
+  operator unsigned() const { return static_cast<unsigned>(value); }
+  operator unsigned long() const { return static_cast<unsigned long>(value); }
 
   T value;
 };
@@ -28,8 +28,8 @@ typedef IndexT<int, -1> Index;
 } // namespace three
 
 namespace std {
-  template <> 
-  struct hash<three::Index> { 
+  template <>
+  struct hash<three::Index> {
     size_t operator()( const three::Index& index ) {
       return hash<int>()( index.value );
     }

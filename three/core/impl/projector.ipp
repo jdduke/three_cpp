@@ -438,7 +438,8 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
   d._renderData.sprites.clear();
   d._renderData.lights.clear();
 
-  std::function<void( Object3D& )> projectObject = [&projectObject, &d]( Object3D & object ) {
+  std::function<void( Object3D& )> projectObject;
+  projectObject = [&projectObject, &d]( Object3D & object ) {
 
     if ( !object.visible ) return;
 

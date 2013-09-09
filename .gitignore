@@ -1,4 +1,5 @@
-/bin
-/lib
-/build*
-/js
+*.sublime-workspace
+*.sublime-project
+bin/
+build/
+lib/
