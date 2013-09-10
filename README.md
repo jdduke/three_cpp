@@ -44,7 +44,7 @@ Reviewing the examples in **three_cpp/examples** is probably the best way to lea
 
 * `cmake ../ -DBUILD_THREE_EXAMPLES:BOOL=OFF`
 
-Binaries are placed in **three_cpp/bin**.  On Windows, you will likely need to copy the SDL runtime library to the appropriate **three_cpp/bin** dir, assuming it's not in your path already.
+Binaries are placed in **three_cpp/bin**.
 
 ## Sample code ##
 
@@ -128,6 +128,7 @@ TODO: Test with GLES (Android/iOS/NACL)
 ## Dependencies ##
 * CMake
 * SDL and GLEW for the examples (included for both MSVC and MinGW)
+    * At the moment, these are required to build the library; this dependency will be optional in the future.
 
 ## Supported Platforms ##
 
@@ -153,6 +154,5 @@ Some examples might be a little flaky on any given platform.
      medium size, 2) play with C++11 and 3) offend as many programmers as possible.
 * But, but, C++ is so... its very existence troubles my spirit... why not target awesome language X?! Why, why C++?
     * For the kids.
-
-
-
+* Why is it complaining about SDL on 64-bit Win builds?
+    * CMake is likely pulling in 32-bit libraries. You can manually change the *${SDL_LIBRARY}* and *${SDLMAIN_LIBRARY}* CMake variables to refer to the proper libraries; simply change the **lib** directory reference to **lib64** if using the provided SDL implementation in **externals**.

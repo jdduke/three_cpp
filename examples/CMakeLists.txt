@@ -8,7 +8,6 @@ if(APPLE)
 endif()
 
 file(GLOB examples "*.cpp")
-#set(examples lines_cubes.cpp)
 
 foreach(example ${examples})
   get_filename_component(example_name ${example} NAME_WE)

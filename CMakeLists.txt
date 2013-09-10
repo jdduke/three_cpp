@@ -52,15 +52,9 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
     set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -Werror")
   endif()
 
-  set(STOP_ON_FIRST_ERROR TRUE CACHE BOOL "Stop compilation on first error")
-  if (STOP_ON_FIRST_ERROR)
+  set(THREE_STOP_ON_FIRST_ERROR TRUE CACHE BOOL "Stop compilation on first error")
+  if (THREE_STOP_ON_FIRST_ERROR)
     set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -Wfatal-errors")
-  endif()
-
-  set(BUILD_DEBUG FALSE CACHE BOOL "Default to debug build")
-  if (BUILD_DEBUG)
-    set(THREE_COMMON_FLAGS "${THREE_COMMON_FLAGS} -g")
-    add_definitions("-D_DEBUG")
   endif()
 
   if (MINGW)
@@ -89,19 +83,21 @@ endif()
 
 if(MSVC)
 
-  set(THREE_USE_NOV_2012_CTP TRUE CACHE BOOL "Enable usage of the Nov 2012 CTP for MSVC 2012")
+  # TODO - Figure out how to set the Platform Toolset in MSVC project files
+  #        ... without resorting to pre-build script madness
+  #set(THREE_USE_NOV_2012_CTP TRUE CACHE BOOL "Enable usage of the Nov 2012 CTP for MSVC 2012")
   if (THREE_USE_NOV_2012_CTP)
     set(THREE_PLATFORM_TOOLSET "v120_CTP_Nov2012" CACHE STRING "Platform toolset" FORCE)
   else()
-    set(THREE_PLATFORM_TOOLSET "" CACHE STRING "Platform toolset" FORCE)
+    set(THREE_PLATFORM_TOOLSET "" CACHE INTERNAL "Platform toolset" FORCE)
   endif()
 
   if(CMAKE_SIZEOF_VOID_P MATCHES 4)
-    set(THREE_SIZE_TYPE x86)
-    set(THREE_BUILD_64_BIT FALSE)
+    set(THREE_SIZE_TYPE x86 CACHE INTERNAL "" FORCE)
+    set(THREE_BUILD_64_BIT FALSE CACHE INTERNAL "" FORCE)
   else()
-    set(THREE_SIZE_TYPE x64)
-    set(THREE_BUILD_64_BIT TRUE)
+    set(THREE_SIZE_TYPE x64 CACHE INTERNAL "" FORCE)
+    set(THREE_BUILD_64_BIT TRUE CACHE INTERNAL "" FORCE)
   endif()
 
   add_definitions("-D_VARIADIC_MAX=6")
@@ -135,28 +131,27 @@ else()
   set(THREE_DIR_SUFFIX "")
 endif()
 
-set(THREE_OUTPUT_SUBDIR ${THREE_SIZE_TYPE}${THREE_DIR_SUFFIX})
-set(THREE_BINARY_PATH  ${CMAKE_HOME_DIRECTORY}/bin/${THREE_OUTPUT_SUBDIR})
-set(THREE_LIBRARY_PATH ${CMAKE_HOME_DIRECTORY}/lib/${THREE_OUTPUT_SUBDIR})
+set(THREE_OUTPUT_SUBDIR ${THREE_SIZE_TYPE}${THREE_DIR_SUFFIX} CACHE INTERNAL "" FORCE)
+set(THREE_BINARY_PATH  ${CMAKE_HOME_DIRECTORY}/bin/${THREE_OUTPUT_SUBDIR} CACHE INTERNAL "" FORCE)
+set(THREE_LIBRARY_PATH ${CMAKE_HOME_DIRECTORY}/lib/${THREE_OUTPUT_SUBDIR} CACHE INTERNAL "" FORCE)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
     ${THREE_BINARY_PATH}
     CACHE PATH
-    "Single Directory for all Executables.")
+    "Single Directory for all Executables." FORCE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
     ${THREE_BINARY_PATH}
     CACHE PATH
-    "Single Directory for all Libraries")
+    "Single Directory for all Libraries" FORCE)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
     ${THREE_LIBRARY_PATH}
     CACHE PATH
-    "Single Directory for all static libraries.")
+    "Single Directory for all static libraries." FORCE)
 
 #############
 # Library config
 
 set(EXTERNALS_DIR ${CMAKE_HOME_DIRECTORY}/externals)
-set(DATA_DIR      ${CMAKE_HOME_DIRECTORY}/data)
 
 include_directories(.)
 
@@ -186,22 +181,28 @@ if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES)
     # Locating GLEW on Windows isn't worth it... just build it
     add_subdirectory(externals/glew-1.9.0)
     if (THREE_STATIC_GLEW)
-      set(GLEW_LIBRARY glews)
+      set(GLEW_LIBRARY glews CACHE INTERNAL "" FORCE)
     else()
-      set(GLEW_LIBRARY glew)
+      set(GLEW_LIBRARY glew CACHE INTERNAL "" FORCE)
     endif()
   endif()
 
   set(THREE_STATIC_GLEW OFF CACHE BOOL "Use static glew library")
   set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
-
   include_directories(${GLEW_INCLUDE_DIR})
   include_directories(${SDL_INCLUDE_DIR})
   include_directories(${RAPID_JSON_INCLUDE_DIR})
 
-  set(THREE_RELEASE_BUILD FALSE CACHE BOOL
-  "Whether to compile examples for installation")
+  # TODO: Remove explicit sdl/glew dependencies
+  add_definitions(-DTHREE_SDL -DTHREE_GLEW)
+  if (THREE_STATIC_GLEW)
+    add_definitions(-DGLEW_STATIC)
+  endif()
 
+  ## TODO: Remove hard-wired data directory path
+  set(THREE_RELEASE_BUILD FALSE CACHE BOOL
+    "Whether to compile examples for installation (changes data dir from absolute to relative reference")
+  set(DATA_DIR ${CMAKE_HOME_DIRECTORY}/data)
   if (THREE_RELEASE_BUILD)
     add_definitions(-DTHREE_DATA_DIR=".")
   else()
@@ -212,34 +213,38 @@ endif()
 
 #############
 
+# Copy SDL runtime on Windows
+if (MSVC OR MINGW)
+  if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES OR THREE_BUILD_TESTS)
+    get_filename_component(SDL_PATH ${SDLMAIN_LIBRARY} PATH)
+    set(SDL_RUNTIME_LIBRARY "${SDL_PATH}/SDL.dll" CACHE INTERNAL "" FORCE)
+    message (STATUS "Copying ${SDL_RUNTIME_LIBRARY} to ${THREE_BINARY_PATH} \n")
+    set(THREE_DEPENDS three_depends)
+    if (MSVC)
+      #add_custom_command(
+      add_custom_target(
+        ${THREE_DEPENDS}
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${THREE_BINARY_PATH}/$<CONFIGURATION>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL_RUNTIME_LIBRARY} "${THREE_BINARY_PATH}/$<CONFIGURATION>"
+        COMMENT "Copying ${SDL_RUNTIME_LIBRARY}")
+    else()
+      add_custom_target(
+        ${THREE_DEPENDS}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${THREE_BINARY_PATH}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL_RUNTIME_LIBRARY} "${THREE_BINARY_PATH}"
+        COMMENT "Copying ${SDL_RUNTIME_LIBRARY}")
+    endif()
+  endif()
+endif()
+
 if (NOT THREE_HEADER_ONLY)
   add_definitions(-DTHREE_SEPARATE_COMPILATION)
   if (NOT THREE_LIBRARY_STATIC)
     add_definitions(-DTHREE_DYN_LINK)
   endif()
 
-  add_definitions(-DTHREE_SDL -DTHREE_GLEW)
-  if (THREE_STATIC_GLEW)
-    add_definitions(-DGLEW_STATIC)
-  endif()
-
-  three_add_library(three three/impl/src.cpp three/impl/src_extras.cpp)
   set(THREE_LIB three)
-
-  if (THREE_BUILD_EXAMPLES OR THREE_BUILD_TESTS)
-    # Copy SDL runtime on Windows
-    if (MSVC OR MINGW)
-      get_filename_component(SDL_PATH ${SDLMAIN_LIBRARY} PATH)
-      set(SDL_RUNTIME_LIBRARY "${SDL_PATH}/SDL.dll")
-      message (STATUS "Copying ${SDL_RUNTIME_LIBRARY} to ${THREE_BINARY_PATH} \n")
-      add_custom_command(
-        TARGET three
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${THREE_BINARY_PATH}
-        COMMAND ${CMAKE_COMMAND} -E copy ${SDL_RUNTIME_LIBRARY} "${THREE_BINARY_PATH}/$<CONFIGURATION>"
-      COMMENT "Copying ${SDL_RUNTIME_LIBRARY}")
-    endif()
-  endif()
+  three_add_library(${THREE_LIB} three/impl/src.cpp three/impl/src_extras.cpp)
 endif()
 
 #############

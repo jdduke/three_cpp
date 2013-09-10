@@ -42,6 +42,10 @@ macro(THREE_ADD_LIBRARY _name)
 
   target_link_libraries(${_name} ${THREE_DEP_LIBS})
 
+  if(THREE_DEPENDS)
+    add_dependencies(${_name} ${THREE_DEPENDS})
+  endif()
+
   link_if_needed(${_name})
 
   if(NOT THREE_LIBRARY_STATIC)
@@ -72,6 +76,10 @@ macro(THREE_ADD_EXAMPLE _name)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                               RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
   endif(WIN32 AND MSVC)
+
+  if(THREE_DEPENDS)
+    add_dependencies(${_name} ${THREE_DEPENDS})
+  endif()
 
   if (THREE_PLATFORM_TOOLSET)
     set_target_properties(${_name}
