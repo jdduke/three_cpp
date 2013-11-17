@@ -21,7 +21,7 @@ Image createImage( int width = 256, int height = 256 ) {
   canvas.reserve( canvasSize );
 
   std::generate_n( std::back_inserter(canvas), canvasSize, []{
-    return Math::randomT<unsigned char>(0, 255);
+    return static_cast<unsigned char>(Math::randomT<unsigned int>(0, 255));
   } );
 
   return Image( std::move(canvas), width, height );

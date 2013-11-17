@@ -34,19 +34,28 @@
 
 #include <three/console.hpp>
 
-//#if defined(THREE_SDL)
-//#include <SDL_opengl.h>
-//#endif
-
 namespace three {
 
 #ifdef _DEBUG
-#define printGLError() glError(__FILE__, __LINE__)
-#define GL_CALL(a) (a); printGLError();
+#define GL_CALL(a) (a); glError(__FILE__, __LINE__)
 #else
-#define printGLError() glError(__FILE__, __LINE__)
 #define GL_CALL(a) (a)
 #endif
+
+namespace {
+inline const char* glErrorStringImpl( GLenum err ) {
+  switch(err) {
+    case GL_INVALID_ENUM:      return "Invalid enum";
+    case GL_INVALID_OPERATION: return "Invalid operation";
+    case GL_INVALID_VALUE:     return "Invalid value";
+    case GL_OUT_OF_MEMORY:     return "Out of memory";
+    case GL_STACK_OVERFLOW:    return "Stack overflow";
+    case GL_STACK_UNDERFLOW:   return "Stack underflow";
+    case GL_TABLE_TOO_LARGE:   return "Table too large";
+    default:                   return "Unknown error";
+  }
+}
+} // namespace
 
 inline int glError( const char* file, int line ) {
   int retCode = 0;
@@ -54,13 +63,11 @@ inline int glError( const char* file, int line ) {
   if ( err != GL_NO_ERROR ) {
     console().warn() << "THREE: glError in file " << file
                      << " @ line "                << line
-                     << ": "                      << gluErrorString( err );
+                     << ": "                      << glErrorStringImpl( err );
     retCode = 1;
   }
   return retCode;
 }
-
-#ifndef THREE_GLES
 
 inline GLuint glCreateBuffer() {
   GLuint buffer = 0;
@@ -146,8 +153,6 @@ inline bool glTrue( GLboolean b ) {
   return b == GL_TRUE;
 }
 
-#endif
-
 template < typename C >
 inline void glBindAndBuffer( GLenum target, unsigned buffer, const C& container, GLenum usage ) {
   glBindBuffer( target, buffer );
@@ -157,11 +162,9 @@ inline void glBindAndBuffer( GLenum target, unsigned buffer, const C& container,
 inline void glEnableVSync( bool enable ) {
 #if defined (_WIN32)
   if (wglewIsSupported("WGL_EXT_swap_control")) {
-    // disable vertical sync
     wglSwapIntervalEXT( enable ? 1 : 0 );
   }
 #endif
-
 }
 
 } // namespace three
