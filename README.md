@@ -10,6 +10,10 @@ to and including revision 50.
 
 Before you start raging, see the [FAQ](#faq).
 
+Note: As of Nov 17, 2013, this project has been seriously neglected for the better part of a year.  
+If there is demand, I (jdduke) would be happy to dust it off, clean up the code and get it back on track.
+Feel free to message me privately if you have specific requests and/or ideas.
+
 
 ## Usage ##
 
