@@ -13,7 +13,9 @@ public:
   typedef std::chrono::duration< float > Duration;
 
   Clock( bool autostart = true )
-    : mbAutoStart( autostart ), mbRunning( false ) { }
+    : mElapsedTime( Duration::zero() ),
+      mbAutoStart( autostart ),
+      mbRunning( false ) { }
 
   THREE_DECL void start() {
     mStartTime = std::chrono::system_clock::now();

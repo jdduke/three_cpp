@@ -789,7 +789,7 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
   if ( material && !( material->type() == THREE::MeshFaceMaterial ) ) {
     return material;
   } else if ( geometry && geometryGroup && geometryGroup->materialIndex.valid() ) {
-    return geometry->materials[ geometryGroup->materialIndex ].get();
+    return geometry->materials[ static_cast<size_t>(geometryGroup->materialIndex) ].get();
   }
 
   return nullptr;

@@ -1,6 +1,8 @@
 #ifndef THREE_INDEX_HPP
 #define THREE_INDEX_HPP
 
+#include <cstdint>
+
 namespace three {
 
 template < typename T, T invalid >
@@ -17,8 +19,8 @@ struct IndexT {
   struct IncompleteType;
 
   operator T() const { return value; }
-  operator unsigned() const { return static_cast<unsigned>(value); }
-  operator unsigned long() const { return static_cast<unsigned long>(value); }
+  operator uint32_t() const { return static_cast<uint32_t>(value); }
+  operator uint64_t() const { return static_cast<uint64_t>(value); }
 
   T value;
 };
