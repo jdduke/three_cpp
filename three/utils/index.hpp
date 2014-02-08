@@ -21,6 +21,7 @@ struct IndexT {
   operator T() const { return value; }
   operator uint32_t() const { return static_cast<uint32_t>(value); }
   operator uint64_t() const { return static_cast<uint64_t>(value); }
+  operator size_t() const { return static_cast<size_t>(value); }
 
   T value;
 };
