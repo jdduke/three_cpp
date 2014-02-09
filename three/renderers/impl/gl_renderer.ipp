@@ -789,7 +789,7 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
   if ( material && !( material->type() == THREE::MeshFaceMaterial ) ) {
     return material;
   } else if ( geometry && geometryGroup && geometryGroup->materialIndex.valid() ) {
-    return geometry->materials[ static_cast<size_t>(geometryGroup->materialIndex) ].get();
+    return geometry->materials[ geometryGroup->materialIndex.value ].get();
   }
 
   return nullptr;
@@ -3629,7 +3629,7 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
 
     if ( materialIndex.valid() ) {
 
-      auto& material = *object.geometry->materials[ materialIndex ];
+      auto& material = *object.geometry->materials[ materialIndex.value ];
 
       if ( material.transparent ) {
 
