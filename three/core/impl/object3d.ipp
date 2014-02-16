@@ -104,6 +104,13 @@ void Object3D::remove( const Object3D::Ptr& object ) {
 
 }
 
+void Object3D::traverse( const std::function<void(const Object3D&)> traverseCallback ) {
+  traverseCallback( *this );
+  for ( auto it = children.begin(); it != children.end(); it++ ) {
+    (*it)->traverse( traverseCallback );
+  }
+}
+
 Object3D::Ptr Object3D::getChildByName( const std::string& name, bool recursive ) {
 
   for ( auto& child : children ) {

@@ -152,6 +152,8 @@ public:
   THREE_DECL void add( const Ptr& object );
   THREE_DECL void remove( const Ptr& object );
 
+  THREE_DECL void traverse( const std::function<void(const Object3D&)> traverseCallback );
+
   THREE_DECL Ptr getChildByName( const std::string& name, bool recursive );
 
   THREE_DECL void updateMatrix();

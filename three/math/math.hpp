@@ -6,6 +6,8 @@
 #include <cmath>
 #include <random>
 
+#define NEAR_ZERO_FLOAT 0.0000000000000000001f
+
 namespace three {
 
 namespace Math {
@@ -13,6 +15,7 @@ namespace Math {
 inline const float PI()   { return 3.1415926535897932384f; }//std::atan(1.f)/4;
 inline const float LN2()  { return 0.6931471805599453094f; }
 inline const float INF()  { return std::numeric_limits<float>::max(); }//std::numeric_limits<float>::infinity();
+
 
 template < typename T > inline T sqrt( T t ) { return std::sqrt( t ); }
 template < typename T > inline T abs( T t )  { return std::abs( t ); }

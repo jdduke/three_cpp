@@ -19,7 +19,7 @@
 #include <three/math/math.hpp>
 #include <three/math/matrix4.hpp>
 #include <three/core/object3d.hpp>
-#include <three/math/projector.hpp>
+#include <three/core/projector.hpp>
 #include <three/math/quaternion.hpp>
 #include <three/math/ray.hpp>
 #include <three/math/rectangle.hpp>

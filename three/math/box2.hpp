@@ -94,8 +94,8 @@ namespace three {
     }
 
     Box2& expandByVector( const Vector2& vector ) {
-      min.min( vector );
-      max.max( vector );
+      min.sub( vector );
+      max.add( vector );
       return *this;
     }
 
@@ -185,18 +185,19 @@ namespace three {
       auto divX = ( max.x - min.x );
       auto divY = ( max.y - min.y );
       return result.set(
-        ( point.x - min.x ) / divX == 0 ? 1 : divX,
-        ( point.y - min.y ) / divX == 0 ? 1 : divY
+        ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT : divX,
+        ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT : divY
       );
     }
 
     Vector2 getParameter( const Vector2& point ) const {
+      //@todo DRY?
       auto result = Vector2();
       auto divX = ( max.x - min.x );
       auto divY = ( max.y - min.y );
       return result.set(
-        ( point.x - min.x ) / divX == 0 ? 1 : divX,
-        ( point.y - min.y ) / divX == 0 ? 1 : divY
+        ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT : divX,
+        ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT : divY
       );
     }
 
