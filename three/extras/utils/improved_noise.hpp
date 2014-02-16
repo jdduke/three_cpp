@@ -1,7 +1,7 @@
 #ifndef THREE_IMPROVED_NOISE_HPP
 #define THREE_IMPROVED_NOISE_HPP
 
-#include <three/core/math.hpp>
+#include <three/math/math.hpp>
 
 #include <array>
 

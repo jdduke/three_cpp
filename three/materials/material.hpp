@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/core/color.hpp>
+#include <three/math/color.hpp>
 
 #include <three/materials/attribute.hpp>
 #include <three/materials/program.hpp>

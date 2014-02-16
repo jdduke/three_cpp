@@ -4,10 +4,10 @@
 #include <three/common.hpp>
 
 #include <three/core/bone.hpp>
-#include <three/core/vector3.hpp>
-#include <three/core/quaternion.hpp>
-#include <three/core/matrix3.hpp>
-#include <three/core/matrix4.hpp>
+#include <three/math/vector3.hpp>
+#include <three/math/quaternion.hpp>
+#include <three/math/matrix3.hpp>
+#include <three/math/matrix4.hpp>
 
 #include <three/materials/material.hpp>
 #include <three/core/geometry.hpp>

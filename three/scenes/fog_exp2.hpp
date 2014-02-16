@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/core/color.hpp>
+#include <three/math/color.hpp>
 
 #include <three/utils/noncopyable.hpp>
 

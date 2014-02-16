@@ -1,7 +1,7 @@
 #ifndef THREE_MATRIX4_IPP
 #define THREE_MATRIX4_IPP
 
-#include <three/core/matrix4.hpp>
+#include <three/math/matrix4.hpp>
 
 namespace three {
 

@@ -5,9 +5,9 @@
 
 #include <three/gl.hpp>
 
-#include <three/core/frustum.hpp>
-#include <three/core/vector3.hpp>
-#include <three/core/matrix4.hpp>
+#include <three/math/frustum.hpp>
+#include <three/math/vector3.hpp>
+#include <three/math/matrix4.hpp>
 #include <three/core/interfaces.hpp>
 
 #include <three/scenes/scene.hpp>

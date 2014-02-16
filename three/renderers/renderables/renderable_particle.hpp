@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/core/vector2.hpp>
+#include <three/math/vector2.hpp>
 
 #include <three/renderers/renderables/renderable.hpp>
 

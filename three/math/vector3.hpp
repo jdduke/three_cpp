@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/core/math.hpp>
+#include <three/math/math.hpp>
 
 namespace three {
 
@@ -137,11 +137,11 @@ public:
     return cross( Vector3( *this ), v );
   }
 
-  bool equals( const Vector3& v ) {
+  bool equals( const Vector3& v ) const {
     return ( ( v.x == x ) && ( v.y == y ) && ( v.z == z ) );
   }
 
-  bool isZero() {
+  bool isZero() const {
     return ( lengthSq() < 0.0001f /* almostZero */ );
   }
 

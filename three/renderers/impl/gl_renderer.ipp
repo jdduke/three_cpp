@@ -9,7 +9,7 @@
 
 #include <three/cameras/camera.hpp>
 
-#include <three/core/frustum.hpp>
+#include <three/math/frustum.hpp>
 #include <three/core/interfaces.hpp>
 #include <three/core/buffer_geometry.hpp>
 #include <three/core/geometry.hpp>

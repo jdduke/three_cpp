@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/core/math.hpp>
+#include <three/math/math.hpp>
 #include <three/cameras/camera.hpp>
 
 namespace three {

@@ -1,10 +1,10 @@
 #ifndef THREE_QUATERNION_IPP
 #define THREE_QUATERNION_IPP
 
-#include <three/core/quaternion.hpp>
+#include <three/math/quaternion.hpp>
 
 #include <three/constants.hpp>
-#include <three/core/math.hpp>
+#include <three/math/math.hpp>
 
 namespace three {
 

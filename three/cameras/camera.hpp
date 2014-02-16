@@ -5,7 +5,7 @@
 
 #include <three/visitor.hpp>
 #include <three/core/object3d.hpp>
-#include <three/core/matrix4.hpp>
+#include <three/math/matrix4.hpp>
 
 namespace three {
 

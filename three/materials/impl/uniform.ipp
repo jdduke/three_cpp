@@ -3,10 +3,10 @@
 
 #include <three/materials/uniform.hpp>
 
-#include <three/core/color.hpp>
-#include <three/core/vector2.hpp>
-#include <three/core/vector3.hpp>
-#include <three/core/matrix4.hpp>
+#include <three/math/color.hpp>
+#include <three/math/vector2.hpp>
+#include <three/math/vector3.hpp>
+#include <three/math/matrix4.hpp>
 
 #include <three/utils/any.hpp>
 

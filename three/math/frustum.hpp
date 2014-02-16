@@ -5,7 +5,7 @@
 
 #include <three/utils/noncopyable.hpp>
 
-#include <three/core/vector4.hpp>
+#include <three/math/vector4.hpp>
 
 #include <array>
 

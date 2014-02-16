@@ -8,13 +8,13 @@
 #endif
 
 #include <three/core/impl/buffer_geometry.ipp>
-#include <three/core/impl/frustum.ipp>
-#include <three/core/impl/geometry.ipp>
-#include <three/core/impl/matrix4.ipp>
-#include <three/core/impl/matrix3.ipp>
+#include <three/math/impl/frustum.ipp>
+#include <three/math/impl/geometry.ipp>
+#include <three/math/impl/matrix4.ipp>
+#include <three/math/impl/matrix3.ipp>
 #include <three/core/impl/object3d.ipp>
-#include <three/core/impl/projector.ipp>
-#include <three/core/impl/quaternion.ipp>
+#include <three/math/impl/projector.ipp>
+#include <three/math/impl/quaternion.ipp>
 
 #include <three/objects/impl/mesh.ipp>
 

@@ -1,10 +1,10 @@
 #ifndef THREE_MATRIX3_IPP
 #define THREE_MATRIX3_IPP
 
-#include <three/core/matrix3.hpp>
+#include <three/math/matrix3.hpp>
 
-#include <three/core/matrix4.hpp>
-#include <three/core/math.hpp>
+#include <three/math/matrix4.hpp>
+#include <three/math/math.hpp>
 
 namespace three {
 

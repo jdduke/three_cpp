@@ -4,7 +4,7 @@
 #include <three/common.hpp>
 #include <three/constants.hpp>
 
-#include <three/core/color.hpp>
+#include <three/math/color.hpp>
 
 namespace three {
 

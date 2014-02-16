@@ -1,7 +1,7 @@
 #ifndef THREE_IMAGE_UTILS_HPP
 #define THREE_IMAGE_UTILS_HPP
 
-#include <three/core/color.hpp>
+#include <three/math/color.hpp>
 
 #include <three/textures/texture.hpp>
 

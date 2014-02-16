@@ -2,7 +2,7 @@
 #define THREE_CUBE_GEOMETRY_HPP
 
 #include <three/core/geometry.hpp>
-#include <three/core/face4.hpp>
+#include <three/math/face4.hpp>
 
 namespace three {
 

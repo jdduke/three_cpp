@@ -2,9 +2,9 @@
 #define THREE_TORUS_GEOMETRY_HPP
 
 #include <three/core/geometry.hpp>
-#include <three/core/face3.hpp>
-#include <three/core/face4.hpp>
-#include <three/core/math.hpp>
+#include <three/math/face3.hpp>
+#include <three/math/face4.hpp>
+#include <three/math/math.hpp>
 
 namespace three {
 

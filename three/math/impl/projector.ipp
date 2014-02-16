@@ -1,14 +1,14 @@
 #ifndef THREE_PROJECTOR_IPP
 #define THREE_PROJECTOR_IPP
 
-#include <three/core/projector.hpp>
+#include <three/math/projector.hpp>
 
 #include <three/cameras/camera.hpp>
 
-#include <three/core/math.hpp>
+#include <three/math/math.hpp>
 
-#include <three/core/frustum.hpp>
-#include <three/core/matrix4.hpp>
+#include <three/math/frustum.hpp>
+#include <three/math/matrix4.hpp>
 
 #include <three/objects/line.hpp>
 #include <three/objects/mesh.hpp>

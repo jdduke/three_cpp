@@ -1,8 +1,8 @@
 #ifndef THREE_GEOMETRY_UTILS_HPP
 #define THREE_GEOMETRY_UTILS_HPP
 
-#include <three/core/face3.hpp>
-#include <three/core/face4.hpp>
+#include <three/math/face3.hpp>
+#include <three/math/face4.hpp>
 
 namespace three {
 

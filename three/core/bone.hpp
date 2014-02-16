@@ -1,8 +1,8 @@
 #ifndef THREE_BONE_HPP
 #define THREE_BONE_HPP
 
-#include <three/core/vector3.hpp>
-#include <three/core/quaternion.hpp>
+#include <three/math/vector3.hpp>
+#include <three/math/quaternion.hpp>
 
 #include <string>
 

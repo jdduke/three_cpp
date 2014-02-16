@@ -3,8 +3,8 @@
 
 #include <three/fwd.hpp>
 
-#include <three/core/uv.hpp>
-#include <three/core/vertex.hpp>
+#include <three/math/uv.hpp>
+#include <three/math/vertex.hpp>
 #include <three/textures/texture.hpp>
 #include <three/utils/noncopyable.hpp>
 

@@ -6,12 +6,12 @@
 #include <three/core/geometry_buffer.hpp>
 #include <three/core/geometry_group.hpp>
 
-#include <three/core/math.hpp>
-#include <three/core/color.hpp>
-#include <three/core/face.hpp>
-#include <three/core/vector3.hpp>
-#include <three/core/vertex.hpp>
-#include <three/core/uv.hpp>
+#include <three/math/math.hpp>
+#include <three/math/color.hpp>
+#include <three/math/face.hpp>
+#include <three/math/vector3.hpp>
+#include <three/math/vertex.hpp>
+#include <three/math/uv.hpp>
 #include <three/core/interfaces.hpp>
 
 #include <three/materials/material.hpp>

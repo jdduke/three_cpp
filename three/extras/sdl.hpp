@@ -2,7 +2,7 @@
 #define THREE_SDL_HPP
 
 #include <three/gl.hpp>
-#include <three/core/color.hpp>
+#include <three/math/color.hpp>
 #include <three/utils/noncopyable.hpp>
 #include <three/renderers/renderer_parameters.hpp>
 

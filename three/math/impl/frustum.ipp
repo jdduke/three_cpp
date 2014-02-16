@@ -1,11 +1,11 @@
 #ifndef THREE_FRUSTUM_IPP
 #define THREE_FRUSTUM_IPP
 
-#include <three/core/frustum.hpp>
+#include <three/math/frustum.hpp>
 
 #include <three/core/object3d.hpp>
 #include <three/core/geometry.hpp>
-#include <three/core/vector4.hpp>
+#include <three/math/vector4.hpp>
 
 #include <three/objects/mesh.hpp>
 

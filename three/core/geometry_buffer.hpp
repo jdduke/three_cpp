@@ -2,7 +2,7 @@
 #define THREE_GEOMETRY_BUFFER_HPP
 
 #include <three/constants.hpp>
-#include <three/core/face.hpp>
+#include <three/math/face.hpp>
 #include <three/materials/attribute.hpp>
 #include <three/utils/noncopyable.hpp>
 

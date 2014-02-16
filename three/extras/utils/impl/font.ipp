@@ -4,11 +4,11 @@
 #include <three/extras/utils/font.hpp>
 
 #include <three/gl.hpp>
-#include <three/core/color.hpp>
-#include <three/core/vector2.hpp>
-#include <three/core/face.hpp>
-#include <three/core/vector4.hpp>
-#include <three/core/matrix4.hpp>
+#include <three/math/color.hpp>
+#include <three/math/vector2.hpp>
+#include <three/math/face.hpp>
+#include <three/math/vector4.hpp>
+#include <three/math/matrix4.hpp>
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include <three/extras/utils/impl/stb_truetype.h>
