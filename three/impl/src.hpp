@@ -12,6 +12,7 @@
 #include <three/math/impl/geometry.ipp>
 #include <three/math/impl/matrix4.ipp>
 #include <three/math/impl/matrix3.ipp>
+#include <three/math/impl/vector4.ipp>
 #include <three/core/impl/object3d.ipp>
 #include <three/math/impl/projector.ipp>
 #include <three/math/impl/quaternion.ipp>

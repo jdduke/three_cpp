@@ -5,6 +5,7 @@
 
 #include <three/math/math.hpp>
 #include <three/math/vector3.hpp>
+#include <three/math/quaternion.hpp>
 
 namespace three {
 
@@ -32,13 +33,7 @@ namespace three {
       return *this;
     }
 
-    Vector4& copy( const Vector3& v ) {
-      x = v.x;
-      y = v.y;
-      z = v.z;
-      w = 1.f;
-      return *this;
-    }
+    Vector4& copy( const Vector3& v );
 
     Vector4& copy( const Vector4& v ) {
       x = v.x;
