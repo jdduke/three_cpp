@@ -4,10 +4,8 @@
 #include <three/common.hpp>
 
 #include <three/constants.hpp>
-#include <three/math/vector3.hpp>
 
-namespace three {
-
+namespace three {    
 class Quaternion {
 public:
 
@@ -37,8 +35,9 @@ public:
     return *this;
   }
 
-  THREE_DECL Vector3 getEuler( THREE::Order order = THREE::XYZ ) const;
-  THREE_DECL Quaternion& setFromEuler( const Vector3& v, THREE::Order order = THREE::XYZ );
+  THREE_DECL Vector3 getEuler( THREE::EulerRotationOrder order = THREE::XYZ ) const;
+  THREE_DECL Quaternion& setFromEuler( const Vector3& v, THREE::EulerRotationOrder order = THREE::XYZ );
+  THREE_DECL Quaternion& setFromEuler( const Euler& v, THREE::EulerRotationOrder order = THREE::XYZ );
   THREE_DECL Quaternion& setFromAxisAngle( const Vector3& axis, float angle );
   THREE_DECL Quaternion& calculateW();
   THREE_DECL Quaternion& inverse();
@@ -62,9 +61,8 @@ private:
 };
 
 } // namespace three
-
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/quaternion.ipp>
+# include <three/math/impl/quaternion.ipp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_QUATERNION_HPP

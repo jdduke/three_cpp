@@ -61,7 +61,7 @@ protected:
         vertices.push_back( vertex );
 
         tmpUvs.push_back( UV( (float)i / segmentsT, (float)j / segmentsR ) );
-        tmpNormals.push_back( vertex.clone().subSelf( center ).normalize() );
+        tmpNormals.push_back( vertex.clone().sub( center ).normalize() );
 
       }
     }
@@ -77,10 +77,10 @@ protected:
         const auto d = ( segmentsT + 1 ) * j + i;
 
         Face4 face( a, b, c, d, tmpNormals[ a ], tmpNormals[ b ], tmpNormals[ c ], tmpNormals[ d ] );
-        face.normal.addSelf( tmpNormals[ a ] );
-        face.normal.addSelf( tmpNormals[ b ] );
-        face.normal.addSelf( tmpNormals[ c ] );
-        face.normal.addSelf( tmpNormals[ d ] );
+        face.normal.add( tmpNormals[ a ] );
+        face.normal.add( tmpNormals[ b ] );
+        face.normal.add( tmpNormals[ c ] );
+        face.normal.add( tmpNormals[ d ] );
         face.normal.normalize();
 
         faces.push_back( face );

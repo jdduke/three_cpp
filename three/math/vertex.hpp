@@ -3,7 +3,6 @@
 
 #include <three/common.hpp>
 
-#include <three/math/vector3.hpp>
 
 namespace three {
 

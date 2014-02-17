@@ -407,7 +407,7 @@ Quaternion Matrix4::getRotation() const {
 }
 
 
-Vector3 Matrix4::getEulerRotation( THREE::Order order /*= THREE::XYZ*/ ) const {
+Vector3 Matrix4::getEulerRotation( THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) const {
   // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
   // clamp, to handle numerical problems
@@ -668,7 +668,7 @@ Matrix4& Matrix4::getInverse( const Matrix4& m ) {
 
 }
 
-Matrix4& Matrix4::setRotationFromEuler( const Vector3& v, THREE::Order order /*= THREE::XYZ*/ ) {
+Matrix4& Matrix4::setRotationFromEuler( const Vector3& v, THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) {
 
   auto x = v.x, y = v.y, z = v.z;
   auto a = Math::cos( x ), b = Math::sin( x );

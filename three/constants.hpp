@@ -113,14 +113,16 @@ enum PixelFormat {
   RGBA_S3TC_DXT5_Format = 2004
 };
 
-enum Order {
+enum EulerRotationOrder { 
   XYZ = 0,
-  YXZ,
-  ZXY,
-  ZYX,
   YZX,
-  XZY
+  ZXY,
+  XZY,
+  YXZ,
+  ZYX
 };
+
+
 
 enum Index {
   X = 0,

@@ -421,7 +421,7 @@ Ray Projector::pickingRay( Vector3 vector, const Camera& camera ) {
   unprojectVector( end, camera );
 
   // find direction from vector to end
-  end.subSelf( vector ).normalize();
+  end.sub( vector ).normalize();
 
   return Ray( vector, end );
 

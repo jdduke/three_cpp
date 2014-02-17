@@ -3,11 +3,8 @@
 
 #include <three/common.hpp>
 #include <three/constants.hpp>
-
-#include <three/math/color.hpp>
 #include <three/math/vector3.hpp>
-#include <three/math/vector4.hpp>
-
+#include <three/math/color.hpp>
 #include <array>
 
 namespace three {

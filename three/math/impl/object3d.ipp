@@ -22,7 +22,7 @@ void Object3D::applyMatrix( const Matrix4& m ) {
 
 void Object3D::translate( float distance, Vector3 axis ) {
   matrix.rotateAxis( axis );
-  position.addSelf( axis.multiplyScalar( distance ) );
+  position.add( axis.multiplyScalar( distance ) );
 }
 
 void Object3D::translateX( float distance ) {

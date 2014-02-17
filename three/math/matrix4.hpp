@@ -4,12 +4,10 @@
 #include <three/common.hpp>
 
 #include <three/math/math.hpp>
-#include <three/math/quaternion.hpp>
-#include <three/math/vector3.hpp>
 #include <three/math/vector4.hpp>
 
 namespace three {
-
+    
 class Matrix4 {
 public:
 
@@ -58,7 +56,7 @@ public:
   THREE_DECL Vector3    getScale() const;
   THREE_DECL Vector3    getPosition() const;
   THREE_DECL Quaternion getRotation() const;
-  THREE_DECL Vector3    getEulerRotation( THREE::Order order = THREE::XYZ ) const;
+  THREE_DECL Vector3    getEulerRotation( THREE::EulerRotationOrder order = THREE::XYZ ) const;
   THREE_DECL Vector4    getAxisAngle( ) const;
 
   Vector3 getColumnX() const;
@@ -69,7 +67,7 @@ public:
 
   THREE_DECL Matrix4& getInverse( const Matrix4& m );
 
-  THREE_DECL Matrix4& setRotationFromEuler( const Vector3& v, THREE::Order order = THREE::XYZ );
+  THREE_DECL Matrix4& setRotationFromEuler( const Vector3& v, THREE::EulerRotationOrder order = THREE::XYZ );
   THREE_DECL Matrix4& setRotationFromQuaternion( const Quaternion& q );
 
   THREE_DECL Matrix4& compose( const Vector3& translation, const Quaternion& rotation, const Vector3& scale );

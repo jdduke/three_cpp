@@ -134,7 +134,7 @@ public:
         // determine if ray intersects the plane of the face
         // note: this works regardless of the direction of the face normal
 
-        vector = objMatrix.multiplyVector3( face.centroid ).subSelf( originCopy );
+        vector = objMatrix.multiplyVector3( face.centroid ).sub( originCopy );
         normal = object.matrixRotationWorld.multiplyVector3( face.normal );
         auto d = directionCopy.dot( normal );
 
@@ -152,7 +152,7 @@ public:
 
         if ( side == THREE::DoubleSide || ( side == THREE::FrontSide ? dot < 0 : dot > 0 ) ) {
 
-          intersectPoint.add( originCopy, directionCopy.multiplyScalar( scalar ) );
+          intersectPoint.addVectors( originCopy, directionCopy.multiplyScalar( scalar ) );
 
           auto distance = originCopy.distanceTo( intersectPoint );
 

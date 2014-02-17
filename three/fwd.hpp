@@ -11,17 +11,24 @@ class Scene;
 class Particle;
 class Sprite;
 class Mesh;
+
+// Math
+class Box2;
+class Box3;
+class Color;
+class Euler;
 class Face;
+class Frustum;
 class Line;
 class Rectangle;
-class Color;
 class Vector2;
-class Vector3;
 class Vector4;
+class Vector3;
+
+class Matrix3;
 class Matrix4;
 class Quaternion;
 class Ray;
-class Frustum;
 
 class Visitor;
 class ConstVisitor;

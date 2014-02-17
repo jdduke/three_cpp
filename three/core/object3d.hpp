@@ -59,7 +59,7 @@ public:
 
   Vector3 position;
   Vector3 rotation;
-  THREE::Order eulerOrder;
+  THREE::EulerRotationOrder eulerOrder;
   Vector3 scale;
 
   float renderDepth;

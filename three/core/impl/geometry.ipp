@@ -53,7 +53,7 @@ void Geometry::computeCentroids() {
     face.centroid.set( 0, 0, 0 );
 
     for ( auto i = 0; i < face.size(); ++i ) {
-      face.centroid.addSelf( vertices[ face.abcd[ i ] ] );
+      face.centroid.add( vertices[ face.abcd[ i ] ] );
     }
 
     face.centroid.divideScalar( ( float )face.size() );
@@ -99,7 +99,7 @@ void Geometry::computeVertexNormals() {
 
   for ( const auto& face : faces ) {
     for ( auto i = 0; i < face.size(); ++i ) {
-      normals[ face.abcd[ i ] ].addSelf( face.normal );
+      normals[ face.abcd[ i ] ].add( face.normal );
     }
   }
 
@@ -153,13 +153,13 @@ void Geometry::computeTangents() {
                  ( s1 * y2 - s2 * y1 ) * r,
                  ( s1 * z2 - s2 * z1 ) * r );
 
-    tan1[ a ].addSelf( sdir );
-    tan1[ b ].addSelf( sdir );
-    tan1[ c ].addSelf( sdir );
+    tan1[ a ].add( sdir );
+    tan1[ b ].add( sdir );
+    tan1[ c ].add( sdir );
 
-    tan2[ a ].addSelf( tdir );
-    tan2[ b ].addSelf( tdir );
-    tan2[ c ].addSelf( tdir );
+    tan2[ a ].add( tdir );
+    tan2[ b ].add( tdir );
+    tan2[ c ].add( tdir );
 
   };
 
@@ -196,7 +196,7 @@ void Geometry::computeTangents() {
       // Gram-Schmidt orthogonalize
 
       tmp.copy( t );
-      tmp.subSelf( n.multiplyScalar( n.dot( t ) ) ).normalize();
+      tmp.sub( n.multiplyScalar( n.dot( t ) ) ).normalize();
 
       // Calculate handedness
 

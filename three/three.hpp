@@ -12,15 +12,23 @@
 #include <three/core/geometry_buffer.hpp>
 #include <three/core/geometry_group.hpp>
 #include <three/core/clock.hpp>
+#include <three/core/object3d.hpp>
+#include <three/core/projector.hpp>
+
+
 #include <three/math/color.hpp>
 #include <three/math/face3.hpp>
 #include <three/math/face4.hpp>
 #include <three/math/frustum.hpp>
 #include <three/math/math.hpp>
 #include <three/math/matrix4.hpp>
-#include <three/core/object3d.hpp>
-#include <three/core/projector.hpp>
+
 #include <three/math/quaternion.hpp>
+
+#include <three/math/euler.hpp>
+
+#include <three/math/box2.hpp>
+#include <three/math/box3.hpp>
 #include <three/math/ray.hpp>
 #include <three/math/rectangle.hpp>
 #include <three/math/spline.hpp>
@@ -28,6 +36,7 @@
 #include <three/math/vector2.hpp>
 #include <three/math/vector3.hpp>
 #include <three/math/vector4.hpp>
+
 
 #include <three/lights/ambient_light.hpp>
 #include <three/lights/directional_light.hpp>

@@ -4798,7 +4798,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
       }
 
       Vector3 _direction = light.matrixWorld.getPosition();
-      _direction.subSelf( light.target->matrixWorld.getPosition() );
+      _direction.sub( light.target->matrixWorld.getPosition() );
       _direction.normalize();
 
       dpositions[ doffset ]     = _direction.x;
@@ -4872,7 +4872,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
       sdistances[ slength ] = distance;
 
       _direction.copy( position );
-      _direction.subSelf( light.target->matrixWorld.getPosition() );
+      _direction.sub( light.target->matrixWorld.getPosition() );
       _direction.normalize();
 
       sdirections[ soffset ]     = _direction.x;

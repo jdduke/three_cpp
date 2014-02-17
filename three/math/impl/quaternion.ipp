@@ -8,7 +8,7 @@
 
 namespace three {
 
-Vector3 Quaternion::getEuler( THREE::Order order /*= THREE::XYZ*/ ) const {
+Vector3 Quaternion::getEuler( THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) const {
   // assumed to be normalized
 
   // clamp, to handle numerical problems
@@ -52,7 +52,67 @@ Vector3 Quaternion::getEuler( THREE::Order order /*= THREE::XYZ*/ ) const {
   return euler;
 }
 
-Quaternion& Quaternion::setFromEuler( const Vector3& v, THREE::Order order /*= THREE::XYZ*/ ) {
+Quaternion& Quaternion::setFromEuler( const Vector3& v, THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) {
+
+  // http://www.mathworks.com/matlabcentral/fileexchange/
+  //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
+  //  content/SpinCalc.m
+
+  auto c1 = Math::cos( v.x / 2 );
+  auto c2 = Math::cos( v.y / 2 );
+  auto c3 = Math::cos( v.z / 2 );
+  auto s1 = Math::sin( v.x / 2 );
+  auto s2 = Math::sin( v.y / 2 );
+  auto s3 = Math::sin( v.z / 2 );
+
+  if ( order == THREE::XYZ ) {
+
+    x = s1 * c2 * c3 + c1 * s2 * s3;
+    y = c1 * s2 * c3 - s1 * c2 * s3;
+    z = c1 * c2 * s3 + s1 * s2 * c3;
+    w = c1 * c2 * c3 - s1 * s2 * s3;
+
+  } else if ( order == THREE::YXZ ) {
+
+    x = s1 * c2 * c3 + c1 * s2 * s3;
+    y = c1 * s2 * c3 - s1 * c2 * s3;
+    z = c1 * c2 * s3 - s1 * s2 * c3;
+    w = c1 * c2 * c3 + s1 * s2 * s3;
+
+  } else if ( order == THREE::ZXY ) {
+
+    x = s1 * c2 * c3 - c1 * s2 * s3;
+    y = c1 * s2 * c3 + s1 * c2 * s3;
+    z = c1 * c2 * s3 + s1 * s2 * c3;
+    w = c1 * c2 * c3 - s1 * s2 * s3;
+
+  } else if ( order == THREE::ZYX ) {
+
+    x = s1 * c2 * c3 - c1 * s2 * s3;
+    y = c1 * s2 * c3 + s1 * c2 * s3;
+    z = c1 * c2 * s3 - s1 * s2 * c3;
+    w = c1 * c2 * c3 + s1 * s2 * s3;
+
+  } else if ( order == THREE::YZX ) {
+
+    x = s1 * c2 * c3 + c1 * s2 * s3;
+    y = c1 * s2 * c3 + s1 * c2 * s3;
+    z = c1 * c2 * s3 - s1 * s2 * c3;
+    w = c1 * c2 * c3 - s1 * s2 * s3;
+
+  } else if ( order == THREE::XZY ) {
+
+    x = s1 * c2 * c3 - c1 * s2 * s3;
+    y = c1 * s2 * c3 - s1 * c2 * s3;
+    z = c1 * c2 * s3 + s1 * s2 * c3;
+    w = c1 * c2 * c3 + s1 * s2 * s3;
+
+  }
+
+  return *this;
+}
+
+Quaternion& Quaternion::setFromEuler( const Euler& v, THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) {
 
   // http://www.mathworks.com/matlabcentral/fileexchange/
   //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
