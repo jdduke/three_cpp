@@ -25,26 +25,39 @@ namespace three {
     float& operator[]( const int i ) { return xyzw[i]; }
     const float operator[]( const int i ) const { return xyzw[i]; }
 
-    Vector4& set( float xIn, float yIn, float zIn, float wIn );
-    Vector4& copy( const Vector3& v );
-    Vector4& copy( const Vector4& v );
-    Vector4& add( const Vector4& a, const Vector4& b );
-    Vector4& addSelf( const Vector4& v );
-    Vector4& sub( const Vector4& a, const Vector4& b );
-    Vector4& subSelf( const Vector4& v );
+    Vector4& set( float xIn, float yIn, float zIn, float wIn ); // r50
+    Vector4& setX( float xIn); // r65
+    Vector4& setY( float yIn ); // r65
+    Vector4& setZ( float zIn ); // r65
+    Vector4& setW( float wIn ); // r65
+    Vector4& copy( const Vector3& v ); // r50
+    Vector4& copy( const Vector4& v ); // r50
+    Vector4& add( const Vector4& v ); // r65
+    Vector4& addVectors( const Vector4& a, const Vector4& b ); //r 65
+    Vector4& addScalar( float s ); // r65
+    Vector4& sub( const Vector4& v ); // r65
+    Vector4& subVectors( const Vector4& a, const Vector4& b ); // r65
     Vector4& multiplyScalar( float s );
+    Vector4& applyMatrix4( const Matrix4& m ); //r65
     Vector4& divideScalar( float s );
-    Vector4& negate();
-    float dot( const Vector4& v ) const;
-    float lengthSq() const;
-    float length() const;
-    Vector4& normalize();
-    Vector4& setLength( float l );
-    Vector4& lerpSelf( const Vector4& v, float alpha );
-    bool equals( const Vector4& v );
+    Vector4& setAxisAngleFromQuaternion( const Quaternion& q ); //r65
+    Vector4& setAxisAngleFromRotationMatrix( const Matrix4& m ); // r65
+    Vector4& min( const Vector4& v ); // r65
+    Vector4& max( const Vector4& v ); // r65
+    Vector4& clamp( const Vector4& min, const Vector4& max ); // r65
+    Vector4& negate(); // r50
+    float dot( const Vector4& v ) const; //r50
+    float lengthSq() const; //r50
+    float length() const; //r50
+    float lengthManhattan() const; //r65
+    Vector4& normalize(); //r50
+    Vector4& setLength( float l ); //r50
+    Vector4& lerp( const Vector4& v, float alpha );  //r65
+    bool equals( const Vector4& v ); //r50
     Vector4 clone() const;
-    Vector4& setAxisAngleFromQuaternion( const Quaternion& q );
+
   };
+
   static_assert( sizeof( Vector4 ) == sizeof( float ) * 4, "Invalid Vector4 storage size" );
 
 } // namespace three

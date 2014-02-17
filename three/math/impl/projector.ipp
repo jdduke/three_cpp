@@ -115,8 +115,8 @@ static bool clipLine( Vector4& s1, Vector4& s2 ) {
       return false;
     } else {
       // Update the s1 and s2 vertices to match the clipped line segment.
-      s1.lerpSelf( s2, alpha1 );
-      s2.lerpSelf( s1, 1 - alpha2 );
+      s1.lerp( s2, alpha1 );
+      s2.lerp( s1, 1 - alpha2 );
       return true;
     }
   }
