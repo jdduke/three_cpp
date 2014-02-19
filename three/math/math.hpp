@@ -42,7 +42,9 @@ template < typename T > inline T floor( T t ) { return std::floor( t ); }
 template < typename T > inline T fmod( T a, T b ) { return std::fmod( a, b ); }
 
 template < typename T > inline T min( T a, T b ) { return std::min( a, b ); }
+template < typename T > inline T min( T a, T b, T c ) { return std::min( std::min( a, b ), c ); }
 template < typename T > inline T max( T a, T b ) { return std::max( a, b ); }
+template < typename T > inline T max( T a, T b, T c) { return std::max( std::max( a, b ), c ); }
 
 template < typename T > inline T clamp( T x, T a, T b )  { return x < a ? a : ( ( x > b ) ? b : x ); }
 template < typename T > inline T clampBottom( T x, T a ) { return x < a ? a : x; }
