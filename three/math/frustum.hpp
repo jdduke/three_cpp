@@ -9,17 +9,27 @@
 
 namespace three {
 
-class Frustum : public NonCopyable {
-public:
+  class Frustum : public NonCopyable {
+  public:
 
-  Frustum() { }
-  Frustum( const Matrix4& m ) { setFromMatrix( m ); }
+    Frustum() { }
+    Frustum( const Matrix4& m ) { setFromMatrix( m ); }
 
-  THREE_DECL void setFromMatrix( const Matrix4& m );
-  THREE_DECL bool contains( const Object3D& object ) const;
+    THREE_DECL void setFromMatrix( const Matrix4& m );
+    THREE_DECL bool contains( const Object3D& object ) const;
 
-  std::array<Vector4, 6> planes;
-};
+    Frustum& set( p0, p1, p2, p3, p4, p5 );
+
+    Frustum copy( frustum );
+
+    Frustum& intersectsObject();
+    Frustum& intersectsSphere( sphere );
+    Frustum& intersectsBox();
+    Frustum& containsPoint( point );
+    Frustum& clone();
+
+    std::array<Vector4, 6> planes;
+  };
 
 } // namespace three
 
