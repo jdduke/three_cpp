@@ -1,12 +1,12 @@
-#ifndef THREE_MATH_HPP
-#define THREE_MATH_HPP
+#ifndef THREE_HPP
+#define THREE_HPP
 
 #include <three/common.hpp>
 
 #include <cmath>
 #include <random>
 
-#define NEAR_ZERO_FLOAT 0.0000000000000000001f
+#define NEAR_ZERO_FLOAT_32 0.0000000000000000001f
 
 namespace three {
 
@@ -135,4 +135,4 @@ inline int nearestPowerOfTwo( int value ) {
 
 } // namespace three
 
-#endif // THREE_MATH_HPP
+#endif // THREE_HPP

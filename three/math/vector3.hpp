@@ -311,7 +311,7 @@ namespace three {
   float angleTo( const Vector3& v ) {
     //@todo near zero correct behavior?
     auto l = length() * v.length();
-    auto theta = dot( v ) / l == 0.f ? NEAR_ZERO_FLOAT : l;
+    auto theta = dot( v ) / l == 0.f ? NEAR_ZERO_FLOAT_32 : l;
 
     // clamp, to handle numerical problems
     return Math::acos( Math::clamp( theta, -1.f, 1.f ) );

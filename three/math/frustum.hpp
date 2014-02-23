@@ -4,6 +4,7 @@
 #include <three/common.hpp>
 
 #include <three/utils/noncopyable.hpp>
+#include <three/math/plane.hpp>
 
 #include <array>
 
@@ -15,20 +16,24 @@ namespace three {
     Frustum() { }
     Frustum( const Matrix4& m ) { setFromMatrix( m ); }
 
-    THREE_DECL void setFromMatrix( const Matrix4& m );
-    THREE_DECL bool contains( const Object3D& object ) const;
+    THREE_DECL Frustum& set( const Plane& p0, const Plane& p1, const Plane& p2, const Plane& p3, const Plane& p4, const Plane& p5 );
+    THREE_DECL Frustum& copy( const Frustum& frustum );
 
-    Frustum& set( p0, p1, p2, p3, p4, p5 );
+    THREE_DECL Frustum& setFromMatrix( const Matrix4& m );
+    THREE_DECL bool intersectsObject( const Object3D& object );
+    THREE_DECL bool intersectsSphere( const Sphere& sphere ) const;
+    THREE_DECL bool intersectsBox( const Box3& box );
+    THREE_OBSOLETE bool contains( const Object3D& point ) const;
+    THREE_DECL bool containsPoint( const Vector3& point ) const;
+    THREE_DECL Frustum clone();
 
-    Frustum copy( frustum );
+    std::array<Plane, 6> planes;
 
-    Frustum& intersectsObject();
-    Frustum& intersectsSphere( sphere );
-    Frustum& intersectsBox();
-    Frustum& containsPoint( point );
-    Frustum& clone();
-
-    std::array<Vector4, 6> planes;
+  private:
+    // @todo lazy init?
+    Sphere _sphere;
+    Vector3 _p1;
+    Vector3 _p2;
   };
 
 } // namespace three

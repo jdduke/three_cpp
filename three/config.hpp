@@ -38,6 +38,10 @@
 # define THREE_DECL
 #endif // !defined(THREE_DECL)
 
+#if !defined(THREE_OBSOLETE)
+  #define THREE_OBSOLETE
+#endif
+
 #ifndef THREE_DATA_DIR
 #define THREE_DATA_DIR "."
 #endif

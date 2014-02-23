@@ -7,6 +7,7 @@
 namespace three {
 
 class Matrix3 {
+
 public:
 
   union {
@@ -21,11 +22,6 @@ public:
   THREE_DECL Matrix3( const Matrix3& other );
   THREE_DECL Matrix3& operator= ( const Matrix3& other );
 
-  THREE_DECL Matrix3& getInverse( const Matrix4& m );
-  THREE_DECL Matrix3& transpose();
-
-  THREE_DECL const Matrix3& transposeIntoArray( float* r ) const;
-
   THREE_DECL Matrix3& set( float n11, float n12, float n13,
                            float n21, float n22, float n23,
                            float n31, float n32, float n33 );
@@ -33,6 +29,20 @@ public:
 
   THREE_DECL Matrix3& copy( const Matrix3& m );
   THREE_DECL Matrix3& copy( const Matrix4& m );
+
+  THREE_DECL std::vector<float>& multiplyVector3Array( std::vector<float>& a);
+
+  THREE_DECL Matrix3& multiplyScalar( float s );
+
+  THREE_DECL float determinant() const;
+
+  THREE_DECL Matrix3& getInverse( const Matrix4& m );
+  THREE_DECL Matrix3& transpose();
+
+  THREE_DECL Matrix3& getNormalMatrix( const Matrix4& m );
+
+  THREE_DECL const Matrix3& transposeIntoArray( float* r ) const;
+
   THREE_DECL Matrix3 clone();
 
 };

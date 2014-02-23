@@ -20,10 +20,12 @@ class Euler;
 class Face;
 class Frustum;
 class Line;
+class Line3;
 class Rectangle;
 class Vector2;
 class Vector4;
 class Vector3;
+class Sphere;
 
 class Matrix3;
 class Matrix4;

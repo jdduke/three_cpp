@@ -11,6 +11,7 @@
 #include <three/math/face.hpp>
 #include <three/math/vector3.hpp>
 #include <three/math/vertex.hpp>
+#include <three/math/sphere.hpp>
 #include <three/math/uv.hpp>
 #include <three/core/interfaces.hpp>
 
@@ -58,10 +59,6 @@ struct Box {
   }
 };
 
-struct Sphere {
-  Sphere() : radius( 0.0f ) { }
-  float radius;
-};
 
 class Geometry : public IGeometry, public GeometryBuffer {
 public:
