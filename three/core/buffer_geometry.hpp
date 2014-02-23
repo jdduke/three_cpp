@@ -27,7 +27,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL void applyMatrix( const Matrix4& matrix );
+  virtual THREE_DECL void applyMatrix( Matrix4& matrix ) ;
 
   THREE_DECL void computeBoundingBox();
   THREE_DECL void computeBoundingSphere();

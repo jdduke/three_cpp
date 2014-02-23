@@ -10,7 +10,7 @@
 
 namespace three {
 
-void BufferGeometry::applyMatrix( const Matrix4& matrix ) {
+void BufferGeometry::applyMatrix( Matrix4& matrix ) {
 
   if ( auto positionsP = attributes.get( AttributeKey::position() ) ) {
     matrix.multiplyVector3Array( positionsP->array );

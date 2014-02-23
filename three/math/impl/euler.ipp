@@ -5,7 +5,7 @@
 
 #include <three/utils/macros.hpp>
 #include <three/math/math.hpp>
-#include <three/math/quaternion.hpp>
+#include <three/math/euler.hpp>
 
 namespace three {
 

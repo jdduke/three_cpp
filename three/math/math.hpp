@@ -7,15 +7,17 @@
 #include <random>
 
 #define NEAR_ZERO_FLOAT_32 0.0000000000000000001f
+#define MATH_PI 3.1415926535897932384f
+#define MATH_LN2 0.6931471805599453094f
+#define MATH_DEG_TO_RAD_FACTOR (3.1415926535897932384f/180)
 
 namespace three {
 
 namespace Math {
 
-inline const float PI()   { return 3.1415926535897932384f; }//std::atan(1.f)/4;
-inline const float LN2()  { return 0.6931471805599453094f; }
+inline const float PI()   { return MATH_PI; }//std::atan(1.f)/4;
+inline const float LN2()  { return MATH_LN2; }
 inline const float INF()  { return std::numeric_limits<float>::max(); }//std::numeric_limits<float>::infinity();
-
 
 template < typename T > inline T sqrt( T t ) { return std::sqrt( t ); }
 template < typename T > inline T abs( T t )  { return std::abs( t ); }
@@ -29,6 +31,7 @@ template < typename T > inline T sin( T t )  { return std::sin( t ); }
 template < typename T > inline T tan( T t )  { return std::tan( t ); }
 template < typename T > inline T log( T t )  { return std::log( t ); }
 template < typename T, typename U > inline T pow( T a, U b )   { return std::pow( a, b ); }
+template < typename T > inline T degToRad( T a )   { return a * MATH_DEG_TO_RAD_FACTOR; }
 
 #if defined(_MSC_VER)
 template < typename T > inline T round( T n ) { return ( n > ( T )0 ) ? std::floor( n + ( T )0.5 ) : std::ceil( n - ( T )0.5 ); }

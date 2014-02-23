@@ -7,17 +7,9 @@
 
 namespace three {
 
-void Object3D::applyMatrix( const Matrix4& m ) {
-
-  matrix.multiply( m, matrix );
-
-  scale = matrix.getScale();
-
-  auto mat = Matrix4().extractRotation( matrix );
-  rotation = mat.getEulerRotation( eulerOrder );
-
-  position = matrix.getPosition();
-
+void Object3D::applyMatrix( Matrix4& matrix ) {
+  matrix.multiplyMatrices( matrix, this->matrix );
+  matrix.decompose( position, quaternion, scale );
 }
 
 void Object3D::translate( float distance, Vector3 axis ) {
@@ -39,12 +31,13 @@ void Object3D::translateZ( float distance ) {
 
 void Object3D::lookAt( const Vector3& vector ) {
 
-  // TODO: Add hierarchy support.
-  matrix.lookAt( vector, position, up );
+  // This routine does not support objects with rotated and/or translated parent(s)
+  // @todo priv member
+  auto m1 = Matrix4();
 
-  if ( rotationAutoUpdate ) {
-    rotation = matrix.getEulerRotation( eulerOrder );
-  }
+    m1.lookAt( vector, position, up );
+
+    quaternion.setFromRotationMatrix( m1 );
 
 }
 
@@ -135,40 +128,31 @@ Object3D::Ptr Object3D::getChildByName( const std::string& name, bool recursive 
 }
 
 void Object3D::updateMatrix() {
-
-  matrix.setPosition( position );
-
-  if ( useQuaternion )  {
-    matrix.setRotationFromQuaternion( quaternion );
-  } else {
-    matrix.setRotationFromEuler( rotation, eulerOrder );
-  }
-
-  if ( scale.x != 1.f || scale.y != 1.f || scale.z != 1.f ) {
-    matrix.scale( scale );
-    boundRadiusScale = std::max( scale.x, std::max( scale.y, scale.z ) );
-  }
-
+  matrix.compose( position, quaternion, scale );
   matrixWorldNeedsUpdate = true;
-
 }
 
 void Object3D::updateMatrixWorld( bool force /*= false*/ ) {
 
-  if ( matrixAutoUpdate ) updateMatrix();
+    if ( matrixAutoUpdate == true ) updateMatrix();
 
-  if ( matrixWorldNeedsUpdate || force ) {
+    if ( matrixWorldNeedsUpdate == true || force == true ) {
 
-    if ( parent != nullptr ) {
-      matrixWorld.multiply( parent->matrixWorld, matrix );
-    } else {
-      matrixWorld.copy( matrix );
+      if ( parent ) {
+
+        matrixWorld.copy( matrix );
+
+      } else {
+
+        matrixWorld.multiplyMatrices( parent->matrixWorld, matrix );
+
+      }
+
+      matrixWorldNeedsUpdate = false;
+
+      force = true;
+
     }
-
-    matrixWorldNeedsUpdate = false;
-    force = true;
-
-  }
 
   // update children
 
@@ -178,20 +162,12 @@ void Object3D::updateMatrixWorld( bool force /*= false*/ ) {
 
 }
 
-Vector3 Object3D::worldToLocal( const Vector3& vector ) const {
+Vector3 Object3D::worldToLocal( Vector3& vector ) const {
   return Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
 }
 
-Vector3 Object3D::localToWorld( const Vector3& vector ) const {
+Vector3 Object3D::localToWorld( Vector3& vector ) const {
   return matrixWorld.multiplyVector3( vector );
-}
-
-void Object3D::worldToLocal( Vector3& vector ) const {
-  Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
-}
-
-void Object3D::localToWorld( Vector3& vector ) const {
-  matrixWorld.multiplyVector3( vector );
 }
 
 void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {

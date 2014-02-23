@@ -143,7 +143,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   THREE_DECL virtual void lookAt( const Vector3& vector );
-  THREE_DECL void applyMatrix( const Matrix4& m );
+  THREE_DECL void applyMatrix( Matrix4& m );
   THREE_DECL void translate( float distance, Vector3 axis );
   THREE_DECL void translateX( float distance );
   THREE_DECL void translateY( float distance );
@@ -159,11 +159,8 @@ public:
   THREE_DECL void updateMatrix();
   THREE_DECL void updateMatrixWorld( bool force = false );
 
-  THREE_DECL void worldToLocal( Vector3& vector ) const;
-  THREE_DECL void localToWorld( Vector3& vector ) const;
-
-  THREE_DECL Vector3 worldToLocal( const Vector3& vector ) const;
-  THREE_DECL Vector3 localToWorld( const Vector3& vector ) const;
+  THREE_DECL Vector3 worldToLocal( Vector3& vector ) const;
+  THREE_DECL Vector3 localToWorld( Vector3& vector ) const;
 
   THREE_DECL void render( const std::function<void( Object3D& )> renderCallback );
 

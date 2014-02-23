@@ -15,7 +15,7 @@ public:
 
 class IGeometry {
 public:
-  virtual void applyMatrix( const Matrix4& ) = 0;
+  virtual void applyMatrix( Matrix4& ) = 0;
   virtual void computeBoundingBox()          = 0;
   virtual void computeBoundingSphere()       = 0;
   virtual void computeVertexNormals()        = 0;

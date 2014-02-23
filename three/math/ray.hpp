@@ -7,10 +7,10 @@
 #include <three/objects/mesh.hpp>
 
 namespace three {
-
+    
 class Ray {
 public:
-
+    
   Vector3 origin;
   Vector3 direction;
   float near;
@@ -50,7 +50,7 @@ public:
     Vector3 point;
     const Face* face;
     int faceIndex;
-    const Object3D* object;
+    const three::Object3D* object;
   };
 
   static bool descSort( const Intersection& a, const Intersection& b ) {
@@ -58,7 +58,7 @@ public:
   }
 
 
-  std::vector<Intersection> intersectObject( Object3D& object, bool recursive = true ) {
+  std::vector<Intersection> intersectObject( three::Object3D& object, bool recursive = true ) {
 
     std::vector<Intersection> intersects;
 
@@ -200,7 +200,7 @@ public:
 
   }
 
-  std::vector<Intersection> intersectObjects( const std::vector<Object3D*>& objects, bool recursive ) {
+  std::vector<Intersection> intersectObjects( const std::vector<three::Object3D*>& objects, bool recursive ) {
 
     std::vector<Intersection> intersects;
 

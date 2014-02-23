@@ -1,9 +1,13 @@
 #ifndef THREE_MATRIX4_IPP
 #define THREE_MATRIX4_IPP
 
+#include <three/math/math.hpp>
 #include <three/math/matrix4.hpp>
+#include <three/math/euler.hpp>
 
 namespace three {
+
+using namespace THREE;
 
 Matrix4::Matrix4() {
   identity();
@@ -54,7 +58,8 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
   }
 
    Matrix4& Matrix4::copy ( const Matrix4& m ) {
-    elements.set( m.elements );
+    std::copy(std::begin(m.elements), std::end(m.elements), std::begin(this->elements));
+//    elements.set( m.elements );
     return *this;
   }
 
@@ -64,7 +69,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
   }
 
    Matrix4& Matrix4::copyPosition( const Matrix4& m ) {
-    const auto& te = elements;
+    auto& te = elements;
     const auto& me = m.elements;
 
     te[12] = me[12];
@@ -78,7 +83,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     // @todo priv prop/reset
     auto v1 = Vector3();
 
-    const auto& te = elements;
+    auto& te = elements;
     const auto& me = m.elements;
 
     auto scaleX = 1 / v1.set( me[0], me[1], me[2] ).length();
@@ -102,14 +107,16 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
 
-    const auto& te = elements;
+    auto& te = elements;
 
-    auto x = euler.x, y = euler.y, z = euler.z;
+    auto x = euler.getX(), y = euler.getY(), z = euler.getZ();
     auto a = Math::cos( x ), b = Math::sin( x );
     auto c = Math::cos( y ), d = Math::sin( y );
     auto e = Math::cos( z ), f = Math::sin( z );
 
-    if ( euler.order == EulerRotationOrder::XYZ ) {
+    auto order = euler.getOrder();
+
+    if ( order == EulerRotationOrder::XYZ ) {
 
       auto ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -125,7 +132,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = be + af * d;
       te[10] = a * c;
 
-    } else if ( euler.order == EulerRotationOrder::YXZ ) {
+    } else if ( order == THREE::EulerRotationOrder::YXZ ) {
 
       auto ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -141,7 +148,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = df + ce * b;
       te[10] = a * c;
 
-    } else if ( euler.order == EulerRotationOrder::ZXY ) {
+    } else if ( order == EulerRotationOrder::ZXY ) {
 
       auto ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -157,7 +164,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = b;
       te[10] = a * c;
 
-    } else if ( euler.order == EulerRotationOrder::ZYX ) {
+    } else if ( order == EulerRotationOrder::ZYX ) {
 
       auto ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -173,7 +180,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = b * c;
       te[10] = a * c;
 
-    } else if ( euler.order == EulerRotationOrder::YZX ) {
+    } else if ( order == EulerRotationOrder::YZX ) {
 
       auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 
@@ -189,7 +196,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = ad * f + bc;
       te[10] = ac - bd * f;
 
-    } else if ( euler.order == EulerRotationOrder::XZY ) {
+    } else if ( order == EulerRotationOrder::XZY ) {
 
       auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 
@@ -226,9 +233,9 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     return makeRotationFromQuaternion( q );
   }
 
-   Matrix4& Matrix4::makeRotationFromQuaternion( const Quarternion& q ) {
+   Matrix4& Matrix4::makeRotationFromQuaternion( const Quaternion& q ) {
 
-    const auto& te = elements;
+    auto& te = elements;
 
     auto x = q.x, y = q.y, z = q.z, w = q.w;
     auto x2 = x + x, y2 = y + y, z2 = z + z;
@@ -269,7 +276,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     auto y = Vector3();
     auto z = Vector3();
 
-    const auto& te = elements;
+    auto& te = elements;
 
     z.subVectors( eye, target ).normalize();
 
@@ -294,14 +301,14 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
   }
 
    Matrix4& Matrix4::multiply( const Matrix4& m ) {
-    return multiplyMatrices( this, m );
+    return multiplyMatrices( *this, m );
   }
 
    Matrix4& Matrix4::multiplyMatrices( const Matrix4& a, const Matrix4& b ) {
 
     const auto& ae = a.elements;
     const auto& be = b.elements;
-    const auto& te = elements;
+    auto& te = elements;
 
     auto a11 = ae[0], a12 = ae[4], a13 = ae[8], a14 = ae[12];
     auto a21 = ae[1], a22 = ae[5], a23 = ae[9], a24 = ae[13];
@@ -336,7 +343,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     return *this;
   }
 
-   Matrix4& Matrix4::multiplyToArray( const Matrix4& a, const Matrix4& b, const Matrix4& r ) {
+   Matrix4& Matrix4::multiplyToArray( const Matrix4& a, const Matrix4& b, Matrix4& r ) {
 
     const auto& te = elements;
     // @todo check ref passing
@@ -352,7 +359,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::multiplyScalar( float s ) {
 
-    const auto& te = elements;
+    auto& te = elements;
 
     te[0] *= s; te[4] *= s; te[8] *= s; te[12] *= s;
     te[1] *= s; te[5] *= s; te[9] *= s; te[13] *= s;
@@ -362,17 +369,17 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     return *this;
   }
 
-   Vector3& Matrix4::multiplyVector3( const Vector3& vector ) {
+   Vector3& Matrix4::multiplyVector3( Vector3& vector ) const {
     //console.warn( 'DEPRECATED: Matrix4\'s .multiplyVector3() has been removed. Use vector.applyMatrix4( matrix ) or vector.applyProjection( matrix ) instead.' );
-    return vector.applyProjection( this );
+    return vector.applyProjection( *this );
   }
 
-   Vector4& Matrix4::multiplyVector4( const Vector4& vector ) {
+   Vector4& Matrix4::multiplyVector4( Vector4& vector ) const {
     //console.warn( 'DEPRECATED: Matrix4\'s .multiplyVector4() has been removed. Use vector.applyMatrix4( matrix ) instead.' );
-    return vector.applyMatrix4( this );
+    return vector.applyMatrix4( *this );
   }
 
-   std::vector<float>& Matrix4::multiplyVector3Array( const std::vector<float>& a) {
+   std::vector<float>& Matrix4::multiplyVector3Array( std::vector<float>& a) {
 
     //todo private
     auto v1 = Vector3();
@@ -383,7 +390,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       v1.y = a[ *it + 1 ];
       v1.z = a[ *it + 2 ];
 
-      v1.applyProjection( this );
+      v1.applyProjection( *this );
 
       a[ *it ]     = v1.x;
       a[ *it + 1 ] = v1.y;
@@ -395,13 +402,13 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Vector3& Matrix4::rotateAxis( Vector3& v ) const {
     //console.warn( 'DEPRECATED: Matrix4\'s .rotateAxis() has been removed. Use Vector3.transformDirection( matrix ) instead.' );
-    v.transformDirection( this );
+    v.transformDirection( *this );
     return v;
   }
 
    Vector3& Matrix4::crossVector( Vector3& vector ) const {
     //console.warn( 'DEPRECATED: Matrix4\'s .crossVector() has been removed. Use vector.applyMatrix4( matrix ) instead.' );
-    return vector.applyMatrix4( this );
+    return vector.applyMatrix4( *this );
   }
 
    float Matrix4::determinant() const {
@@ -456,8 +463,8 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::transpose() {
 
-    const auto& te = elements;
-    Matrix4 tmp = Matrix4();
+    auto& te = elements;
+    float tmp;
 
     tmp = te[1]; te[1] = te[4]; te[4] = tmp;
     tmp = te[2]; te[2] = te[8]; te[8] = tmp;
@@ -515,7 +522,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
   }
 
    Matrix4& Matrix4::setPosition( const Vector3& v ) {
-    const auto& te = elements;
+    auto& te = elements;
 
     te[12] = v.x;
     te[13] = v.y;
@@ -527,7 +534,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
    Matrix4& Matrix4::getInverse( const Matrix4& m, bool throwOnInvertible ) {
 
     // based on http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
-    const auto& te = elements;
+    auto& te = elements;
     const auto& me = m.elements;
 
     auto n11 = me[0], n12 = me[4], n13 = me[8], n14 = me[12];
@@ -577,7 +584,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::scale( const Vector3& v ) {
 
-    const auto& te = elements;
+    auto& te = elements;
     auto x = v.x, y = v.y, z = v.z;
 
     te[0] *= x; te[4] *= y; te[8] *= z;
@@ -674,13 +681,13 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
   }
 
    Matrix4& Matrix4::compose( const Vector3& position, const Quaternion& quaternion, const Vector3& scale ) {
-    makeRotationFromQuaternion( quaternion );
-    scale( scale );
-    setPosition( position );
+    this->makeRotationFromQuaternion( quaternion );
+    this->scale( scale );
+    this->setPosition( position );
     return *this;
   }
 
-   Matrix4& Matrix4::decompose( Vector3& position, const Quaternion& quaternion, Vector3& scale ) {
+   Matrix4& Matrix4::decompose( Vector3& position, Quaternion& quaternion, Vector3& scale ) {
 
     // @todo priv members
     auto vector = Vector3();
@@ -704,7 +711,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
     // scale the rotation part
 
-    matrix.elements.set( elements ); // at this point matrix is incomplete so we can't use .copy()
+    std::copy(std::begin(elements), std::end(elements), std::begin(matrix.elements));
 
     auto invSX = 1 / sx;
     auto invSY = 1 / sy;
@@ -733,7 +740,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::makeFrustum( float left, float right, float bottom, float top, float near, float far ) {
 
-    const auto& te = elements;
+    auto& te = elements;
     auto x = 2 * near / ( right - left );
     auto y = 2 * near / ( top - bottom );
 
@@ -752,7 +759,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::makePerspective( float fov, float aspect, float near, float far ) {
 
-    auto ymax = near * Math::tan( THREE.Math::degToRad( fov * 0.5 ) );
+    auto ymax = near * Math::tan( Math::degToRad( fov * 0.5 ) );
     auto ymin = - ymax;
     auto xmin = ymin * aspect;
     auto xmax = ymax * aspect;
@@ -762,7 +769,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::makeOrthographic( float left, float right, float top, float bottom, float near, float far ) {
 
-    const auto& te = elements;
+    auto& te = elements;
     auto w = right - left;
     auto h = top - bottom;
     auto p = far - near;

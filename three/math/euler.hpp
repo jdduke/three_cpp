@@ -1,22 +1,16 @@
 #ifndef THREE_EULER_HPP
 #define THREE_EULER_HPP
 
-#include <three/common.hpp>
-
-#include <three/utils/macros.hpp>
-#include <three/math/math.hpp>
-
-#include <three/math/quaternion.hpp>
-
 namespace three {
-
+  class Quaternion;
+    
 	class Euler {
 	private:
 
     float _x, _y, _z;
 
     THREE::EulerRotationOrder _order;
-    Quaternion* _quaternion;
+    Quaternion _quaternion;
 
 
     void _updateQuaternion();
@@ -29,17 +23,11 @@ namespace three {
 
     const THREE::EulerRotationOrder DefaultOrder = THREE::EulerRotationOrder::XYZ;
 
-    Euler() : _x(0.f), _y(0.f), _z(0.f), _order(THREE::EulerRotationOrder::XYZ) {
-      _quaternion = new Quaternion();
-    };
+    Euler() : _x(0.f), _y(0.f), _z(0.f), _order(THREE::EulerRotationOrder::XYZ) {};
 
-    Euler(float xIn, float yIn, float zIn) : _x(xIn), _y(yIn), _z(zIn), _order(THREE::EulerRotationOrder::XYZ) {
-      _quaternion = new Quaternion();
-    };
+    Euler(float xIn, float yIn, float zIn) : _x(xIn), _y(yIn), _z(zIn), _order(THREE::EulerRotationOrder::XYZ) { };
 
-    Euler(float xIn, float yIn, float zIn, THREE::EulerRotationOrder orderIn) : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {
-      _quaternion = new Quaternion();
-    };
+    Euler(float xIn, float yIn, float zIn, THREE::EulerRotationOrder orderIn) : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
 
   THREE_DECL inline float getX() const;
   THREE_DECL inline Quaternion& setX(const float& value);

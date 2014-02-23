@@ -8,7 +8,7 @@
 	typedef t property__tmp_type_##n
 #define WRITEONLY_PROPERTY(t,n) __declspec( property (put = property__set_##n) ) t n;\
 	typedef t property__tmp_type_##n
-#define GET(n) inline property__tmp_type_##n property__get_##n() 
-#define SET(n) inline void property__set_##n(const property__tmp_type_##n& value)
+#define GET(n) property__tmp_type_##n property__get_##n() 
+#define SET(n) property__set_##n(const property__tmp_type_##n& value)
 
 #endif //THREE_MACROS_UTILS_HPP

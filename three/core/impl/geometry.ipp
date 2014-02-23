@@ -23,7 +23,7 @@ struct PointHash {
 
 /////////////////////////////////////////////////////////////////////////
 
-void Geometry::applyMatrix( const Matrix4& matrix ) {
+void Geometry::applyMatrix( Matrix4& matrix ) {
 
   Matrix4 matrixRotation;
   matrixRotation.extractRotation( matrix );

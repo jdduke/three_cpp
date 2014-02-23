@@ -120,7 +120,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  virtual THREE_DECL void applyMatrix( const Matrix4& matrix );
+  virtual THREE_DECL void applyMatrix( Matrix4& matrix );
 
   virtual THREE_DECL void computeCentroids();
   virtual THREE_DECL void computeFaceNormals();
