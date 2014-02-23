@@ -32,10 +32,10 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   void lookAt( const Vector3& vector ) override {
-    matrix.lookAt( position, vector, up );
-    if ( rotationAutoUpdate ) {
-      rotation = matrix.getEulerRotation( eulerOrder );
-    }
+    //@todo priv mmeber
+    auto m1 = Matrix4();
+    m1.lookAt( position, vector, up );
+    quaternion.setFromRotationMatrix( m1 );
   }
 
   /////////////////////////////////////////////////////////////////////////

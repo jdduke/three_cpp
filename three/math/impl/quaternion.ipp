@@ -1,321 +1,360 @@
 #ifndef THREE_QUATERNION_IPP
 #define THREE_QUATERNION_IPP
 
+
+#include <three/common.hpp>
+
+#include <three/utils/macros.hpp>
+#include <three/math/math.hpp>
 #include <three/math/quaternion.hpp>
 
-#include <three/constants.hpp>
-#include <three/math/math.hpp>
-#include <three/math/euler.hpp>
 
 namespace three {
 
-Vector3 Quaternion::getEuler( THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) const {
-  // assumed to be normalized
-
-  // clamp, to handle numerical problems
-  auto clamp = []( float x ) {
-    return Math::min( Math::max( x, -1.f ), 1.f );
-  };
-
-  auto sqx = x * x;
-  auto sqy = y * y;
-  auto sqz = z * z;
-  auto sqw = w * w;
-
-  Vector3 euler;
-
-  if ( order == THREE::XYZ ) {
-    euler.x = Math::atan2( 2.f * ( x * w - y * z ), ( sqw - sqx - sqy + sqz ) );
-    euler.y = Math::asin( clamp( 2.f * ( x * z + y * w ) ) );
-    euler.z = Math::atan2( 2.f * ( z * w - x * y ), ( sqw + sqx - sqy - sqz ) );
-  } else if ( order == THREE::YXZ ) {
-    euler.x = Math::asin( clamp( 2.f * ( x * w - y * z ) ) );
-    euler.y = Math::atan2( 2.f * ( x * z + y * w ), ( sqw - sqx - sqy + sqz ) );
-    euler.z = Math::atan2( 2.f * ( x * y + z * w ), ( sqw - sqx + sqy - sqz ) );
-  } else if ( order == THREE::ZXY ) {
-    euler.x = Math::asin( clamp( 2.f * ( x * w + y * z ) ) );
-    euler.y = Math::atan2( 2.f * ( y * w - z * x ), ( sqw - sqx - sqy + sqz ) );
-    euler.z = Math::atan2( 2.f * ( z * w - x * y ), ( sqw - sqx + sqy - sqz ) );
-  } else if ( order == THREE::ZYX ) {
-    euler.x = Math::atan2( 2.f * ( x * w + z * y ), ( sqw - sqx - sqy + sqz ) );
-    euler.y = Math::asin( clamp( 2.f * ( y * w - x * z ) ) );
-    euler.z = Math::atan2( 2.f * ( x * y + z * w ), ( sqw + sqx - sqy - sqz ) );
-  } else if ( order == THREE::YZX ) {
-    euler.x = Math::atan2( 2.f * ( x * w - z * y ), ( sqw - sqx + sqy - sqz ) );
-    euler.y = Math::atan2( 2.f * ( y * w - x * z ), ( sqw + sqx - sqy - sqz ) );
-    euler.z = Math::asin( clamp( 2.f * ( x * y + z * w ) ) );
-  } else if ( order == THREE::XZY ) {
-    euler.x = Math::atan2( 2.f * ( x * w + y * z ), ( sqw - sqx + sqy - sqz ) );
-    euler.y = Math::atan2( 2.f * ( x * z + y * w ), ( sqw + sqx - sqy - sqz ) );
-    euler.z = Math::asin( clamp( 2.f * ( z * w - x * y ) ) );
+  void Quaternion::_updateEuler() {
+    _euler.setFromQuaternion( this, false );
   }
 
-  return euler;
-}
-
-Quaternion& Quaternion::setFromEuler( const Vector3& v, THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) {
-
-  // http://www.mathworks.com/matlabcentral/fileexchange/
-  //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
-  //  content/SpinCalc.m
-
-  auto c1 = Math::cos( v.x / 2 );
-  auto c2 = Math::cos( v.y / 2 );
-  auto c3 = Math::cos( v.z / 2 );
-  auto s1 = Math::sin( v.x / 2 );
-  auto s2 = Math::sin( v.y / 2 );
-  auto s3 = Math::sin( v.z / 2 );
-
-  if ( order == THREE::XYZ ) {
-
-    x = s1 * c2 * c3 + c1 * s2 * s3;
-    y = c1 * s2 * c3 - s1 * c2 * s3;
-    z = c1 * c2 * s3 + s1 * s2 * c3;
-    w = c1 * c2 * c3 - s1 * s2 * s3;
-
-  } else if ( order == THREE::YXZ ) {
-
-    x = s1 * c2 * c3 + c1 * s2 * s3;
-    y = c1 * s2 * c3 - s1 * c2 * s3;
-    z = c1 * c2 * s3 - s1 * s2 * c3;
-    w = c1 * c2 * c3 + s1 * s2 * s3;
-
-  } else if ( order == THREE::ZXY ) {
-
-    x = s1 * c2 * c3 - c1 * s2 * s3;
-    y = c1 * s2 * c3 + s1 * c2 * s3;
-    z = c1 * c2 * s3 + s1 * s2 * c3;
-    w = c1 * c2 * c3 - s1 * s2 * s3;
-
-  } else if ( order == THREE::ZYX ) {
-
-    x = s1 * c2 * c3 - c1 * s2 * s3;
-    y = c1 * s2 * c3 + s1 * c2 * s3;
-    z = c1 * c2 * s3 - s1 * s2 * c3;
-    w = c1 * c2 * c3 + s1 * s2 * s3;
-
-  } else if ( order == THREE::YZX ) {
-
-    x = s1 * c2 * c3 + c1 * s2 * s3;
-    y = c1 * s2 * c3 + s1 * c2 * s3;
-    z = c1 * c2 * s3 - s1 * s2 * c3;
-    w = c1 * c2 * c3 - s1 * s2 * s3;
-
-  } else if ( order == THREE::XZY ) {
-
-    x = s1 * c2 * c3 - c1 * s2 * s3;
-    y = c1 * s2 * c3 - s1 * c2 * s3;
-    z = c1 * c2 * s3 + s1 * s2 * c3;
-    w = c1 * c2 * c3 + s1 * s2 * s3;
-
+  inline float Quaternion::getX() const {
+    return _x;
   }
 
-  return *this;
-}
-
-Quaternion& Quaternion::setFromEuler( const Euler& v, THREE::EulerRotationOrder order /*= THREE::XYZ*/ ) {
-
-  // http://www.mathworks.com/matlabcentral/fileexchange/
-  //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
-  //  content/SpinCalc.m
-
-  auto c1 = Math::cos( v.x / 2 );
-  auto c2 = Math::cos( v.y / 2 );
-  auto c3 = Math::cos( v.z / 2 );
-  auto s1 = Math::sin( v.x / 2 );
-  auto s2 = Math::sin( v.y / 2 );
-  auto s3 = Math::sin( v.z / 2 );
-
-  if ( order == THREE::XYZ ) {
-
-    x = s1 * c2 * c3 + c1 * s2 * s3;
-    y = c1 * s2 * c3 - s1 * c2 * s3;
-    z = c1 * c2 * s3 + s1 * s2 * c3;
-    w = c1 * c2 * c3 - s1 * s2 * s3;
-
-  } else if ( order == THREE::YXZ ) {
-
-    x = s1 * c2 * c3 + c1 * s2 * s3;
-    y = c1 * s2 * c3 - s1 * c2 * s3;
-    z = c1 * c2 * s3 - s1 * s2 * c3;
-    w = c1 * c2 * c3 + s1 * s2 * s3;
-
-  } else if ( order == THREE::ZXY ) {
-
-    x = s1 * c2 * c3 - c1 * s2 * s3;
-    y = c1 * s2 * c3 + s1 * c2 * s3;
-    z = c1 * c2 * s3 + s1 * s2 * c3;
-    w = c1 * c2 * c3 - s1 * s2 * s3;
-
-  } else if ( order == THREE::ZYX ) {
-
-    x = s1 * c2 * c3 - c1 * s2 * s3;
-    y = c1 * s2 * c3 + s1 * c2 * s3;
-    z = c1 * c2 * s3 - s1 * s2 * c3;
-    w = c1 * c2 * c3 + s1 * s2 * s3;
-
-  } else if ( order == THREE::YZX ) {
-
-    x = s1 * c2 * c3 + c1 * s2 * s3;
-    y = c1 * s2 * c3 + s1 * c2 * s3;
-    z = c1 * c2 * s3 - s1 * s2 * c3;
-    w = c1 * c2 * c3 - s1 * s2 * s3;
-
-  } else if ( order == THREE::XZY ) {
-
-    x = s1 * c2 * c3 - c1 * s2 * s3;
-    y = c1 * s2 * c3 - s1 * c2 * s3;
-    z = c1 * c2 * s3 + s1 * s2 * c3;
-    w = c1 * c2 * c3 + s1 * s2 * s3;
-
-  }
-
-  return *this;
-}
-
-Quaternion& Quaternion::setFromAxisAngle( const Vector3& axis, float angle ) {
-  // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
-  // axis have to be normalized
-
-  float halfAngle = angle / 2.f;
-  float s = Math::sin( halfAngle );
-
-  x = axis.x * s;
-  y = axis.y * s;
-  z = axis.z * s;
-  w = Math::cos( halfAngle );
-
-  return *this;
-}
-
-Quaternion& Quaternion::calculateW() {
-  w = - Math::sqrt( Math::abs( 1.f - x * x - y * y - z * z ) );
-  return *this;
-}
-
-Quaternion& Quaternion::inverse() {
-  x *= -1.f;
-  y *= -1.f;
-  z *= -1.f;
-  return *this;
-}
-
-float Quaternion::length() const {
-  return Math::sqrt( lengthSq() );
-}
-
-Quaternion& Quaternion::normalize() {
-  return divideScalar( length() );
-}
-
-Quaternion& Quaternion::multiply( const Quaternion& a, const Quaternion& b ) {
-  // from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
-  float qax = a.x, qay = a.y, qaz = a.z, qaw = a.w,
-        qbx = b.x, qby = b.y, qbz = b.z, qbw = b.w;
-
-  x =  qax * qbw + qay * qbz - qaz * qby + qaw * qbx;
-  y = -qax * qbz + qay * qbw + qaz * qbx + qaw * qby;
-  z =  qax * qby - qay * qbx + qaz * qbw + qaw * qbz;
-  w = -qax * qbx - qay * qby - qaz * qbz + qaw * qbw;
-
-  return *this;
-}
-
-Quaternion& Quaternion::multiplySelf( const Quaternion& b ) {
-  float qax = x,   qay = y,   qaz = z,   qaw = w,
-        qbx = b.x, qby = b.y, qbz = b.z, qbw = b.w;
-
-  x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
-  y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
-  z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
-  w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
-
-  return *this;
-}
-
-Vector3 Quaternion::multiplyVector3( const Vector3& v ) {
-  float qx = x, qy = y, qz = z, qw = w;
-
-  // calculate quat * vector
-  float ix =  qw * v.x + qy * v.z - qz * v.y,
-        iy =  qw * v.y + qz * v.x - qx * v.z,
-        iz =  qw * v.z + qx * v.y - qy * v.x,
-        iw = -qx * v.x - qy * v.y - qz * v.z;
-
-  // calculate result * inverse quat
-  Vector3 dest;
-  dest.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-  dest.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-  dest.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-
-  return dest;
-}
-
-Quaternion& Quaternion::slerpSelf( const Quaternion& qb, float t ) {
-
-  // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
-  auto cosHalfTheta = w * qb.w + x * qb.x + y * qb.y + z * qb.z;
-
-  if ( cosHalfTheta < 0 ) {
-    w = -qb.w;
-    x = -qb.x;
-    y = -qb.y;
-    z = -qb.z;
-
-    cosHalfTheta = -cosHalfTheta;
-  } else {
-    copy( qb );
-  }
-
-  if ( cosHalfTheta >= 1.0f ) {
-    w = w;
-    x = x;
-    y = y;
-    z = z;
+  inline Quaternion& Quaternion::setX(const float& value) {
+    _x = value;
+    _updateEuler();
     return *this;
   }
 
-  auto halfTheta    = Math::acos( cosHalfTheta );
-  auto sinHalfTheta = Math::sqrt( 1.0f - cosHalfTheta * cosHalfTheta );
+  inline float Quaternion::getY() const {
+    return _y;
+  }
 
-  if ( Math::abs( sinHalfTheta ) < 0.001f ) {
-    w = 0.5f * ( w + w );
-    x = 0.5f * ( x + x );
-    y = 0.5f * ( y + y );
-    z = 0.5f * ( z + z );
+  inline Quaternion& Quaternion::setY(const float& value) {
+    _y = value;
+    _updateEuler();
     return *this;
   }
 
-  auto ratioA = Math::sin( ( 1.f - t ) * halfTheta ) / sinHalfTheta;
-  auto ratioB = Math::sin( t * halfTheta ) / sinHalfTheta;
-
-  w = ( w * ratioA + w * ratioB );
-  x = ( x * ratioA + x * ratioB );
-  y = ( y * ratioA + y * ratioB );
-  z = ( z * ratioA + z * ratioB );
-
-  return *this;
-}
-
-float Quaternion::lengthSq() const {
-  return x * x + y * y + z * z + w * w;
-}
-
-Quaternion& Quaternion::multiplyScalar( float s ) {
-  x *= s;
-  y *= s;
-  z *= s;
-  w *= s;
-  return *this;
-}
-
-Quaternion& Quaternion::divideScalar( float s ) {
-  if ( s != 0.f ) {
-    return multiplyScalar( 1.f / s );
-  } else {
-    return set( 0, 0, 0, 0 );
+  inline float Quaternion::getZ() const {
+    return _z;
   }
-}
+
+  inline Quaternion& Quaternion::setZ(const float& value) {
+    _z = value;
+    _updateEuler();
+    return *this;
+  }
+
+  inline float Quaternion::getW() const {
+    return _x;
+  }
+
+  inline Quaternion& Quaternion::setW(const float& value) {
+    _w = value;
+    _updateEuler();
+    return *this;
+  }
+
+Quaternion& Quaternion::set( float x, float y, float z, float w ) {
+    _x = x;
+    _y = y;
+    _z = z;
+    _w = w;
+    _updateEuler();
+    return *this;
+  }
+
+  Quaternion& Quaternion::copy( const Quaternion& quaternion ) {
+    _x = quaternion._x;
+    _y = quaternion._y;
+    _z = quaternion._z;
+    _w = quaternion._w;
+    _updateEuler();
+    return *this;
+  }
+
+  Quaternion& Quaternion::setFromEuler( const Euler& euler, bool update = false ) {
+
+    // http://www.mathworks.com/matlabcentral/fileexchange/
+    //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
+    //  content/SpinCalc.m
+
+    auto c1 = Math::cos( euler.x / 2 );
+    auto c2 = Math::cos( euler.y / 2 );
+    auto c3 = Math::cos( euler.z / 2 );
+    auto s1 = Math::sin( euler.x / 2 );
+    auto s2 = Math::sin( euler.y / 2 );
+    auto s3 = Math::sin( euler.z / 2 );
+
+    if ( euler.order == EulerRotationOrder::XYZ ) {
+
+      _x = s1 * c2 * c3 + c1 * s2 * s3;
+      _y = c1 * s2 * c3 - s1 * c2 * s3;
+      _z = c1 * c2 * s3 + s1 * s2 * c3;
+      _w = c1 * c2 * c3 - s1 * s2 * s3;
+
+    } else if ( euler.order == EulerRotationOrder::YXZ ) {
+
+      _x = s1 * c2 * c3 + c1 * s2 * s3;
+      _y = c1 * s2 * c3 - s1 * c2 * s3;
+      _z = c1 * c2 * s3 - s1 * s2 * c3;
+      _w = c1 * c2 * c3 + s1 * s2 * s3;
+
+    } else if ( euler.order == EulerRotationOrder::ZXY ) {
+
+      _x = s1 * c2 * c3 - c1 * s2 * s3;
+      _y = c1 * s2 * c3 + s1 * c2 * s3;
+      _z = c1 * c2 * s3 + s1 * s2 * c3;
+      _w = c1 * c2 * c3 - s1 * s2 * s3;
+
+    } else if ( euler.order == EulerRotationOrder::ZYX ) {
+
+      _x = s1 * c2 * c3 - c1 * s2 * s3;
+      _y = c1 * s2 * c3 + s1 * c2 * s3;
+      _z = c1 * c2 * s3 - s1 * s2 * c3;
+      _w = c1 * c2 * c3 + s1 * s2 * s3;
+
+    } else if ( euler.order == EulerRotationOrder::YZX ) {
+
+      _x = s1 * c2 * c3 + c1 * s2 * s3;
+      _y = c1 * s2 * c3 + s1 * c2 * s3;
+      _z = c1 * c2 * s3 - s1 * s2 * c3;
+      _w = c1 * c2 * c3 - s1 * s2 * s3;
+
+    } else if ( euler.order == EulerRotationOrder::XZY ) {
+
+      _x = s1 * c2 * c3 - c1 * s2 * s3;
+      _y = c1 * s2 * c3 - s1 * c2 * s3;
+      _z = c1 * c2 * s3 + s1 * s2 * c3;
+      _w = c1 * c2 * c3 + s1 * s2 * s3;
+
+    }
+
+    if ( update ) _updateEuler();
+
+    return *this;
+
+  }
+
+  Quaternion& Quaternion::setFromAxisAngle( const Vector3& axis, float angle ) {
+
+    // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
+    // axis have to be normalized
+
+    auto halfAngle = angle / 2.f, s = Math::sin( halfAngle );
+
+    _x = axis.x * s;
+    _y = axis.y * s;
+    _z = axis.z * s;
+    _w = Math::cos( halfAngle );
+
+    _updateEuler();
+
+    return *this;
+
+  }
+
+  Quaternion& Quaternion::setFromRotationMatrix( const Matrix4& m ) {
+
+    // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+
+    // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+    const auto& te = m.elements
+
+      auto m11 = te[0], m12 = te[4], m13 = te[8],
+      m21 = te[1], m22 = te[5], m23 = te[9],
+      m31 = te[2], m32 = te[6], m33 = te[10];
+
+      auto trace = m11 + m22 + m33;
+      float s;
+
+    if ( trace > 0 ) {
+
+      s = 0.5 / Math::sqrt( trace + 1.0 );
+
+      _w = 0.25 / s;
+      _x = ( m32 - m23 ) * s;
+      _y = ( m13 - m31 ) * s;
+      _z = ( m21 - m12 ) * s;
+
+    } else if ( m11 > m22 && m11 > m33 ) {
+
+      s = 2.0 * Math::sqrt( 1.0 + m11 - m22 - m33 );
+
+      _w = (m32 - m23 ) / s;
+      _x = 0.25 * s;
+      _y = (m12 + m21 ) / s;
+      _z = (m13 + m31 ) / s;
+
+    } else if ( m22 > m33 ) {
+
+      s = 2.0 * Math::sqrt( 1.0 + m22 - m11 - m33 );
+
+      _w = (m13 - m31 ) / s;
+      _x = (m12 + m21 ) / s;
+      _y = 0.25 * s;
+      _z = (m23 + m32 ) / s;
+
+    } else {
+
+      s = 2.0 * Math::sqrt( 1.0 + m33 - m11 - m22 );
+
+      _w = ( m21 - m12 ) / s;
+      _x = ( m13 + m31 ) / s;
+      _y = ( m23 + m32 ) / s;
+      _z = 0.25 * s;
+
+    }
+
+    _updateEuler();
+
+    return *this;
+
+  }
+
+  Quaternion& Quaternion::inverse() {
+    conjugate().normalize();
+    return *this;
+  }
+
+  Quaternion& Quaternion::conjugate() {
+    _x *= -1;
+    _y *= -1;
+    _z *= -1;
+    _updateEuler();
+    return *this;
+  }
+
+  Quaternion& Quaternion::lengthSq() {
+    return _x * _x + _y * _y + _z * _z + _w * _w;
+  }
+
+  Quaternion& Quaternion::length() {
+    return Math::sqrt( _x * _x + _y * _y + _z * _z + _w * _w );
+  }
+
+  Quaternion& Quaternion::normalize() {
+
+    auto l = length();
+
+    if ( l === 0 ) {
+
+      _x = 0;
+      _y = 0;
+      _z = 0;
+      _w = 1;
+
+    } else {
+
+      l = 1 / l;
+
+      _x = _x * l;
+      _y = _y * l;
+      _z = _z * l;
+      _w = _w * l;
+
+    }
+
+    return *this;
+  }
+
+  Quaternion& Quaternion::multiply( const Quaternion& q ) {
+    return multiplyQuaternions( this, q );
+  }
+
+  Quaternion& Quaternion::multiplyQuaternions( const Quaternion& a, const Quaternion& b ) {
+
+    // from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
+
+    auto qax = a.x, qay = a.y, qaz = a.z, qaw = a.w;
+    auto qbx = b.x, qby = b.y, qbz = b.z, qbw = b.w;
+
+    _x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
+    _y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
+    _z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
+    _w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+
+    _updateEuler();
+
+    return *this;
+
+  }
+
+  Quaternion& Quaternion::multiplyVector3( Vector3& vector ) const {
+    //console.warn( 'DEPRECATED: Quaternion\'s .multiplyVector3() has been removed. Use is now vector.applyQuaternion( quaternion ) instead.' );
+    return vector.applyQuaternion( this );
+  }
+
+  Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
+
+    auto x = _x, y = _y, z = _z, w = _w;
+
+    // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
+
+    auto cosHalfTheta = w * qb.w + x * qb.x + y * qb.y + z * qb.z;
+
+    if ( cosHalfTheta < 0 ) {
+
+      _w = -qb.w;
+      _x = -qb.x;
+      _y = -qb.y;
+      _z = -qb.z;
+
+      cosHalfTheta = -cosHalfTheta;
+
+    } else {
+
+      copy( qb );
+
+    }
+
+    if ( cosHalfTheta >= 1.0 ) {
+
+      _w = w;
+      _x = x;
+      _y = y;
+      _z = z;
+
+      return *this;
+
+    }
+
+    auto halfTheta = Math::acos( cosHalfTheta );
+    auto sinHalfTheta = Math::sqrt( 1.0 - cosHalfTheta * cosHalfTheta );
+
+    if ( Math::abs( sinHalfTheta ) < 0.001 ) {
+
+      _w = 0.5 * ( w + _w );
+      _x = 0.5 * ( x + _x );
+      _y = 0.5 * ( y + _y );
+      _z = 0.5 * ( z + _z );
+
+      return *this;
+
+    }
+
+    auto ratioA = Math::sin( ( 1 - t ) * halfTheta ) / sinHalfTheta,
+    ratioB = Math::sin( t * halfTheta ) / sinHalfTheta;
+
+    _w = ( w * ratioA + _w * ratioB );
+    _x = ( x * ratioA + _x * ratioB );
+    _y = ( y * ratioA + _y * ratioB );
+    _z = ( z * ratioA + _z * ratioB );
+
+    _updateEuler();
+
+    return *this;
+
+  }
+
+  bool Quaternion::equals( const Quaternion& quaternion ) const {
+    return ( quaternion.x == _x ) && ( quaternion.y == _y ) && ( quaternion.z == _z ) && ( quaternion.w == _w );
+  }
+
+  Quaternion Quaternion::clone() {
+    return *this;
+  }
 
 } // namespace three
 

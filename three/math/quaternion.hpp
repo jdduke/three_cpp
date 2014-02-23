@@ -2,61 +2,71 @@
 #define THREE_QUATERNION_HPP
 
 #include <three/common.hpp>
+#include <three/utils/macros.hpp>
+#include <three/math/euler.hpp>
 
-#include <three/constants.hpp>
 
 namespace three {    
 class Quaternion {
-public:
-
+private:
   union {
-    struct { float x, y, z, w; };
+    struct { float _x, _y, _z, _w; };
     float xyzw[4];
   };
 
-  Quaternion() : x( 0 ), y( 0 ), z( 0 ), w( 1.f ) { }
-  Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) : x( xIn ), y( yIn ), z( zIn ), w( wIn ) { }
-  Quaternion( const Quaternion& v ) : x( v.x ), y( v.y ), z( v.z ), w( v.w ) { }
-  Quaternion& operator= ( const Quaternion& v ) { return copy( v ); }
+  // todo lazy init?
+  Euler _euler;
 
-  Quaternion& set( float xIn, float yIn, float zIn, float wIn ) {
-    x = xIn;
-    y = yIn;
-    z = zIn;
-    w = wIn;
-    return *this;
-  }
+  void _updateEuler();
 
-  Quaternion& copy( const Quaternion& v ) {
-    x = v.x;
-    y = v.y;
-    z = v.z;
-    w = v.w;
-    return *this;
-  }
+public:
 
-  THREE_DECL Vector3 getEuler( THREE::EulerRotationOrder order = THREE::XYZ ) const;
-  THREE_DECL Quaternion& setFromEuler( const Vector3& v, THREE::EulerRotationOrder order = THREE::XYZ );
-  THREE_DECL Quaternion& setFromEuler( const Euler& v, THREE::EulerRotationOrder order = THREE::XYZ );
+  Quaternion() : _x( 0 ), _y( 0 ), _z( 0 ), _w( 1.f ) { }
+  Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) { }
+  Quaternion( const Quaternion& v ) : _x( v.getX() ), _y( v.getY() ), _z( v.getZ() ), _w( v.getW() ) { }
+  Quaternion& operator= ( const Quaternion& q ) { return copy( q ); }
+
+  THREE_DECL inline float getX() const;
+  THREE_DECL inline Quaternion& setX(const float& value);
+  THREE_DECL inline float getY() const;
+  THREE_DECL inline Quaternion& setY(const float& value);
+  THREE_DECL inline float getZ() const;
+  THREE_DECL inline Quaternion& setZ(const float& value);
+  THREE_DECL inline float getW() const;
+
+  THREE_DECL Quaternion& setW(const float& value);
+
+  THREE_DECL Quaternion& set( float x, float y, float z, float w );
+
+  THREE_DECL Quaternion& copy( const Quaternion& quaternion );
+
+  THREE_DECL Quaternion& setFromEuler( const Euler& euler, bool update = false );
+
   THREE_DECL Quaternion& setFromAxisAngle( const Vector3& axis, float angle );
-  THREE_DECL Quaternion& calculateW();
+
+  THREE_DECL Quaternion& setFromRotationMatrix( const Matrix4& m );
+
   THREE_DECL Quaternion& inverse();
-  THREE_DECL float length() const;
+
+  THREE_DECL Quaternion& conjugate();
+
+  THREE_DECL Quaternion& lengthSq();
+
+  THREE_DECL Quaternion& length();
+
   THREE_DECL Quaternion& normalize();
-  THREE_DECL Quaternion& multiply( const Quaternion& a, const Quaternion& b );
-  THREE_DECL Quaternion& multiplySelf( const Quaternion& b );
-  THREE_DECL Vector3 multiplyVector3( const Vector3& v );
-  THREE_DECL Quaternion& slerpSelf( const Quaternion& qb, float t );
 
-  Quaternion clone() {
-    return *this;
-  }
+  THREE_DECL Quaternion& multiply( const Quaternion& q );
 
-private:
+  THREE_DECL Quaternion& multiplyQuaternions( const Quaternion& a, const Quaternion& b );
 
-  THREE_DECL float lengthSq() const;
-  THREE_DECL Quaternion& multiplyScalar( float s );
-  THREE_DECL Quaternion& divideScalar( float s );
+  THREE_DECL Quaternion& multiplyVector3( Vector3& vector ) const;
+
+  THREE_DECL Quaternion& slerp( const Quaternion& qb, float t );
+
+  THREE_DECL Quaternion& equals( const Quaternion& quaternion ) const;
+
+  THREE_DECL Quaternion clone();
 
 };
 

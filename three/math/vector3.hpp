@@ -142,10 +142,10 @@ namespace three {
 
   Vector3& applyQuaternion( const Quaternion& q ) {
 
-    auto qx = q.x;
-    auto qy = q.y;
-    auto qz = q.z;
-    auto qw = q.w;
+    auto qx = q.getX();
+    auto qy = q.getY();
+    auto qz = q.getZ();
+    auto qw = q.getW();
 
     // calculate quat * vector
 

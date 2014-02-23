@@ -16,6 +16,7 @@ class Mesh;
 class Box2;
 class Box3;
 class Color;
+class Quaternion;
 class Euler;
 class Face;
 class Frustum;
@@ -29,7 +30,6 @@ class Sphere;
 
 class Matrix3;
 class Matrix4;
-class Quaternion;
 class Ray;
 
 class Visitor;
