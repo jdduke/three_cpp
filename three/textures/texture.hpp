@@ -1,5 +1,5 @@
-#ifndef THREE_TEXTURE_HPP
-#define THREE_TEXTURE_HPP
+#ifndef enums_TEXTURE_HPP
+#define enums_TEXTURE_HPP
 
 #include <three/common.hpp>
 #include <three/constants.hpp>
@@ -25,13 +25,13 @@ struct Image {
 
 struct TextureDesc {
   explicit TextureDesc( Image image,
-                        THREE::PixelFormat format = THREE::RGBAFormat,
-                        THREE::Mapping mapping    = THREE::UVMapping,
-                        THREE::Wrapping wrapS     = THREE::ClampToEdgeWrapping,
-                        THREE::Wrapping wrapT     = THREE::ClampToEdgeWrapping,
-                        THREE::Filter magFilter   = THREE::LinearFilter,
-                        THREE::Filter minFilter   = THREE::LinearMipMapLinearFilter,
-                        THREE::DataType dataType  = THREE::UnsignedByteType,
+                        enums::PixelFormat format = enums::RGBAFormat,
+                        enums::Mapping mapping    = enums::UVMapping,
+                        enums::Wrapping wrapS     = enums::ClampToEdgeWrapping,
+                        enums::Wrapping wrapT     = enums::ClampToEdgeWrapping,
+                        enums::Filter magFilter   = enums::LinearFilter,
+                        enums::Filter minFilter   = enums::LinearMipMapLinearFilter,
+                        enums::DataType dataType  = enums::UnsignedByteType,
                         float anisotropy          = 1 )
     : image( std::move( image ) ),
       mapping( mapping ),
@@ -44,11 +44,11 @@ struct TextureDesc {
       anisotropy( anisotropy ) { }
 
   Image image;
-  THREE::Mapping mapping;
-  THREE::Wrapping wrapS, wrapT;
-  THREE::Filter magFilter, minFilter;
-  THREE::PixelFormat format;
-  THREE::DataType dataType;
+  enums::Mapping mapping;
+  enums::Wrapping wrapS, wrapT;
+  enums::Filter magFilter, minFilter;
+  enums::PixelFormat format;
+  enums::DataType dataType;
   float anisotropy;
 };
 
@@ -59,7 +59,7 @@ public:
 
   static Ptr create( const TextureDesc& desc ) { return three::make_shared<Texture>( desc ); }
 
-  virtual THREE::TextureType type() const { return THREE::Texture; }
+  virtual enums::TextureType type() const { return enums::Texture; }
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -67,15 +67,15 @@ public:
 
   std::vector<Image> image;
 
-  THREE::Mapping mapping;
+  enums::Mapping mapping;
 
-  THREE::Wrapping wrapS, wrapT;
+  enums::Wrapping wrapS, wrapT;
 
-  THREE::Filter magFilter, minFilter;
+  enums::Filter magFilter, minFilter;
 
-  THREE::PixelFormat format;
+  enums::PixelFormat format;
 
-  THREE::DataType dataType;
+  enums::DataType dataType;
 
   float anisotropy;
 
@@ -153,4 +153,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_TEXTURE_HPP
+#endif // enums_TEXTURE_HPP

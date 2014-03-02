@@ -54,7 +54,7 @@ public:
 
   THREE_DECL Vector3::Ptr intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, const Vector3& optionalTarget );
 
-  THREE_DECL Ray& applyMatrix4( const Matrxi4& matrix4 );
+  THREE_DECL Ray& applyMatrix4( const Matrix4& matrix4 );
 
   THREE_DECL bool equals( const Ray& ray ) const;
 

@@ -16,7 +16,7 @@ public:
 
   static Ptr create( const Geometry::Ptr& geometry,
                      const Material::Ptr& material,
-                     THREE::LineType lineType = THREE::LineStrip ) {
+                     enums::LineType lineType = enums::LineStrip ) {
     if ( material ) {
       return three::make_shared<Line>( geometry, material, lineType );
     } else {
@@ -30,11 +30,11 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE::LineType lineType;
+  enums::LineType lineType;
 
 protected:
 
-  Line( const Geometry::Ptr& geometry, const Material::Ptr& material, THREE::LineType lineType )
+  Line( const Geometry::Ptr& geometry, const Material::Ptr& material, enums::LineType lineType )
     : Object3D( material, geometry ), lineType( lineType ) {
 
     if ( geometry ) {

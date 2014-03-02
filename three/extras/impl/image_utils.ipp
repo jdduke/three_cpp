@@ -127,17 +127,17 @@ inline DDS parseDDS( const std::vector<unsigned char>& buffer, bool loadMipmaps 
 
   case FOURCC_DXT1:
     blockBytes = 8;
-    dds.format = THREE::RGB_S3TC_DXT1_Format;
+    dds.format = enums::RGB_S3TC_DXT1_Format;
     break;
 
   case FOURCC_DXT3:
     blockBytes = 16;
-    dds.format = THREE::RGBA_S3TC_DXT3_Format;
+    dds.format = enums::RGBA_S3TC_DXT3_Format;
     break;
 
   case FOURCC_DXT5:
     blockBytes = 16;
-    dds.format = THREE::RGBA_S3TC_DXT5_Format;
+    dds.format = enums::RGBA_S3TC_DXT5_Format;
     break;
 
   default:
@@ -288,7 +288,7 @@ inline getNormalMap: function( image, depth ) {
 /////////////////////////////////////////////////////////////////////////
 
 Texture::Ptr ImageUtils::loadTexture( const std::string& url ) {
-                                      //,THREE::Mapping mapping /*= THREE::UVMapping*/ ) {
+                                      //,enums::Mapping mapping /*= enums::UVMapping*/ ) {
 
   typedef std::unique_ptr<unsigned char, std::function<void(unsigned char*)>> stbi_ptr;
 
@@ -304,7 +304,7 @@ Texture::Ptr ImageUtils::loadTexture( const std::string& url ) {
 
   return Texture::create(
     TextureDesc( Image(data.get(), w * h * n, w, h),
-                 n == 3 ? THREE::RGBFormat : THREE::RGBAFormat )
+                 n == 3 ? enums::RGBFormat : enums::RGBAFormat )
   );
 
 }
@@ -312,9 +312,9 @@ Texture::Ptr ImageUtils::loadTexture( const std::string& url ) {
 #ifdef TODO_LOAD_COMPRESSED_TEXTURE
 
 Texture::Ptr ImageUtils::loadCompressedTexture( const std::string& url,
-                                                THREE::Mapping mapping /*= THREE::UVMapping*/ ) {
+                                                enums::Mapping mapping /*= enums::UVMapping*/ ) {
 
-  var texture = new THREE::CompressedTexture();
+  var texture = new enums::CompressedTexture();
   texture.mapping = mapping;
 
   var request = new XMLHttpRequest();
@@ -322,7 +322,7 @@ Texture::Ptr ImageUtils::loadCompressedTexture( const std::string& url,
   request.onload = function() {
 
     var buffer = request.response;
-    var dds = THREE::ImageUtils.parseDDS( buffer, true );
+    var dds = enums::ImageUtils.parseDDS( buffer, true );
 
     texture.format = dds.format;
 
@@ -375,7 +375,7 @@ Texture::Ptr ImageUtils::generateDataTexture( int width, int height, Color color
   }
 
   auto texture = Texture::create(
-    TextureDesc( Image(data, width, height), THREE::RGBFormat )
+    TextureDesc( Image(data, width, height), enums::RGBFormat )
   );
   texture->needsUpdate = true;
 
@@ -386,12 +386,12 @@ Texture::Ptr ImageUtils::generateDataTexture( int width, int height, Color color
 #ifdef TODO_LOAD_TEXTURE_CUBE
 
 Texture::Ptr ImageUtils::loadTextureCube( std::array<std: string, 6> array,
-THREE::Mapping mapping = THREE::UVMapping ) {
+enums::Mapping mapping = enums::UVMapping ) {
 
   var images = [];
   images.loadCount = 0;
 
-  var texture = new THREE::Texture();
+  var texture = new enums::Texture();
   texture.image = images;
   if ( mapping != = undefined ) texture.mapping = mapping;
 
@@ -429,12 +429,12 @@ THREE::Mapping mapping = THREE::UVMapping ) {
 }
 
 Texture::Ptr ImageUtils::loadCompressedTextureCube( std::array<std: string, 6> array,
-THREE::Mapping mapping = THREE::UVMapping ) {
+enums::Mapping mapping = enums::UVMapping ) {
 
   var images = [];
   images.loadCount = 0;
 
-  var texture = new THREE::CompressedTexture();
+  var texture = new enums::CompressedTexture();
   texture.image = images;
   if ( mapping != = undefined ) texture.mapping = mapping;
 
@@ -453,7 +453,7 @@ THREE::Mapping mapping = THREE::UVMapping ) {
     return function() {
 
       var buffer = rq.response;
-      var dds = THREE::ImageUtils.parseDDS( buffer, true );
+      var dds = enums::ImageUtils.parseDDS( buffer, true );
 
       img.format = dds.format;
 

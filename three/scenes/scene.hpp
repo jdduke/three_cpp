@@ -66,7 +66,7 @@ protected:
   THREE_DECL Scene();
   THREE_DECL ~Scene();
 
-  virtual THREE::Type type() const { return THREE::Scene; }
+  virtual enums::Type type() const { return enums::Scene; }
 
   THREE_DECL virtual void visit( Visitor& v );
   THREE_DECL virtual void visit( ConstVisitor& v ) const;

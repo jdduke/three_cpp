@@ -13,7 +13,7 @@ namespace three {
 class GeometryBuffer : NonCopyable {
 public:
 
-  virtual THREE::GeometryType type() const { return THREE::Geometry; }
+  virtual enums::GeometryType type() const { return enums::Geometry; }
 
   virtual ~GeometryBuffer() { }
 

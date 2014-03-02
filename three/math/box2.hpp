@@ -10,10 +10,8 @@ namespace three {
   class Box2 {
   public:
 
-    union {
-      struct { Vector2 min, max; };
-      Vector2 minmax[2];
-    };
+    Vector2 min, max; 
+
 
     Box2();
     Box2( Vector2 minIn, Vector2 maxIn ) : min( minIn ), max( maxIn ) { }

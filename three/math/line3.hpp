@@ -8,10 +8,8 @@ namespace three {
 class Line3 {
 public:
     
-    union {
-        struct { Vector3 start, end; };
-        Vector3 vectors[2];
-    };
+    Vector3 start, end; 
+  
 
 	Line3() {
 		start = Vector3();

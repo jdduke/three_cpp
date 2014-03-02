@@ -1,6 +1,7 @@
 #ifndef THREE_BOX3_HPP
 #define THREE_BOX3_HPP
 
+#include <three/math/vector3.hpp>
 
 namespace three {
 
@@ -9,10 +10,10 @@ namespace three {
 
     typedef std::shared_ptr<Box3> Ptr;
 
-    union {
-      struct { Vector3 min, max; };
-      Vector3 minmax[2];
-    };
+  
+     Vector3 min, max;
+
+ 
 
       Box3();
       Box3( Vector3 minIn, Vector3 maxIn ) : min( minIn ), max( maxIn ) {

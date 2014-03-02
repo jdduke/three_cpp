@@ -16,7 +16,7 @@ public:
     return three::make_shared<MeshPhongMaterial>( parameters );
   }
 
-  virtual THREE::MaterialType type() const { return THREE::MeshPhongMaterial; }
+  virtual enums::MaterialType type() const { return enums::MeshPhongMaterial; }
 
   /////////////////////////////////////////////////////////////////////////
 

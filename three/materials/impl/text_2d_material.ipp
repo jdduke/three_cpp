@@ -43,14 +43,14 @@ ShaderMaterial::Ptr Text2DMaterial::create( const Font& font,
   auto material = ShaderMaterial::create(
     std::string(detail::textVertexShader()),
     std::string(detail::textFragmentShader()),
-    Uniforms().add( UniformKey::diffuse(), Uniform( THREE::c, color ) )
-              .add( UniformKey::opacity(), Uniform( THREE::f, opacity ) )
-              .add( "texture",             Uniform( THREE::t, font.texture().get() ) )
+    Uniforms().add( UniformKey::diffuse(), Uniform( enums::c, color ) )
+              .add( UniformKey::opacity(), Uniform( enums::f, opacity ) )
+              .add( "texture",             Uniform( enums::t, font.texture().get() ) )
   );
 
   //material->map = font.texture();
   material->depthTest = material->depthWrite = false;
-  material->side = THREE::NoSide;
+  material->side = enums::NoSide;
   material->transparent = true;
 
   return material;

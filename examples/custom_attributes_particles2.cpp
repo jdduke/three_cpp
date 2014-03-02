@@ -46,13 +46,13 @@ void shader( GLRenderer::Ptr renderer ) {
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/disc.png" ) );
 
   Uniforms uniforms;
-  uniforms[ "color" ]   = Uniform( THREE::c, Color( 0xffffff ) );
-  uniforms[ "texture" ] = Uniform( THREE::t, texture.get() );
-  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
+  uniforms[ "color" ]   = Uniform( enums::c, Color( 0xffffff ) );
+  uniforms[ "texture" ] = Uniform( enums::t, texture.get() );
+  texture->wrapS = texture->wrapT = enums::RepeatWrapping;
 
   Attributes attributes;
-  attributes[ "size" ] = Attribute( THREE::f );
-  attributes[ "ca" ]   = Attribute( THREE::c );
+  attributes[ "size" ] = Attribute( enums::f );
+  attributes[ "ca" ]   = Attribute( enums::c );
 
   auto shaderMaterial = ShaderMaterial::create(
     vertexShader,

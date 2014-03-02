@@ -8,8 +8,8 @@ namespace three {
   class Plane {
   public: 
 
-    Vector3 normal = Vector3( 1.f, 0.f, 0.f );
-    float constant = 0.f;
+    Vector3 normal;
+    float constant;
 
     THREE_DECL Plane() : normal(Vector3( 1.f, 0.f, 0.f)), constant(0.f) {}
     THREE_DECL Plane( Vector3 v, float constant) : normal(v), constant(constant) {}

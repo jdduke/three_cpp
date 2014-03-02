@@ -15,7 +15,7 @@ public:
     return three::make_shared<MeshNormalMaterial>( parameters );
   }
 
-  virtual THREE::MaterialType type() const { return THREE::MeshNormalMaterial; }
+  virtual enums::MaterialType type() const { return enums::MeshNormalMaterial; }
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -27,7 +27,7 @@ protected:
 
   MeshNormalMaterial( const Parameters& parameters )
     : Material() {
-    shading = THREE::FlatShading;
+    shading = enums::FlatShading;
     setParameters( parameters, DefaultKeys() );
   }
 

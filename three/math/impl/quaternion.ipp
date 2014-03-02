@@ -12,47 +12,7 @@
 namespace three {
 
   void Quaternion::_updateEuler() {
-    _euler.setFromQuaternion( this, false );
-  }
-
-  inline float Quaternion::getX() const {
-    return _x;
-  }
-
-  inline Quaternion& Quaternion::setX(const float& value) {
-    _x = value;
-    _updateEuler();
-    return *this;
-  }
-
-  inline float Quaternion::getY() const {
-    return _y;
-  }
-
-  inline Quaternion& Quaternion::setY(const float& value) {
-    _y = value;
-    _updateEuler();
-    return *this;
-  }
-
-  inline float Quaternion::getZ() const {
-    return _z;
-  }
-
-  inline Quaternion& Quaternion::setZ(const float& value) {
-    _z = value;
-    _updateEuler();
-    return *this;
-  }
-
-  inline float Quaternion::getW() const {
-    return _x;
-  }
-
-  inline Quaternion& Quaternion::setW(const float& value) {
-    _w = value;
-    _updateEuler();
-    return *this;
+    _euler->setFromQuaternion( *this, false );
   }
 
 Quaternion& Quaternion::set( float x, float y, float z, float w ) {
@@ -73,7 +33,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
     return *this;
   }
 
-  Quaternion& Quaternion::setFromEuler( const Euler& euler, bool update = false ) {
+  Quaternion& Quaternion::setFromEuler( const Euler& euler, bool update ) {
 
     // http://www.mathworks.com/matlabcentral/fileexchange/
     //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
@@ -86,42 +46,42 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
     auto s2 = Math::sin( euler.y / 2 );
     auto s3 = Math::sin( euler.z / 2 );
 
-    if ( euler.order == EulerRotationOrder::XYZ ) {
+    if ( euler.order == enums::EulerRotationOrder::XYZ ) {
 
       _x = s1 * c2 * c3 + c1 * s2 * s3;
       _y = c1 * s2 * c3 - s1 * c2 * s3;
       _z = c1 * c2 * s3 + s1 * s2 * c3;
       _w = c1 * c2 * c3 - s1 * s2 * s3;
 
-    } else if ( euler.order == EulerRotationOrder::YXZ ) {
+    } else if ( euler.order == enums::EulerRotationOrder::YXZ ) {
 
       _x = s1 * c2 * c3 + c1 * s2 * s3;
       _y = c1 * s2 * c3 - s1 * c2 * s3;
       _z = c1 * c2 * s3 - s1 * s2 * c3;
       _w = c1 * c2 * c3 + s1 * s2 * s3;
 
-    } else if ( euler.order == EulerRotationOrder::ZXY ) {
+    } else if ( euler.order == enums::EulerRotationOrder::ZXY ) {
 
       _x = s1 * c2 * c3 - c1 * s2 * s3;
       _y = c1 * s2 * c3 + s1 * c2 * s3;
       _z = c1 * c2 * s3 + s1 * s2 * c3;
       _w = c1 * c2 * c3 - s1 * s2 * s3;
 
-    } else if ( euler.order == EulerRotationOrder::ZYX ) {
+    } else if ( euler.order == enums::EulerRotationOrder::ZYX ) {
 
       _x = s1 * c2 * c3 - c1 * s2 * s3;
       _y = c1 * s2 * c3 + s1 * c2 * s3;
       _z = c1 * c2 * s3 - s1 * s2 * c3;
       _w = c1 * c2 * c3 + s1 * s2 * s3;
 
-    } else if ( euler.order == EulerRotationOrder::YZX ) {
+    } else if ( euler.order == enums::EulerRotationOrder::YZX ) {
 
       _x = s1 * c2 * c3 + c1 * s2 * s3;
       _y = c1 * s2 * c3 + s1 * c2 * s3;
       _z = c1 * c2 * s3 - s1 * s2 * c3;
       _w = c1 * c2 * c3 - s1 * s2 * s3;
 
-    } else if ( euler.order == EulerRotationOrder::XZY ) {
+    } else if ( euler.order == enums::EulerRotationOrder::XZY ) {
 
       _x = s1 * c2 * c3 - c1 * s2 * s3;
       _y = c1 * s2 * c3 - s1 * c2 * s3;
@@ -160,7 +120,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
     // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
-    const auto& te = m.elements
+    const auto& te = m.elements;
 
       auto m11 = te[0], m12 = te[4], m13 = te[8],
       m21 = te[1], m22 = te[5], m23 = te[9],
@@ -226,11 +186,11 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
     return *this;
   }
 
-  Quaternion& Quaternion::lengthSq() {
+  float Quaternion::lengthSq() const {
     return _x * _x + _y * _y + _z * _z + _w * _w;
   }
 
-  Quaternion& Quaternion::length() {
+  float Quaternion::length() const {
     return Math::sqrt( _x * _x + _y * _y + _z * _z + _w * _w );
   }
 
@@ -238,7 +198,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
     auto l = length();
 
-    if ( l === 0 ) {
+    if ( l == 0.f ) {
 
       _x = 0;
       _y = 0;
@@ -247,7 +207,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
     } else {
 
-      l = 1 / l;
+      l = 1.f / l;
 
       _x = _x * l;
       _y = _y * l;
@@ -260,7 +220,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
   }
 
   Quaternion& Quaternion::multiply( const Quaternion& q ) {
-    return multiplyQuaternions( this, q );
+    return multiplyQuaternions( *this, q );
   }
 
   Quaternion& Quaternion::multiplyQuaternions( const Quaternion& a, const Quaternion& b ) {
@@ -281,9 +241,9 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
   }
 
-  Quaternion& Quaternion::multiplyVector3( Vector3& vector ) const {
+  Vector3& Quaternion::multiplyVector3( Vector3& vector ) const {
     //console.warn( 'DEPRECATED: Quaternion\'s .multiplyVector3() has been removed. Use is now vector.applyQuaternion( quaternion ) instead.' );
-    return vector.applyQuaternion( this );
+    return vector.applyQuaternion( *this );
   }
 
   Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {

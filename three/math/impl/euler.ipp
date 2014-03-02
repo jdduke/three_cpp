@@ -17,45 +17,6 @@ namespace three {
       return Math::min( Math::max( x, -1.f ), 1.f );
     }
 
-  inline float Euler::getX() const {
-    return _x;
-  }
-
-  inline Euler& Euler::setX(const float& value) {
-    _x = value;
-    _updateQuaternion();
-    return *this;
-  }
-
-  inline float Euler::getY() const {
-    return _y;
-  }
-
-  inline Euler& Euler::setY(const float& value) {
-    _y = value;
-    _updateQuaternion();
-    return *this;
-  }
-
-  inline float Euler::getZ() const {
-    return _z;
-  }
-
-  inline Euler& Euler::setZ(const float& value) {
-    _z = value;
-    _updateQuaternion();
-    return *this;
-  }
-
-  inline THREE::EulerRotationOrder& Euler::getW() const {
-    return _order;
-  }
-
-  inline Euler& Euler::setW(const THREE::EulerRotationOrder& value) {
-    _w = value;
-    _updateQuaternion();
-    return *this;
-  }
 
 	Euler& Euler::set( float xIn, float yIn, float zIn) {
 
@@ -68,7 +29,7 @@ namespace three {
      return *this;
    }
 
-   Euler& Euler::set( float xIn, float yIn, float zIn, THREE::EulerRotationOrder orderIn ) {
+   Euler& Euler::set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn ) {
 
      _x = xIn;
      _y = yIn;
@@ -96,7 +57,7 @@ namespace three {
     return setFromRotationMatrix(m, _order);
   }
 
-  Euler& Euler::setFromRotationMatrix( const Matrix3& m, THREE::EulerRotationOrder order ) {
+  Euler& Euler::setFromRotationMatrix( const Matrix3& m, enums::EulerRotationOrder order ) {
 
       // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
@@ -106,7 +67,7 @@ namespace three {
     auto m31 = te[2], m32 = te[6], m33 = te[10];
 
 
-    if ( order == THREE::EulerRotationOrder::XYZ ) {
+    if ( order == enums::EulerRotationOrder::XYZ ) {
 
       _y = Math::asin( clamp( m13 ) );
 
@@ -118,7 +79,7 @@ namespace three {
         _z = 0.f;
       }
 
-    } else if ( order == THREE::EulerRotationOrder::YXZ ) {
+    } else if ( order == enums::EulerRotationOrder::YXZ ) {
 
       _x = Math::asin( - clamp( m23 ) );
 
@@ -130,7 +91,7 @@ namespace three {
         _z = 0.f;
       }
 
-    } else if ( order == THREE::EulerRotationOrder::ZXY ) {
+    } else if ( order == enums::EulerRotationOrder::ZXY ) {
 
       _x = Math::asin( clamp( m32 ) );
 
@@ -142,7 +103,7 @@ namespace three {
         _z = Math::atan2( m21, m11 );
       }
 
-    } else if ( order == THREE::EulerRotationOrder::ZYX ) {
+    } else if ( order == enums::EulerRotationOrder::ZYX ) {
 
       _y = Math::asin( - clamp( m31 ) );
 
@@ -155,7 +116,7 @@ namespace three {
 
       }
 
-    } else if ( order == THREE::EulerRotationOrder::YZX ) {
+    } else if ( order == enums::EulerRotationOrder::YZX ) {
 
       _z = Math::asin( clamp( m21 ) );
 
@@ -167,7 +128,7 @@ namespace three {
         _y = Math::atan2( m13, m33 );
       }
 
-    } else if ( order == THREE::EulerRotationOrder::XZY ) {
+    } else if ( order == enums::EulerRotationOrder::XZY ) {
 
       _z = Math::asin( - clamp( m12 ) );
 
@@ -191,11 +152,11 @@ namespace three {
     return *this;
   }
 
-  Euler& Euler::setFromQuaternion( const Quaternion& q, bool update = true) {
+  Euler& Euler::setFromQuaternion( const Quaternion& q, bool update) {
     return setFromQuaternion(q, _order, update);
   }
 
-  Euler& Euler::setFromQuaternion( const Quaternion& q, THREE::EulerRotationOrder order, bool update = true) {
+  Euler& Euler::setFromQuaternion( const Quaternion& q, enums::EulerRotationOrder order, bool update) {
 
       // q is assumed to be normalized
       // http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
@@ -205,37 +166,37 @@ namespace three {
     auto sqz = q.z * q.z;
     auto sqw = q.w * q.w;
 
-    if ( order == THREE::EulerRotationOrder::XYZ) {
+    if ( order == enums::EulerRotationOrder::XYZ) {
 
       _x = Math::atan2( 2 * ( q.x * q.w - q.y * q.z ), ( sqw - sqx - sqy + sqz ) );
       _y = Math::asin(  clamp( 2 * ( q.x * q.z + q.y * q.w ) ) );
       _z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw + sqx - sqy - sqz ) );
 
-    } else if ( order == THREE::EulerRotationOrder::YXZ ) {
+    } else if ( order == enums::EulerRotationOrder::YXZ ) {
 
       _x = Math::asin(  clamp( 2 * ( q.x * q.w - q.y * q.z ) ) );
       _y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw - sqx - sqy + sqz ) );
       _z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw - sqx + sqy - sqz ) );
 
-    } else if ( order == THREE::EulerRotationOrder::ZXY ) {
+    } else if ( order == enums::EulerRotationOrder::ZXY ) {
 
       _x = Math::asin(  clamp( 2 * ( q.x * q.w + q.y * q.z ) ) );
       _y = Math::atan2( 2 * ( q.y * q.w - q.z * q.x ), ( sqw - sqx - sqy + sqz ) );
       _z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw - sqx + sqy - sqz ) );
 
-    } else if ( order == THREE::EulerRotationOrder::ZYX ) {
+    } else if ( order == enums::EulerRotationOrder::ZYX ) {
 
       _x = Math::atan2( 2 * ( q.x * q.w + q.z * q.y ), ( sqw - sqx - sqy + sqz ) );
       _y = Math::asin(  clamp( 2 * ( q.y * q.w - q.x * q.z ) ) );
       _z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw + sqx - sqy - sqz ) );
 
-    } else if ( order == THREE::EulerRotationOrder::YZX ) {
+    } else if ( order == enums::EulerRotationOrder::YZX ) {
 
       _x = Math::atan2( 2 * ( q.x * q.w - q.z * q.y ), ( sqw - sqx + sqy - sqz ) );
       _y = Math::atan2( 2 * ( q.y * q.w - q.x * q.z ), ( sqw + sqx - sqy - sqz ) );
       _z = Math::asin(  clamp( 2 * ( q.x * q.y + q.z * q.w ) ) );
 
-    } else if ( order == THREE::EulerRotationOrder::XZY ) {
+    } else if ( order == enums::EulerRotationOrder::XZY ) {
 
       _x = Math::atan2( 2 * ( q.x * q.w + q.y * q.z ), ( sqw - sqx + sqy - sqz ) );
       _y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw + sqx - sqy - sqz ) );
@@ -253,7 +214,7 @@ namespace three {
     return *this;
   }
 
-  Euler& Euler::reorder(THREE::EulerRotationOrder newOrder) {
+  Euler& Euler::reorder(enums::EulerRotationOrder newOrder) {
       // WARNING: this discards revolution information -bhouston
     auto q = Quaternion();
     q.setFromEuler( *this );

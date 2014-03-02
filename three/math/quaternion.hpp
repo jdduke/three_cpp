@@ -96,9 +96,9 @@ namespace three {
 
    THREE_DECL Quaternion& conjugate();
 
-   THREE_DECL Quaternion& lengthSq();
+   THREE_DECL float lengthSq() const;
 
-   THREE_DECL Quaternion& length();
+   THREE_DECL float length() const;
 
    THREE_DECL Quaternion& normalize();
 
@@ -106,11 +106,11 @@ namespace three {
 
    THREE_DECL Quaternion& multiplyQuaternions( const Quaternion& a, const Quaternion& b );
 
-   THREE_DECL Quaternion& multiplyVector3( Vector3& vector ) const;
+   THREE_DECL Vector3& multiplyVector3( Vector3& vector ) const;
 
    THREE_DECL Quaternion& slerp( const Quaternion& qb, float t );
 
-   THREE_DECL Quaternion& equals( const Quaternion& quaternion ) const;
+   THREE_DECL bool equals( const Quaternion& quaternion ) const;
 
    THREE_DECL Quaternion clone();
 

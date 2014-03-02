@@ -148,8 +148,8 @@ private:
 
   THREE_DECL Material* getBufferMaterial( Object3D& object, GeometryGroup* geometryGroup );
   THREE_DECL bool materialNeedsSmoothNormals( const Material* material );
-  THREE_DECL THREE::Shading bufferGuessNormalType( const Material* material );
-  THREE_DECL THREE::Colors bufferGuessVertexColorType( const Material* material );
+  THREE_DECL enums::Shading bufferGuessNormalType( const Material* material );
+  THREE_DECL enums::Colors bufferGuessVertexColorType( const Material* material );
   THREE_DECL bool bufferGuessUVType( const Material* material );
 
   //
@@ -173,8 +173,8 @@ private:
 
   // Rendering
   THREE_DECL void renderPlugins( std::vector<IPlugin::Ptr>& plugins, Scene& scene, Camera& camera );
-  THREE_DECL void renderObjects( RenderList& renderList, bool reverse, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial = nullptr );
-  THREE_DECL void renderObjectsImmediate( RenderList& renderList, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial = nullptr );
+  THREE_DECL void renderObjects( RenderList& renderList, bool reverse, enums::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial = nullptr );
+  THREE_DECL void renderObjectsImmediate( RenderList& renderList, enums::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial = nullptr );
   THREE_DECL void renderImmediateObject( Camera& camera, Lights& lights, IFog* fog, Material& material, Object3D& object );
   THREE_DECL void unrollImmediateBufferMaterial( Scene::GLObject& globject );
   THREE_DECL void unrollBufferMaterial( Scene::GLObject& globject );
@@ -226,16 +226,16 @@ private:
 
 
   // GL state setting
-  THREE_DECL void setFaceCulling( THREE::Side cullFace = THREE::NoSide, THREE::Dir frontFace = THREE::CCW );
+  THREE_DECL void setFaceCulling( enums::Side cullFace = enums::NoSide, enums::Dir frontFace = enums::CCW );
   THREE_DECL void setMaterialFaces( Material& material );
   THREE_DECL void setDepthTest( bool depthTest );
   THREE_DECL void setDepthWrite( bool depthWrite );
   THREE_DECL void setLineWidth( float width );
   THREE_DECL void setPolygonOffset( bool polygonoffset, float factor, float units );
-  THREE_DECL void setBlending( THREE::Blending blending,
-                    THREE::BlendEquation blendEquation = THREE::AddEquation,
-                    THREE::BlendFactor blendSrc = THREE::OneFactor,
-                    THREE::BlendFactor blendDst = THREE::OneFactor );
+  THREE_DECL void setBlending( enums::Blending blending,
+                    enums::BlendEquation blendEquation = enums::AddEquation,
+                    enums::BlendFactor blendSrc = enums::OneFactor,
+                    enums::BlendFactor blendDst = enums::OneFactor );
 
   // Shaders
   THREE_DECL Program::Ptr buildProgram( const std::string& shaderID,
@@ -249,7 +249,7 @@ private:
   THREE_DECL static void cacheUniformLocations( Program& program, const Identifiers& identifiers );
   THREE_DECL static void cacheAttributeLocations( Program& program, const Identifiers& identifiers );
   THREE_DECL static std::string addLineNumbers( const std::string& string );
-  THREE_DECL Buffer getShader( THREE::ShaderType type, const std::string& source );
+  THREE_DECL Buffer getShader( enums::ShaderType type, const std::string& source );
 
 
   // Textures
@@ -274,7 +274,7 @@ private:
 
     }
 
-    if ( _glExtensionTextureFilterAnisotropic && texture.dataType != THREE::FloatType ) {
+    if ( _glExtensionTextureFilterAnisotropic && texture.dataType != enums::FloatType ) {
       if ( texture.anisotropy > 1 || texture.__oldAnisotropy ) {
         glTexParameterf( textureType, TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
         texture.__oldAnisotropy = texture.anisotropy;
@@ -299,7 +299,7 @@ private:
   // Fallback filters for non-power-of-2 textures
   THREE_DECL static int filterFallback( int f );
 
-  // Map THREE::cpp constants to WebGL constants
+  // Map enums::cpp constants to WebGL constants
   THREE_DECL static int paramThreeToGL( int p );
 
   // Allocations
@@ -319,7 +319,7 @@ private:
 
   int _width, _height;
   bool _vsync;
-  THREE::PrecisionType _precision;
+  enums::PrecisionType _precision;
   bool _alpha;
   bool _premultipliedAlpha;
   bool _antialias;
@@ -469,11 +469,11 @@ private:
   /*
   // default plugins (order is important)
 
-  shadowMapPlugin = new THREE::ShadowMapPlugin();
+  shadowMapPlugin = new enums::ShadowMapPlugin();
   addPrePlugin( shadowMapPlugin );
 
-  addPostPlugin( new THREE::SpritePlugin() );
-  addPostPlugin( new THREE::LensFlarePlugin() );
+  addPostPlugin( new enums::SpritePlugin() );
+  addPostPlugin( new enums::LensFlarePlugin() );
   */
 
 private:

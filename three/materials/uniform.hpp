@@ -19,14 +19,14 @@ public:
   THREE_DECL Uniform( );
   THREE_DECL Uniform( Uniform&& );
   THREE_DECL Uniform( const Uniform& );
-  THREE_DECL explicit Uniform( THREE::UniformType type, any value = any() );
+  THREE_DECL explicit Uniform( enums::UniformType type, any value = any() );
   THREE_DECL Uniform& operator=( Uniform );
 
   THREE_DECL void load( int location );
 
   //////////////////////////////////////////////////////////////////////////
 
-  THREE::UniformType type;
+  enums::UniformType type;
   any value;
 
   //////////////////////////////////////////////////////////////////////////

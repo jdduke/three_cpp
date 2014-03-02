@@ -18,7 +18,7 @@ public:
     return three::make_shared<Fog>( hex, near, far );
   }
 
-  THREE::FogType type() const { return THREE::Fog; }
+  enums::FogType type() const { return enums::Fog; }
 
   /////////////////////////////////////////////////////////////////////////
 

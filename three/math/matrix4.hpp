@@ -5,6 +5,7 @@
 
 #include <three/math/math.hpp>
 #include <three/math/vector4.hpp>
+#include <array>
 
 namespace three {
     
@@ -52,8 +53,8 @@ public:
   THREE_DECL Vector3& crossVector( Vector3& vector ) const;
   THREE_DECL float determinant() const;
   THREE_DECL Matrix4& transpose();
-  THREE_DECL std::vector<float>& flattenToArray( std::vector<float>& flat ) const;
-  THREE_DECL std::vector<float>& flattenToArrayOffset( std::vector<float>& flat, const size_t offset ) const;
+  THREE_DECL std::array<float, 16>& flattenToArray( std::array<float, 16>& flat ) const;
+  THREE_DECL std::array<float, 16>& flattenToArrayOffset( std::array<float, 16>& flat, const size_t offset ) const;
   THREE_DECL Vector3& getPosition() const;
   THREE_DECL Matrix4& setPosition( const Vector3& v );
   THREE_DECL Matrix4& getInverse( const Matrix4& m, bool throwOnInvertible = false );

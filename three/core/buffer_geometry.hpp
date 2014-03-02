@@ -19,7 +19,7 @@ public:
 
   Ptr create() { return make_shared<BufferGeometry>(); }
 
-  virtual THREE::GeometryType type() const { return THREE::BufferGeometry; }
+  virtual enums::GeometryType type() const { return enums::BufferGeometry; }
 
   /////////////////////////////////////////////////////////////////////////
 

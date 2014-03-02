@@ -67,7 +67,7 @@ public:
 
   static Ptr create() { return make_shared<Geometry>(); }
 
-  virtual THREE::GeometryType type() const { return THREE::Geometry; }
+  virtual enums::GeometryType type() const { return enums::Geometry; }
 
   /////////////////////////////////////////////////////////////////////////
 

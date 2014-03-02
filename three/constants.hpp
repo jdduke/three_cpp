@@ -5,7 +5,7 @@ namespace three {
 
 typedef unsigned Buffer;
 
-namespace THREE {
+namespace enums {
 
 enum Side {
   NoSide     = -1,

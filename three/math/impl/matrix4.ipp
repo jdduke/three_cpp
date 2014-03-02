@@ -7,8 +7,6 @@
 
 namespace three {
 
-using namespace THREE;
-
 Matrix4::Matrix4() {
   identity();
 }
@@ -109,14 +107,14 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
     auto& te = elements;
 
-    auto x = euler.getX(), y = euler.getY(), z = euler.getZ();
+    auto x = euler.x, y = euler.y, z = euler.z;
     auto a = Math::cos( x ), b = Math::sin( x );
     auto c = Math::cos( y ), d = Math::sin( y );
     auto e = Math::cos( z ), f = Math::sin( z );
 
-    auto order = euler.getOrder();
+    auto order = euler.order;
 
-    if ( order == EulerRotationOrder::XYZ ) {
+    if ( order == enums::EulerRotationOrder::XYZ ) {
 
       auto ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -132,7 +130,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = be + af * d;
       te[10] = a * c;
 
-    } else if ( order == THREE::EulerRotationOrder::YXZ ) {
+    } else if ( order == enums::EulerRotationOrder::YXZ ) {
 
       auto ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -148,7 +146,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = df + ce * b;
       te[10] = a * c;
 
-    } else if ( order == EulerRotationOrder::ZXY ) {
+    } else if ( order == enums::EulerRotationOrder::ZXY ) {
 
       auto ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -164,7 +162,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = b;
       te[10] = a * c;
 
-    } else if ( order == EulerRotationOrder::ZYX ) {
+    } else if ( order == enums::EulerRotationOrder::ZYX ) {
 
       auto ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -180,7 +178,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = b * c;
       te[10] = a * c;
 
-    } else if ( order == EulerRotationOrder::YZX ) {
+    } else if ( order == enums::EulerRotationOrder::YZX ) {
 
       auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 
@@ -196,7 +194,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
       te[6] = ad * f + bc;
       te[10] = ac - bd * f;
 
-    } else if ( order == EulerRotationOrder::XZY ) {
+    } else if ( order == enums::EulerRotationOrder::XZY ) {
 
       auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 
@@ -287,7 +285,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     x.crossVectors( up, z ).normalize();
 
     if ( x.length() == 0 ) {
-      z.x += 0.0001;
+      z.x += 0.0001f;
       x.crossVectors( up, z ).normalize();
     }
 
@@ -477,8 +475,9 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     return *this;
   }
 
-   std::vector<float>& Matrix4::flattenToArray( std::vector<float>& flat ) const {
+   std::array<float, 16>& Matrix4::flattenToArray( std::array<float, 16>& flat ) const {
     const auto& te = elements;
+
     flat[ 0 ] = te[0]; flat[ 1 ] = te[1]; flat[ 2 ] = te[2]; flat[ 3 ] = te[3];
     flat[ 4 ] = te[4]; flat[ 5 ] = te[5]; flat[ 6 ] = te[6]; flat[ 7 ] = te[7];
     flat[ 8 ] = te[8]; flat[ 9 ] = te[9]; flat[ 10 ] = te[10]; flat[ 11 ] = te[11];
@@ -486,7 +485,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
     return flat;
   }
 
-   std::vector<float>& Matrix4::flattenToArrayOffset( std::vector<float>& flat, const size_t offset ) const {
+   std::array<float, 16>& Matrix4::flattenToArrayOffset(std::array<float, 16>& flat, const size_t offset ) const {
     // @todo, offset check
     const auto& te = elements;
     flat[ offset ] = te[0];

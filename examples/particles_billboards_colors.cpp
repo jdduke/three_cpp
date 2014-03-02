@@ -48,7 +48,7 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
   auto material = ParticleBasicMaterial::create(
     Material::Parameters().add( "size", 85.f )
                           .add( "map", sprite )
-                          .add( "vertexColors", THREE::VertexColors )
+                          .add( "vertexColors", enums::VertexColors )
   );
   material->color.setHSV( 1.f, 0.2f, 0.8f );
   //material->depthTest = false;

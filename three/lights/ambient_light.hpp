@@ -14,7 +14,7 @@ public:
 
   static Ptr create( int hex ) { return make_shared<AmbientLight>( hex ); }
 
-  virtual THREE::Type type() const { return THREE::AmbientLight; }
+  virtual enums::Type type() const { return enums::AmbientLight; }
 
 protected:
 

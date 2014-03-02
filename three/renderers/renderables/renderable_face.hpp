@@ -11,9 +11,9 @@ namespace three {
 class RenderableFace : public Renderable {
 public:
 
-  RenderableFace( THREE::FaceType type = THREE::Face3 )
+  RenderableFace( enums::FaceType type = enums::Face3 )
     : Renderable( 0 ), material( nullptr ), faceMaterial( nullptr ),
-      mType( type ), mSize( type == THREE::Face3 ? 3 : 4 ) { }
+      mType( type ), mSize( type == enums::Face3 ? 3 : 4 ) { }
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -30,13 +30,13 @@ public:
 
   std::array<std::vector<UV>, 4> uvs;
 
-  THREE::FaceType type() const { return mType; }
+  enums::FaceType type() const { return mType; }
 
   int size() { return mSize; }
 
 private:
 
-  THREE::FaceType mType;
+  enums::FaceType mType;
   int mSize;
 };
 

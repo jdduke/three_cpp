@@ -44,19 +44,19 @@ void shader( GLRenderer::Ptr renderer ) {
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/spark1.png" ) );
 
   Uniforms uniforms;
-  uniforms[ "color" ]      = Uniform( THREE::c, Color( 0xffffff ) );
-  uniforms[ "texture" ]    = Uniform( THREE::t, texture.get() );
+  uniforms[ "color" ]      = Uniform( enums::c, Color( 0xffffff ) );
+  uniforms[ "texture" ]    = Uniform( enums::t, texture.get() );
 
   Attributes attributes;
-  attributes[ "size" ]        = Attribute( THREE::f );
-  attributes[ "customColor" ] = Attribute( THREE::c );
+  attributes[ "size" ]        = Attribute( enums::f );
+  attributes[ "customColor" ] = Attribute( enums::c );
 
   auto shaderMaterial = ShaderMaterial::create(
     vertexShader,
     fragmentShader,
     uniforms,
     attributes,
-    Material::Parameters().add( "blending", THREE::AdditiveBlending )
+    Material::Parameters().add( "blending", enums::AdditiveBlending )
                           .add( "depthTest", false )
                           .add( "transparent", true )
   );

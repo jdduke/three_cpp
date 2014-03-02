@@ -16,7 +16,7 @@ public:
     return three::make_shared<MeshFaceMaterial>( parameters );
   }
 
-  virtual THREE::MaterialType type() const { return THREE::MeshFaceMaterial; }
+  virtual enums::MaterialType type() const { return enums::MeshFaceMaterial; }
 
   /////////////////////////////////////////////////////////////////////////
 

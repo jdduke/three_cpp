@@ -16,7 +16,7 @@ public:
     return make_shared<SpotLight>( hex, intensity, distance, angle, exponent );
   }
 
-  virtual THREE::Type type() const { return THREE::SpotLight; }
+  virtual enums::Type type() const { return enums::SpotLight; }
 
   /////////////////////////////////////////////////////////////////////////
 

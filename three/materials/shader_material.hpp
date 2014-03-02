@@ -24,7 +24,7 @@ public:
                                                parameters );
   }
 
-  virtual THREE::MaterialType type() const { return THREE::ShaderMaterial; }
+  virtual enums::MaterialType type() const { return enums::ShaderMaterial; }
 
   /////////////////////////////////////////////////////////////////////////
 

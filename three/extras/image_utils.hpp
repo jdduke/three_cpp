@@ -12,12 +12,12 @@ public:
 
   THREE_DECL static Texture::Ptr loadTexture(
     const std::string& url
-    //,THREE::Mapping mapping = THREE::UVMapping
+    //,enums::Mapping mapping = enums::UVMapping
   );
 
   THREE_DECL static Texture::Ptr loadCompressedTexture(
     const std::string& url,
-    THREE::Mapping mapping = THREE::UVMapping
+    enums::Mapping mapping = enums::UVMapping
   );
 
   THREE_DECL static Texture::Ptr generateDataTexture(
@@ -30,12 +30,12 @@ public:
 
   THREE_DECL static Texture::Ptr loadTextureCube(
     std::array<std: string, 6> array,
-    THREE::Mapping mapping = THREE::UVMapping
+    enums::Mapping mapping = enums::UVMapping
   );
 
   THREE_DECL static Texture::Ptr loadCompressedTextureCube(
     std::array<std: string, 6> array,
-    THREE::Mapping mapping = THREE::UVMapping
+    enums::Mapping mapping = enums::UVMapping
   );
 
 #endif // TODO_LOAD_TEXTURE_CUBE

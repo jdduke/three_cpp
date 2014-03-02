@@ -16,7 +16,7 @@ public:
     return three::make_shared<ParticleBasicMaterial>( parameters );
   }
 
-  virtual THREE::MaterialType type() const { return THREE::ParticleBasicMaterial; }
+  virtual enums::MaterialType type() const { return enums::ParticleBasicMaterial; }
 
   /////////////////////////////////////////////////////////////////////////
 

@@ -18,7 +18,7 @@ public:
     return three::make_shared<FogExp2>( hex, density );
   }
 
-  THREE::FogType type() const { return THREE::FogExp2; }
+  enums::FogType type() const { return enums::FogExp2; }
 
   /////////////////////////////////////////////////////////////////////////
 

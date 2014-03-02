@@ -31,7 +31,7 @@ public:
 
   static Ptr create() { return make_shared<Material>( ); }
 
-  virtual THREE::MaterialType type() const { return THREE::Material; }
+  virtual enums::MaterialType type() const { return enums::Material; }
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +42,7 @@ public:
   Attributes attributes;
   //AttributeLocations attributeLocations;
 
-  THREE::Side side;
+  enums::Side side;
 
   Color color, ambient, emissive, specular;
   float shininess;
@@ -52,13 +52,13 @@ public:
   float size;
   bool sizeAttenuation;
 
-  THREE::Shading shading;
-  THREE::Colors vertexColors;
+  enums::Shading shading;
+  enums::Colors vertexColors;
 
-  THREE::Blending blending;
-  THREE::BlendFactor blendSrc;
-  THREE::BlendFactor blendDst;
-  THREE::BlendEquation blendEquation;
+  enums::Blending blending;
+  enums::BlendFactor blendSrc;
+  enums::BlendFactor blendDst;
+  enums::BlendEquation blendEquation;
 
   bool depthTest;
   bool depthWrite;
@@ -81,7 +81,7 @@ public:
 
   float reflectivity;
   float refractionRatio;
-  THREE::TextureConstant combine;
+  enums::TextureConstant combine;
 
   bool metal;
   bool perPixel;
@@ -91,7 +91,7 @@ public:
   bool wireframe;
   float wireframeLinewidth;
   float linewidth;
-  THREE::LineEndType linecap, linejoin;
+  enums::LineEndType linecap, linejoin;
 
   int numSupportedMorphTargets;
   int numSupportedMorphNormals;

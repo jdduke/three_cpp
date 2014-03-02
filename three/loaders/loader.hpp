@@ -66,7 +66,7 @@ protected:
   template < typename Scope >
   bool hasNormals( Scope& scope ) {
     for ( auto& m : scope.materials ) {
-      if ( m->type() == THREE::ShaderMaterial ) return true;
+      if ( m->type() == enums::ShaderMaterial ) return true;
     }
     return false;
   }

@@ -1,15 +1,15 @@
 #ifndef THREE_EULER_HPP
 #define THREE_EULER_HPP
 
-namespace three {
-  class Quaternion;
-    
+#include <three/common.hpp>
+
+namespace three {   
 	class Euler {
 	private:
 
     float _x, _y, _z;
 
-    THREE::EulerRotationOrder _order;
+    enums::EulerRotationOrder _order;
     Quaternion _quaternion;
 
 
@@ -21,38 +21,73 @@ namespace three {
   public:
         
 
-    const THREE::EulerRotationOrder DefaultOrder = THREE::EulerRotationOrder::XYZ;
+    static const enums::EulerRotationOrder DefaultOrder = enums::EulerRotationOrder::XYZ;
 
-    Euler() : _x(0.f), _y(0.f), _z(0.f), _order(THREE::EulerRotationOrder::XYZ) {};
+    Euler() : _x(0.f), _y(0.f), _z(0.f), _order(enums::EulerRotationOrder::XYZ) {};
 
-    Euler(float xIn, float yIn, float zIn) : _x(xIn), _y(yIn), _z(zIn), _order(THREE::EulerRotationOrder::XYZ) { };
+    Euler(float xIn, float yIn, float zIn) : _x(xIn), _y(yIn), _z(zIn), _order(enums::EulerRotationOrder::XYZ) { };
 
-    Euler(float xIn, float yIn, float zIn, THREE::EulerRotationOrder orderIn) : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
+    Euler(float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn) : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
 
-  THREE_DECL inline float getX() const;
-  THREE_DECL inline Quaternion& setX(const float& value);
-  THREE_DECL inline float getY() const;
-  THREE_DECL inline Quaternion& setY(const float& value);
-  THREE_DECL inline float getZ() const;
-  THREE_DECL inline Quaternion& setOrder(const THREE::EulerRotationOrder& value);
-  THREE_DECL inline THREE::EulerRotationOrder& getOrder() const;
+	PROPERTY(float, x);
+    GET(x) const {
+     return _x;
+    }
 
+    inline Euler& SET(x) {
+      _x = value;
+      _updateQuaternion();
+	  return *this;
+    }
+
+    PROPERTY(float, y);
+    GET(y) const {
+     return _y;
+    }
+
+    inline Euler& SET(y) {
+      _y = value;
+      _updateQuaternion();
+      return *this;
+    }
+
+    PROPERTY(float, z);
+    GET(z) const {
+     return _z;
+    }
+
+    inline Euler& SET(z) {
+      _z = value;
+      _updateQuaternion();
+      return *this;
+    }
+
+	PROPERTY(enums::EulerRotationOrder, order);
+    GET(order) const {
+     return _order;
+    }
+
+    inline Euler& SET(order) {
+      _order = value;
+      _updateQuaternion();
+      return *this;
+    }
 
    THREE_DECL Euler& set( float xIn, float yIn, float zIn);
 
-   THREE_DECL Euler& set( float xIn, float yIn, float zIn, THREE::EulerRotationOrder orderIn );
+   THREE_DECL Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn );
 
    THREE_DECL Euler& copy ( const Euler& euler );
 
    THREE_DECL Euler& setFromRotationMatrix( const Matrix3& m );
 
-  THREE_DECL Euler& setFromRotationMatrix( const Matrix3& m, THREE::EulerRotationOrder order );
+  THREE_DECL Euler& setFromRotationMatrix( const Matrix3& m, enums::EulerRotationOrder order );
 
   THREE_DECL Euler& setFromQuaternion( const Quaternion& q, bool update = true);
 
-  THREE_DECL Euler& setFromQuaternion( const Quaternion& q, THREE::EulerRotationOrder order, bool update = true);
+  THREE_DECL Euler& setFromQuaternion( const Quaternion& q, enums::EulerRotationOrder order, bool update = true);
 
-  THREE_DECL Euler& reorder(THREE::EulerRotationOrder newOrder);
+  THREE_DECL Euler& reorder(enums::EulerRotationOrder newOrder);
 
   THREE_DECL bool equals( const Euler& euler ) const;
 

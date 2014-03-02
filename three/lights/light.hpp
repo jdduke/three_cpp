@@ -14,7 +14,7 @@ public:
 
   typedef std::shared_ptr<Light> Ptr;
 
-  virtual THREE::Type type() const { return THREE::Light; }
+  virtual enums::Type type() const { return enums::Light; }
 
   /////////////////////////////////////////////////////////////////////////
 

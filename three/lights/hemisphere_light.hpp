@@ -16,7 +16,7 @@ public:
     return make_shared<HemisphereLight>( skyColorHex, groundColorHex, intensity );
   }
 
-  virtual THREE::Type type() const { return THREE::HemisphereLight; }
+  virtual enums::Type type() const { return enums::HemisphereLight; }
 
   //////////////////////////////////////////////////////////////////////////
 

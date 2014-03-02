@@ -136,8 +136,8 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
   auto material = ShaderMaterial::create(
     vertexShader,
     fragmentShader,
-    Uniforms().add("time",  Uniform( THREE::f, time ))
-              .add("scale", Uniform( THREE::f, 1.5f ))
+    Uniforms().add("time",  Uniform( enums::f, time ))
+              .add("scale", Uniform( enums::f, 1.5f ))
   );
 
   // Geometries

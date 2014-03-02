@@ -96,7 +96,7 @@ void BufferGeometry::computeVertexNormals() {
 
     } else {
 
-      attributes.add( AttributeKey::normal(), Attribute( THREE::v3, nVertexElements ) );
+      attributes.add( AttributeKey::normal(), Attribute( enums::v3, nVertexElements ) );
 
     }
 
@@ -195,7 +195,7 @@ void BufferGeometry::computeTangents() {
 
   if ( !attributes.contains( AttributeKey::tangent() ) ) {
     const auto nTangentElements = 4 * nVertices;
-    attributes[ AttributeKey::tangent() ] = Attribute( THREE::v4, nTangentElements );
+    attributes[ AttributeKey::tangent() ] = Attribute( enums::v4, nTangentElements );
   }
 
   auto& tangents = attributes[ AttributeKey::tangent() ].array;

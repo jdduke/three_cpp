@@ -12,7 +12,7 @@ struct RendererParameters {
   RendererParameters()
   : width( 1024 ), height( 768 ),
     vsync ( true ),
-    precision( THREE::PrecisionHigh ),
+    precision( enums::PrecisionHigh ),
     alpha( true ),
     premultipliedAlpha( true ),
     antialias( false ),
@@ -24,7 +24,7 @@ struct RendererParameters {
 
   int width, height;
   bool vsync;
-  THREE::PrecisionType precision;
+  enums::PrecisionType precision;
   bool alpha;
   bool premultipliedAlpha;
   bool antialias;

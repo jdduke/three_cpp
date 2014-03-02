@@ -16,7 +16,7 @@ public:
     return make_shared<DirectionalLight>( hex, intensity, distance );
   }
 
-  virtual THREE::Type type() const { return THREE::DirectionalLight; }
+  virtual enums::Type type() const { return enums::DirectionalLight; }
 
   /////////////////////////////////////////////////////////////////////////
 

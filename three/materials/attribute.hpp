@@ -1,5 +1,5 @@
-#ifndef THREE_ATTRIBUTE_HPP
-#define THREE_ATTRIBUTE_HPP
+#ifndef enums_ATTRIBUTE_HPP
+#define enums_ATTRIBUTE_HPP
 
 #include <three/common.hpp>
 #include <three/constants.hpp>
@@ -15,7 +15,7 @@ namespace three {
 class Attribute /*: public NonCopyable*/ {
 public:
 
-  explicit Attribute( THREE::AttributeType type = THREE::v3, int arraySize = 0 )
+  explicit Attribute( enums::AttributeType type = enums::v3, int arraySize = 0 )
     : type( type ),
     buffer( 0 ),
     createUniqueBuffers( false ),
@@ -32,7 +32,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE::AttributeType type;
+  enums::AttributeType type;
 
   // TODO: Use the union for indices support (rather than casting from float)
   /*union Value {
@@ -163,4 +163,4 @@ namespace AttributeKey {
 
 } // namespace three
 
-#endif // THREE_ATTRIBUTE_H
+#endif // enums_ATTRIBUTE_H

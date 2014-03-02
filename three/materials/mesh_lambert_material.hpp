@@ -16,7 +16,7 @@ public:
     return three::make_shared<MeshLambertMaterial>( parameters );
   }
 
-  virtual THREE::MaterialType type() const { return THREE::MeshLambertMaterial; }
+  virtual enums::MaterialType type() const { return enums::MeshLambertMaterial; }
 
   /////////////////////////////////////////////////////////////////////////
 

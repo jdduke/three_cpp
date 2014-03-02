@@ -21,7 +21,7 @@ namespace three {
 
     /////////////////////////////////////////////////////////////////////////
 
-    virtual THREE::Type type() const { return THREE::Mesh; }
+    virtual enums::Type type() const { return enums::Mesh; }
     virtual void visit( Visitor& v ) { v( *this ); }
     virtual void visit( ConstVisitor& v ) const { v( *this ); }
 

@@ -54,7 +54,7 @@ void lines_sphere( GLRenderer::Ptr renderer ) {
                             .add( "linewidth", width )
     );
 
-    auto line = Line::create( geometry, material, THREE::LinePieces );
+    auto line = Line::create( geometry, material, enums::LinePieces );
     line->scale.x = line->scale.y = line->scale.z = scale;
     line->rotation.y = Math::random() * Math::PI();
     line->updateMatrix();
@@ -114,7 +114,7 @@ void lines_sphere( GLRenderer::Ptr renderer ) {
 
       for ( size_t i = 0; i < scene->children.size(); i++ ) {
         auto& object = *scene->children[i];
-        if ( object.type() == THREE::Line ) {
+        if ( object.type() == enums::Line ) {
           object.rotation.y = time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) );
           if ( i < 5 )
             object.scale.x = object.scale.y

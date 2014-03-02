@@ -22,7 +22,7 @@
 #include <vector>
 
 #define THREE_IMPL_OBJECT(NAME)                                       \
-  virtual THREE::Type type() const override { return THREE:: NAME; }  \
+  virtual enums::Type type() const override { return enums:: NAME; }  \
   virtual void visit( Visitor& v ) override { v( *this ); }           \
   virtual void visit( ConstVisitor& v ) const override { v( *this ); }
 
@@ -39,7 +39,7 @@ public:
 
   //////////////////////////////////////////////////////////////////////////
 
-  virtual THREE::Type type() const { return THREE::Object3D; }
+  virtual enums::Type type() const { return enums::Object3D; }
   virtual void visit( Visitor& v ) { };
   virtual void visit( ConstVisitor& v ) const { };
   THREE_DECL virtual ~Object3D();
@@ -59,7 +59,7 @@ public:
 
   Vector3 position;
   Vector3 rotation;
-  THREE::EulerRotationOrder eulerOrder;
+  enums::EulerRotationOrder eulerOrder;
   Vector3 scale;
 
   float renderDepth;
@@ -108,9 +108,10 @@ public:
     Matrix4 _modelViewMatrix;
     Matrix3 _normalMatrix;
 
-    std::vector<float> _normalMatrixArray;
-    std::vector<float> _modelViewMatrixArray;
-    std::vector<float> _modelMatrixArray;
+	// Obsolete?
+    std::array<float, 16> _normalMatrixArray;
+    std::array<float, 16> _modelViewMatrixArray;
+    std::array<float, 16> _modelMatrixArray;
     std::vector<int>   __glMorphTargetInfluences;
 
     void clear() {
@@ -118,9 +119,9 @@ public:
       __glActive = false;
       _modelViewMatrix.identity();
       _normalMatrix.identity();
-      _normalMatrixArray.clear();
-      _modelViewMatrixArray.clear();
-      _modelMatrixArray.clear();
+      //_normalMatrixArray.clear();
+      //_modelViewMatrixArray.clear();
+      //_modelMatrixArray.clear();
       __glMorphTargetInfluences.clear();
     }
   } glData;

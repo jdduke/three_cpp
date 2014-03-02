@@ -11,7 +11,7 @@ public:
 
   static void merge( Geometry& geometry1, Object3D& object2 ) {
 
-    if ( object2.type() == THREE::Mesh ) {
+    if ( object2.type() == enums::Mesh ) {
 
       if ( object2.matrixAutoUpdate )
         object2.updateMatrix();
@@ -71,9 +71,9 @@ public:
       const auto& faceVertexNormals = face.vertexNormals;
       const auto& faceVertexColors = face.vertexColors;
 
-      if ( face.type() == THREE::Face3 ) {
+      if ( face.type() == enums::Face3 ) {
         faceCopy = Face3( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset );
-      } else if ( face.type() == THREE::Face4 ) {
+      } else if ( face.type() == enums::Face4 ) {
         faceCopy = Face4( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset, face.d + vertexOffset );
       }
 

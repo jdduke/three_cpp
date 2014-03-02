@@ -42,7 +42,7 @@ void trails( GLRenderer::Ptr renderer ) {
   auto material = ParticleBasicMaterial::create(
     Material::Parameters().add("color", Color(0xcccccc))
                           .add("size", 1.0f)
-                          .add("vertexColors", THREE::VertexColors)
+                          .add("vertexColors", enums::VertexColors)
                           .add("depthTest", false)
                           .add("opacity", 0.5f)
                           .add("sizeAttenuation", false)

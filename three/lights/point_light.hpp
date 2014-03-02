@@ -16,7 +16,7 @@ public:
     return make_shared<PointLight>( hex, intensity, distance );
   }
 
-  virtual THREE::Type type() const { return THREE::PointLight; }
+  virtual enums::Type type() const { return enums::PointLight; }
 
 protected:
 
