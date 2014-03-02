@@ -1,6 +1,9 @@
 three.cpp
 =========
 
+### Status
+[![Build Status](https://travis-ci.org/elwinarens/three_cpp.png)](https://travis-ci.org/elwinarens/three_cpp)
+
 #### A port of three.js to C++ #####
 
 [three.js](http://mrdoob.github.com/three.js/) is a popular and
