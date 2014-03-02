@@ -3,6 +3,10 @@ language: cpp
 compiler:
   - gcc
 
+install:
+udo apt-get -qq update
+sudo apt-get -qq install libglew-dev 
+
 before_script:
   - mkdir build
   - cd build
