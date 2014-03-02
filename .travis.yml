@@ -6,6 +6,7 @@ compiler:
 
 install:
   - sudo apt-get -qq update
+  - sudo apt-get -qq install apt-get build-essential
   - sudo apt-get -qq install libglew-dev libsdl1.2-dev
 
 before_script:
