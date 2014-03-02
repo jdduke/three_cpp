@@ -22,9 +22,9 @@ namespace three {
 
   public:
 
-    Quaternion() : _x( 0 ), _y( 0 ), _z( 0 ), _w( 1.f ) { }
+    Quaternion() : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ) { }
     Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) { }
-    Quaternion( Quaternion& v ) : _x( v.x() ), _y( v.y() ), _z( v.z() ), _w( v.w() ) { }
+    //Quaternion( Quaternion& v ) : _x( v.x() ), _y( v.y() ), _z( v.z() ), _w( v.w() ) { }
     Quaternion& operator= ( const Quaternion& q ) { return copy( q ); }
 
     inline float x() const {
