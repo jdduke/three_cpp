@@ -144,7 +144,7 @@ namespace three {
 
   Vector3& applyQuaternion( const Quaternion& q ) {
 
-    auto qx = q.x;
+    float qx = q.x;
     auto qy = q.y;
     auto qz = q.z;
     auto qw = q.w;

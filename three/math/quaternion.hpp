@@ -1,6 +1,9 @@
 #ifndef THREE_QUATERNION_HPP
 #define THREE_QUATERNION_HPP
 
+#include <three/common.hpp>
+
+#include <three/math/math.hpp>
 #include <three/utils/macros.hpp>
 
 namespace three {
@@ -22,22 +25,22 @@ namespace three {
 
     Quaternion() : _x( 0 ), _y( 0 ), _z( 0 ), _w( 1.f ) { }
     Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) { }
-    Quaternion( const Quaternion& v ) : _x( v.x ), _y( v.y ), _z( v.z ), _w( v.w ) { }
+    Quaternion( Quaternion& v ) : _x( v.x ), _y( v.y ), _z( v.z ), _w( v.w ) { }
     Quaternion& operator= ( const Quaternion& q ) { return copy( q ); }
 
     PROPERTY(float, x);
-    GET(x) {
+    GET(x) const {
      return _x;
     }
 
     inline Quaternion& SET(x) {
       _x = value;
       _updateEuler();
-      return *this;
+	  return *this;
     }
 
     PROPERTY(float, y);
-    GET(y) {
+    GET(y) const {
      return _y;
     }
 
@@ -48,7 +51,7 @@ namespace three {
     }
 
     PROPERTY(float, z);
-    GET(z) {
+    GET(z) const {
      return _z;
     }
 
@@ -59,7 +62,7 @@ namespace three {
     }
 
     PROPERTY(float, w);
-    GET(w) {
+    GET(w) const {
      return _w;
     }
 

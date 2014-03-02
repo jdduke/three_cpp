@@ -221,7 +221,7 @@ namespace three {
     auto result = target;
 
     result.center = center();
-    result.radius = size( v1 ).length() * 0.5;
+    result.radius = size( v1 ).length() * 0.5f;
     return result;
   }
 

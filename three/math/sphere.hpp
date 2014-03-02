@@ -2,6 +2,7 @@
 #define THREE_SPHERE_HPP
 
 #include <three/math/box3.hpp>
+#include <three/math/vector3.hpp>
 
 namespace three {
 
@@ -64,7 +65,7 @@ public:
     return ( point.distanceToSquared( center ) <= ( radius * radius ) );
   }
 
-  bool distanceToPoint( const Vector3& point ) const {
+  float distanceToPoint( const Vector3& point ) const {
     return ( point.distanceTo( center ) - radius );
   }
 
