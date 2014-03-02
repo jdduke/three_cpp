@@ -7,6 +7,8 @@ namespace three {
   class Box3 {
   public:
 
+    typedef std::shared_ptr<Box3> Ptr;
+
     union {
       struct { Vector3 min, max; };
       Vector3 minmax[2];
