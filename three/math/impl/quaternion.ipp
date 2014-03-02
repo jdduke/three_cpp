@@ -4,7 +4,6 @@
 
 #include <three/common.hpp>
 
-#include <three/utils/macros.hpp>
 #include <three/math/math.hpp>
 #include <three/math/quaternion.hpp>
 
@@ -39,49 +38,49 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
     //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
     //  content/SpinCalc.m
 
-    auto c1 = Math::cos( euler.x / 2 );
-    auto c2 = Math::cos( euler.y / 2 );
-    auto c3 = Math::cos( euler.z / 2 );
-    auto s1 = Math::sin( euler.x / 2 );
-    auto s2 = Math::sin( euler.y / 2 );
-    auto s3 = Math::sin( euler.z / 2 );
+    auto c1 = Math::cos( euler.x() / 2 );
+    auto c2 = Math::cos( euler.y() / 2 );
+    auto c3 = Math::cos( euler.z() / 2 );
+    auto s1 = Math::sin( euler.x() / 2 );
+    auto s2 = Math::sin( euler.y() / 2 );
+    auto s3 = Math::sin( euler.z() / 2 );
 
-    if ( euler.order == enums::EulerRotationOrder::XYZ ) {
+    if ( euler.order() == enums::EulerRotationOrder::XYZ ) {
 
       _x = s1 * c2 * c3 + c1 * s2 * s3;
       _y = c1 * s2 * c3 - s1 * c2 * s3;
       _z = c1 * c2 * s3 + s1 * s2 * c3;
       _w = c1 * c2 * c3 - s1 * s2 * s3;
 
-    } else if ( euler.order == enums::EulerRotationOrder::YXZ ) {
+    } else if ( euler.order() == enums::EulerRotationOrder::YXZ ) {
 
       _x = s1 * c2 * c3 + c1 * s2 * s3;
       _y = c1 * s2 * c3 - s1 * c2 * s3;
       _z = c1 * c2 * s3 - s1 * s2 * c3;
       _w = c1 * c2 * c3 + s1 * s2 * s3;
 
-    } else if ( euler.order == enums::EulerRotationOrder::ZXY ) {
+    } else if ( euler.order() == enums::EulerRotationOrder::ZXY ) {
 
       _x = s1 * c2 * c3 - c1 * s2 * s3;
       _y = c1 * s2 * c3 + s1 * c2 * s3;
       _z = c1 * c2 * s3 + s1 * s2 * c3;
       _w = c1 * c2 * c3 - s1 * s2 * s3;
 
-    } else if ( euler.order == enums::EulerRotationOrder::ZYX ) {
+    } else if ( euler.order() == enums::EulerRotationOrder::ZYX ) {
 
       _x = s1 * c2 * c3 - c1 * s2 * s3;
       _y = c1 * s2 * c3 + s1 * c2 * s3;
       _z = c1 * c2 * s3 - s1 * s2 * c3;
       _w = c1 * c2 * c3 + s1 * s2 * s3;
 
-    } else if ( euler.order == enums::EulerRotationOrder::YZX ) {
+    } else if ( euler.order() == enums::EulerRotationOrder::YZX ) {
 
       _x = s1 * c2 * c3 + c1 * s2 * s3;
       _y = c1 * s2 * c3 + s1 * c2 * s3;
       _z = c1 * c2 * s3 - s1 * s2 * c3;
       _w = c1 * c2 * c3 - s1 * s2 * s3;
 
-    } else if ( euler.order == enums::EulerRotationOrder::XZY ) {
+    } else if ( euler.order() == enums::EulerRotationOrder::XZY ) {
 
       _x = s1 * c2 * c3 - c1 * s2 * s3;
       _y = c1 * s2 * c3 - s1 * c2 * s3;
@@ -227,8 +226,8 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
     // from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
 
-    auto qax = a.x, qay = a.y, qaz = a.z, qaw = a.w;
-    auto qbx = b.x, qby = b.y, qbz = b.z, qbw = b.w;
+    auto qax = a.x(), qay = a.y(), qaz = a.z(), qaw = a.w();
+    auto qbx = b.x(), qby = b.y(), qbz = b.z(), qbw = b.w();
 
     _x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
     _y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
@@ -252,14 +251,14 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
     // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
 
-    auto cosHalfTheta = w * qb.w + x * qb.x + y * qb.y + z * qb.z;
+    auto cosHalfTheta = w * qb.w() + x * qb.x() + y * qb.y() + z * qb.z();
 
     if ( cosHalfTheta < 0 ) {
 
-      _w = -qb.w;
-      _x = -qb.x;
-      _y = -qb.y;
-      _z = -qb.z;
+      _w = -qb.w();
+      _x = -qb.x();
+      _y = -qb.y();
+      _z = -qb.z();
 
       cosHalfTheta = -cosHalfTheta;
 
@@ -309,7 +308,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
   }
 
   bool Quaternion::equals( const Quaternion& quaternion ) const {
-    return ( quaternion.x == _x ) && ( quaternion.y == _y ) && ( quaternion.z == _z ) && ( quaternion.w == _w );
+    return ( quaternion.x() == _x ) && ( quaternion.y() == _y ) && ( quaternion.z() == _z ) && ( quaternion.w() == _w );
   }
 
   Quaternion Quaternion::clone() {

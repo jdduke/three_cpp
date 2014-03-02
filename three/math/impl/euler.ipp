@@ -3,7 +3,6 @@
 
 #include <three/common.hpp>
 
-#include <three/utils/macros.hpp>
 #include <three/math/math.hpp>
 #include <three/math/euler.hpp>
 
@@ -161,46 +160,46 @@ namespace three {
       // q is assumed to be normalized
       // http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
 
-    auto sqx = q.x * q.x;
-    auto sqy = q.y * q.y;
-    auto sqz = q.z * q.z;
-    auto sqw = q.w * q.w;
+    auto sqx = q.x() * q.x();
+    auto sqy = q.y() * q.y();
+    auto sqz = q.z() * q.z();
+    auto sqw = q.w() * q.w();
 
     if ( order == enums::EulerRotationOrder::XYZ) {
 
-      _x = Math::atan2( 2 * ( q.x * q.w - q.y * q.z ), ( sqw - sqx - sqy + sqz ) );
-      _y = Math::asin(  clamp( 2 * ( q.x * q.z + q.y * q.w ) ) );
-      _z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw + sqx - sqy - sqz ) );
+      _x = Math::atan2( 2 * ( q.x() * q.w() - q.y() * q.z() ), ( sqw - sqx - sqy + sqz ) );
+      _y = Math::asin(  clamp( 2 * ( q.x() * q.z() + q.y() * q.w() ) ) );
+      _z = Math::atan2( 2 * ( q.z() * q.w() - q.x() * q.y() ), ( sqw + sqx - sqy - sqz ) );
 
     } else if ( order == enums::EulerRotationOrder::YXZ ) {
 
-      _x = Math::asin(  clamp( 2 * ( q.x * q.w - q.y * q.z ) ) );
-      _y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw - sqx - sqy + sqz ) );
-      _z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw - sqx + sqy - sqz ) );
+      _x = Math::asin(  clamp( 2 * ( q.x() * q.w() - q.y() * q.z() ) ) );
+      _y = Math::atan2( 2 * ( q.x() * q.z() + q.y() * q.w() ), ( sqw - sqx - sqy + sqz ) );
+      _z = Math::atan2( 2 * ( q.x() * q.y() + q.z() * q.w() ), ( sqw - sqx + sqy - sqz ) );
 
     } else if ( order == enums::EulerRotationOrder::ZXY ) {
 
-      _x = Math::asin(  clamp( 2 * ( q.x * q.w + q.y * q.z ) ) );
-      _y = Math::atan2( 2 * ( q.y * q.w - q.z * q.x ), ( sqw - sqx - sqy + sqz ) );
-      _z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw - sqx + sqy - sqz ) );
+      _x = Math::asin(  clamp( 2 * ( q.x() * q.w() + q.y() * q.z() ) ) );
+      _y = Math::atan2( 2 * ( q.y() * q.w() - q.z() * q.x() ), ( sqw - sqx - sqy + sqz ) );
+      _z = Math::atan2( 2 * ( q.z() * q.w() - q.x() * q.y() ), ( sqw - sqx + sqy - sqz ) );
 
     } else if ( order == enums::EulerRotationOrder::ZYX ) {
 
-      _x = Math::atan2( 2 * ( q.x * q.w + q.z * q.y ), ( sqw - sqx - sqy + sqz ) );
-      _y = Math::asin(  clamp( 2 * ( q.y * q.w - q.x * q.z ) ) );
-      _z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw + sqx - sqy - sqz ) );
+      _x = Math::atan2( 2 * ( q.x() * q.w() + q.z() * q.y() ), ( sqw - sqx - sqy + sqz ) );
+      _y = Math::asin(  clamp( 2 * ( q.y() * q.w() - q.x() * q.z() ) ) );
+      _z = Math::atan2( 2 * ( q.x() * q.y() + q.z() * q.w() ), ( sqw + sqx - sqy - sqz ) );
 
     } else if ( order == enums::EulerRotationOrder::YZX ) {
 
-      _x = Math::atan2( 2 * ( q.x * q.w - q.z * q.y ), ( sqw - sqx + sqy - sqz ) );
-      _y = Math::atan2( 2 * ( q.y * q.w - q.x * q.z ), ( sqw + sqx - sqy - sqz ) );
-      _z = Math::asin(  clamp( 2 * ( q.x * q.y + q.z * q.w ) ) );
+      _x = Math::atan2( 2 * ( q.x() * q.w() - q.z() * q.y() ), ( sqw - sqx + sqy - sqz ) );
+      _y = Math::atan2( 2 * ( q.y() * q.w() - q.x() * q.z() ), ( sqw + sqx - sqy - sqz ) );
+      _z = Math::asin(  clamp( 2 * ( q.x() * q.y() + q.z() * q.w() ) ) );
 
     } else if ( order == enums::EulerRotationOrder::XZY ) {
 
-      _x = Math::atan2( 2 * ( q.x * q.w + q.y * q.z ), ( sqw - sqx + sqy - sqz ) );
-      _y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw + sqx - sqy - sqz ) );
-      _z = Math::asin(  clamp( 2 * ( q.z * q.w - q.x * q.y ) ) );
+      _x = Math::atan2( 2 * ( q.x() * q.w() + q.y() * q.z() ), ( sqw - sqx + sqy - sqz ) );
+      _y = Math::atan2( 2 * ( q.x() * q.z() + q.y() * q.w() ), ( sqw + sqx - sqy - sqz ) );
+      _z = Math::asin(  clamp( 2 * ( q.z() * q.w() - q.x() * q.y() ) ) );
 
     } else {
         //@todo

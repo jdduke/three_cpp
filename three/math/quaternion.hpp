@@ -4,7 +4,6 @@
 #include <three/common.hpp>
 
 #include <three/math/math.hpp>
-#include <three/utils/macros.hpp>
 
 namespace three {
   class Euler;
@@ -25,62 +24,48 @@ namespace three {
 
     Quaternion() : _x( 0 ), _y( 0 ), _z( 0 ), _w( 1.f ) { }
     Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) { }
-    Quaternion( Quaternion& v ) : _x( v.x ), _y( v.y ), _z( v.z ), _w( v.w ) { }
+    Quaternion( Quaternion& v ) : _x( v.x() ), _y( v.y() ), _z( v.z() ), _w( v.w() ) { }
     Quaternion& operator= ( const Quaternion& q ) { return copy( q ); }
 
-    PROPERTY(float, x);
-    GET(x) const {
+    inline float x() const {
      return _x;
     }
 
-    inline Quaternion& SET(x) {
+    inline Quaternion& x(const float& value) {
       _x = value;
       _updateEuler();
 	  return *this;
     }
 
-    PROPERTY(float, y);
-    GET(y) const {
+     inline float y() const {
      return _y;
     }
 
-    inline Quaternion& SET(y) {
+    inline Quaternion& y(const float& value) {
       _y = value;
       _updateEuler();
-      return *this;
+	  return *this;
     }
 
-    PROPERTY(float, z);
-    GET(z) const {
+     inline float z() const {
      return _z;
     }
 
-    inline Quaternion& SET(z) {
+    inline Quaternion& z(const float& value) {
       _z = value;
       _updateEuler();
-      return *this;
+	  return *this;
     }
 
-    PROPERTY(float, w);
-    GET(w) const {
+     inline float w() const {
      return _w;
     }
 
-    inline Quaternion& SET(w) {
+    inline Quaternion& w(const float& value) {
       _w = value;
       _updateEuler();
-      return *this;
+	  return *this;
     }
-
-   /*THREE_DECL inline float getX() const;
-   THREE_DECL inline Quaternion& setX(const float& value);
-   THREE_DECL inline float getY() const;
-   THREE_DECL inline Quaternion& setY(const float& value);
-   THREE_DECL inline float getZ() const;
-   THREE_DECL inline Quaternion& setZ(const float& value);
-   THREE_DECL inline float getW() const;*/
-
-   THREE_DECL Quaternion& setW(const float& value);
 
    THREE_DECL Quaternion& set( float x, float y, float z, float w );
 

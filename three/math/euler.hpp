@@ -29,50 +29,46 @@ namespace three {
 
     Euler(float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn) : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
 
-	PROPERTY(float, x);
-    GET(x) const {
+    inline float x() const {
      return _x;
     }
 
-    inline Euler& SET(x) {
+    inline Euler& x(const float& value) {
       _x = value;
       _updateQuaternion();
 	  return *this;
     }
 
-    PROPERTY(float, y);
-    GET(y) const {
+     inline float y() const {
      return _y;
     }
 
-    inline Euler& SET(y) {
+    inline Euler& y(const float& value) {
       _y = value;
       _updateQuaternion();
-      return *this;
+	  return *this;
     }
 
-    PROPERTY(float, z);
-    GET(z) const {
+     inline float z() const {
      return _z;
     }
 
-    inline Euler& SET(z) {
+    inline Euler& z(const float& value) {
       _z = value;
       _updateQuaternion();
-      return *this;
+	  return *this;
     }
 
-	PROPERTY(enums::EulerRotationOrder, order);
-    GET(order) const {
+     inline enums::EulerRotationOrder order() const {
      return _order;
     }
 
-    inline Euler& SET(order) {
+    inline Euler& w(const enums::EulerRotationOrder& value) {
       _order = value;
       _updateQuaternion();
-      return *this;
+	  return *this;
     }
-
+	
    THREE_DECL Euler& set( float xIn, float yIn, float zIn);
 
    THREE_DECL Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn );
