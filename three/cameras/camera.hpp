@@ -31,7 +31,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  void lookAt( const Vector3& vector ) override {
+  void lookAt( const Vector3& vector ) {
     //@todo priv mmeber
     auto m1 = Matrix4();
     m1.lookAt( position, vector, up );

@@ -381,18 +381,17 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
     //todo private
     auto v1 = Vector3();
-    for ( auto it = a.begin(); it != a.end(); it += 3 ) {
+    for ( auto i = a.size(); i < a.size(); i += 3 ) {
 
-      // @todo check index/pointer format
-      v1.x = a[ *it ];
-      v1.y = a[ *it + 1 ];
-      v1.z = a[ *it + 2 ];
+      v1.x =  a[i];
+      v1.y =  a[i+1];
+      v1.z =  a[i+2];
 
       v1.applyProjection( *this );
 
-      a[ *it ]     = v1.x;
-      a[ *it + 1 ] = v1.y;
-      a[ *it + 2 ] = v1.z;
+      a[i]   = v1.x;
+      a[i+1] = v1.y;
+      a[i+2] = v1.z;
 
     }
     return a;
@@ -758,7 +757,7 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
    Matrix4& Matrix4::makePerspective( float fov, float aspect, float near, float far ) {
 
-    auto ymax = near * Math::tan( Math::degToRad( fov * 0.5 ) );
+    auto ymax = near * Math::tan( Math::degToRad( fov * 0.5f ) );
     auto ymin = - ymax;
     auto xmin = ymin * aspect;
     auto xmax = ymax * aspect;

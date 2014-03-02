@@ -9,7 +9,7 @@
 namespace three {
 
     void Euler::_updateQuaternion() {
-      _quaternion.setFromEuler( *this, _order );
+      _quaternion.setFromEuler( *this, false );
     }
 
     inline float Euler::clamp( const float& x ) {

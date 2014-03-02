@@ -22,9 +22,9 @@
 #include <vector>
 
 #define THREE_IMPL_OBJECT(NAME)                                       \
-  virtual enums::Type type() const override { return enums:: NAME; }  \
-  virtual void visit( Visitor& v ) override { v( *this ); }           \
-  virtual void visit( ConstVisitor& v ) const override { v( *this ); }
+  virtual enums::Type type() const { return enums:: NAME; }  \
+  virtual void visit( Visitor& v ) { v( *this ); }           \
+  virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 namespace three {
 

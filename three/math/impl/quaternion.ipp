@@ -128,41 +128,41 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
       auto trace = m11 + m22 + m33;
       float s;
 
-    if ( trace > 0 ) {
+    if ( trace > 0.f ) {
 
-      s = 0.5 / Math::sqrt( trace + 1.0 );
+      s = 0.5f / Math::sqrt( trace + 1.0f );
 
-      _w = 0.25 / s;
+      _w = 0.25f / s;
       _x = ( m32 - m23 ) * s;
       _y = ( m13 - m31 ) * s;
       _z = ( m21 - m12 ) * s;
 
     } else if ( m11 > m22 && m11 > m33 ) {
 
-      s = 2.0 * Math::sqrt( 1.0 + m11 - m22 - m33 );
+      s = 2.0f * Math::sqrt( 1.0f + m11 - m22 - m33 );
 
       _w = (m32 - m23 ) / s;
-      _x = 0.25 * s;
+      _x = 0.25f * s;
       _y = (m12 + m21 ) / s;
       _z = (m13 + m31 ) / s;
 
     } else if ( m22 > m33 ) {
 
-      s = 2.0 * Math::sqrt( 1.0 + m22 - m11 - m33 );
+      s = 2.0f * Math::sqrt( 1.0f + m22 - m11 - m33 );
 
       _w = (m13 - m31 ) / s;
       _x = (m12 + m21 ) / s;
-      _y = 0.25 * s;
+      _y = 0.25f * s;
       _z = (m23 + m32 ) / s;
 
     } else {
 
-      s = 2.0 * Math::sqrt( 1.0 + m33 - m11 - m22 );
+      s = 2.0f * Math::sqrt( 1.0f + m33 - m11 - m22 );
 
       _w = ( m21 - m12 ) / s;
       _x = ( m13 + m31 ) / s;
       _y = ( m23 + m32 ) / s;
-      _z = 0.25 * s;
+      _z = 0.25f * s;
 
     }
 
@@ -253,7 +253,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
     auto cosHalfTheta = w * qb.w() + x * qb.x() + y * qb.y() + z * qb.z();
 
-    if ( cosHalfTheta < 0 ) {
+    if ( cosHalfTheta < 0.f ) {
 
       _w = -qb.w();
       _x = -qb.x();
@@ -268,7 +268,7 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
     }
 
-    if ( cosHalfTheta >= 1.0 ) {
+    if ( cosHalfTheta >= 1.0f ) {
 
       _w = w;
       _x = x;
@@ -280,20 +280,20 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
     }
 
     auto halfTheta = Math::acos( cosHalfTheta );
-    auto sinHalfTheta = Math::sqrt( 1.0 - cosHalfTheta * cosHalfTheta );
+    auto sinHalfTheta = Math::sqrt( 1.0f - cosHalfTheta * cosHalfTheta );
 
-    if ( Math::abs( sinHalfTheta ) < 0.001 ) {
+    if ( Math::abs( sinHalfTheta ) < 0.001f ) {
 
-      _w = 0.5 * ( w + _w );
-      _x = 0.5 * ( x + _x );
-      _y = 0.5 * ( y + _y );
-      _z = 0.5 * ( z + _z );
+      _w = 0.5f * ( w + _w );
+      _x = 0.5f * ( x + _x );
+      _y = 0.5f * ( y + _y );
+      _z = 0.5f * ( z + _z );
 
       return *this;
 
     }
 
-    auto ratioA = Math::sin( ( 1 - t ) * halfTheta ) / sinHalfTheta,
+    auto ratioA = Math::sin( ( 1.f - t ) * halfTheta ) / sinHalfTheta,
     ratioB = Math::sin( t * halfTheta ) / sinHalfTheta;
 
     _w = ( w * ratioA + _w * ratioB );

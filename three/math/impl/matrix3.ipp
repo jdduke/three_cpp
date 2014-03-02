@@ -64,17 +64,16 @@ namespace three {
 
   std::vector<float>& Matrix3::multiplyVector3Array( std::vector<float>& a) {
     auto v1 = Vector3();
-    for ( auto it = a.begin(); it != a.end(); it += 3 ) {
-        // @todo check *it for index
-        v1.x = a[ *it ];
-        v1.y = a[ *it + 1 ];
-        v1.z = a[ *it + 2 ];
+    for ( auto i = a.size(); i < a.size(); i += 3 ) {
+        v1.x = a[i];
+        v1.y = a[i+1];
+        v1.z = a[i+2];
 
         v1.applyMatrix3(*this);
 
-        a[ *it ]     = v1.x;
-        a[ *it + 1 ] = v1.y;
-        a[ *it + 2 ] = v1.z;
+        a[i]	= v1.x;
+        a[i+1]  = v1.y;
+        a[i+2]  = v1.z;
 
       }
       return a;
