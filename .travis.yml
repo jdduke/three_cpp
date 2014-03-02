@@ -4,14 +4,21 @@ compiler:
   - gcc
   - clang
 
+before_install:
+    - if [ "${CXX}" == "clang++" ]; then sudo add-apt-repository --yes ppa:h-rayflood/llvm; fi # clang++-3.3
+    - sudo apt-get -qq update
+
 install:
-  - sudo apt-get -qq update
-  - sudo apt-get -qq install apt-get build-essential
+  - if [ "${CXX}" == "clang++" ]; then sudo apt-get -qq install clang-3.3; fi
+  - sudo apt-get install g++-4.8; # clang need it for libstdc++ update
   - sudo apt-get -qq install libglew-dev libsdl1.2-dev
 
 before_script:
+  - if [ "${CXX}" == "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - if [ "${CXX}" == "clang++" ]; then export CXX="clang++-3.3" CC="clang-3.3"; fi
+
+script: 
   - mkdir build
   - cd build
   - cmake ../ -DTHREE_HEADER_ONLY:BOOL=OFF
-
-script: make
+  - make
