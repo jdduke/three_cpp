@@ -8,20 +8,11 @@ namespace three {
   class Box3 {
   public:
 
-    typedef std::shared_ptr<Box3> Ptr;
-
-  
-     Vector3 min, max;
-
- 
-
-      Box3();
-      Box3( Vector3 minIn, Vector3 maxIn ) : min( minIn ), max( maxIn ) {
-          
-      }
+    Vector3 min, max;
     
-    explicit Box3( Vector3* values ) : min( values[0] ), max( values[1] ) { }
-
+    Box3();
+    Box3( Vector3 minIn, Vector3 maxIn ) : min( minIn ), max( maxIn ) { }
+    
     THREE_DECL Box3&    set( const Vector3& minIn, const Vector3& maxIn );
     THREE_DECL Box3&    addPoint ( const Vector3& point );
     THREE_DECL Box3&    setFromPoints(const std::vector<Vector3>& points );

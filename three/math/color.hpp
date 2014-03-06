@@ -14,7 +14,7 @@ namespace three {
       float hsl[3];
     };
 
-    HSL () : h ( 1 ), s ( 1 ), l ( 1 ) { }
+    HSL () : h ( 1.f ), s ( 1.f ), l ( 1.f ) { }
 
     float& operator[] (const int i) { return hsl[i]; }
     const float operator[] (const int i) const { return hsl[i]; }
@@ -28,7 +28,7 @@ namespace three {
       float rgb[3];
     };
 
-    Color () : r ( 1 ), g ( 1 ), b ( 1 ) { }
+    Color () : r ( 1.f ), g ( 1.f ), b ( 1.f ) { }
 
     explicit Color ( unsigned hex ) { setHex ( hex ); }
 
@@ -67,7 +67,6 @@ namespace three {
         g = hue2rgb( q, p, h );
         b = hue2rgb( q, p, h - 1.f / 3.f );
       }
-
       return *this;
     }
 

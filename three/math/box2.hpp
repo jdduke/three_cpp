@@ -2,7 +2,6 @@
 #define THREE_BOX2_HPP
 
 #include <three/common.hpp>
-
 #include <three/math/math.hpp>
 
 namespace three {
@@ -10,14 +9,11 @@ namespace three {
   class Box2 {
   public:
 
-    Vector2 min, max; 
-
+    Vector2 min, max;
 
     Box2();
     Box2( Vector2 minIn, Vector2 maxIn ) : min( minIn ), max( maxIn ) { }
     
-    explicit Box2( Vector2* values ) : min( values[0] ), max( values[1] ) { }
-
     THREE_DECL Box2&    set( const Vector2& minIn, const Vector2& maxIn );
     THREE_DECL Box2&    copy( const Box2& b );
     THREE_DECL float    distanceToPoint( const Vector2& point ) const;
