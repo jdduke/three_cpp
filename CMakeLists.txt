@@ -242,12 +242,13 @@ if (NOT THREE_HEADER_ONLY)
   if (NOT THREE_LIBRARY_STATIC)
     add_definitions(-DTHREE_DYN_LINK)
   endif()
-  
-  set(THREE_LIB_SOURCE_FILES three/impl/src.cpp three/impl/src_extras.cpp)
 
   if(${CMAKE_GENERATOR} STREQUAL Xcode)
-    set(THREE_LIB_SOURCE_FILES ${THREE_LIB_SOURCE_FILES} externals/sdl-1.2.15/xcode/SDLMain.m)
+     add_library(xcode_sdlmain STATIC externals/sdl-1.2.15/xcode/SDLMain.m)
+     set(SDLMAIN_LIBRARY xcode_sdlmain)
   endif()
+  
+  set(THREE_LIB_SOURCE_FILES three/impl/src.cpp three/impl/src_extras.cpp)
 
   set(THREE_LIB three)
   three_add_library(${THREE_LIB} ${THREE_LIB_SOURCE_FILES})
