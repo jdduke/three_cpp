@@ -30,7 +30,6 @@ namespace three {
     std::array<Plane, 6> planes;
 
   private:
-    // @todo lazy init?
     Sphere _sphere;
     Vector3 _p1;
     Vector3 _p2;

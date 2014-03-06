@@ -11,8 +11,6 @@ namespace three {
   class Vector3 {
   public:
 
-    typedef std::shared_ptr<Vector3> Ptr;
-
     union {
       struct { float x, y, z; };
       float xyz[3];

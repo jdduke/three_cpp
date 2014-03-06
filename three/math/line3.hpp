@@ -9,63 +9,59 @@ class Line3 {
 public:
     
     Vector3 start, end; 
-  
 
 	Line3() {
 		start = Vector3();
 		end = Vector3();
 	}
 
-	Line3(const Vector3& startIn, const Vector3& endIn) : start(startIn), end(endIn) {}
+	Line3( const Vector3& startIn, const Vector3& endIn) : start(startIn), end(endIn) {}
 
-	Line3& set( const Vector3& startIn, const Vector3& endIn ) {
+	THREE_DECL Line3& set( const Vector3& startIn, const Vector3& endIn ) {
 		start.copy( startIn );
 		end.copy( endIn );
 		return *this;
 	}
 
-	Line3& copy( const Line3& line ) {
+	THREE_DECL Line3& copy( const Line3& line ) {
 		start.copy( line.start );
 		end.copy( line.end );
 		return *this;
 	}
 
-	Vector3& center() const {
-		return center(Vector3());
+	THREE_DECL Vector3 center() const {
+		return Vector3().addVectors( start, end ).multiplyScalar( 0.5f );
 	}
 
-	Vector3& center( const Vector3& target ) const {
-		auto result = target;
-		return result.addVectors( start, end ).multiplyScalar( 0.5f );
+	THREE_DECL Vector3& center( Vector3& target ) {
+		return target.addVectors( start, end ).multiplyScalar( 0.5f );
 	}
 
-	Vector3& delta() const {
-		return delta(Vector3());
+	THREE_DECL Vector3 delta() const {
+		return Vector3().subVectors( end, start );
 	}
 
-	Vector3& delta( const Vector3& target ) const {
-		auto result = target;
-		return result.subVectors( end, start );
+	THREE_DECL Vector3& delta( Vector3& target ) {
+		return target.subVectors( end, start );
 	}
 
-	float distanceSq() {
+	THREE_DECL float distanceSq() {
 		return start.distanceToSquared( end );
 	}
 
-	float distance() {
+	THREE_DECL float distance() {
 		return start.distanceTo( end );
 	}
 
-	Vector3& at( float t ) {
-		return at(t, Vector3());
+	THREE_DECL Vector3 at( float t ) {
+		return delta().multiplyScalar( t ).add( start );
 	}
 
-	Vector3& at( float t, const Vector3& target ) {
-		auto result = target;
-		return delta( result ).multiplyScalar( t ).add( start );
+	THREE_DECL Vector3& at( float t, Vector3& target ) {
+		return delta( target ).multiplyScalar( t ).add( start );
 	}
 
-	float closestPointToPointParameter( const Vector3& point, bool clampToLine ) const {
+	THREE_DECL float closestPointToPointParameter( const Vector3& point, bool clampToLine ) const {
 
 		auto startP = Vector3();
 		auto startEnd = Vector3();
@@ -84,27 +80,27 @@ public:
 		return t;
 	}
 
-	Vector3& closestPointToPoint( const Vector3& point, bool clampToLine ) {
-		return closestPointToPoint(point, clampToLine, Vector3());
-	}
-
-	Vector3& closestPointToPoint( const Vector3& point, bool clampToLine, const Vector3& target ) {
+	THREE_DECL Vector3 closestPointToPoint( const Vector3& point, bool clampToLine ) {
 		auto t = closestPointToPointParameter( point, clampToLine );
-		auto result = target;
-		return delta( result ).multiplyScalar( t ).add( start );
+		return delta().multiplyScalar( t ).add( start );
 	}
 
-	Line3& applyMatrix4( const Matrix4& matrix ) {
+	THREE_DECL Vector3& closestPointToPoint( const Vector3& point, bool clampToLine, Vector3& target ) {
+		auto t = closestPointToPointParameter( point, clampToLine );
+		return delta( target ).multiplyScalar( t ).add( start );
+	}
+
+	THREE_DECL Line3& applyMatrix4( const Matrix4& matrix ) {
 		start.applyMatrix4( matrix );
 		end.applyMatrix4( matrix );
 		return *this;
 	}
 
-	bool equals( const Line3& line ) const {
+	THREE_DECL bool equals( const Line3& line ) const {
 		return line.start.equals( start ) && line.end.equals( end );
 	}
 
-	Line3 clone() {
+	THREE_DECL Line3 clone() {
 		return *this;
 	}
 

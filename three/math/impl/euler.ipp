@@ -52,11 +52,11 @@ namespace three {
      return *this;
    }
 
-   Euler& Euler::setFromRotationMatrix( const Matrix3& m ) {
+   Euler& Euler::setFromRotationMatrix( const Matrix4& m ) {
     return setFromRotationMatrix(m, _order);
   }
 
-  Euler& Euler::setFromRotationMatrix( const Matrix3& m, enums::EulerRotationOrder order ) {
+  Euler& Euler::setFromRotationMatrix( const Matrix4& m, enums::EulerRotationOrder order ) {
 
       // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 

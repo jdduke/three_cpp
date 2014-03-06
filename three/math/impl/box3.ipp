@@ -118,18 +118,16 @@ namespace three {
     return Vector3().addVectors( min, max ).multiplyScalar( 0.5 );
   }
 
-  Vector3 Box3::center( const Vector3& target ) const {
-    auto result = target;
-    return result.addVectors( min, max ).multiplyScalar( 0.5 );
+  Vector3& Box3::center( Vector3& target ) {
+    return target.addVectors( min, max ).multiplyScalar( 0.5 );
   }
 
   Vector3 Box3::size() const {
     return Vector3().subVectors( max, min );
   }
 
-  Vector3 Box3::size( const Vector3& target ) const {
-    auto result = target;
-    return result.subVectors( min, max );
+  Vector3& Box3::size( Vector3& target ) {
+    return target.subVectors( min, max );
   }
 
   Box3& Box3::expandByPoint( const Vector3& point ) {
@@ -170,16 +168,21 @@ namespace three {
   }
 
   Vector3 Box3::getParameter( const Vector3& point ) const {
-    // @todo mem check
-    return getParameter(point, Vector3());
-  }
-
-  Vector3 Box3::getParameter( const Vector3& point, const Vector3& target ) const {
-    auto result = target;
     auto divX = ( max.x - min.x );
     auto divY = ( max.y - min.y );
     auto divZ = ( max.z - min.z );
-    return result.set(
+    return Vector3().set(
+      ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
+      ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY,
+      ( point.z - min.z ) / divZ == 0 ? NEAR_ZERO_FLOAT_32 : divZ
+    );
+  }
+
+  Vector3& Box3::getParameter( const Vector3& point, Vector3& target ) {
+    auto divX = ( max.x - min.x );
+    auto divY = ( max.y - min.y );
+    auto divZ = ( max.z - min.z );
+    return target.set(
       ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
       ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY,
       ( point.z - min.z ) / divZ == 0 ? NEAR_ZERO_FLOAT_32 : divZ
@@ -197,13 +200,11 @@ namespace three {
   }
 
   Vector3 Box3::clampPoint( const Vector3& point ) const {
-  // @todo mem check
-    return clampPoint(point, Vector3());
+    return Vector3().copy( point ).clamp( min, max );
   }
 
-  Vector3 Box3::clampPoint( const Vector3& point, const Vector3& target ) const {
-    auto result = target;
-    return result.copy( point ).clamp( min, max );
+  Vector3& Box3::clampPoint( const Vector3& point, Vector3& target ) {
+    return target.copy( point ).clamp( min, max );
   }
 
   float Box3::distanceToPoint( const Vector3& point ) const {
@@ -213,16 +214,16 @@ namespace three {
   }
 
   Sphere Box3::getBoundingSphere() const {
-    return getBoundingSphere(Sphere());
+    auto s = Sphere();
+    s.center = center();
+    s.radius = size().length() * 0.5f;
+    return s;
   }
 
-  Sphere Box3::getBoundingSphere(const Sphere& target) const {
-    auto v1 = Vector3();
-    auto result = target;
-
-    result.center = center();
-    result.radius = size( v1 ).length() * 0.5f;
-    return result;
+  Sphere& Box3::getBoundingSphere( Sphere& target) {
+    target.center = center();
+    target.radius = size().length() * 0.5f;
+    return target;
   }
 
   Box3& Box3::intersect( const Box3& box ) {
@@ -239,15 +240,16 @@ namespace three {
 
   Box3& Box3::applyMatrix4(const Matrix4& matrix)  {
     // VS2012 doesnt support initializer list
-    std::vector<Vector3> points;
-	points[0] = Vector3();
-	points[1] = Vector3();
-	points[2] = Vector3();
-	points[3] = Vector3();
-	points[4] = Vector3();
-	points[5] = Vector3();
-	points[6] = Vector3();
-	points[7] = Vector3();
+    std::vector<Vector3> points = {
+    	points[0] = Vector3(),
+    	points[1] = Vector3(),
+    	points[2] = Vector3(),
+    	points[3] = Vector3(),
+    	points[4] = Vector3(),
+    	points[5] = Vector3(),
+    	points[6] = Vector3(),
+    	points[7] = Vector3(),
+    };
 
     // NOTE: I am using a binary pattern to specify all 2^3 combinations below
     points[0].set( min.x, min.y, min.z ).applyMatrix4( matrix ); // 000

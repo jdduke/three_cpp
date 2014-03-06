@@ -2,7 +2,6 @@
 #define THREE_BOX2_IPP
 
 #include <three/common.hpp>
-
 #include <three/math/math.hpp>
 #include <three/math/box2.hpp>
 
@@ -99,9 +98,8 @@ namespace three {
       return Vector2().addVectors( min, max ).multiplyScalar( 0.5 );
     }
 
-    Vector2 Box2::center( const Vector2& target ) const {
-      auto result = target;
-      return result.addVectors( min, max ).multiplyScalar( 0.5 );
+    Vector2& Box2::center( Vector2& target ) {
+      return target.addVectors( min, max ).multiplyScalar( 0.5 );
     }
 
     bool Box2::containsBox( const Box2& box ) const {
@@ -119,13 +117,11 @@ namespace three {
     }
 
     Vector2 Box2::clampPoint( const Vector2& point ) const {
-    // @todo mem check
-      return clampPoint(point, Vector2());
+      return Vector2().copy( point ).clamp( min, max );
     }
 
-    Vector2 Box2::clampPoint( const Vector2& point, const Vector2& target ) const {
-      auto result = target;
-      return result.copy( point ).clamp( min, max );
+    Vector2 Box2::clampPoint( const Vector2& point, Vector2& target ) {
+      return target.copy( point ).clamp( min, max );
     }
 
     Box2 Box2::clone() const {
@@ -136,9 +132,8 @@ namespace three {
       return Vector2().subVectors( max, min );
     }
 
-    Vector2 Box2::size( const Vector2& target ) const {
-      auto result = target;
-      return result.subVectors( min, max );
+    Vector2& Box2::size( Vector2& target ) {
+      return target.subVectors( min, max );
     }
 
     Box2& Box2::intersect( const Box2& box ) {
@@ -170,27 +165,23 @@ namespace three {
       return box.min.equals( min ) && box.max.equals( max );
     }
 
-    Vector2 Box2::getParameter( const Vector2& point, const Vector2& target ) const {
-      auto result = target;
-      auto divX = ( max.x - min.x );
-      auto divY = ( max.y - min.y );
-      return result.set(
-        ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
-        ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY
-      );
-    }
-
     Vector2 Box2::getParameter( const Vector2& point ) const {
-      //@todo DRY?
-      auto result = Vector2();
       auto divX = ( max.x - min.x );
       auto divY = ( max.y - min.y );
-      return result.set(
+      return Vector2().set(
         ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
         ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY
       );
     }
 
+    Vector2& Box2::getParameter( const Vector2& point, Vector2& target ) {
+      auto divX = ( max.x - min.x );
+      auto divY = ( max.y - min.y );
+      return target.set(
+        ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
+        ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY
+      );
+    }
 
 } // namespace three
 

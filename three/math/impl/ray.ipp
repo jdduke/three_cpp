@@ -5,84 +5,61 @@
 
 namespace three {
     
-
   Ray& Ray::set( const Vector3& origin, const Vector3& direction ) {
-    
     this->origin.copy( origin );
     this->direction.copy( direction );
-
     return *this;
   }
 
   Ray& Ray::copy( const Ray& ray ) {
-
     this->origin.copy( ray.origin );
     this->direction.copy( ray.direction );
-
     return *this;
-
   }
 
-  Vector3& Ray::at( float t ) const {
-    return at( t, Vector3() );
+  Vector3 Ray::at( float t ) const {
+    return Vector3().copy( this->direction ).multiplyScalar( t ).add( this->origin );
   }
 
-  Vector3& Ray::at( float t, const Vector3::Ptr target  ) const {
-    auto result = target ? std::move(taregt) : Vector3();
-    return result.copy( this->direction ).multiplyScalar( t ).add( this->origin );
+  Vector3 Ray::at( float t, Vector3& target ) {
+    return target.copy( this->direction ).multiplyScalar( t ).add( this->origin );
   }
 
   Ray& Ray::recast( float t ) {
-
-    // @todo priv member?
-    auto v1 = Vector3();
-
-    this->origin.copy( this->at( t, v1 ) );
-
+    this->origin.copy( this->at( t, Vector3() ) );
     return *this;
   }
 
-  Vector3& Ray::closestPointToPoint( const Vector3& point ) {
+  Vector3 Ray::closestPointToPoint( const Vector3& point ) {
     return closestPointToPoint(point, Vector3());
   }
 
-  Vector3& Ray::closestPointToPoint( const Vector3& point, const Vector3::Ptr target ) {
-
+  Vector3 Ray::closestPointToPoint( const Vector3& point, Vector3& target ) {
     target.subVectors( point, this->origin );
     auto directionDistance = target.dot( this->direction );
 
     if ( directionDistance < 0 ) {
-
       return target.copy( this->origin );
-
     }
-
     return target.copy( this->direction ).multiplyScalar( directionDistance ).add( this->origin );
-
   }
 
   float Ray::distanceToPoint( const Vector3& point ) const {
-
-    // @todo priv member check
     auto v1 = Vector3();
     auto directionDistance = v1.subVectors( point, this->origin ).dot( this->direction );
 
     // point behind the ray
-
     if ( directionDistance < 0 ) {
-
       return this->origin.distanceTo( point );
-
     }
 
     v1.copy( this->direction ).multiplyScalar( directionDistance ).add( this->origin );
 
     return v1.distanceTo( point );
-
   }
 
   float Ray::distanceSqToSegment( const Vector3& v0, const Vector3& v1, 
-    Vector3::Ptr optionalPointOnRay = nullptr, Vector3::Ptr optionalPointOnSegment = nullptr ) const  
+    Vector3* optionalPointOnRay = nullptr, Vector3* optionalPointOnSegment = nullptr )  
   {
 
     // from http://www.geometrictools.com/LibMathematics/Distance/Wm5DistRay3Segment3.cpp
@@ -176,13 +153,10 @@ namespace three {
       }
 
     } else {
-
       // Ray and segment are parallel.
-
       s1 = ( a01 > 0 ) ? - segExtent : segExtent;
       s0 = Math::max( 0, - ( a01 * s1 + b0 ) );
       sqrDist = - s0 * s0 + s1 * ( s1 + 2 * b1 ) + c;
-
     }
 
     if ( optionalPointOnRay ) {
@@ -202,35 +176,24 @@ namespace three {
   }
 
   bool Ray::isIntersectionSphere( const Sphere& sphere ) const {
-
     return this->distanceToPoint( sphere.center ) <= sphere.radius;
-
   }
 
   bool Ray::isIntersectionPlane( const Plane& plane ) const {
-
     // check if the ray lies on the plane first
-
     auto distToPoint = plane.distanceToPoint( this->origin );
 
     if ( distToPoint === 0 ) {
-
       return true;
-
     }
 
     auto denominator = plane.normal.dot( this->direction );
-
     if ( denominator * distToPoint < 0 ) {
-
       return true
-
     }
 
     // ray origin is behind the plane (and is pointing behind it)
-
     return false;
-
   }
 
   float Ray::distanceToPlane( const Plane& plane ) const {
@@ -240,30 +203,23 @@ namespace three {
 
       // line is coplanar, return origin
       if( plane.distanceToPoint( this->origin ) == 0 ) {
-
         return 0;
-
       }
 
       return -1;
-
     }
 
     auto t = - ( this->origin.dot( plane.normal ) + plane.constant ) / denominator;
 
     // Return if the ray never intersects the plane
-
     return t >= 0 ? t : -1;
-
   }
 
-  Vector3::Ptr Ray::intersectPlane( const Vector3& plane ) {
-
+  Vector3 Ray::intersectPlane( const Vector3& plane ) {
     return intersectPlane( plane, Vector3() );
-
   }
 
-  Vector3::Ptr Ray::intersectPlane( const Plane& plane, const Vector3::Ptr target ) {
+  Vector3 Ray::intersectPlane( const Plane& plane, Vector3& target ) {
 
     auto t = this->distanceToPlane( plane );
 
@@ -272,7 +228,6 @@ namespace three {
     }
 
     return this->at( t, target );
-
   }
 
   bool Ray::isIntersectionBox( const Box& box ) const {
@@ -283,12 +238,12 @@ namespace three {
     return this->intersectBox( box, v ) != nullptr;
   }
 
-  Box3::Ptr Ray::intersectBox( const Box3& box ) {
+  Box3 Ray::intersectBox( const Box3& box ) {
     //@todo mem check efficiency
     return intersectBox(box, nullptr);
   }
 
-  Box3::Ptr Ray::intersectBox( const Box3& box , const Vector3::Ptr target ) {
+  Box3 Ray::intersectBox( const Box3& box, Vector3& target ) {
 
     // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
 
@@ -356,7 +311,7 @@ namespace three {
 
   }
 
-  Vector3::Ptr Ray::intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, const Vector3::Ptr optionalTarget ) {
+  Vector3 Ray::intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3* optionalTarget ) {
 
     // @todo priv member check
     // Compute the offset origin, edges, and normal.

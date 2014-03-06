@@ -78,20 +78,18 @@ namespace three {
     return orthoPoint( point ).sub( point ).negate();
   }
 
-  Vector3 Plane::projectPoint( const Vector3& point, const Vector3& target ) const {
+  Vector3& Plane::projectPoint( const Vector3& point, Vector3& target ) {
     return orthoPoint( point, target ).sub( point ).negate();
   }
 
   Vector3 Plane::orthoPoint( const Vector3& point) const {
     auto perpendicularMagnitude = distanceToPoint( point );
-    auto result = Vector3();
-    return result.copy( normal ).multiplyScalar( perpendicularMagnitude );
+    return Vector3().copy( normal ).multiplyScalar( perpendicularMagnitude );
   }
 
-  Vector3 Plane::orthoPoint( const Vector3& point, const Vector3& target ) const {
+  Vector3& Plane::orthoPoint( const Vector3& point, Vector3& target ) {
     auto perpendicularMagnitude = distanceToPoint( point );
-    auto result = target;
-    return result.copy( normal ).multiplyScalar( perpendicularMagnitude );
+    return target.copy( normal ).multiplyScalar( perpendicularMagnitude );
   }
 
   bool Plane::isIntersectionLine( const Line3& line ) const {
@@ -101,33 +99,48 @@ namespace three {
     return ( startSign < 0 && endSign > 0 ) || ( endSign < 0 && startSign > 0 );
   }
 
-  Vector3* Plane::intersectLine( const Line3& line) const {
-    return intersectLine(line, Vector3());
+  Vector3 Plane::intersectLine( const Line3& line) const {
+    auto direction = line.delta();
+    auto denominator = normal.dot( direction );
+
+    auto result = Vector3();
+    if ( denominator == 0 ) {
+        // line is coplanar, return origin
+        if( distanceToPoint( line.start ) == 0 ) {
+            return result.copy( line.start );
+        }
+        // Unsure if this is the correct method to handle this case.
+        return result;
+    }
+
+    auto t = - ( line.start.dot( normal ) + constant ) / denominator;
+
+    if( t < 0 || t > 1 ) {
+        return result;
+    }
+    return result.copy( direction ).multiplyScalar( t ).add( line.start );
+
   }
 
-    // @todo refactor nullptr
-  Vector3* Plane::intersectLine( const Line3& line, const Vector3& target) const {
-
-    auto v1 = Vector3();
-		auto result = target;// || new THREE.Vector3();
-		auto direction = line.delta( v1 );
+  Vector3& Plane::intersectLine( const Line3& line, Vector3& target) {
+		auto direction = line.delta();
 		auto denominator = normal.dot( direction );
 
 		if ( denominator == 0 ) {
 			// line is coplanar, return origin
 			if( distanceToPoint( line.start ) == 0 ) {
-				return &result.copy( line.start );
+				return target.copy( line.start );
 			}
 			// Unsure if this is the correct method to handle this case.
-			return nullptr;
+			return target;
 		}
 
 		auto t = - ( line.start.dot( normal ) + constant ) / denominator;
 
 		if( t < 0 || t > 1 ) {
-			return nullptr;
+			return target;
 		}
-		return &result.copy( direction ).multiplyScalar( t ).add( line.start );
+		return target.copy( direction ).multiplyScalar( t ).add( line.start );
  }
 
  Vector3 Plane::coplanarPoint() const {
