@@ -7,138 +7,179 @@
 #include <three/math/matrix3.hpp>
 
 namespace three {
-    
-  class Vector3 {
-  public:
 
-    union {
-      struct { float x, y, z; };
-      float xyz[3];
+class Vector3 {
+public:
+
+  union {
+    struct {
+      float x, y, z;
     };
+    float xyz[3];
+  };
 
-    Vector3() : x( 0 ), y( 0 ), z( 0 ) { }
-    Vector3( float xIn, float yIn, float zIn ) : x( xIn ), y( yIn ), z( zIn ) { }
-    explicit Vector3( float value ) : x( value ), y( value ), z( value ) { }
-    explicit Vector3( float* values ) : x( values[0] ), y( values[1] ), z( values[2] ) { }
+  Vector3()
+    : x( 0 ), y( 0 ), z( 0 ) {}
 
-    float& operator[]( const int i ) { return xyz[i]; }
-    const float operator[]( const int i ) const { return xyz[i]; }
+  Vector3( float xIn, float yIn, float zIn )
+    : x( xIn ), y( yIn ), z( zIn ) {}
 
-    Vector3& set( float xIn, float yIn, float zIn ) {
-      x = xIn;
-      y = yIn;
-      z = zIn;
-      return *this;
-    }
+  explicit Vector3( float value )
+    : x( value ), y( value ), z( value ) {}
 
-    Vector3& setX( float xIn ) {
-      x = xIn;
-      return *this;
-    }
+  explicit Vector3( float* values )
+    : x( values[0] ), y( values[1] ), z( values[2] ) {}
 
-    Vector3& setY( float yIn ) {
-      y = yIn;
-      return *this;
-    }
+  float& operator[]( const int i ) {
+    return xyz[i];
+  }
 
-    Vector3& setZ( float zIn ) {
-      z = zIn;
-      return *this;
-    }
+  const float operator[]( const int i ) const {
+    return xyz[i];
+  }
 
-    Vector3& copy( const Vector3& v ) {
-      x = v.x;
-      y = v.y;
-      z = v.z;
-      return *this;
-    }
+  Vector3& set( const float& xIn, const float& yIn, const float& zIn ) {
 
-    Vector3& add( const Vector3& v ) {
-      x += v.x;
-      y += v.y;
-      z += v.z;
-      return *this;
-    }
+    x = xIn;
+    y = yIn;
+    z = zIn;
 
-    Vector3& addScalar( float s ) {
-      x += s;
-      y += s;
-      z += s;
-      return *this;
-    }
+    return *this;
+  }
 
-    Vector3& addVectors( const Vector3& a, const Vector3& b ) {
-      x = a.x + b.x;
-      y = a.y + b.y;
-      z = a.z + b.z;
-      return *this;
-    }
+  Vector3& setX( const float& xIn ) {
 
-    Vector3& sub( const Vector3& v ) {
-      x -= v.x;
-      y -= v.y;
-      z -= v.z;
-      return *this;
-    }
+    x = xIn;
 
-    Vector3& subVectors( const Vector3& a, const Vector3& b ) {
-      x = a.x - b.x;
-      y = a.y - b.y;
-      z = a.z - b.z;
-      return *this;
-    }
+    return *this;
+  }
 
-    Vector3& multiply( const Vector3& v ) {
-      x *= v.x;
-      y *= v.y;
-      z *= v.z;
-      return *this;
-    }
+  Vector3& setY( const float& yIn ) {
 
-    Vector3& multiplyScalar( float s ) {
-      x *= s;
-      y *= s;
-      z *= s;
-      return *this;
-    }
+    y = yIn;
 
-    Vector3& multiplyVectors( const Vector3& a, const Vector3& b ) {
-      x = a.x * b.x;
-      y = a.y * b.y;
-      z = a.z * b.z;
-      return *this;
-    }
+    return *this;
+  }
 
-    Vector3& applyMatrix3( const Matrix3& m ) {
-      auto e = m.elements;
+  Vector3& setZ( const float& zIn ) {
 
-      x = e[0] * x + e[3] * y + e[6] * z;
-      y = e[1] * x + e[4] * y + e[7] * z;
-      z = e[2] * x + e[5] * y + e[8] * z;
+    z = zIn;
 
-      return *this;
-    }
+    return *this;
+  }
 
-    Vector3& applyMatrix4( const Matrix4& m ) {
-      auto e = m.elements;
+  Vector3& copy( const Vector3& v ) {
 
-      x = e[0] * x + e[4] * y + e[8]  * z + e[12];
-      y = e[1] * x + e[5] * y + e[9]  * z + e[13];
-      z = e[2] * x + e[6] * y + e[10] * z + e[14];
+    x = v.x;
+    y = v.y;
+    z = v.z;
 
-      return *this;
-    }
+    return *this;
+  }
 
-    Vector3& applyProjection( const Matrix4& m ) {
-      auto e = m.elements;
-      auto d = 1.0f / ( e[3] * x + e[7] * y + e[11] * z + e[15] ); // perspective divide
+  Vector3& add( const Vector3& v ) {
 
-      x = ( e[0] * x + e[4] * y + e[8]  * z + e[12] ) * d;
-      y = ( e[1] * x + e[5] * y + e[9]  * z + e[13] ) * d;
-      z = ( e[2] * x + e[6] * y + e[10] * z + e[14] ) * d;
+    x += v.x;
+    y += v.y;
+    z += v.z;
 
-      return *this;
-    }
+    return *this;
+  }
+
+  Vector3& addScalar( const float& s ) {
+    x += s;
+    y += s;
+    z += s;
+    return *this;
+  }
+
+  Vector3& addVectors( const Vector3& a, const Vector3& b ) {
+
+    x = a.x + b.x;
+    y = a.y + b.y;
+    z = a.z + b.z;
+
+    return *this;
+  }
+
+  Vector3& sub( const Vector3& v ) {
+
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
+
+    return *this;
+  }
+
+  Vector3& subVectors( const Vector3& a, const Vector3& b ) {
+
+    x = a.x - b.x;
+    y = a.y - b.y;
+    z = a.z - b.z;
+
+    return *this;
+  }
+
+  Vector3& multiply( const Vector3& v ) {
+
+    x *= v.x;
+    y *= v.y;
+    z *= v.z;
+
+    return *this;
+  }
+
+  Vector3& multiplyScalar( const float& s ) {
+
+    x *= s;
+    y *= s;
+    z *= s;
+
+    return *this;
+  }
+
+  Vector3& multiplyVectors( const Vector3& a, const Vector3& b ) {
+
+    x = a.x * b.x;
+    y = a.y * b.y;
+    z = a.z * b.z;
+
+    return *this;
+  }
+
+  Vector3& applyMatrix3( const Matrix3& m ) {
+
+    const auto& e = m.elements;
+
+    x = e[0] * x + e[3] * y + e[6] * z;
+    y = e[1] * x + e[4] * y + e[7] * z;
+    z = e[2] * x + e[5] * y + e[8] * z;
+
+    return *this;
+  }
+
+  Vector3& applyMatrix4( const Matrix4& m ) {
+
+    const auto& e = m.elements;
+
+    x = e[0] * x + e[4] * y + e[8]  * z + e[12];
+    y = e[1] * x + e[5] * y + e[9]  * z + e[13];
+    z = e[2] * x + e[6] * y + e[10] * z + e[14];
+
+    return *this;
+  }
+
+  Vector3& applyProjection( const Matrix4& m ) {
+
+    const auto& e = m.elements;
+    auto d = 1.0f / ( e[3] * x + e[7] * y + e[11] * z + e[15] ); // perspective divide
+
+    x = ( e[0] * x + e[4] * y + e[8]  * z + e[12] ) * d;
+    y = ( e[1] * x + e[5] * y + e[9]  * z + e[13] ) * d;
+    z = ( e[2] * x + e[6] * y + e[10] * z + e[14] ) * d;
+
+    return *this;
+  }
 
   Vector3& applyQuaternion( const Quaternion& q ) {
 
@@ -165,7 +206,8 @@ namespace three {
   }
 
   Vector3& transformDirection( const Matrix4& m ) {
-    auto e = m.elements;
+
+    const auto& e = m.elements;
 
     x = e[0] * x + e[4] * y + e[8]  * z;
     y = e[1] * x + e[5] * y + e[9]  * z;
@@ -177,7 +219,9 @@ namespace three {
   }
 
   Vector3& divide( const Vector3& v ) {
+
     // @todo what's the desired/correct behavior?
+
     if(v.x != 0.f && v.y != 0.f && v.z != 0.f) {
       x /= v.x;
       y /= v.y;
@@ -185,10 +229,12 @@ namespace three {
     } else {
       set( 0.f, 0.f, 0.f);
     }
+
     return *this;
   }
 
-  Vector3& divideScalar( float s ) {
+  Vector3& divideScalar( const float& s ) {
+
     if ( s != 0.f ) {
       auto invScalar = 1.f / s;
 
@@ -198,10 +244,12 @@ namespace three {
     } else {
       set( 0.f, 0.f, 0.f );
     }
+
     return *this;
   }
 
   Vector3& min( const Vector3& v ) {
+
     if ( x > v.x ) {
       x = v.x;
     }
@@ -213,6 +261,7 @@ namespace three {
     if ( z > v.z ) {
       z = v.z;
     }
+
     return *this;
   }
 
@@ -286,29 +335,36 @@ namespace three {
     return normalize().multiplyScalar( l );
   }
 
-  Vector3& lerp( const Vector3& v, float alpha ) {
+  Vector3& lerp( const Vector3& v, const float& alpha ) {
+
     x += ( v.x - x ) * alpha;
     y += ( v.y - y ) * alpha;
     z += ( v.z - z ) * alpha;
+
     return *this;
   }
 
   Vector3& cross( const Vector3& v) {
+
     x = y * v.z - z * v.y;
     y = z * v.x - x * v.z;
     z = x * v.y - y * v.x;
+
     return *this;
   }
 
   Vector3& crossVectors( const Vector3& a, const Vector3& b ) {
+
     x = a.y * b.z - a.z * b.y;
     y = a.z * b.x - a.x * b.z;
     z = a.x * b.y - a.y * b.x;
+
     return *this;
   }
 
 
   float angleTo( const Vector3& v ) {
+
     //@todo near zero correct behavior?
     auto l = length() * v.length();
     auto theta = dot( v ) / l == 0.f ? NEAR_ZERO_FLOAT_32 : l;
@@ -326,9 +382,11 @@ namespace three {
   }
 
   Vector3& setFromMatrixPosition( const Matrix4& m ) {
+
     x = m.elements[ 12 ];
     y = m.elements[ 13 ];
     z = m.elements[ 14 ];
+
     return *this;
   }
 
@@ -341,7 +399,7 @@ namespace three {
     return *this;
   }
 
-  Vector3& setFromMatrixColumn( const size_t index, const Matrix4& matrix ) {
+  Vector3& setFromMatrixColumn( const size_t& index, const Matrix4& matrix ) {
 
     auto offset = index * 4;
 
@@ -365,53 +423,63 @@ namespace three {
   }
 
   Vector3& applyEuler( const Euler& euler ) {
+
     applyQuaternion( Quaternion().setFromEuler( euler ) );
+
     return *this;
   }
 
   Vector3& applyAxisAngle( const Vector3& axis, float angle ) {
+
     applyQuaternion( Quaternion().setFromAxisAngle( axis, angle ) );
+
     return *this;
   }
 
   Vector3& projectOnVector( const Vector3& vector ) {
+
     auto v1 = Vector3();
     v1.copy( vector ).normalize();
     auto d = dot( v1 );
+
     return copy( v1 ).multiplyScalar( d );
   }
 
   Vector3& projectOnPlane( const Vector3& planeNormal ) {
+
     auto v1 = Vector3();
     v1.copy( *this ).projectOnVector( planeNormal );
+
     return sub( v1 );
   }
 
   Vector3& reflect( const Vector3& vector ) {
+
     auto v1 = Vector3();
     v1.copy( *this ).projectOnVector( vector ).multiplyScalar( 2 );
+
     return subVectors( v1, *this );
   }
 
 };
 
-  static_assert( sizeof( Vector3 ) == sizeof( float ) * 3, "Invalid Vector3 storage size" );
+static_assert( sizeof( Vector3 ) == sizeof( float ) * 3, "Invalid Vector3 storage size" );
 
-  inline Vector3 add( const Vector3& a, const Vector3& b ) {
-    return Vector3().addVectors( a, b );
-  }
+inline Vector3 add( const Vector3& a, const Vector3& b ) {
+  return Vector3().addVectors( a, b );
+}
 
-  inline Vector3 sub( const Vector3& a, const Vector3& b ) {
-    return Vector3().subVectors( a, b );
-  }
+inline Vector3 sub( const Vector3& a, const Vector3& b ) {
+  return Vector3().subVectors( a, b );
+}
 
-  inline float dot( const Vector3& a, const Vector3& b ) {
-    return a.dot( b );
-  }
+inline float dot( const Vector3& a, const Vector3& b ) {
+  return a.dot( b );
+}
 
-  inline Vector3 cross( const Vector3& a, const Vector3& b ) {
-    return Vector3().crossVectors( a, b );
-  }
+inline Vector3 cross( const Vector3& a, const Vector3& b ) {
+  return Vector3().crossVectors( a, b );
+}
 
 } // namespace three
 

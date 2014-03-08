@@ -10,7 +10,6 @@ namespace three {
 
 // TODO:
 class Bone {
-
   Bone( std::string name,
         Vector3 position,
         Quaternion quaternion,
