@@ -46,6 +46,10 @@
 #define THREE_DATA_DIR "."
 #endif
 
+#ifndef THREE_CLASS
+#define THREE_CLASS
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 
 

@@ -8,66 +8,66 @@ namespace three {
 class ShaderChunk {
 public:
 
-  THREE_DECL static const char* fog_pars_fragment();
-  THREE_DECL static const char* fog_fragment();
+  static const char* fog_pars_fragment();
+  static const char* fog_fragment();
 
-  THREE_DECL static const char* envmap_pars_fragment();
-  THREE_DECL static const char* envmap_fragment();
-  THREE_DECL static const char* envmap_pars_vertex();
-  THREE_DECL static const char* envmap_vertex();
+  static const char* envmap_pars_fragment();
+  static const char* envmap_fragment();
+  static const char* envmap_pars_vertex();
+  static const char* envmap_vertex();
 
-  THREE_DECL static const char* map_particle_pars_fragment();
-  THREE_DECL static const char* map_particle_fragment();
+  static const char* map_particle_pars_fragment();
+  static const char* map_particle_fragment();
 
-  THREE_DECL static const char* map_pars_vertex();
-  THREE_DECL static const char* map_pars_fragment();
-  THREE_DECL static const char* map_vertex();
-  THREE_DECL static const char* map_fragment();
+  static const char* map_pars_vertex();
+  static const char* map_pars_fragment();
+  static const char* map_vertex();
+  static const char* map_fragment();
 
-  THREE_DECL static const char* lightmap_pars_fragment();
-  THREE_DECL static const char* lightmap_pars_vertex();
-  THREE_DECL static const char* lightmap_fragment();
-  THREE_DECL static const char* lightmap_vertex();
+  static const char* lightmap_pars_fragment();
+  static const char* lightmap_pars_vertex();
+  static const char* lightmap_fragment();
+  static const char* lightmap_vertex();
 
-  THREE_DECL static const char* bumpmap_pars_fragment();
+  static const char* bumpmap_pars_fragment();
 
-  THREE_DECL static const char* specularmap_pars_fragment();
-  THREE_DECL static const char* specularmap_fragment();
+  static const char* specularmap_pars_fragment();
+  static const char* specularmap_fragment();
 
-  THREE_DECL static const char* lights_lambert_pars_vertex();
-  THREE_DECL static const char* lights_lambert_vertex();
+  static const char* lights_lambert_pars_vertex();
+  static const char* lights_lambert_vertex();
 
-  THREE_DECL static const char* lights_phong_pars_vertex();
-  THREE_DECL static const char* lights_phong_vertex();
+  static const char* lights_phong_pars_vertex();
+  static const char* lights_phong_vertex();
 
-  THREE_DECL static const char* lights_phong_pars_fragment();
-  THREE_DECL static const char* lights_phong_fragment();
+  static const char* lights_phong_pars_fragment();
+  static const char* lights_phong_fragment();
 
-  THREE_DECL static const char* color_pars_fragment();
-  THREE_DECL static const char* color_fragment();
-  THREE_DECL static const char* color_pars_vertex();
-  THREE_DECL static const char* color_vertex();
+  static const char* color_pars_fragment();
+  static const char* color_fragment();
+  static const char* color_pars_vertex();
+  static const char* color_vertex();
 
-  THREE_DECL static const char* skinning_pars_vertex();
+  static const char* skinning_pars_vertex();
 
-  THREE_DECL static const char* skinbase_vertex();
-  THREE_DECL static const char* skinning_vertex();
-  THREE_DECL static const char* morphtarget_pars_vertex();
-  THREE_DECL static const char* morphtarget_vertex();
+  static const char* skinbase_vertex();
+  static const char* skinning_vertex();
+  static const char* morphtarget_pars_vertex();
+  static const char* morphtarget_vertex();
 
-  THREE_DECL static const char* default_vertex();
-  THREE_DECL static const char* morphnormal_vertex();
-  THREE_DECL static const char* skinnormal_vertex();
-  THREE_DECL static const char* defaultnormal_vertex();
+  static const char* default_vertex();
+  static const char* morphnormal_vertex();
+  static const char* skinnormal_vertex();
+  static const char* defaultnormal_vertex();
 
-  THREE_DECL static const char* shadowmap_pars_fragment();
-  THREE_DECL static const char* shadowmap_fragment();
-  THREE_DECL static const char* shadowmap_pars_vertex();
-  THREE_DECL static const char* shadowmap_vertex();
+  static const char* shadowmap_pars_fragment();
+  static const char* shadowmap_fragment();
+  static const char* shadowmap_pars_vertex();
+  static const char* shadowmap_vertex();
 
-  THREE_DECL static const char* alphatest_fragment();
+  static const char* alphatest_fragment();
 
-  THREE_DECL static const char* linear_to_gamma_fragment();
+  static const char* linear_to_gamma_fragment();
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -75,12 +75,12 @@ public:
 class UniformsLib {
 public:
 
-  THREE_DECL static Uniforms common();
-  THREE_DECL static Uniforms bump();
-  THREE_DECL static Uniforms fog();
-  THREE_DECL static Uniforms lights();
-  THREE_DECL static Uniforms particle();
-  THREE_DECL static Uniforms shadowmap();
+  static Uniforms common();
+  static Uniforms bump();
+  static Uniforms fog();
+  static Uniforms lights();
+  static Uniforms particle();
+  static Uniforms shadowmap();
 
 };
 
@@ -99,13 +99,13 @@ public:
 class ShaderLib {
 public:
 
-  THREE_DECL static const Shader& depth();
-  THREE_DECL static const Shader& normal();
-  THREE_DECL static const Shader& basic();
-  THREE_DECL static const Shader& lambert();
-  THREE_DECL static const Shader& phong();
-  THREE_DECL static const Shader& particleBasic();
-  THREE_DECL static const Shader& depthRGBA();
+  static const Shader& depth();
+  static const Shader& normal();
+  static const Shader& basic();
+  static const Shader& lambert();
+  static const Shader& phong();
+  static const Shader& particleBasic();
+  static const Shader& depthRGBA();
 
 };
 

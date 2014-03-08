@@ -10,17 +10,17 @@ namespace three {
 class ImageUtils {
 public:
 
-  THREE_DECL static Texture::Ptr loadTexture(
+  static Texture::Ptr loadTexture(
     const std::string& url
     //,enums::Mapping mapping = enums::UVMapping
   );
 
-  THREE_DECL static Texture::Ptr loadCompressedTexture(
+  static Texture::Ptr loadCompressedTexture(
     const std::string& url,
     enums::Mapping mapping = enums::UVMapping
   );
 
-  THREE_DECL static Texture::Ptr generateDataTexture(
+  static Texture::Ptr generateDataTexture(
     int width,
     int height,
     Color color
@@ -28,12 +28,12 @@ public:
 
 #ifdef TODO_LOAD_TEXTURE_CUBE
 
-  THREE_DECL static Texture::Ptr loadTextureCube(
+  static Texture::Ptr loadTextureCube(
     std::array<std: string, 6> array,
     enums::Mapping mapping = enums::UVMapping
   );
 
-  THREE_DECL static Texture::Ptr loadCompressedTextureCube(
+  static Texture::Ptr loadCompressedTextureCube(
     std::array<std: string, 6> array,
     enums::Mapping mapping = enums::UVMapping
   );

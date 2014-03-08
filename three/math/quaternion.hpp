@@ -67,37 +67,37 @@ namespace three {
 	  return *this;
     }
 
-   THREE_DECL Quaternion& set( float x, float y, float z, float w );
+   Quaternion& set( float x, float y, float z, float w );
 
-   THREE_DECL Quaternion& copy( const Quaternion& quaternion );
+   Quaternion& copy( const Quaternion& quaternion );
 
-   THREE_DECL Quaternion& setFromEuler( const Euler& euler, bool update = false );
+   Quaternion& setFromEuler( const Euler& euler, bool update = false );
 
-   THREE_DECL Quaternion& setFromAxisAngle( const Vector3& axis, float angle );
+   Quaternion& setFromAxisAngle( const Vector3& axis, float angle );
 
-   THREE_DECL Quaternion& setFromRotationMatrix( const Matrix4& m );
+   Quaternion& setFromRotationMatrix( const Matrix4& m );
 
-   THREE_DECL Quaternion& inverse();
+   Quaternion& inverse();
 
-   THREE_DECL Quaternion& conjugate();
+   Quaternion& conjugate();
 
-   THREE_DECL float lengthSq() const;
+   float lengthSq() const;
 
-   THREE_DECL float length() const;
+   float length() const;
 
-   THREE_DECL Quaternion& normalize();
+   Quaternion& normalize();
 
-   THREE_DECL Quaternion& multiply( const Quaternion& q );
+   Quaternion& multiply( const Quaternion& q );
 
-   THREE_DECL Quaternion& multiplyQuaternions( const Quaternion& a, const Quaternion& b );
+   Quaternion& multiplyQuaternions( const Quaternion& a, const Quaternion& b );
 
-   THREE_DECL Vector3& multiplyVector3( Vector3& vector ) const;
+   Vector3& multiplyVector3( Vector3& vector ) const;
 
-   THREE_DECL Quaternion& slerp( const Quaternion& qb, float t );
+   Quaternion& slerp( const Quaternion& qb, float t );
 
-   THREE_DECL bool equals( const Quaternion& quaternion ) const;
+   bool equals( const Quaternion& quaternion ) const;
 
-   THREE_DECL Quaternion clone();
+   Quaternion clone();
 
  };
 

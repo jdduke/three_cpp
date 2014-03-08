@@ -42,7 +42,7 @@ public:
   virtual enums::Type type() const { return enums::Object3D; }
   virtual void visit( Visitor& v ) { };
   virtual void visit( ConstVisitor& v ) const { };
-  THREE_DECL virtual ~Object3D();
+  virtual ~Object3D();
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -143,35 +143,35 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL virtual void lookAt( const Vector3& vector );
-  THREE_DECL void applyMatrix( Matrix4& m );
-  THREE_DECL void translate( float distance, Vector3 axis );
-  THREE_DECL void translateX( float distance );
-  THREE_DECL void translateY( float distance );
-  THREE_DECL void translateZ( float distance );
+  virtual void lookAt( const Vector3& vector );
+  void applyMatrix( Matrix4& m );
+  void translate( float distance, Vector3 axis );
+  void translateX( float distance );
+  void translateY( float distance );
+  void translateZ( float distance );
 
-  THREE_DECL void add( const Ptr& object );
-  THREE_DECL void remove( const Ptr& object );
+  void add( const Ptr& object );
+  void remove( const Ptr& object );
 
-  THREE_DECL void traverse( const std::function<void(const Object3D&)> traverseCallback );
+  void traverse( const std::function<void(const Object3D&)> traverseCallback );
 
-  THREE_DECL Ptr getChildByName( const std::string& name, bool recursive );
+  Ptr getChildByName( const std::string& name, bool recursive );
 
-  THREE_DECL void updateMatrix();
-  THREE_DECL void updateMatrixWorld( bool force = false );
+  void updateMatrix();
+  void updateMatrixWorld( bool force = false );
 
-  THREE_DECL Vector3 worldToLocal( Vector3& vector ) const;
-  THREE_DECL Vector3 localToWorld( Vector3& vector ) const;
+  Vector3 worldToLocal( Vector3& vector ) const;
+  Vector3 localToWorld( Vector3& vector ) const;
 
-  THREE_DECL void render( const std::function<void( Object3D& )> renderCallback );
+  void render( const std::function<void( Object3D& )> renderCallback );
 
 protected:
 
-  THREE_DECL Object3D( const Material::Ptr& material = Material::Ptr(),
+  Object3D( const Material::Ptr& material = Material::Ptr(),
                        const Geometry::Ptr& geometry = Geometry::Ptr() );
 
-  THREE_DECL virtual void __addObject( const Ptr& object );
-  THREE_DECL virtual void __removeObject( const Ptr& object );
+  virtual void __addObject( const Ptr& object );
+  virtual void __removeObject( const Ptr& object );
 
 private:
 

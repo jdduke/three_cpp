@@ -21,23 +21,23 @@ typedef std::function<void(const Event&)> EventListener;
 
 /////////////////////////////////////////////////////////////////////////
 
-THREE_DECL bool init( RendererParameters& parameters );
-THREE_DECL bool swapBuffers();
-THREE_DECL void quit();
+bool init( RendererParameters& parameters );
+bool swapBuffers();
+void quit();
 
 /////////////////////////////////////////////////////////////////////////
 
-THREE_DECL EventKey addEventListener( EventType, EventListener );
-THREE_DECL void removeEventListener( EventKey );
-THREE_DECL void clearEventListeners();
-THREE_DECL void processEvents();
+EventKey addEventListener( EventType, EventListener );
+void removeEventListener( EventKey );
+void clearEventListeners();
+void processEvents();
 
 /////////////////////////////////////////////////////////////////////////
 
 class ScopedEventListener : public NonCopyable {
 public:
-  THREE_DECL ScopedEventListener( EventType, EventListener );
-  THREE_DECL ~ScopedEventListener();
+  ScopedEventListener( EventType, EventListener );
+  ~ScopedEventListener();
 private:
   EventKey eventKey;
 };

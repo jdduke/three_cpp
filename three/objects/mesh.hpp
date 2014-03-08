@@ -17,7 +17,7 @@ namespace three {
 
     typedef std::shared_ptr<Mesh> Ptr;
 
-    THREE_DECL static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
+    static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
 
     /////////////////////////////////////////////////////////////////////////
 
@@ -36,11 +36,11 @@ namespace three {
 
     /////////////////////////////////////////////////////////////////////////
 
-    THREE_DECL int getMorphTargetIndexByName( const std::string& name );
+    int getMorphTargetIndexByName( const std::string& name );
 
   protected:
 
-    THREE_DECL Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material );
+    Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material );
 
   };
 

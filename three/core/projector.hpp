@@ -17,12 +17,12 @@ namespace three {
 class Projector : public NonCopyable {
 public:
 
-  THREE_DECL Projector();
+  Projector();
 
-  THREE_DECL Vector3& projectVector( Vector3& vector, const Camera& camera );
-  THREE_DECL Vector3& unprojectVector( Vector3& vector, const Camera& camera );
+  Vector3& projectVector( Vector3& vector, const Camera& camera );
+  Vector3& unprojectVector( Vector3& vector, const Camera& camera );
 
-  THREE_DECL Ray pickingRay( Vector3 vector, const Camera& camera );
+  Ray pickingRay( Vector3 vector, const Camera& camera );
 
   struct RenderData {
     // TODO: Fill these with pointers AFTER creating with the pool
@@ -32,8 +32,8 @@ public:
     std::vector<Renderable*>      elements;
   };
 
-  THREE_DECL RenderData& projectGraph( Object3D& root, bool sort );
-  THREE_DECL RenderData& projectScene( Scene& scene, Camera& camera, bool sort );
+  RenderData& projectGraph( Object3D& root, bool sort );
+  RenderData& projectScene( Scene& scene, Camera& camera, bool sort );
 
   struct Impl;
 

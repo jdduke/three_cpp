@@ -9,8 +9,8 @@ namespace anim {
 typedef std::function<bool( float )> Update;
 typedef std::function<bool( float )> Render;
 
-THREE_DECL void gameLoop( Update update, float frameRate = 60 );
-THREE_DECL void gameLoop( Update update, Render render, float frameRate = 60 );
+void gameLoop( Update update, float frameRate = 60 );
+void gameLoop( Update update, Render render, float frameRate = 60 );
 
 } // namespace anim
 } // namespace three

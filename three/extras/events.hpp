@@ -33,20 +33,20 @@ struct KeyboardEvent {
 
 class EventHandler {
 public:
-  THREE_DECL static EventHandler& instance();
+  static EventHandler& instance();
 
-  THREE_DECL EventKey addEventListener( EventType, EventListener ) = 0;
-  THREE_DECL void removeEventListener( EventKey ) = 0;
-  THREE_DECL void clearEventListeners() = 0;
-  THREE_DECL void processEvents() = 0;
+  EventKey addEventListener( EventType, EventListener ) = 0;
+  void removeEventListener( EventKey ) = 0;
+  void clearEventListeners() = 0;
+  void processEvents() = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////
 
 class ScopedEventListener : public NonCopyable {
 public:
-  THREE_DECL ScopedEventListener( EventType, EventListener );
-  THREE_DECL ~ScopedEventListener();
+  ScopedEventListener( EventType, EventListener );
+  ~ScopedEventListener();
 private:
   EventKey eventKey;
 };

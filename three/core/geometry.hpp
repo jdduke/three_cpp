@@ -10,7 +10,6 @@
 #include <three/math/color.hpp>
 #include <three/math/face.hpp>
 #include <three/math/vector3.hpp>
-#include <three/math/vertex.hpp>
 #include <three/math/sphere.hpp>
 #include <three/math/uv.hpp>
 #include <three/core/interfaces.hpp>
@@ -120,23 +119,23 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  virtual THREE_DECL void applyMatrix( Matrix4& matrix );
+  virtual void applyMatrix( Matrix4& matrix );
 
-  virtual THREE_DECL void computeCentroids();
-  virtual THREE_DECL void computeFaceNormals();
-  virtual THREE_DECL void computeVertexNormals();
-  virtual THREE_DECL void computeTangents();
-  virtual THREE_DECL void computeBoundingBox();
-  virtual THREE_DECL void computeBoundingSphere();
+  virtual void computeCentroids();
+  virtual void computeFaceNormals();
+  virtual void computeVertexNormals();
+  virtual void computeTangents();
+  virtual void computeBoundingBox();
+  virtual void computeBoundingSphere();
 
-  THREE_DECL void mergeVertices();
+  void mergeVertices();
 
   /////////////////////////////////////////////////////////////////////////
 
 protected:
 
-  THREE_DECL Geometry();
-  THREE_DECL virtual ~Geometry();
+  Geometry();
+  virtual ~Geometry();
 
 private:
 

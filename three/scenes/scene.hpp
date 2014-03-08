@@ -58,18 +58,18 @@ public:
 
 protected:
 
-  THREE_DECL virtual void __addObject( const Object3D::Ptr& object );
-  THREE_DECL virtual void __removeObject( const Object3D::Ptr& object );
+  virtual void __addObject( const Object3D::Ptr& object );
+  virtual void __removeObject( const Object3D::Ptr& object );
 
 protected:
 
-  THREE_DECL Scene();
-  THREE_DECL ~Scene();
+  Scene();
+  ~Scene();
 
   virtual enums::Type type() const { return enums::Scene; }
 
-  THREE_DECL virtual void visit( Visitor& v );
-  THREE_DECL virtual void visit( ConstVisitor& v ) const;
+  virtual void visit( Visitor& v );
+  virtual void visit( ConstVisitor& v ) const;
 };
 
 } // namespace three

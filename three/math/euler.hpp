@@ -28,41 +28,41 @@ public:
   Euler(const float& xIn, const float& yIn, const float& zIn, enums::EulerRotationOrder orderIn)
     : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
 
-  THREE_DECL inline float x() const;
+  inline float x() const;
 
-  THREE_DECL inline Euler& x(const float& value);
+  inline Euler& x(const float& value);
 
-  THREE_DECL inline float y() const;
+  inline float y() const;
 
-  THREE_DECL inline Euler& y(const float& value);
+  inline Euler& y(const float& value);
 
-  THREE_DECL inline float z() const;
+  inline float z() const;
 
-  THREE_DECL inline Euler& z(const float& value);
+  inline Euler& z(const float& value);
 
-  THREE_DECL inline enums::EulerRotationOrder order() const;
+  inline enums::EulerRotationOrder order() const;
 
-  THREE_DECL inline Euler& w(const enums::EulerRotationOrder& value);
+  inline Euler& w(const enums::EulerRotationOrder& value);
 
-  THREE_DECL Euler& set( float xIn, float yIn, float zIn);
+  Euler& set( float xIn, float yIn, float zIn);
 
-  THREE_DECL Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn );
+  Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn );
 
-  THREE_DECL Euler& copy ( const Euler& euler );
+  Euler& copy ( const Euler& euler );
 
-  THREE_DECL Euler& setFromRotationMatrix( const Matrix4& m );
+  Euler& setFromRotationMatrix( const Matrix4& m );
 
-  THREE_DECL Euler& setFromRotationMatrix( const Matrix4& m, enums::EulerRotationOrder order );
+  Euler& setFromRotationMatrix( const Matrix4& m, enums::EulerRotationOrder order );
 
-  THREE_DECL Euler& setFromQuaternion( const Quaternion& q, bool update = true);
+  Euler& setFromQuaternion( const Quaternion& q, bool update = true);
 
-  THREE_DECL Euler& setFromQuaternion( const Quaternion& q, enums::EulerRotationOrder order, bool update = true);
+  Euler& setFromQuaternion( const Quaternion& q, enums::EulerRotationOrder order, bool update = true);
 
-  THREE_DECL Euler& reorder(enums::EulerRotationOrder newOrder);
+  Euler& reorder(enums::EulerRotationOrder newOrder);
 
-  THREE_DECL inline bool equals( const Euler& euler ) const;
+  inline bool equals( const Euler& euler ) const;
 
-  THREE_DECL Euler clone() {
+  Euler clone() {
     return *this;
   }
 

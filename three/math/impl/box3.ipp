@@ -8,7 +8,7 @@
 
 namespace three {
 
-inline Box3& Box3::set( const Vector3& minIn, const Vector3& maxIn ) {
+Box3& Box3::set( const Vector3& minIn, const Vector3& maxIn ) {
 
   min.copy(minIn);
   max.copy(maxIn);
@@ -16,7 +16,7 @@ inline Box3& Box3::set( const Vector3& minIn, const Vector3& maxIn ) {
   return *this;
 }
 
-inline Box3& Box3::addPoint ( const Vector3& point ) {
+Box3& Box3::addPoint ( const Vector3& point ) {
 
   if ( point.x < min.x ) {
     min.x = point.x;
@@ -39,7 +39,7 @@ inline Box3& Box3::addPoint ( const Vector3& point ) {
   return *this;
 }
 
-inline Box3& Box3::setFromPoints(const std::vector<Vector3>& points ) {
+Box3& Box3::setFromPoints(const std::vector<Vector3>& points ) {
 
   if ( points.size() == 0 ) {
     makeEmpty();
@@ -56,7 +56,7 @@ inline Box3& Box3::setFromPoints(const std::vector<Vector3>& points ) {
   return *this;
 }
 
-inline Box3& Box3::setFromCenterAndSize( const Vector3& center, const Vector3& size ) {
+Box3& Box3::setFromCenterAndSize( const Vector3& center, const Vector3& size ) {
 
   auto v1 = Vector3();
   auto halfSize = v1.copy( size ).multiplyScalar( 0.5 );
@@ -98,7 +98,7 @@ Box3& Box3::setFromObject ( Object3D& object ) {
   return *this;
 }
 
-inline Box3& Box3::copy( const Box3& b ) {
+Box3& Box3::copy( const Box3& b ) {
 
   min.copy(b.min);
   max.copy(b.max);
@@ -106,7 +106,7 @@ inline Box3& Box3::copy( const Box3& b ) {
   return *this;
 }
 
-inline Box3& Box3::makeEmpty() {
+Box3& Box3::makeEmpty() {
 
   min.x = min.y = min.z = Math::INF();
   max.x = max.y = max.z = -Math::INF();
@@ -114,27 +114,27 @@ inline Box3& Box3::makeEmpty() {
   return *this;
 }
 
-inline bool Box3::empty() const {
+bool Box3::empty() const {
   return ( max.x < min.x ) || ( max.y < min.y ) || ( max.z < min.z );
 }
 
-inline Vector3 Box3::center() const {
+Vector3 Box3::center() const {
   return Vector3().addVectors( min, max ).multiplyScalar( 0.5 );
 }
 
-inline Vector3& Box3::center( Vector3& target ) {
+Vector3& Box3::center( Vector3& target ) {
   return target.addVectors( min, max ).multiplyScalar( 0.5 );
 }
 
-inline Vector3 Box3::size() const {
+Vector3 Box3::size() const {
   return Vector3().subVectors( max, min );
 }
 
-inline Vector3& Box3::size( Vector3& target ) {
+Vector3& Box3::size( Vector3& target ) {
   return target.subVectors( min, max );
 }
 
-inline Box3& Box3::expandByPoint( const Vector3& point ) {
+Box3& Box3::expandByPoint( const Vector3& point ) {
 
   min.min( point );
   max.max( point );
@@ -142,7 +142,7 @@ inline Box3& Box3::expandByPoint( const Vector3& point ) {
   return *this;
 }
 
-inline Box3& Box3::expandByVector( const Vector3& vector ) {
+Box3& Box3::expandByVector( const Vector3& vector ) {
 
   min.sub( vector );
   max.add( vector );
@@ -150,7 +150,7 @@ inline Box3& Box3::expandByVector( const Vector3& vector ) {
   return *this;
 }
 
-inline Box3& Box3::expandByScalar( float scalar ) {
+Box3& Box3::expandByScalar( float scalar ) {
 
   min.addScalar( -scalar );
   max.addScalar( scalar );
@@ -158,7 +158,7 @@ inline Box3& Box3::expandByScalar( float scalar ) {
   return *this;
 }
 
-inline bool Box3::containsPoint ( const Vector3& point ) const {
+bool Box3::containsPoint ( const Vector3& point ) const {
 
   if ( point.x < min.x || point.x > max.x ||
        point.y < min.y || point.y > max.y ||
@@ -169,7 +169,7 @@ inline bool Box3::containsPoint ( const Vector3& point ) const {
   return true;
 }
 
-inline bool Box3::containsBox( const Box3& box ) const {
+bool Box3::containsBox( const Box3& box ) const {
 
   if ( ( min.x <= box.min.x ) && ( box.max.x <= max.x ) &&
        ( min.y <= box.min.y ) && ( box.max.y <= max.y ) &&
@@ -180,7 +180,7 @@ inline bool Box3::containsBox( const Box3& box ) const {
   return false;
 }
 
-inline Vector3 Box3::getParameter( const Vector3& point ) const {
+Vector3 Box3::getParameter( const Vector3& point ) const {
 
   auto divX = ( max.x - min.x );
   auto divY = ( max.y - min.y );
@@ -193,7 +193,7 @@ inline Vector3 Box3::getParameter( const Vector3& point ) const {
          );
 }
 
-inline Vector3& Box3::getParameter( const Vector3& point, Vector3& target ) {
+Vector3& Box3::getParameter( const Vector3& point, Vector3& target ) {
 
   auto divX = ( max.x - min.x );
   auto divY = ( max.y - min.y );
@@ -206,7 +206,7 @@ inline Vector3& Box3::getParameter( const Vector3& point, Vector3& target ) {
          );
 }
 
-inline bool Box3::isIntersectionBox( const Box3& box ) const {
+bool Box3::isIntersectionBox( const Box3& box ) const {
 
   // using 6 splitting planes to rule out intersections.
 
@@ -219,15 +219,15 @@ inline bool Box3::isIntersectionBox( const Box3& box ) const {
   return true;
 }
 
-inline Vector3 Box3::clampPoint( const Vector3& point ) const {
+Vector3 Box3::clampPoint( const Vector3& point ) const {
   return Vector3().copy( point ).clamp( min, max );
 }
 
-inline Vector3& Box3::clampPoint( const Vector3& point, Vector3& target ) {
+Vector3& Box3::clampPoint( const Vector3& point, Vector3& target ) {
   return target.copy( point ).clamp( min, max );
 }
 
-inline float Box3::distanceToPoint( const Vector3& point ) const {
+float Box3::distanceToPoint( const Vector3& point ) const {
 
   auto v1 = point;
   auto clampedPoint = v1.copy( point ).clamp( min, max );
@@ -235,7 +235,7 @@ inline float Box3::distanceToPoint( const Vector3& point ) const {
   return clampedPoint.sub( point ).length();
 }
 
-inline Sphere Box3::getBoundingSphere() const {
+Sphere Box3::getBoundingSphere() const {
 
   auto s = Sphere();
   s.center = center();
@@ -244,7 +244,7 @@ inline Sphere Box3::getBoundingSphere() const {
   return s;
 }
 
-inline Sphere& Box3::getBoundingSphere( Sphere& target) {
+Sphere& Box3::getBoundingSphere( Sphere& target) {
 
   target.center = center();
   target.radius = size().length() * 0.5f;
@@ -252,7 +252,7 @@ inline Sphere& Box3::getBoundingSphere( Sphere& target) {
   return target;
 }
 
-inline Box3& Box3::intersect( const Box3& box ) {
+Box3& Box3::intersect( const Box3& box ) {
 
   min.max( box.min );
   max.min( box.max );
@@ -260,7 +260,7 @@ inline Box3& Box3::intersect( const Box3& box ) {
   return *this;
 }
 
-inline Box3& Box3::unionBox( const Box3& box ) {
+Box3& Box3::unionBox( const Box3& box ) {
 
   min.min( box.min );
   max.max( box.max );
@@ -297,7 +297,7 @@ Box3& Box3::applyMatrix4(const Matrix4& matrix)  {
   return *this;
 }
 
-inline Box3& Box3::translate( float& offset ) {
+Box3& Box3::translate( float& offset ) {
 
   min.addScalar( offset );
   max.addScalar( offset );
@@ -305,11 +305,11 @@ inline Box3& Box3::translate( float& offset ) {
   return *this;
 }
 
-inline bool Box3::equals ( const Box3& box ) const {
+bool Box3::equals ( const Box3& box ) const {
   return box.min.equals( min ) && box.max.equals( max );
 }
 
-inline Box3 Box3::clone() const {
+Box3 Box3::clone() const {
   return *this;
 }
 

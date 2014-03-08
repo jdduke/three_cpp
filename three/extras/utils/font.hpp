@@ -4,7 +4,6 @@
 #include <three/fwd.hpp>
 
 #include <three/math/uv.hpp>
-#include <three/math/vertex.hpp>
 #include <three/textures/texture.hpp>
 #include <three/utils/noncopyable.hpp>
 
@@ -18,26 +17,26 @@ public:
 
   typedef std::shared_ptr<Font> Ptr;
 
-  THREE_DECL static Ptr create( const std::string& ttf,
+  static Ptr create( const std::string& ttf,
                                 float fontSize     = 30,
                                 int textureWidth   = 512,
                                 int textureHeight  = 512,
                                 int firstCharacter = 32,
                                 int countCharacter = 96 );
 
-  THREE_DECL void generate( const std::string& text,
+  void generate( const std::string& text,
                             std::vector<Vertex>& vertices,
                             std::vector<Face>& faces,
                             std::vector<std::array<UV,4>>& faceUvs );
 
-  THREE_DECL const Texture::Ptr& texture() const;
+  const Texture::Ptr& texture() const;
 
-  THREE_DECL ~Font();
+  ~Font();
 
 protected:
 
-  THREE_DECL Font();
-  THREE_DECL bool initialize( const std::string& ttf,
+  Font();
+  bool initialize( const std::string& ttf,
                               float fontSize,
                               int textureWidth,
                               int textureHeight,

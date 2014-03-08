@@ -6,39 +6,51 @@
 
 namespace three {
 
-	Vector4& Vector4::set( float xIn, float yIn, float zIn, float wIn ) {
+	Vector4& Vector4::set( const float& xIn, const float& yIn, const float& zIn, const float& wIn ) {
+
 		x = xIn;
 		y = yIn;
 		z = zIn;
 		w = wIn;
+
 		return *this;
 	}
 
-  Vector4& Vector4::setX(float xIn) {
+  Vector4& Vector4::setX(const float& xIn) {
+
     x = xIn;
+
     return *this;
   }
 
-  Vector4& Vector4::setY(float yIn) {
+  Vector4& Vector4::setY(const float& yIn) {
+
     y = yIn;
+
     return *this;
   }
 
-  Vector4& Vector4::setZ(float zIn) {
+  Vector4& Vector4::setZ(const float& zIn) {
+
     z = zIn;
+
     return *this;
   }
 
-  Vector4& Vector4::setW(float wIn) {
+  Vector4& Vector4::setW(const float& wIn) {
+
     w = wIn;
+
     return *this;
   }
 
   Vector4& Vector4::copy( const Vector3& v ) {
+
     x = v.x;
     y = v.y;
     z = v.z;
     w = 1.f;
+
     return *this;
   }
 
@@ -51,26 +63,32 @@ namespace three {
   }
 
   Vector4& Vector4::add( const Vector4& v ) {
+
     x += v.x;
     y += v.y;
     z += v.z;
     w += v.w;
+
     return *this;
   }
 
   Vector4& Vector4::addVectors( const Vector4& a, const Vector4& b ) {
+
     x = a.x + b.x;
     y = a.y + b.y;
     z = a.z + b.z;
     w = a.w + b.w;
+
     return *this;
   }
 
-  Vector4& Vector4::addScalar( float s ) {
+  Vector4& Vector4::addScalar( const float& s ) {
+
     x += s;
     y += s;
     z += s;
     w += s;
+
     return *this;
   }
 
@@ -90,7 +108,7 @@ namespace three {
     return *this;
   }
 
-  Vector4& Vector4::multiplyScalar( float s ) {
+  Vector4& Vector4::multiplyScalar( const float& s ) {
     x *= s;
     y *= s;
     z *= s;
@@ -110,7 +128,7 @@ namespace three {
     return *this;
   }
 
-  Vector4& Vector4::divideScalar( float s ) {
+  Vector4& Vector4::divideScalar( const float& s ) {
     if ( s != 0.f ) {
      return multiplyScalar( 1.f / s );
    } else {
@@ -356,11 +374,11 @@ Vector4& Vector4::setAxisAngleFromRotationMatrix( const Matrix4& m ) {
     return divideScalar( length() );
   }
 
-  Vector4& Vector4::setLength( float l ) {
+  Vector4& Vector4::setLength( const float& l ) {
     return normalize().multiplyScalar( l );
   }
 
-  Vector4& Vector4::lerp( const Vector4& v, float alpha ) {
+  Vector4& Vector4::lerp( const Vector4& v, const float& alpha ) {
     x += ( v.x - x ) * alpha;
     y += ( v.y - y ) * alpha;
     z += ( v.z - z ) * alpha;

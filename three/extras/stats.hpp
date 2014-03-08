@@ -12,10 +12,10 @@ namespace stats {
 
 class Stats : public NonCopyable {
 public:
-  THREE_DECL Stats( GLRenderer& renderer );
-  THREE_DECL ~Stats();
+  Stats( GLRenderer& renderer );
+  ~Stats();
 
-  THREE_DECL void update( float deltaTime, bool render = true );
+  void update( float deltaTime, bool render = true );
 
 private:
 

@@ -114,11 +114,11 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL Material& clone( Material& material ) const;
+  Material& clone( Material& material ) const;
 
 protected:
 
-  THREE_DECL Material( );
+  Material( );
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -131,7 +131,7 @@ protected:
 
   /////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL void setParameters( const Parameters& parameters,
+  void setParameters( const Parameters& parameters,
                                  const ParameterKeys& keys = ParameterKeys() );
 
   static const ParameterKeys& defaultKeys() {

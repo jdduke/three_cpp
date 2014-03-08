@@ -16,13 +16,13 @@ public:
 
   //////////////////////////////////////////////////////////////////////////
 
-  THREE_DECL Uniform( );
-  THREE_DECL Uniform( Uniform&& );
-  THREE_DECL Uniform( const Uniform& );
-  THREE_DECL explicit Uniform( enums::UniformType type, any value = any() );
-  THREE_DECL Uniform& operator=( Uniform );
+  Uniform( );
+  Uniform( Uniform&& );
+  Uniform( const Uniform& );
+  explicit Uniform( enums::UniformType type, any value = any() );
+  Uniform& operator=( Uniform );
 
-  THREE_DECL void load( int location );
+  void load( int location );
 
   //////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +32,7 @@ public:
   //////////////////////////////////////////////////////////////////////////
 
 private:
-  THREE_DECL Uniform& swap( Uniform& other );
+  Uniform& swap( Uniform& other );
 };
 
 /////////////////////////////////////////////////////////////////////////

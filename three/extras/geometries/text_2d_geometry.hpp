@@ -12,19 +12,19 @@ public:
 
   typedef std::shared_ptr<Text2DGeometry> Ptr;
 
-  THREE_DECL static Ptr create( const std::string& text,
+  static Ptr create( const std::string& text,
                                 const Font::Ptr& font );
 
 #ifdef TODO_THREE_DYNAMIC_GEOMETRY
-  THREE_DECL void update( const std::string& text );
+  void update( const std::string& text );
 #endif
 
 protected:
 
-  THREE_DECL Text2DGeometry( const std::string& text,
+  Text2DGeometry( const std::string& text,
                              const Font::Ptr& font );
 
-  THREE_DECL void update();
+  void update();
 
   std::string text;
   Font::Ptr font;

@@ -31,7 +31,7 @@ public:
 
 protected:
 
-  THREE_DECL OrthographicCamera( float left, float right, float top, float bottom, float near, float far )
+  OrthographicCamera( float left, float right, float top, float bottom, float near, float far )
     : Camera( near, far ), left( left ), right( right ), top( top ), bottom( bottom ) {
 
     updateProjectionMatrix();

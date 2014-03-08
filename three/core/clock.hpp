@@ -17,25 +17,25 @@ public:
       mbAutoStart( autostart ),
       mbRunning( false ) { }
 
-  THREE_DECL void start() {
+  void start() {
     mStartTime = std::chrono::system_clock::now();
     mOldTime = mStartTime;
     mbRunning = true;
   }
 
-  THREE_DECL void stop() {
+  void stop() {
     getElapsedTime();
     mbRunning = false;
   }
 
-  THREE_DECL float getElapsedTime() {
+  float getElapsedTime() {
     mElapsedTime += getDelta();
     return mElapsedTime.count();
   }
 
 private:
 
-  THREE_DECL Duration getDelta() {
+  Duration getDelta() {
     Duration diff;
 
     if ( mbAutoStart && !mbRunning ) {

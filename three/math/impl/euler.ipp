@@ -8,41 +8,41 @@
 
 namespace three {
 
-inline float Euler::x() const {
+float Euler::x() const {
   return _x;
 }
 
-inline Euler& Euler::x(const float& value) {
+Euler& Euler::x(const float& value) {
   _x = value;
   _updateQuaternion();
   return *this;
 }
 
-inline float Euler::y() const {
+float Euler::y() const {
   return _y;
 }
 
-inline Euler& Euler::y(const float& value) {
+Euler& Euler::y(const float& value) {
   _y = value;
   _updateQuaternion();
   return *this;
 }
 
-inline float Euler::z() const {
+float Euler::z() const {
   return _z;
 }
 
-inline Euler& Euler::z(const float& value) {
+Euler& Euler::z(const float& value) {
   _z = value;
   _updateQuaternion();
   return *this;
 }
 
-inline enums::EulerRotationOrder Euler::order() const {
+enums::EulerRotationOrder Euler::order() const {
   return _order;
 }
 
-inline Euler& Euler::w(const enums::EulerRotationOrder& value) {
+Euler& Euler::w(const enums::EulerRotationOrder& value) {
   _order = value;
   _updateQuaternion();
   return *this;
@@ -259,7 +259,7 @@ Euler& Euler::reorder(enums::EulerRotationOrder newOrder) {
   return *this;
 }
 
-inline bool Euler::equals( const Euler& euler ) const {
+bool Euler::equals( const Euler& euler ) const {
 
   return ( euler._x == _x ) && ( euler._y == _y ) && ( euler._z == _z ) && ( euler._order == _order );
 
@@ -271,7 +271,7 @@ void Euler::_updateQuaternion() {
 
 }
 
-inline float Euler::_clamp( const float& x ) {
+float Euler::_clamp( const float& x ) {
 
   return Math::min( Math::max( x, -1.f ), 1.f );
 

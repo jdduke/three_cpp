@@ -73,12 +73,12 @@ public:
 
   float getComponent ( size_t index ) {
 
-    if(index == 0) {
+    if(index <= 0) {
       return x;
-    } else if(index == 1) {
+    } else {
       return y;
     }
-
+      
   }
 
   Vector2& copy( const Vector2& v ) {

@@ -27,16 +27,16 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  virtual THREE_DECL void applyMatrix( Matrix4& matrix ) ;
+  virtual void applyMatrix( Matrix4& matrix ) ;
 
-  THREE_DECL void computeBoundingBox();
-  THREE_DECL void computeBoundingSphere();
-  THREE_DECL void computeVertexNormals();
-  THREE_DECL void computeTangents();
+  void computeBoundingBox();
+  void computeBoundingSphere();
+  void computeVertexNormals();
+  void computeTangents();
 
 protected:
 
-  THREE_DECL BufferGeometry();
+  BufferGeometry();
 
 };
 
