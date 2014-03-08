@@ -76,4 +76,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_Euler_HPP
+#endif // THREE_EULER_HPP
