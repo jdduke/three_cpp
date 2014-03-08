@@ -11,7 +11,6 @@
 #include <three/math/face.hpp>
 #include <three/math/vector3.hpp>
 #include <three/math/sphere.hpp>
-#include <three/math/uv.hpp>
 #include <three/core/interfaces.hpp>
 
 #include <three/materials/material.hpp>
@@ -83,8 +82,8 @@ public:
 
   std::vector<Face> faces;
 
-  std::vector<std::vector<UV>> faceUvs;
-  std::vector<std::vector<std::array<UV, 4>>> faceVertexUvs;
+  std::vector<std::vector<Vector2>> faceUvs;
+  std::vector<std::vector<std::array<Vector2, 4>>> faceVertexUvs;
 
   std::vector<MorphTarget> morphTargets;
   std::vector<Color> morphColors;

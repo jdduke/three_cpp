@@ -1958,8 +1958,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         const auto& uvi = uv[ i ];
 
-        uvArray[ offset_uv ]     = uvi.u;
-        uvArray[ offset_uv + 1 ] = uvi.v;
+        uvArray[ offset_uv ]     = uvi.x;
+        uvArray[ offset_uv + 1 ] = uvi.y;
 
         offset_uv += 2;
 
@@ -1978,8 +1978,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         const auto& uvi = uv[ i ];
 
-        uvArray[ offset_uv ]     = uvi.u;
-        uvArray[ offset_uv + 1 ] = uvi.v;
+        uvArray[ offset_uv ]     = uvi.x;
+        uvArray[ offset_uv + 1 ] = uvi.y;
 
         offset_uv += 2;
 
@@ -2008,8 +2008,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         const auto& uv2i = uv2[ i ];
 
-        uv2Array[ offset_uv2 ]     = uv2i.u;
-        uv2Array[ offset_uv2 + 1 ] = uv2i.v;
+        uv2Array[ offset_uv2 ]     = uv2i.x;
+        uv2Array[ offset_uv2 + 1 ] = uv2i.y;
 
         offset_uv2 += 2;
 
@@ -2028,8 +2028,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         const auto& uv2i = uv2[ i ];
 
-        uv2Array[ offset_uv2 ]     = uv2i.u;
-        uv2Array[ offset_uv2 + 1 ] = uv2i.v;
+        uv2Array[ offset_uv2 ]     = uv2i.x;
+        uv2Array[ offset_uv2 + 1 ] = uv2i.y;
 
         offset_uv2 += 2;
 

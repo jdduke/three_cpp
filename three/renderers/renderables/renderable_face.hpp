@@ -28,7 +28,7 @@ public:
   Material* material;
   Material* faceMaterial;
 
-  std::array<std::vector<UV>, 4> uvs;
+  std::array<std::vector<Vector2>, 4> uvs;
 
   enums::FaceType type() const { return mType; }
 

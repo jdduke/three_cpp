@@ -3,7 +3,6 @@
 
 #include <three/fwd.hpp>
 
-#include <three/math/uv.hpp>
 #include <three/textures/texture.hpp>
 #include <three/utils/noncopyable.hpp>
 
@@ -27,7 +26,7 @@ public:
   void generate( const std::string& text,
                             std::vector<Vertex>& vertices,
                             std::vector<Face>& faces,
-                            std::vector<std::array<UV,4>>& faceUvs );
+                            std::vector<std::array<Vector2,4>>& faceUvs );
 
   const Texture::Ptr& texture() const;
 

@@ -123,7 +123,7 @@ void Geometry::computeTangents() {
   std::vector<Vector3> tan1( vertices.size() );
   std::vector<Vector3> tan2( vertices.size() );
 
-  auto handleTriangle = [&, this]( const std::array<UV, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
+  auto handleTriangle = [&, this]( const std::array<Vector2, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
 
     const auto& vA = vertices[ a ];
     const auto& vB = vertices[ b ];
@@ -140,10 +140,10 @@ void Geometry::computeTangents() {
     const auto z1 = vB.z - vA.z;
     const auto z2 = vC.z - vA.z;
 
-    const auto s1 = uvB.u - uvA.u;
-    const auto s2 = uvC.u - uvA.u;
-    const auto t1 = uvB.v - uvA.v;
-    const auto t2 = uvC.v - uvA.v;
+    const auto s1 = uvB.x - uvA.x;
+    const auto s2 = uvC.x - uvA.x;
+    const auto t1 = uvB.y - uvA.y;
+    const auto t2 = uvC.y - uvA.y;
 
     const auto r = 1.0f / ( s1 * t2 - s2 * t1 );
     Vector3 sdir( ( t2 * x1 - t1 * x2 ) * r,
