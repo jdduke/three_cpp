@@ -239,17 +239,17 @@ namespace three {
   }
 
   Box3& Box3::applyMatrix4(const Matrix4& matrix)  {
-    // VS2012 doesnt support initializer list
-    std::vector<Vector3> points = {
-    	points[0] = Vector3(),
-    	points[1] = Vector3(),
-    	points[2] = Vector3(),
-    	points[3] = Vector3(),
-    	points[4] = Vector3(),
-    	points[5] = Vector3(),
-    	points[6] = Vector3(),
-    	points[7] = Vector3(),
-    };
+
+    std::vector<Vector3> points;
+    points[0] = Vector3();
+    points[1] = Vector3();
+    points[2] = Vector3();
+    points[3] = Vector3();
+    points[4] = Vector3();
+    points[5] = Vector3();
+    points[6] = Vector3();
+    points[7] = Vector3();
+    
 
     // NOTE: I am using a binary pattern to specify all 2^3 combinations below
     points[0].set( min.x, min.y, min.z ).applyMatrix4( matrix ); // 000
