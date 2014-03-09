@@ -9,6 +9,8 @@
 #include <three/utils/noncopyable.hpp>
 
 #include <unordered_map>
+#include <vector>
+#include <string>
 
 namespace three {
 

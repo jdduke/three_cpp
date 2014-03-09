@@ -2,6 +2,7 @@
 #define THREE_GEOMETRY_IPP
 
 #include <three/core/geometry.hpp>
+#include <three/core/face.hpp>
 
 namespace three {
 

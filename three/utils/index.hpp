@@ -2,6 +2,7 @@
 #define THREE_INDEX_HPP
 
 #include <cstdint>
+#include <map>
 
 namespace three {
 

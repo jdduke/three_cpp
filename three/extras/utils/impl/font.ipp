@@ -8,6 +8,7 @@
 #include <three/math/vector2.hpp>
 #include <three/math/vector4.hpp>
 #include <three/math/matrix4.hpp>
+#include <three/core/face.hpp>
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include <three/extras/utils/impl/stb_truetype.h>

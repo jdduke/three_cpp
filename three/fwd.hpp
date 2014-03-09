@@ -11,6 +11,7 @@ class Scene;
 class Particle;
 class Sprite;
 class Mesh;
+class Face;
 
 // Math
 class Box2;

@@ -16,7 +16,7 @@ public:
   virtual void operator()( Particle& ) { }
   virtual void operator()( Sprite& )   { }
   virtual void operator()( Mesh& )     { }
-  virtual void operator()( Line& )     { }
+  virtual void operator()( Line3& )     { }
   virtual ~Visitor() { }
   template < typename T >
   void fallback( T& object ) { ( *this )( static_cast<Object3D&>( object ) ); }
@@ -32,7 +32,7 @@ public:
   virtual void operator()( const Particle& ) { }
   virtual void operator()( const Sprite& )   { }
   virtual void operator()( const Mesh& )     { }
-  virtual void operator()( const Line& )     { }
+  virtual void operator()( const Line3& )     { }
   virtual ~ConstVisitor() { }
   template < typename T >
   void fallback( const T& object ) { ( *this )( static_cast<const Object3D&>( object ) ); }

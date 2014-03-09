@@ -7,6 +7,7 @@
 #include <three/core/geometry.hpp>
 #include <three/math/vector4.hpp>
 #include <three/math/sphere.hpp>
+#include <three/math/box3.hpp>
 
 #include <three/objects/mesh.hpp>
 
