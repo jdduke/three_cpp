@@ -31,7 +31,6 @@
 #include <three/math/plane.hpp>
 #include <three/math/quaternion.hpp>
 #include <three/math/ray.hpp>
-#include <three/math/rectangle.hpp>
 #include <three/math/sphere.hpp>
 #include <three/math/spline.hpp>
 #include <three/math/triangle.hpp>
