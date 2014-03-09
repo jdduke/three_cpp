@@ -44,11 +44,11 @@ public:
 
   inline Euler& w(const enums::EulerRotationOrder& value);
 
-  Euler& set( float xIn, float yIn, float zIn);
+  inline Euler& set( float xIn, float yIn, float zIn);
 
-  Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn );
+  inline Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn );
 
-  Euler& copy ( const Euler& euler );
+  inline Euler& copy ( const Euler& euler );
 
   Euler& setFromRotationMatrix( const Matrix4& m );
 
@@ -62,13 +62,13 @@ public:
 
   inline bool equals( const Euler& euler ) const;
 
-  Euler clone() {
+  inline Euler clone() {
     return *this;
   }
 
 private:
 
-  void _updateQuaternion();
+  inline void _updateQuaternion();
 
   inline float _clamp( const float& x );
 
