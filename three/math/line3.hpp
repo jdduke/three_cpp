@@ -7,8 +7,6 @@ namespace three {
 
 class Line3 {
 public:
-    
-    Vector3 start, end; 
 
 	Line3() {
 		start = Vector3();
@@ -104,6 +102,8 @@ public:
 		return *this;
 	}
 
+  Vector3 start, end;
+  
 };
     
 }

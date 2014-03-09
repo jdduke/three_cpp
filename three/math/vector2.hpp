@@ -60,7 +60,7 @@ public:
     return *this;
   }
 
-  Vector2& setComponent (size_t index, const float& value ) {
+  Vector2& setComponent (size_t index, float value ) {
 
     if(index == 0) {
       x = value;
@@ -105,7 +105,7 @@ public:
     return *this;
   }
 
-  Vector2& addScalar( const float& value ) {
+  Vector2& addScalar( float value ) {
 
     x += value;
     y += value;
@@ -129,7 +129,7 @@ public:
     return *this;
   }
 
-  Vector2& multiplyScalar( const float& s ) {
+  Vector2& multiplyScalar( float s ) {
 
     x *= s;
     y *= s;
@@ -137,7 +137,7 @@ public:
     return *this;
   }
 
-  Vector2& divideScalar( const float& s ) {
+  Vector2& divideScalar( float s ) {
 
     if ( s ) {
       return multiplyScalar( 1.f / s );
@@ -190,7 +190,7 @@ public:
     return *this;
   }
 
-  Vector2& clampScalar( const float& minVal, const float& maxVal ) {
+  Vector2& clampScalar( float minVal, float maxVal ) {
 
     auto min = Vector2();
     auto max = Vector2();
@@ -262,7 +262,7 @@ public:
     return dx * dx + dy * dy;
   }
 
-  Vector2& setLength( const float& l ) {
+  Vector2& setLength( float l ) {
 
     auto oldLength = length();
 

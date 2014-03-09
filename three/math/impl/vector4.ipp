@@ -6,7 +6,7 @@
 
 namespace three {
 
-	Vector4& Vector4::set( const float& xIn, const float& yIn, const float& zIn, const float& wIn ) {
+	Vector4& Vector4::set( float xIn, float yIn, float zIn, float wIn ) {
 
 		x = xIn;
 		y = yIn;
@@ -16,28 +16,28 @@ namespace three {
 		return *this;
 	}
 
-  Vector4& Vector4::setX(const float& xIn) {
+  Vector4& Vector4::setX( float xIn ) {
 
     x = xIn;
 
     return *this;
   }
 
-  Vector4& Vector4::setY(const float& yIn) {
+  Vector4& Vector4::setY( float yIn ) {
 
     y = yIn;
 
     return *this;
   }
 
-  Vector4& Vector4::setZ(const float& zIn) {
+  Vector4& Vector4::setZ( float zIn ) {
 
     z = zIn;
 
     return *this;
   }
 
-  Vector4& Vector4::setW(const float& wIn) {
+  Vector4& Vector4::setW( float wIn ) {
 
     w = wIn;
 
@@ -82,7 +82,7 @@ namespace three {
     return *this;
   }
 
-  Vector4& Vector4::addScalar( const float& s ) {
+  Vector4& Vector4::addScalar( float s ) {
 
     x += s;
     y += s;
@@ -108,7 +108,7 @@ namespace three {
     return *this;
   }
 
-  Vector4& Vector4::multiplyScalar( const float& s ) {
+  Vector4& Vector4::multiplyScalar( float s ) {
     x *= s;
     y *= s;
     z *= s;
@@ -128,7 +128,7 @@ namespace three {
     return *this;
   }
 
-  Vector4& Vector4::divideScalar( const float& s ) {
+  Vector4& Vector4::divideScalar( float s ) {
     if ( s != 0.f ) {
      return multiplyScalar( 1.f / s );
    } else {
@@ -374,11 +374,11 @@ Vector4& Vector4::setAxisAngleFromRotationMatrix( const Matrix4& m ) {
     return divideScalar( length() );
   }
 
-  Vector4& Vector4::setLength( const float& l ) {
+  Vector4& Vector4::setLength( float l ) {
     return normalize().multiplyScalar( l );
   }
 
-  Vector4& Vector4::lerp( const Vector4& v, const float& alpha ) {
+  Vector4& Vector4::lerp( const Vector4& v, float alpha ) {
     x += ( v.x - x ) * alpha;
     y += ( v.y - y ) * alpha;
     z += ( v.z - z ) * alpha;

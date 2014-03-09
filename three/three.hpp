@@ -7,6 +7,7 @@
 #include <three/cameras/orthographic_camera.hpp>
 #include <three/cameras/perspective_camera.hpp>
 
+
 #include <three/core/buffer_geometry.hpp>
 #include <three/core/geometry.hpp>
 #include <three/core/geometry_buffer.hpp>
@@ -16,23 +17,24 @@
 #include <three/core/projector.hpp>
 
 
+#include <three/math/box2.hpp>
+#include <three/math/box3.hpp>
 #include <three/math/color.hpp>
+#include <three/math/euler.hpp>
 #include <three/math/face3.hpp>
 #include <three/math/face4.hpp>
 #include <three/math/frustum.hpp>
+#include <three/math/line3.hpp>
 #include <three/math/math.hpp>
+#include <three/math/matrix3.hpp>
 #include <three/math/matrix4.hpp>
-
+#include <three/math/plane.hpp>
 #include <three/math/quaternion.hpp>
-
-#include <three/math/euler.hpp>
-
-#include <three/math/box2.hpp>
-#include <three/math/box3.hpp>
 #include <three/math/ray.hpp>
 #include <three/math/rectangle.hpp>
+#include <three/math/sphere.hpp>
 #include <three/math/spline.hpp>
-#include <three/math/uv.hpp>
+#include <three/math/triangle.hpp>
 #include <three/math/vector2.hpp>
 #include <three/math/vector3.hpp>
 #include <three/math/vector4.hpp>

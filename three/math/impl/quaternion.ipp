@@ -3,18 +3,75 @@
 
 
 #include <three/common.hpp>
-
 #include <three/math/math.hpp>
+#include <three/math/euler.hpp>
 #include <three/math/quaternion.hpp>
+
 
 
 namespace three {
 
-  void Quaternion::_updateEuler() {
-    _euler->setFromQuaternion( *this, false );
-  }
+  inline float Quaternion::x() const {
 
-Quaternion& Quaternion::set( float x, float y, float z, float w ) {
+     return _x;
+
+    }
+
+    inline Quaternion& Quaternion::x( float value ) {
+
+      _x = value;
+      _updateEuler();
+
+     return *this;
+
+    }
+
+    inline float Quaternion::y() const {
+
+      return _y;
+
+    }
+
+    inline Quaternion& Quaternion::y( float value ) {
+
+      _y = value;
+      _updateEuler();
+
+      return *this;
+
+    }
+
+    inline float Quaternion::z() const {
+
+      return _z;
+
+    }
+
+    inline Quaternion& Quaternion::z(float value) {
+
+      _z = value;
+      _updateEuler();
+
+      return *this;
+
+    }
+
+    inline float Quaternion::w() const {
+
+      return _w;
+
+    }
+
+    inline Quaternion& Quaternion::w(float value) {
+
+      _w = value;
+      _updateEuler();
+
+      return *this;
+      
+    }
+
+  Quaternion& Quaternion::set( float x, float y, float z, float w ) {
     _x = x;
     _y = y;
     _z = z;
@@ -313,6 +370,10 @@ Quaternion& Quaternion::set( float x, float y, float z, float w ) {
 
   Quaternion Quaternion::clone() {
     return *this;
+  }
+
+  void Quaternion::_updateEuler() {
+    _euler->setFromQuaternion( *this, false );
   }
 
 } // namespace three

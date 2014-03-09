@@ -12,7 +12,7 @@ float Euler::x() const {
   return _x;
 }
 
-Euler& Euler::x(const float& value) {
+Euler& Euler::x(float value) {
   _x = value;
   _updateQuaternion();
   return *this;
@@ -22,7 +22,7 @@ float Euler::y() const {
   return _y;
 }
 
-Euler& Euler::y(const float& value) {
+Euler& Euler::y(float value) {
   _y = value;
   _updateQuaternion();
   return *this;
@@ -32,7 +32,7 @@ float Euler::z() const {
   return _z;
 }
 
-Euler& Euler::z(const float& value) {
+Euler& Euler::z(float value) {
   _z = value;
   _updateQuaternion();
   return *this;
@@ -267,11 +267,11 @@ bool Euler::equals( const Euler& euler ) const {
 
 void Euler::_updateQuaternion() {
 
-  _quaternion.setFromEuler( *this, false );
+  _quaternion->setFromEuler( *this, false );
 
 }
 
-float Euler::_clamp( const float& x ) {
+float Euler::_clamp( float x ) {
 
   return Math::min( Math::max( x, -1.f ), 1.f );
 

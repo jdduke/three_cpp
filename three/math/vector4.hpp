@@ -19,7 +19,7 @@ namespace three {
 
     Vector4() 
         : x( 0 ), y( 0 ), z( 0 ), w( 1.f ) {}
-    Vector4( const float& xIn, const float& yIn, const float& zIn, const float& wIn = 1.f ) 
+    Vector4( float xIn, float yIn, float zIn, float wIn = 1.f ) 
         : x( xIn ), y( yIn ), z( zIn ), w( wIn ) {}
 
     explicit Vector4( float value ) 
@@ -31,15 +31,15 @@ namespace three {
 
     const float operator[]( const int i ) const { return xyzw[i]; }
 
-    Vector4& set( const float& xIn, const float& yIn, const float& zIn, const float& wIn ); 
+    Vector4& set( float xIn, float yIn, float zIn, float wIn ); 
 
-    Vector4& setX( const float& xIn);
+    Vector4& setX( float xIn);
 
-    Vector4& setY( const float& yIn );
+    Vector4& setY( float yIn );
 
-    Vector4& setZ( const float& zIn );
+    Vector4& setZ( float zIn );
 
-    Vector4& setW( const float& wIn );
+    Vector4& setW( float wIn );
 
     Vector4& copy( const Vector3& v );
 
@@ -49,17 +49,17 @@ namespace three {
 
     Vector4& addVectors( const Vector4& a, const Vector4& b );
 
-    Vector4& addScalar( const float& s );
+    Vector4& addScalar( float s );
 
     Vector4& sub( const Vector4& v );
 
     Vector4& subVectors( const Vector4& a, const Vector4& b );
 
-    Vector4& multiplyScalar( const float& s );
+    Vector4& multiplyScalar( float s );
 
     Vector4& applyMatrix4( const Matrix4& m );
 
-    Vector4& divideScalar( const float& s );
+    Vector4& divideScalar( float s );
 
     Vector4& setAxisAngleFromQuaternion( const Quaternion& q );
 
@@ -83,9 +83,9 @@ namespace three {
 
     Vector4& normalize();
 
-    Vector4& setLength( const float& l );
+    Vector4& setLength( float l );
 
-    Vector4& lerp( const Vector4& v, const float& alpha );
+    Vector4& lerp( const Vector4& v, float alpha );
 
     bool equals( const Vector4& v );
 

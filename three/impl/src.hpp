@@ -18,8 +18,10 @@
 #include <three/math/impl/plane.ipp>
 #include <three/core/impl/object3d.ipp>
 #include <three/math/impl/projector.ipp>
-#include <three/math/impl/quaternion.ipp>
 #include <three/math/impl/euler.ipp>
+#include <three/math/impl/quaternion.ipp>
+#include <three/math/impl/spline.ipp>
+
 #include <three/math/impl/triangle.ipp>
 
 

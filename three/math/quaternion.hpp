@@ -4,68 +4,40 @@
 #include <three/common.hpp>
 
 #include <three/math/math.hpp>
+#include <three/math/euler.hpp>
 
 namespace three {
-  class Euler;
 
   class Quaternion {
-  private:
-    union {
-      struct { float _x, _y, _z, _w; };
-      float xyzw[4];
-    };
-
-  // todo lazy init?
-    Euler* _euler;
-
-    void _updateEuler();
 
   public:
 
-    Quaternion() : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ) { }
-    Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) { }
-    //Quaternion( Quaternion& v ) : _x( v.x() ), _y( v.y() ), _z( v.z() ), _w( v.w() ) { }
-    Quaternion& operator= ( const Quaternion& q ) { return copy( q ); }
+   union {
+      struct { float _x, _y, _z, _w; };
+      float _xyzw[4];
+   };
 
-    inline float x() const {
-     return _x;
-    }
+    Quaternion() 
+      : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ) {}
 
-    inline Quaternion& x(const float& value) {
-      _x = value;
-      _updateEuler();
-	  return *this;
-    }
+    Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) 
+      : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) {}
 
-     inline float y() const {
-     return _y;
-    }
+   float x() const;
 
-    inline Quaternion& y(const float& value) {
-      _y = value;
-      _updateEuler();
-	  return *this;
-    }
+   Quaternion& x( float value );
 
-     inline float z() const {
-     return _z;
-    }
+   float y() const;
 
-    inline Quaternion& z(const float& value) {
-      _z = value;
-      _updateEuler();
-	  return *this;
-    }
+   Quaternion& y( float value );
 
-     inline float w() const {
-     return _w;
-    }
+   float z() const;
 
-    inline Quaternion& w(const float& value) {
-      _w = value;
-      _updateEuler();
-	  return *this;
-    }
+   Quaternion& z(float value);
+
+   float w() const;
+
+   Quaternion& w(float value);
 
    Quaternion& set( float x, float y, float z, float w );
 
@@ -99,11 +71,14 @@ namespace three {
 
    Quaternion clone();
 
+  private:
+    
+    void _updateEuler();
+
+    std::shared_ptr<Euler> _euler;
+
  };
 
 } // namespace three
-#if defined(THREE_HEADER_ONLY)
-# include <three/math/impl/quaternion.ipp>
-#endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_QUATERNION_HPP

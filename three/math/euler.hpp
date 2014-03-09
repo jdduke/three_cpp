@@ -2,18 +2,11 @@
 #define THREE_EULER_HPP
 
 #include <three/common.hpp>
+#include <three/math/quaternion.hpp>
 
 namespace three {
-
+    
 class Euler {
-
-private:
-
-  float _x, _y, _z;
-
-  enums::EulerRotationOrder _order;
-
-  Quaternion _quaternion;
 
 public:
 
@@ -22,23 +15,23 @@ public:
   Euler()
     : _x(0.f), _y(0.f), _z(0.f), _order(enums::EulerRotationOrder::XYZ) {};
 
-  Euler(const float& xIn, const float& yIn, const float& zIn)
+  Euler(float xIn, float yIn, float zIn)
     : _x(xIn), _y(yIn), _z(zIn), _order(enums::EulerRotationOrder::XYZ) {};
 
-  Euler(const float& xIn, const float& yIn, const float& zIn, enums::EulerRotationOrder orderIn)
+  Euler(float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn)
     : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
 
   inline float x() const;
 
-  inline Euler& x(const float& value);
+  inline Euler& x(float value);
 
   inline float y() const;
 
-  inline Euler& y(const float& value);
+  inline Euler& y(float value);
 
   inline float z() const;
 
-  inline Euler& z(const float& value);
+  inline Euler& z(float value);
 
   inline enums::EulerRotationOrder order() const;
 
@@ -63,14 +56,20 @@ public:
   inline bool equals( const Euler& euler ) const;
 
   inline Euler clone() {
-    return *this;
+      return *this;
   }
 
 private:
-
-  inline void _updateQuaternion();
-
-  inline float _clamp( const float& x );
+    
+    float _clamp( float x );
+    
+    void _updateQuaternion();
+    
+    float _x, _y, _z;
+    
+    enums::EulerRotationOrder _order;
+    
+    std::shared_ptr<Quaternion> _quaternion;
 
 };
 

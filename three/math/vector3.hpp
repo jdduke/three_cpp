@@ -38,7 +38,7 @@ public:
     return xyz[i];
   }
 
-  Vector3& set( const float& xIn, const float& yIn, const float& zIn ) {
+  Vector3& set( float xIn, float yIn, float zIn ) {
 
     x = xIn;
     y = yIn;
@@ -47,21 +47,21 @@ public:
     return *this;
   }
 
-  Vector3& setX( const float& xIn ) {
+  Vector3& setX( float xIn ) {
 
     x = xIn;
 
     return *this;
   }
 
-  Vector3& setY( const float& yIn ) {
+  Vector3& setY( float yIn ) {
 
     y = yIn;
 
     return *this;
   }
 
-  Vector3& setZ( const float& zIn ) {
+  Vector3& setZ( float zIn ) {
 
     z = zIn;
 
@@ -86,7 +86,7 @@ public:
     return *this;
   }
 
-  Vector3& addScalar( const float& s ) {
+  Vector3& addScalar( float s ) {
     x += s;
     y += s;
     z += s;
@@ -129,7 +129,7 @@ public:
     return *this;
   }
 
-  Vector3& multiplyScalar( const float& s ) {
+  Vector3& multiplyScalar( float s ) {
 
     x *= s;
     y *= s;
@@ -233,7 +233,7 @@ public:
     return *this;
   }
 
-  Vector3& divideScalar( const float& s ) {
+  Vector3& divideScalar( float s ) {
 
     if ( s != 0.f ) {
       auto invScalar = 1.f / s;
@@ -335,7 +335,7 @@ public:
     return normalize().multiplyScalar( l );
   }
 
-  Vector3& lerp( const Vector3& v, const float& alpha ) {
+  Vector3& lerp( const Vector3& v, float alpha ) {
 
     x += ( v.x - x ) * alpha;
     y += ( v.y - y ) * alpha;
