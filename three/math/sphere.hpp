@@ -1,8 +1,7 @@
 #ifndef THREE_SPHERE_HPP
 #define THREE_SPHERE_HPP
 
-#include <three/math/box3.hpp>
-#include <three/math/vector3.hpp>
+#include <three/common.hpp>
 
 namespace three {
 

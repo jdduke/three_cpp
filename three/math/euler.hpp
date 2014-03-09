@@ -2,7 +2,6 @@
 #define THREE_EULER_HPP
 
 #include <three/common.hpp>
-#include <three/math/quaternion.hpp>
 
 namespace three {
     
@@ -21,49 +20,160 @@ public:
   Euler(float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn)
     : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
 
-  inline float x() const;
+  inline float x() const {
 
-  inline Euler& x(float value);
+    return _x;
 
-  inline float y() const;
+  }
 
-  inline Euler& y(float value);
+  inline Euler& x(float value) {
 
-  inline float z() const;
+    _x = value;
 
-  inline Euler& z(float value);
+    _updateQuaternion();
 
-  inline enums::EulerRotationOrder order() const;
+    return *this;
 
-  inline Euler& w(const enums::EulerRotationOrder& value);
+  }
 
-  inline Euler& set( float xIn, float yIn, float zIn);
+  inline float y() const {
 
-  inline Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn );
+    return _y;
 
-  inline Euler& copy ( const Euler& euler );
+  }
 
-  Euler& setFromRotationMatrix( const Matrix4& m );
+  inline Euler& y(float value) {
+
+    _y = value;
+
+    _updateQuaternion();
+
+    return *this;
+
+  }
+
+  inline float z() const {
+
+    return _z;
+
+  }
+
+  inline Euler& z(float value) {
+
+    _z = value;
+
+    _updateQuaternion();
+
+    return *this;
+
+  }
+
+  inline enums::EulerRotationOrder order() const {
+
+    return _order;
+
+  }
+
+  inline Euler& w(const enums::EulerRotationOrder& value) {
+
+    _order = value;
+
+    _updateQuaternion();
+
+    return *this;
+  }
+
+  inline Euler& set( float xIn, float yIn, float zIn) {
+
+    _x = xIn;
+    _y = yIn;
+    _z = zIn;
+
+    _updateQuaternion();
+
+    return *this;
+
+  }
+
+  inline Euler& set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn ) {
+
+    _x = xIn;
+    _y = yIn;
+    _z = zIn;
+    _order = orderIn;
+
+    _updateQuaternion();
+
+    return *this;
+
+  }
+
+  inline Euler& copy ( const Euler& euler ) {
+
+    _x = euler._x;
+    _y = euler._y;
+    _z = euler._z;
+    _order = euler._order;
+
+    _updateQuaternion();
+
+    return *this;
+
+  }
+
+  inline Euler& setFromRotationMatrix( const Matrix4& m ) {
+
+    return setFromRotationMatrix(m, _order);
+
+  }
 
   Euler& setFromRotationMatrix( const Matrix4& m, enums::EulerRotationOrder order );
 
-  Euler& setFromQuaternion( const Quaternion& q, bool update = true);
+  inline Euler& setFromQuaternion( const Quaternion& q, bool update = false) {
 
-  Euler& setFromQuaternion( const Quaternion& q, enums::EulerRotationOrder order, bool update = true);
+    return setFromQuaternion(q, _order, update);
 
-  Euler& reorder(enums::EulerRotationOrder newOrder);
+  }
 
-  inline bool equals( const Euler& euler ) const;
+  Euler& setFromQuaternion( const Quaternion& q, enums::EulerRotationOrder order, bool update = false );
+
+  inline Euler& reorder(enums::EulerRotationOrder newOrder) {
+
+    // WARNING: this discards revolution information -bhouston
+
+    auto q = Quaternion();
+    q.setFromEuler( *this );
+    setFromQuaternion( q, newOrder );
+
+    return *this;
+
+  }
+
+  inline bool equals( const Euler& euler ) const {
+
+    return ( euler._x == _x ) && ( euler._y == _y ) && ( euler._z == _z ) && ( euler._order == _order );
+
+  }
 
   inline Euler clone() {
+
       return *this;
+      
   }
 
 private:
     
-    float _clamp( float x );
-    
-    void _updateQuaternion();
+    inline void _updateQuaternion() {
+
+      _quaternion->setFromEuler( *this, false );
+
+    }
+
+    inline float _clamp( float x ) {
+
+      return Math::min( Math::max( x, -1.f ), 1.f );
+
+    }
     
     float _x, _y, _z;
     

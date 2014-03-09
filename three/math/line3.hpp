@@ -1,7 +1,7 @@
 #ifndef THREE_LINE3_HPP
 #define THREE_LINE3_HPP
 
-#include <three/math/vector3.hpp>
+#include <three/common.hpp>
 
 namespace three {
 

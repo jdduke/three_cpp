@@ -2,7 +2,7 @@
 #define THREE_MATRIX3_HPP
 
 #include <three/common.hpp>
-#include <three/math/matrix4.hpp>
+#include <vector>
 
 namespace three {
 

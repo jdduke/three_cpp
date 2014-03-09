@@ -17,20 +17,21 @@ class Box2;
 class Box3;
 class Color;
 class Euler;
-class Quaternion;
-class Face;
 class Frustum;
-class Line;
 class Line3;
-class Rectangle;
+class Matrix3;
+class Matrix4;
+class Plane;
+class Quaternion;
+class Ray;
+class Sphere;
+class Spline;
+class Triangle;
 class Vector2;
 class Vector4;
 class Vector3;
-class Sphere;
 
-class Matrix3;
-class Matrix4;
-class Ray;
+
 
 class Visitor;
 class ConstVisitor;

@@ -4,8 +4,6 @@
 #include <three/common.hpp>
 
 #include <three/math/math.hpp>
-#include <three/math/vector3.hpp>
-#include <three/math/quaternion.hpp>
 
 namespace three {
 

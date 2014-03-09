@@ -6,7 +6,6 @@
 #include <three/gl.hpp>
 #include <three/math/color.hpp>
 #include <three/math/vector2.hpp>
-#include <three/math/face.hpp>
 #include <three/math/vector4.hpp>
 #include <three/math/matrix4.hpp>
 

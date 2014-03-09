@@ -1,7 +1,7 @@
 #ifndef THREE_PLANE_HPP
 #define THREE_PLANE_HPP
 
-#include <three/math/line3.hpp>
+#include <three/common.hpp>
 
 namespace three {
 

@@ -8,7 +8,6 @@
 
 #include <three/math/math.hpp>
 #include <three/math/color.hpp>
-#include <three/math/face.hpp>
 #include <three/math/vector3.hpp>
 #include <three/math/sphere.hpp>
 #include <three/core/interfaces.hpp>

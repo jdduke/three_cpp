@@ -4,7 +4,6 @@
 #include <three/common.hpp>
 
 #include <three/math/math.hpp>
-#include <three/math/vector4.hpp>
 #include <array>
 
 namespace three {
