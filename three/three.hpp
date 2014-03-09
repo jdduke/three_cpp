@@ -21,8 +21,8 @@
 #include <three/math/box3.hpp>
 #include <three/math/color.hpp>
 #include <three/math/euler.hpp>
-#include <three/math/face3.hpp>
-#include <three/math/face4.hpp>
+#include <three/core/face3.hpp>
+#include <three/core/face4.hpp>
 #include <three/math/frustum.hpp>
 #include <three/math/line3.hpp>
 #include <three/math/math.hpp>
