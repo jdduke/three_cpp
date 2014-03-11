@@ -314,7 +314,7 @@ public:
     } else if ( z > max.z ) {
 
       z = max.z;
-      
+
     }
 
     return *this;
@@ -420,7 +420,7 @@ public:
 
   Vector3& setFromMatrixScale( const Matrix4& m );
 
-  Vector3& setFromMatrixColumn( const size_t& index, const Matrix4& matrix );
+  Vector3& setFromMatrixColumn( size_t index, const Matrix4& matrix );
 
   inline bool equals( const Vector3& v ) const {
 

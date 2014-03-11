@@ -88,8 +88,8 @@ public:
 
     } else {
 
-      
       return y;
+      
     }
       
   }
@@ -316,7 +316,7 @@ public:
 
     auto oldLength = length();
 
-    if ( oldLength != 0.0f && l != oldLength ) {
+    if ( oldLength != 0.f && l != oldLength ) {
 
       return multiplyScalar( l / oldLength);
 

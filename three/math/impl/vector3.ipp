@@ -102,7 +102,7 @@ Vector3& Vector3::setFromMatrixScale( const Matrix4& m ) {
 
 }
 
-Vector3& Vector3::setFromMatrixColumn( const size_t& index, const Matrix4& matrix ) {
+Vector3& Vector3::setFromMatrixColumn( size_t index, const Matrix4& matrix ) {
 
   auto offset = index * 4;
 
