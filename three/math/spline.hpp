@@ -17,6 +17,8 @@ public:
   Spline( std::vector<Vector3> points )
     : points( std::move( points ) ) {}
 
+  std::vector<Vector3> points;
+
   inline Spline& initFromArray( const float* a, size_t n ) {
 
     points.resize( n );
@@ -49,8 +51,6 @@ public:
     return ( 2.f * ( p1 - p2 ) + v0 + v1 ) * t3 + ( - 3.f * ( p1 - p2 ) - 2.f * v0 - v1 ) * t2 + v0 * t + p1;
 
   }
-
-  std::vector<Vector3> points;
 
 };
 

@@ -19,6 +19,10 @@ public:
   Sphere( Vector3 centerIn, float radiusIn) 
     : center(centerIn), radius(radiusIn) {}
 
+  Vector3 center;
+  
+  float radius;
+
   inline Sphere& set( const Vector3& center, float radius ) {
 
     this->center.copy( center );
@@ -126,10 +130,6 @@ public:
     return *this;
 
   }
-
-  Vector3 center;
-  
-  float radius;
 
 };
 

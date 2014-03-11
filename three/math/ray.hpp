@@ -12,10 +12,6 @@ class Ray {
 
 public:
 
-  Vector3 origin;
-
-  Vector3 direction;
-
   Ray()
     : origin( Vector3() ), direction( Vector3() ) { };
 
@@ -24,6 +20,10 @@ public:
 
   Ray( const Vector3& originIn, const Vector3& directionIn ) 
     : origin( originIn ), direction( directionIn ) { }
+
+  Vector3 origin;
+
+  Vector3 direction;
 
   Ray& set( const Vector3& origin, const Vector3& direction );
 

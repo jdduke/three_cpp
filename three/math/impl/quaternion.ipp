@@ -7,87 +7,7 @@
 #include <three/math/euler.hpp>
 #include <three/math/quaternion.hpp>
 
-
-
 namespace three {
-
-  inline float Quaternion::x() const {
-
-     return _x;
-
-    }
-
-    inline Quaternion& Quaternion::x( float value ) {
-
-      _x = value;
-      _updateEuler();
-
-     return *this;
-
-    }
-
-    inline float Quaternion::y() const {
-
-      return _y;
-
-    }
-
-    inline Quaternion& Quaternion::y( float value ) {
-
-      _y = value;
-      _updateEuler();
-
-      return *this;
-
-    }
-
-    inline float Quaternion::z() const {
-
-      return _z;
-
-    }
-
-    inline Quaternion& Quaternion::z(float value) {
-
-      _z = value;
-      _updateEuler();
-
-      return *this;
-
-    }
-
-    inline float Quaternion::w() const {
-
-      return _w;
-
-    }
-
-    inline Quaternion& Quaternion::w(float value) {
-
-      _w = value;
-      _updateEuler();
-
-      return *this;
-      
-    }
-
-  Quaternion& Quaternion::set( float x, float y, float z, float w ) {
-    _x = x;
-    _y = y;
-    _z = z;
-    _w = w;
-    _updateEuler();
-    return *this;
-  }
-
-  Quaternion& Quaternion::copy( const Quaternion& quaternion ) {
-    _x = quaternion._x;
-    _y = quaternion._y;
-    _z = quaternion._z;
-    _w = quaternion._w;
-    _updateEuler();
-    return *this;
-  }
 
   Quaternion& Quaternion::setFromEuler( const Euler& euler, bool update ) {
 
@@ -152,24 +72,6 @@ namespace three {
 
   }
 
-  Quaternion& Quaternion::setFromAxisAngle( const Vector3& axis, float angle ) {
-
-    // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
-    // axis have to be normalized
-
-    auto halfAngle = angle / 2.f, s = Math::sin( halfAngle );
-
-    _x = axis.x * s;
-    _y = axis.y * s;
-    _z = axis.z * s;
-    _w = Math::cos( halfAngle );
-
-    _updateEuler();
-
-    return *this;
-
-  }
-
   Quaternion& Quaternion::setFromRotationMatrix( const Matrix4& m ) {
 
     // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
@@ -229,27 +131,6 @@ namespace three {
 
   }
 
-  Quaternion& Quaternion::inverse() {
-    conjugate().normalize();
-    return *this;
-  }
-
-  Quaternion& Quaternion::conjugate() {
-    _x *= -1;
-    _y *= -1;
-    _z *= -1;
-    _updateEuler();
-    return *this;
-  }
-
-  float Quaternion::lengthSq() const {
-    return _x * _x + _y * _y + _z * _z + _w * _w;
-  }
-
-  float Quaternion::length() const {
-    return Math::sqrt( _x * _x + _y * _y + _z * _z + _w * _w );
-  }
-
   Quaternion& Quaternion::normalize() {
 
     auto l = length();
@@ -275,10 +156,6 @@ namespace three {
     return *this;
   }
 
-  Quaternion& Quaternion::multiply( const Quaternion& q ) {
-    return multiplyQuaternions( *this, q );
-  }
-
   Quaternion& Quaternion::multiplyQuaternions( const Quaternion& a, const Quaternion& b ) {
 
     // from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
@@ -295,11 +172,6 @@ namespace three {
 
     return *this;
 
-  }
-
-  Vector3& Quaternion::multiplyVector3( Vector3& vector ) const {
-    //console.warn( 'DEPRECATED: Quaternion\'s .multiplyVector3() has been removed. Use is now vector.applyQuaternion( quaternion ) instead.' );
-    return vector.applyQuaternion( *this );
   }
 
   Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
@@ -364,17 +236,12 @@ namespace three {
 
   }
 
-  bool Quaternion::equals( const Quaternion& quaternion ) const {
-    return ( quaternion.x() == _x ) && ( quaternion.y() == _y ) && ( quaternion.z() == _z ) && ( quaternion.w() == _w );
-  }
-
-  Quaternion Quaternion::clone() {
-    return *this;
-  }
-
   void Quaternion::_updateEuler() {
-    _euler->setFromQuaternion( *this, false );
-  }
+      if(_euler == nullptr) {
+        _euler = make_shared<Euler>(Euler()); 
+      }
+      _euler->setFromQuaternion( *this, false );
+    }
 
 } // namespace three
 

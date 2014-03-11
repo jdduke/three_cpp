@@ -66,6 +66,8 @@ public:
   Triangle( const Vector3& aIn, const Vector3& bIn, const Vector3& cIn )
     : a( aIn ), b( bIn ), c( cIn ) {} 
 
+  Vector3 a, b, c;
+
   inline Triangle& set( const Vector3& aIn, const Vector3& bIn, const Vector3& cIn ) {
 
     a.copy( aIn );
@@ -76,7 +78,7 @@ public:
 
   }
 
-  inline Triangle& setFromPointsAndIndices ( const std::vector<Vector3>& points, const size_t& i0, const size_t& i1, const size_t& i2 ) {
+  inline Triangle& setFromPointsAndIndices ( const std::vector<Vector3>& points, size_t i0, size_t i1, size_t i2 ) {
 
     a.copy( points[i0] );
     b.copy( points[i1] );
@@ -181,8 +183,6 @@ public:
     return *this;
 
   }
-
-  Vector3 a, b, c;
 
 };
 
