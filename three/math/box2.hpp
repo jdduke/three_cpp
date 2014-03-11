@@ -78,6 +78,7 @@ public:
         max.y = point.y;
 
       }
+      
     }
 
     return *this;

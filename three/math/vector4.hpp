@@ -183,19 +183,27 @@ public:
   inline Vector4& min( const Vector4& v ) {
 
     if ( x > v.x ) {
+
       x = v.x;
+
     }
 
     if ( y > v.y ) {
+
       y = v.y;
+
     }
 
     if ( z > v.z ) {
+
       z = v.z;
+
     }
 
     if ( w > v.w ) {
+
       w = v.w;
+
     }
 
     return *this;
@@ -205,19 +213,27 @@ public:
   inline Vector4& max( const Vector4& v ) {
 
     if ( x < v.x ) {
+
       x = v.x;
+
     }
 
     if ( y < v.y ) {
+
       y = v.y;
+
     }
 
     if ( z < v.z ) {
+
       z = v.z;
+
     }
 
     if ( w < v.w ) {
+
       w = v.w;
+
     }
 
     return *this;
@@ -228,27 +244,43 @@ public:
     // This function assumes min < max, if this assumption isn't true it will not operate correctly
 
     if ( x < min.x ) {
+
       x = min.x;
+
     } else if ( x > max.x ) {
+
       x = max.x;
+
     }
 
     if ( y < min.y ) {
+
       y = min.y;
+
     } else if ( y > max.y ) {
+
       y = max.y;
+
     }
 
     if ( z < min.z ) {
+
       z = min.z;
+
     } else if ( z > max.z ) {
+
       z = max.z;
+
     }
 
     if ( w < min.w ) {
+
       w = min.w;
+
     } else if ( w > max.w ) {
+
       w = max.w;
+      
     }
 
     return *this;

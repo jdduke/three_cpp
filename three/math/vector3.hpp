@@ -182,15 +182,33 @@ public:
 
     // @todo what's the desired/correct behavior?
 
-    if(v.x != 0.f && v.y != 0.f && v.z != 0.f) {
+    if( v.x != 0.f ) {
 
       x /= v.x;
+
+    } else {
+
+      x = 0.f;
+
+    }
+
+    if( v.y != 0.f ) {
+
       y /= v.y;
+
+    } else {
+
+      y = 0.f;
+
+    }
+
+    if( v.z != 0.f ) {
+
       z /= v.z;
 
     } else {
 
-      set( 0.f, 0.f, 0.f);
+      z = 0.f;
 
     }
 
@@ -220,15 +238,21 @@ public:
   inline Vector3& min( const Vector3& v ) {
 
     if ( x > v.x ) {
+
       x = v.x;
+
     }
 
     if ( y > v.y ) {
+
       y = v.y;
+
     }
 
     if ( z > v.z ) {
+
       z = v.z;
+
     }
 
     return *this;
@@ -238,15 +262,21 @@ public:
   inline Vector3& max( const Vector3& v ) {
 
     if ( x < v.x ) {
+
       x = v.x;
+
     }
 
     if ( y < v.y ) {
+
       y = v.y;
+
     }
 
     if ( z < v.z ) {
+
       z = v.z;
+
     }
 
     return *this;
@@ -258,21 +288,33 @@ public:
     // This function assumes min < max, if this assumption isn't true it will not operate correctly
 
     if ( x < min.x ) {
+
       x = min.x;
+
     } else if ( x > max.x ) {
+
       x = max.x;
+
     }
 
     if ( y < min.y ) {
+
       y = min.y;
+
     } else if ( y > max.y ) {
+
       y = max.y;
+
     }
 
     if ( z < min.z ) {
+
       z = min.z;
+
     } else if ( z > max.z ) {
+
       z = max.z;
+      
     }
 
     return *this;
