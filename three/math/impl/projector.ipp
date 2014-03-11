@@ -2,6 +2,7 @@
 #define THREE_PROJECTOR_IPP
 
 #include <three/core/projector.hpp>
+#include <three/core/face.hpp>
 
 #include <three/cameras/camera.hpp>
 

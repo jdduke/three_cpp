@@ -1,6 +1,8 @@
 #ifndef THREE_RAY_IPP
 #define THREE_RAY_IPP
 
+#include <three/math/math.hpp>
+
 #include <three/math/ray.hpp>
 
 namespace three {
@@ -21,20 +23,32 @@ namespace three {
     return Vector3().copy( this->direction ).multiplyScalar( t ).add( this->origin );
   }
 
-  Vector3 Ray::at( float t, Vector3& target ) {
+  Vector3& Ray::at( float t, Vector3& target ) const {
     return target.copy( this->direction ).multiplyScalar( t ).add( this->origin );
+  }
+  
+  Vector3::Ptr Ray::at( float t, Vector3::Ptr target ) const {
+    target->copy( this->direction );
+    target->multiplyScalar( t );
+    target->add( this->origin );
+    return target;
   }
 
   Ray& Ray::recast( float t ) {
-    this->origin.copy( this->at( t, Vector3() ) );
+    auto result = Vector3();
+    this->origin.copy( this->at( t, result ) );
     return *this;
   }
 
   Vector3 Ray::closestPointToPoint( const Vector3& point ) {
-    return closestPointToPoint(point, Vector3());
+    
+    auto result = Vector3();
+
+    return closestPointToPoint(point, result);
+
   }
 
-  Vector3 Ray::closestPointToPoint( const Vector3& point, Vector3& target ) {
+  Vector3& Ray::closestPointToPoint( const Vector3& point, Vector3& target ) {
     target.subVectors( point, this->origin );
     auto directionDistance = target.dot( this->direction );
 
@@ -58,8 +72,7 @@ namespace three {
     return v1.distanceTo( point );
   }
 
-  float Ray::distanceSqToSegment( const Vector3& v0, const Vector3& v1, 
-    Vector3* optionalPointOnRay = nullptr, Vector3* optionalPointOnSegment = nullptr )  
+  float Ray::distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3::Ptr optionalPointOnRay, Vector3::Ptr optionalPointOnSegment )
   {
 
     // from http://www.geometrictools.com/LibMathematics/Distance/Wm5DistRay3Segment3.cpp
@@ -71,14 +84,14 @@ namespace three {
 
     auto segCenter = v0.clone().add( v1 ).multiplyScalar( 0.5 );
     auto segDir = v1.clone().sub( v0 ).normalize();
-    auto segExtent = v0.distanceTo( v1 ) * 0.5;
+    float segExtent = v0.distanceTo( v1 ) * 0.5;
     auto diff = this->origin.clone().sub( segCenter );
     auto a01 = - this->direction.dot( segDir );
-    auto b0 = diff.dot( this->direction );
+    float b0 = diff.dot( this->direction );
     auto b1 = - diff.dot( segDir );
     auto c = diff.lengthSq();
     auto det = Math::abs( 1 - a01 * a01 );
-    auto s0, s1, sqrDist, extDet;
+    float s0, s1, sqrDist, extDet;
 
     if ( det >= 0 ) {
 
@@ -107,7 +120,7 @@ namespace three {
             // region 1
 
             s1 = segExtent;
-            s0 = Math::max( 0, - ( a01 * s1 + b0) );
+            s0 = Math::max( 0.f , - ( a01 * s1 + b0) );
             sqrDist = - s0 * s0 + s1 * ( s1 + 2 * b1 ) + c;
 
           }
@@ -117,7 +130,7 @@ namespace three {
           // region 5
 
           s1 = - segExtent;
-          s0 = Math::max( 0, - ( a01 * s1 + b0) );
+          s0 = Math::max( 0.f , - ( a01 * s1 + b0) );
           sqrDist = - s0 * s0 + s1 * ( s1 + 2 * b1 ) + c;
 
         }
@@ -128,8 +141,8 @@ namespace three {
 
           // region 4
 
-          s0 = Math::max( 0, - ( - a01 * segExtent + b0 ) );
-          s1 = ( s0 > 0 ) ? - segExtent : Math::min( Math::max( - segExtent, - b1 ), segExtent );
+          s0 = Math::max( 0.f, (float) - ( - a01 * segExtent + b0 ) );
+          s1 = ( s0 > 0 ) ? - segExtent : Math::min( Math::max( (float)- segExtent, (float)- b1 ), segExtent );
           sqrDist = - s0 * s0 + s1 * ( s1 + 2 * b1 ) + c;
 
         } else if ( s1 <= extDet ) {
@@ -144,7 +157,7 @@ namespace three {
 
           // region 2
 
-          s0 = Math::max( 0, - ( a01 * segExtent + b0 ) );
+          s0 = Math::max( 0.f , - ( a01 * segExtent + b0 ) );
           s1 = ( s0 > 0 ) ? segExtent : Math::min( Math::max( - segExtent, - b1 ), segExtent );
           sqrDist = - s0 * s0 + s1 * ( s1 + 2 * b1 ) + c;
 
@@ -155,19 +168,19 @@ namespace three {
     } else {
       // Ray and segment are parallel.
       s1 = ( a01 > 0 ) ? - segExtent : segExtent;
-      s0 = Math::max( 0, - ( a01 * s1 + b0 ) );
+      s0 = Math::max( 0.f , - ( a01 * s1 + b0 ) );
       sqrDist = - s0 * s0 + s1 * ( s1 + 2 * b1 ) + c;
     }
 
     if ( optionalPointOnRay ) {
 
-      optionalPointOnRay.copy( this->direction.clone().multiplyScalar( s0 ).add( this->origin ) );
+      optionalPointOnRay->copy( this->direction.clone().multiplyScalar( s0 ).add( this->origin ) );
 
     }
 
     if ( optionalPointOnSegment ) {
 
-      optionalPointOnSegment.copy( segDir.clone().multiplyScalar( s1 ).add( segCenter ) );
+      optionalPointOnSegment->copy( segDir.clone().multiplyScalar( s1 ).add( segCenter ) );
 
     }
 
@@ -183,13 +196,13 @@ namespace three {
     // check if the ray lies on the plane first
     auto distToPoint = plane.distanceToPoint( this->origin );
 
-    if ( distToPoint === 0 ) {
+    if ( distToPoint == 0 ) {
       return true;
     }
 
     auto denominator = plane.normal.dot( this->direction );
     if ( denominator * distToPoint < 0 ) {
-      return true
+      return true;
     }
 
     // ray origin is behind the plane (and is pointing behind it)
@@ -215,11 +228,15 @@ namespace three {
     return t >= 0 ? t : -1;
   }
 
-  Vector3 Ray::intersectPlane( const Vector3& plane ) {
-    return intersectPlane( plane, Vector3() );
+  Vector3 Ray::intersectPlane( const Plane& plane ) {
+    
+    auto result = Vector3();
+
+    return *intersectPlane( plane, result );
+
   }
 
-  Vector3 Ray::intersectPlane( const Plane& plane, Vector3& target ) {
+  Vector3::Ptr Ray::intersectPlane( const Plane& plane, Vector3& target ) {
 
     auto t = this->distanceToPlane( plane );
 
@@ -227,27 +244,26 @@ namespace three {
       return nullptr;
     }
 
-    return this->at( t, target );
+    auto result = this->at( t, target );
+    return Vector3::create(result);
   }
 
-  bool Ray::isIntersectionBox( const Box& box ) const {
-    
-    //@todo priv mmeber check
-    auto v = Vector3();
+  bool Ray::isIntersectionBox( const Box3& box )  {
 
-    return this->intersectBox( box, v ) != nullptr;
+    return intersectBox( box ) != nullptr;
   }
 
-  Box3 Ray::intersectBox( const Box3& box ) {
+  Vector3::Ptr Ray::intersectBox( const Box3& box ) {
     //@todo mem check efficiency
-    return intersectBox(box, nullptr);
+    auto v = Vector3();
+    return intersectBox(box, v );
   }
 
-  Box3 Ray::intersectBox( const Box3& box, Vector3& target ) {
+  Vector3::Ptr Ray::intersectBox( const Box3& box, Vector3& target ) {
 
     // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
 
-    auto tmin,tmax,tymin,tymax,tzmin,tzmax;
+    float tmin,tmax,tymin,tymax,tzmin,tzmax;
 
     auto invdirx = 1/this->direction.x,
       invdiry = 1/this->direction.y,
@@ -277,14 +293,14 @@ namespace three {
       tymax = (box.min.y - origin.y) * invdiry;
     }
 
-    if ((tmin > tymax) || (tymin > tmax)) return null;
+    if ((tmin > tymax) || (tymin > tmax)) return nullptr;
 
     // These lines also handle the case where tmin or tmax is NaN
-    // (result of 0 * Infinity). x !== x returns true if x is NaN
+    // (result of 0 * Infinity). x != x returns true if x is NaN
     
-    if (tymin > tmin || tmin !== tmin ) tmin = tymin;
+    if (tymin > tmin || tmin != tmin ) tmin = tymin;
 
-    if (tymax < tmax || tmax !== tmax ) tmax = tymax;
+    if (tymax < tmax || tmax != tmax ) tmax = tymax;
 
     if (invdirz >= 0) {
     
@@ -297,21 +313,22 @@ namespace three {
       tzmax = (box.min.z - origin.z) * invdirz;
     }
 
-    if ((tmin > tzmax) || (tzmin > tmax)) return null;
+    if ((tmin > tzmax) || (tzmin > tmax)) return nullptr;
 
-    if (tzmin > tmin || tmin !== tmin ) tmin = tzmin;
+    if (tzmin > tmin || tmin != tmin ) tmin = tzmin;
 
-    if (tzmax < tmax || tmax !== tmax ) tmax = tzmax;
+    if (tzmax < tmax || tmax != tmax ) tmax = tzmax;
 
     //return point closest to the ray (positive side)
 
     if ( tmax < 0 ) return nullptr;
 
-    return this->at( tmin >= 0 ? tmin : tmax, target );
+    auto result = this->at( tmin >= 0 ? tmin : tmax, target );
 
+    return Vector3::create( result );
   }
 
-  Vector3 Ray::intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3* optionalTarget ) {
+  Vector3::Ptr Ray::intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3::Ptr optionalTarget ) {
 
     // @todo priv member check
     // Compute the offset origin, edges, and normal.
@@ -331,7 +348,7 @@ namespace three {
     //   |Dot(D,N)|*b2 = sign(Dot(D,N))*Dot(D,Cross(E1,Q))
     //   |Dot(D,N)|*t = -sign(Dot(D,N))*Dot(Q,N)
     auto DdN = this->direction.dot( normal );
-    auto sign;
+    float sign;
 
     if ( DdN > 0 ) {
 
@@ -389,7 +406,7 @@ namespace three {
     return this->at( QdN / DdN, optionalTarget );
   }
 
-  Ray& Ray::applyMatrix4( const Matrxi4& matrix4 ) {
+  Ray& Ray::applyMatrix4( const Matrix4& matrix4 ) {
 
     this->direction.add( this->origin ).applyMatrix4( matrix4 );
     this->origin.applyMatrix4( matrix4 );
@@ -405,10 +422,8 @@ namespace three {
 
   Ray Ray::clone() {
     return *this;
-  }  
-  
-};
+  }
 
-} // namespace three
+}; // namespace three
 
 #endif // THREE

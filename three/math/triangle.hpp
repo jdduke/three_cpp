@@ -11,15 +11,38 @@ class TriangleHelper {
 
 public:
 
-  static Vector3 normal( const Vector3& a, const Vector3& b, const Vector3& c);
+  inline static Vector3 normal( const Vector3& a, const Vector3& b, const Vector3& c) {
+    
+    auto target = Vector3();
+    
+    TriangleHelper::normal( a, b, c, target );
+    
+    return target;
+
+  }
 
   static Vector3& normal( const Vector3& a, const Vector3& b, const Vector3& c, Vector3& target );
 
-  static Vector3 barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c);
+  inline static Vector3 barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c) {
+
+    auto target = Vector3();
+
+    TriangleHelper::barycoordFromPoint( point, a, b, c, target );
+
+    return target;
+
+  }
 
   static Vector3& barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c, Vector3& target );
 
-  static bool containsPoint ( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c );
+  inline static bool containsPoint ( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c ) {
+
+    auto v1 = Vector3();
+    auto result = TriangleHelper::barycoordFromPoint( point, a, b, c, v1 );
+
+    return ( result.x >= 0 ) && ( result.y >= 0 ) && ( ( result.x + result.y ) <= 1 );
+
+  }
 
 private:
 
@@ -30,8 +53,6 @@ private:
 class Triangle {
 
 public:
-
-  Vector3 a, b, c;
 
   Triangle()
     : a( Vector3() ), b( Vector3() ), c( Vector3() ) {} 
@@ -45,35 +66,123 @@ public:
   Triangle( const Vector3& aIn, const Vector3& bIn, const Vector3& cIn )
     : a( aIn ), b( bIn ), c( cIn ) {} 
 
-  Triangle& set( const Vector3& a, const Vector3& b, const Vector3& c );
+  inline Triangle& set( const Vector3& aIn, const Vector3& bIn, const Vector3& cIn ) {
 
-  Triangle& setFromPointsAndIndices( const std::vector<Vector3>& points, const size_t& i0, const size_t& i1, const size_t& i2 );
+    a.copy( aIn );
+    b.copy( bIn );
+    c.copy( cIn );
 
-  Triangle& copy( const Triangle& triangle );
+    return *this;
 
-  float area() const;
+  }
 
-  Vector3 midpoint() const;
+  inline Triangle& setFromPointsAndIndices ( const std::vector<Vector3>& points, const size_t& i0, const size_t& i1, const size_t& i2 ) {
 
-  Vector3& midpoint( Vector3& target ) const;
+    a.copy( points[i0] );
+    b.copy( points[i1] );
+    c.copy( points[i2] );
 
-  Vector3 normal() const;
+    return *this;
 
-  Vector3& normal( Vector3& target ) const;
+  }
 
-  Plane plane() const;
+  inline Triangle& copy( const Triangle& triangle ) {
 
-  Plane& plane( Plane& target ) const;
+    a.copy( triangle.a );
+    b.copy( triangle.b );
+    c.copy( triangle.c );
 
-  Vector3 barycoordFromPoint( const Vector3& point ) const;
+    return *this;
+    
+  }
 
-  Vector3& barycoordFromPoint( const Vector3& point, Vector3& target ) const;
+  inline float area() const {
 
-  bool containsPoint( const Vector3& point ) const;
+    auto v0 = Vector3();
+    auto v1 = Vector3();
 
-  bool equals( const Triangle& triangle ) const;
+    v0.subVectors( c, b );
+    v1.subVectors( a, b );
 
-  Triangle clone() const;
+    return v0.cross( v1 ).length() * 0.5f;
+
+  }
+
+  inline Vector3 midpoint() const {
+
+    auto target = Vector3();
+    
+    midpoint( target );
+
+    return target;
+
+  }
+
+  inline Vector3& midpoint( Vector3& target ) const {
+
+    return target.addVectors( a, b ).add( c ).multiplyScalar( 1 / 3 );
+
+  }
+
+  inline Vector3 normal() const {
+
+    return TriangleHelper::normal( a, b, c );
+
+  }
+
+  inline Vector3& normal( Vector3& target ) const {
+
+    return TriangleHelper::normal( a, b, c, target );
+
+  }
+
+  inline Plane plane() const {
+
+    auto target = Plane();
+
+    plane( target );
+
+    return target;
+
+  }
+
+  inline Plane& plane( Plane& target ) const {
+
+    return target.setFromCoplanarPoints( a, b, c );
+
+  }
+
+  inline Vector3 barycoordFromPoint( const Vector3& point ) const {
+
+    return TriangleHelper::barycoordFromPoint( point, a, b, c );
+
+  }
+
+  inline Vector3& barycoordFromPoint( const Vector3& point, Vector3& target ) const {
+
+    return TriangleHelper::barycoordFromPoint( point, a, b, c, target );
+
+  }
+
+  inline bool containsPoint( const Vector3& point ) const {
+
+    return TriangleHelper::containsPoint( point, a, b, c );
+
+  }
+
+  inline bool equals( const Triangle& triangle ) const {
+
+    return triangle.a.equals( a ) && triangle.b.equals( b ) && triangle.c.equals( c );
+
+  }
+
+  inline Triangle clone() const {
+
+    return *this;
+
+  }
+
+  Vector3 a, b, c;
 
 };
 

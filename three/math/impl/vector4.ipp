@@ -6,115 +6,7 @@
 
 namespace three {
 
-	Vector4& Vector4::set( float xIn, float yIn, float zIn, float wIn ) {
-
-		x = xIn;
-		y = yIn;
-		z = zIn;
-		w = wIn;
-
-		return *this;
-	}
-
-  Vector4& Vector4::setX( float xIn ) {
-
-    x = xIn;
-
-    return *this;
-  }
-
-  Vector4& Vector4::setY( float yIn ) {
-
-    y = yIn;
-
-    return *this;
-  }
-
-  Vector4& Vector4::setZ( float zIn ) {
-
-    z = zIn;
-
-    return *this;
-  }
-
-  Vector4& Vector4::setW( float wIn ) {
-
-    w = wIn;
-
-    return *this;
-  }
-
-  Vector4& Vector4::copy( const Vector3& v ) {
-
-    x = v.x;
-    y = v.y;
-    z = v.z;
-    w = 1.f;
-
-    return *this;
-  }
-
-  Vector4& Vector4::copy( const Vector4& v ) {
-    x = v.x;
-    y = v.y;
-    z = v.z;
-    w = v.w;
-    return *this;
-  }
-
-  Vector4& Vector4::add( const Vector4& v ) {
-
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    w += v.w;
-
-    return *this;
-  }
-
-  Vector4& Vector4::addVectors( const Vector4& a, const Vector4& b ) {
-
-    x = a.x + b.x;
-    y = a.y + b.y;
-    z = a.z + b.z;
-    w = a.w + b.w;
-
-    return *this;
-  }
-
-  Vector4& Vector4::addScalar( float s ) {
-
-    x += s;
-    y += s;
-    z += s;
-    w += s;
-
-    return *this;
-  }
-
-  Vector4& Vector4::sub( const Vector4& v ) {
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-    w -= v.w;
-    return *this;
-  }
-
-  Vector4& Vector4::subVectors( const Vector4& a, const Vector4& b ) {
-    x = a.x - b.x;
-    y = a.y - b.y;
-    z = a.z - b.z;
-    w = a.w - b.w;
-    return *this;
-  }
-
-  Vector4& Vector4::multiplyScalar( float s ) {
-    x *= s;
-    y *= s;
-    z *= s;
-    w *= s;
-    return *this;
-  }
+	
 
   Vector4& Vector4::applyMatrix4( const Matrix4& m ) {
 
@@ -128,34 +20,28 @@ namespace three {
     return *this;
   }
 
-  Vector4& Vector4::divideScalar( float s ) {
-    if ( s != 0.f ) {
-     return multiplyScalar( 1.f / s );
+
+
+   Vector4& Vector4::setAxisAngleFromQuaternion( const Quaternion& q ) {
+        // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/index.htm
+        // q is assumed to be normalized
+    w = 2 * Math::acos( q.w() );
+
+    auto s = Math::sqrt( 1.f - q.w() * q.w() );
+
+    if ( s < 0.0001f ) {
+     x = 1.f;
+     y = 0.f;
+     z = 0.f;
    } else {
-     return set( 0, 0, 0, 1 );
+     x = q.x() / s;
+     y = q.y() / s;
+     z = q.z() / s;
    }
- }
+   return *this;
+  }
 
- Vector4& Vector4::setAxisAngleFromQuaternion( const Quaternion& q ) {
-      // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/index.htm
-      // q is assumed to be normalized
-  w = 2 * Math::acos( q.w() );
-
-  auto s = Math::sqrt( 1.f - q.w() * q.w() );
-
-  if ( s < 0.0001f ) {
-   x = 1.f;
-   y = 0.f;
-   z = 0.f;
- } else {
-   x = q.x() / s;
-   y = q.y() / s;
-   z = q.z() / s;
- }
- return *this;
-}
-
-Vector4& Vector4::setAxisAngleFromRotationMatrix( const Matrix4& m ) {
+  Vector4& Vector4::setAxisAngleFromRotationMatrix( const Matrix4& m ) {
 
     // @todo r65 mem optimization
 
@@ -277,120 +163,6 @@ Vector4& Vector4::setAxisAngleFromRotationMatrix( const Matrix4& m ) {
     z = ( m21 - m12 ) / s;
     w = Math::acos( ( m11 + m22 + m33 - 1 ) / 2.f );
 
-    return *this;
-  }
-
-  Vector4& Vector4::min( const Vector4& v ) {
-    if ( x > v.x ) {
-      x = v.x;
-    }
-
-    if ( y > v.y ) {
-      y = v.y;
-    }
-
-    if ( z > v.z ) {
-      z = v.z;
-    }
-
-    if ( w > v.w ) {
-      w = v.w;
-    }
-
-    return *this;
-  }
-
-  Vector4& Vector4::max( const Vector4& v ) {
-    if ( x < v.x ) {
-      x = v.x;
-    }
-
-    if ( y < v.y ) {
-      y = v.y;
-    }
-
-    if ( z < v.z ) {
-      z = v.z;
-    }
-
-    if ( w < v.w ) {
-      w = v.w;
-    }
-
-    return *this;
-  }
-
-  Vector4& Vector4::clamp( const Vector4& min, const Vector4& max ) {
-    // This function assumes min < max, if this assumption isn't true it will not operate correctly
-
-    if ( x < min.x ) {
-      x = min.x;
-    } else if ( x > max.x ) {
-      x = max.x;
-    }
-
-    if ( y < min.y ) {
-      y = min.y;
-    } else if ( y > max.y ) {
-      y = max.y;
-    }
-
-    if ( z < min.z ) {
-      z = min.z;
-    } else if ( z > max.z ) {
-      z = max.z;
-    }
-
-    if ( w < min.w ) {
-      w = min.w;
-    } else if ( w > max.w ) {
-      w = max.w;
-    }
-
-    return *this;
-  }
-
-  Vector4& Vector4::negate() {
-    return multiplyScalar( -1.f );
-  }
-
-  float Vector4::dot( const Vector4& v ) const {
-    return x * v.x + y * v.y + z * v.z + w + v.w;
-  }
-
-  float Vector4::lengthSq() const {
-    return dot( *this );
-  }
-
-  float Vector4::length() const {
-    return Math::sqrt( lengthSq() );
-  }
-
-  float Vector4::lengthManhattan() const {
-    return Math::abs( x ) + Math::abs( y ) + Math::abs( z ) + Math::abs( w );
-  }
-
-  Vector4& Vector4::normalize() {
-    return divideScalar( length() );
-  }
-
-  Vector4& Vector4::setLength( float l ) {
-    return normalize().multiplyScalar( l );
-  }
-
-  Vector4& Vector4::lerp( const Vector4& v, float alpha ) {
-    x += ( v.x - x ) * alpha;
-    y += ( v.y - y ) * alpha;
-    z += ( v.z - z ) * alpha;
-    w += ( v.w - w ) * alpha;
-    return *this;
-  }
-
-  bool Vector4::equals( const Vector4& v ) {
-    return ( ( v.x == x ) && ( v.y == y ) && ( v.z == z ) );
-  }
-
-  Vector4 Vector4::clone() const {
     return *this;
   }
 

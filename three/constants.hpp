@@ -150,7 +150,8 @@ enum Type {
   Mesh,
   SkinnedMesh,
   Ribbon,
-  Line
+  Line,
+  Vector3
 };
 
 enum GeometryType {

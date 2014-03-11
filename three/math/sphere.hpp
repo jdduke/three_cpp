@@ -2,6 +2,7 @@
 #define THREE_SPHERE_HPP
 
 #include <three/common.hpp>
+#include <three/math/matrix4.hpp>
 
 namespace three {
 
@@ -18,37 +19,113 @@ public:
   Sphere( Vector3 centerIn, float radiusIn) 
     : center(centerIn), radius(radiusIn) {}
 
-  Sphere& set( const Vector3& center, float radius );
+  inline Sphere& set( const Vector3& center, float radius ) {
+
+    this->center.copy( center );
+    this->radius = radius;
+
+    return *this;
+
+  }
 
   Sphere& setFromPoints( const std::vector<Vector3>& points);
-
+  
   Sphere& setFromPoints( const std::vector<Vector3>& points, const Vector3& center  );
 
-  Sphere& copy( const Sphere& sphere );
+  inline Sphere& copy( const Sphere& sphere ) {
 
-  bool empty() const;
+    center.copy( sphere.center );
+    radius = sphere.radius;
 
-  bool containsPoint( const Vector3& point ) const;
+    return *this;
 
-  float distanceToPoint( const Vector3& point ) const;
+  }
 
-  bool intersectsSphere( const Sphere& sphere ) const;
+  inline bool empty() const {
 
-  Vector3 clampPoint( const Vector3& point ) const;
+    return ( radius <= 0.f );
 
-  Vector3& clampPoint( const Vector3& point, Vector3& target ) const;
+  }
+
+  inline bool containsPoint( const Vector3& point ) const {
+
+    return ( point.distanceToSquared( center ) <= ( radius * radius ) );
+
+  }
+
+  inline float distanceToPoint( const Vector3& point ) const {
+
+    return ( point.distanceTo( center ) - radius );
+
+  }
+
+  inline bool intersectsSphere( const Sphere& sphere ) const {
+
+    auto radiusSum = radius + sphere.radius;
+
+    return sphere.center.distanceToSquared( center ) <= ( radiusSum * radiusSum );
+
+  }
+
+  inline Vector3 clampPoint( const Vector3& point ) const {
+
+    auto result = Vector3();
+
+    clampPoint(point, result );
+
+    return result;
+
+  }
+
+  inline Vector3& clampPoint( const Vector3& point, Vector3& target ) const {
+
+    auto deltaLengthSq = center.distanceToSquared( point );
+
+    target.copy( point );
+
+    if ( deltaLengthSq > ( radius * radius ) ) {
+
+      target.sub( center ).normalize();
+      target.multiplyScalar( radius ).add( center );
+
+    }
+
+    return target;
+
+  }
 
   Box3 getBoundingBox( ) const;
 
   Box3& getBoundingBox( Box3& target ) const;
 
-  Sphere& applyMatrix4( const Matrix4& matrix ); 
+  inline Sphere& applyMatrix4( const Matrix4& matrix ) {
 
-  Sphere& translate( const Vector3& offset );
+    center.applyMatrix4( matrix );
+    radius = radius * matrix.getMaxScaleOnAxis();
 
-  bool equals( const Sphere& sphere ) const;
+    return *this;
 
-  Sphere clone();
+  }
+
+  inline Sphere& translate( const Vector3& offset ) {
+
+    center.add( offset );
+
+    return *this;
+
+  }
+
+  inline bool equals( const Sphere& sphere ) const {
+
+    return sphere.center.equals( center ) && ( sphere.radius == radius );
+
+  }
+
+  inline Sphere clone() {
+
+    return *this;
+
+  }
 
   Vector3 center;
   

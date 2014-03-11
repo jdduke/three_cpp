@@ -17,55 +17,57 @@ public:
   Vector3 direction;
 
   Ray()
-    : origin(Vector3()), direction(Vector3()) { };
+    : origin( Vector3() ), direction( Vector3() ) { };
 
   Ray( const Vector3& originIn ) 
-    : origin(originIn), direction(Vector3()) { }
+    : origin( originIn ), direction( Vector3() ) { }
 
   Ray( const Vector3& originIn, const Vector3& directionIn ) 
-    : origin(originIn), direction(directionIn) { }
+    : origin( originIn ), direction( directionIn ) { }
 
-  inline Ray& set( const Vector3& origin, const Vector3& direction );
+  Ray& set( const Vector3& origin, const Vector3& direction );
 
-  inline Ray& copy( const Ray& ray );
+  Ray& copy( const Ray& ray );
 
-  inline Vector3 at( float t ) const;
+  Vector3 at( float t ) const;
 
-  inline Vector3 at( float t, const Vector3& optionalTarget ) const;
+  Vector3& at( float t, Vector3& target ) const;
 
-  inline Ray& recast( float t );
+  Vector3::Ptr at( float t, Vector3::Ptr target ) const;
 
-  inline Vector3 closestPointToPoint( const Vector3& point );
+  Ray& recast( float t );
 
-  inline Vector3 closestPointToPoint( const Vector3& point, const Vector3& target );
+  Vector3 closestPointToPoint( const Vector3& point );
 
-  inline float distanceToPoint( const Vector3& point ) const;
+  Vector3& closestPointToPoint( const Vector3& point, Vector3& target );
 
-  float distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3* optionalPointOnRay = nullptr, Vector3* optionalPointOnSegment = nullptr ) const;
+  float distanceToPoint( const Vector3& point ) const;
 
-  inline bool isIntersectionSphere( const Sphere& sphere ) const;
+  float distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3::Ptr optionalPointOnRay = nullptr, Vector3::Ptr optionalPointOnSegment = nullptr );
 
-  inline bool isIntersectionPlane( const Plane& plane ) const;
+  bool isIntersectionSphere( const Sphere& sphere ) const;
 
-  inline float distanceToPlane( const Plane& plane ) const;
+  bool isIntersectionPlane( const Plane& plane ) const;
 
-  inline Vector3 intersectPlane( const Vector3& plane );
+  float distanceToPlane( const Plane& plane ) const;
 
-  inline Vector3 intersectPlane( const Plane& plane, Vector3& target );
+  Vector3 intersectPlane( const Plane& plane );
 
-  bool isIntersectionBox( const Box& box ) const;
+  Vector3::Ptr intersectPlane( const Plane& plane, Vector3& target );
 
-  Box3 intersectBox( const Box3& box );
+  bool isIntersectionBox( const Box3& box );
 
-  Box3 intersectBox( const Box3& box , Vector3& target );
+  Vector3::Ptr intersectBox( const Box3& box );
 
-  Vector3 intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, const Vector3& optionalTarget );
+  Vector3::Ptr intersectBox( const Box3& box, Vector3& target );
+
+  Vector3::Ptr intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3::Ptr optionalTarget );
 
   Ray& applyMatrix4( const Matrix4& matrix4 );
 
-  inline bool equals( const Ray& ray ) const;
+  bool equals( const Ray& ray ) const;
 
-  inline Ray clone();
+  Ray clone();
 
 };
 

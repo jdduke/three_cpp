@@ -12,18 +12,6 @@
 
 namespace three {
 
-  Spline& Spline::initFromArray( const float* a, size_t n ) {
-
-    points.resize( n );
-
-    for ( size_t i = 0; i < n; i += 3 ) {
-      points [ i ].set( a[ i ], a[ i + 1 ], a[ i + 2 ] );
-    }
-
-    return *this;
-
-  }
-
   Vector3 Spline::getPoint( float k ) const {
 
     float point = k * ( ( int )points.size() - 1 );
@@ -51,12 +39,6 @@ namespace three {
     v3.z = interpolate( pa.z, pb.z, pc.z, pd.z, weight, w2, w3 );
 
     return v3;
-
-  }
-
-  const std::vector<Vector3>& Spline::getControlPointsArray() const {
-
-    return points;
 
   }
 
@@ -142,15 +124,6 @@ namespace three {
     }
 
     points = std::move( newpoints );
-
-  }
-
-  float Spline::interpolate( float p0, float p1, float p2, float p3, float t, float t2, float t3 ) {
-
-    auto v0 = ( p2 - p0 ) * 0.5f,
-         v1 = ( p3 - p1 ) * 0.5f;
-
-    return ( 2.f * ( p1 - p2 ) + v0 + v1 ) * t3 + ( - 3.f * ( p1 - p2 ) - 2.f * v0 - v1 ) * t2 + v0 * t + p1;
 
   }
 

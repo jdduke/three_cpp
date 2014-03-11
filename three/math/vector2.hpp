@@ -30,15 +30,19 @@ public:
   explicit Vector2( float* values )
     : x( values[0] ), y( values[1] ) {}
 
-  float& operator[]( const int i ) {
+  inline float& operator[]( const int i ) {
+
     return xy[i];
+
   }
 
-  const float operator[]( const int i ) const {
+  inline const float operator[]( const int i ) const {
+
     return xy[i];
+
   }
 
-  Vector2& set( float xIn, float yIn ) {
+  inline Vector2& set( float xIn, float yIn ) {
 
     x = xIn;
     y = yIn;
@@ -46,108 +50,128 @@ public:
     return *this;
   }
 
-  Vector2& setX( float xIn ) {
+  inline Vector2& setX( float xIn ) {
 
     x = x;
 
     return *this;
   }
 
-  Vector2& setY( float yIn ) {
+  inline Vector2& setY( float yIn ) {
 
     y = y;
 
     return *this;
   }
 
-  Vector2& setComponent (size_t index, float value ) {
+  inline Vector2& setComponent (size_t index, float value ) {
 
     if(index == 0) {
+
       x = value;
+
     } else if(index == 1) {
+
       y = value;
+
     }
 
     return *this;
+
   }
 
-  float getComponent ( size_t index ) {
+  inline float getComponent ( size_t index ) {
 
     if(index <= 0) {
+
       return x;
+
     } else {
+
+      
       return y;
     }
       
   }
 
-  Vector2& copy( const Vector2& v ) {
+  inline Vector2& copy( const Vector2& v ) {
 
     x = v.x;
     y = v.y;
 
     return *this;
+
   }
 
-  Vector2& add( const Vector2& v) {
+  inline Vector2& add( const Vector2& v) {
 
     x = v.x;
     y = v.y;
 
     return *this;
+
   }
 
-  Vector2& addVectors( const Vector2& a, const Vector2& b ) {
+  inline Vector2& addVectors( const Vector2& a, const Vector2& b ) {
 
     x = a.x + b.x;
     y = a.y + b.y;
 
     return *this;
+
   }
 
-  Vector2& addScalar( float value ) {
+  inline Vector2& addScalar( float value ) {
 
     x += value;
     y += value;
 
     return *this;
+
   }
 
-  Vector2& sub( const Vector2& v ) {
+  inline Vector2& sub( const Vector2& v ) {
 
     x -= v.x;
     y -= v.y;
 
     return *this;
+
   }
 
-  Vector2& subVectors( const Vector2& a, const Vector2& b ) {
+  inline Vector2& subVectors( const Vector2& a, const Vector2& b ) {
 
     x = a.x - b.x;
     y = a.y - b.y;
 
     return *this;
+
   }
 
-  Vector2& multiplyScalar( float s ) {
+  inline Vector2& multiplyScalar( float s ) {
 
     x *= s;
     y *= s;
 
     return *this;
+
   }
 
-  Vector2& divideScalar( float s ) {
+  inline Vector2& divideScalar( float s ) {
 
     if ( s ) {
+
       return multiplyScalar( 1.f / s );
+
     } else {
+
       return set( 0, 0 );
+
     }
 
   }
 
-  Vector2& min ( const Vector2& v ) {
+  inline Vector2& min ( const Vector2& v ) {
 
     if ( x > v.x ) {
       x = v.x;
@@ -156,10 +180,13 @@ public:
     if ( y > v.y ) {
       y = v.y;
     }
+
     return *this;
+
   }
 
-  Vector2& max ( const Vector2& v ) {
+  inline Vector2& max ( const Vector2& v ) {
+
     if ( x < v.x ) {
       x = v.x;
     }
@@ -167,11 +194,13 @@ public:
     if ( y < v.y ) {
       y = v.y;
     }
+
     return *this;
+
   }
 
 
-  Vector2& clamp ( const Vector2& min, const Vector2& max ) {
+  inline Vector2& clamp ( const Vector2& min, const Vector2& max ) {
 
     // This function assumes min < max, if this assumption isn't true it will not operate correctly
 
@@ -188,9 +217,10 @@ public:
     }
 
     return *this;
+
   }
 
-  Vector2& clampScalar( float minVal, float maxVal ) {
+  inline Vector2& clampScalar( float minVal, float maxVal ) {
 
     auto min = Vector2();
     auto max = Vector2();
@@ -199,98 +229,128 @@ public:
     max.set( maxVal, maxVal );
 
     return clamp( min, max );
+
   }
 
-  Vector2& floor() {
+  inline Vector2& floor() {
 
     x = Math::floor( x );
     y = Math::floor( y );
 
     return *this;
+
   }
 
-  Vector2& ceil () {
+  inline Vector2& ceil () {
 
     x = Math::ceil( x );
     y = Math::ceil( y );
 
     return *this;
+
   }
 
-  Vector2& round() {
+  inline Vector2& round() {
 
     x = Math::round( x );
     y = Math::round( y );
 
     return *this;
+
   }
 
-  Vector2& roundToZero() {
+  inline Vector2& roundToZero() {
 
     x = ( x < 0.0f ) ? Math::ceil( x ) : Math::floor( x );
     y = ( y < 0.0f ) ? Math::ceil( y ) : Math::floor( y );
 
     return *this;
+
   }
 
-  Vector2& negate() {
+  inline Vector2& negate() {
+
     return multiplyScalar( -1.f );
+
   }
 
-  float dot( const Vector2& v ) const {
+  inline float dot( const Vector2& v ) const {
+
     return x * v.x + y * v.y;
+
   }
 
-  float lengthSq() const {
+  inline float lengthSq() const {
+
     return x * x + y * y;
+
   }
 
-  float length() const {
+  inline float length() const {
+
     return Math::sqrt( lengthSq() );
+
   }
 
-  Vector2& normalize() {
+  inline Vector2& normalize() {
+
     return divideScalar( length() );
+
   }
 
-  float distanceTo( const Vector2& v ) const {
+  inline float distanceTo( const Vector2& v ) const {
+
     return Math::sqrt( distanceToSquared( v ) );
+
   }
 
-  float distanceToSquared( const Vector2& v ) const {
+  inline float distanceToSquared( const Vector2& v ) const {
+
     auto dx = x - v.x, dy = y - v.y;
+
     return dx * dx + dy * dy;
+
   }
 
-  Vector2& setLength( float l ) {
+  inline Vector2& setLength( float l ) {
 
     auto oldLength = length();
 
     if ( oldLength != 0.0f && l != oldLength ) {
+
       return multiplyScalar( l / oldLength);
+
     }
 
     return *this;
+
   }
 
-  Vector2& lerp( const Vector2& v, float alpha ) {
+  inline Vector2& lerp( const Vector2& v, float alpha ) {
 
     x += ( v.x - x ) * alpha;
     y += ( v.y - y ) * alpha;
 
     return *this;
+
   }
 
-  bool equals( const Vector2& v ) const {
+  inline bool equals( const Vector2& v ) const {
+
     return ( ( v.x == x ) && ( v.y == y ) );
+
   }
 
-  Vector2 clone() const {
+  inline Vector2 clone() const {
+
     return *this;
+
   }
 
-  bool isZero() const {
+  inline bool isZero() const {
+
     return ( lengthSq() < 0.0001 /* almostZero */ );
+    
   }
 
 };

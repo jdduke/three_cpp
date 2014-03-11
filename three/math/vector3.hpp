@@ -2,8 +2,10 @@
 #define THREE_VECTOR3_HPP
 
 #include <three/common.hpp>
-#include <memory>
+#include <three/utils/memory.hpp>
 #include <three/math/math.hpp>
+
+#include <memory>
 
 namespace three {
 
@@ -11,12 +13,18 @@ class Vector3 {
 
 public:
 
+  typedef std::shared_ptr<Vector3> Ptr;
+
   union {
     struct {
       float x, y, z;
     };
     float xyz[3];
   };
+
+  static Ptr create( Vector3 v ) {
+    return make_shared<Vector3>( v.x, v.y, v.z );
+  }
 
   Vector3()
     : x( 0 ), y( 0 ), z( 0 ) {}
@@ -30,19 +38,13 @@ public:
   explicit Vector3( float* values )
     : x( values[0] ), y( values[1] ), z( values[2] ) {}
 
-  float& operator[]( const int i ) {
+  float& operator[]( const int i ) { return xyz[i]; }
 
-    return xyz[i];
+  const float operator[]( const int i ) const { return xyz[i]; }
 
-  }
+  virtual enums::Type type() const { return enums::Vector3; }
 
-  const float operator[]( const int i ) const {
-
-    return xyz[i];
-
-  }
-
-  Vector3& set( float xIn, float yIn, float zIn ) {
+  inline Vector3& set( float xIn, float yIn, float zIn ) {
 
     x = xIn;
     y = yIn;
@@ -52,7 +54,7 @@ public:
 
   }
 
-  Vector3& setX( float xIn ) {
+  inline Vector3& setX( float xIn ) {
 
     x = xIn;
 
@@ -60,7 +62,7 @@ public:
 
   }
 
-  Vector3& setY( float yIn ) {
+  inline Vector3& setY( float yIn ) {
 
     y = yIn;
 
@@ -68,7 +70,7 @@ public:
 
   }
 
-  Vector3& setZ( float zIn ) {
+  inline Vector3& setZ( float zIn ) {
 
     z = zIn;
 
@@ -76,7 +78,7 @@ public:
 
   }
 
-  Vector3& copy( const Vector3& v ) {
+  inline Vector3& copy( const Vector3& v ) {
 
     x = v.x;
     y = v.y;
@@ -86,7 +88,7 @@ public:
 
   }
 
-  Vector3& add( const Vector3& v ) {
+  inline Vector3& add( const Vector3& v ) {
 
     x += v.x;
     y += v.y;
@@ -96,7 +98,7 @@ public:
 
   }
 
-  Vector3& addScalar( float s ) {
+  inline Vector3& addScalar( float s ) {
 
     x += s;
     y += s;
@@ -106,7 +108,7 @@ public:
 
   }
 
-  Vector3& addVectors( const Vector3& a, const Vector3& b ) {
+  inline Vector3& addVectors( const Vector3& a, const Vector3& b ) {
 
     x = a.x + b.x;
     y = a.y + b.y;
@@ -116,7 +118,7 @@ public:
 
   }
 
-  Vector3& sub( const Vector3& v ) {
+  inline Vector3& sub( const Vector3& v ) {
 
     x -= v.x;
     y -= v.y;
@@ -126,7 +128,7 @@ public:
 
   }
 
-  Vector3& subVectors( const Vector3& a, const Vector3& b ) {
+  inline Vector3& subVectors( const Vector3& a, const Vector3& b ) {
 
     x = a.x - b.x;
     y = a.y - b.y;
@@ -136,7 +138,7 @@ public:
 
   }
 
-  Vector3& multiply( const Vector3& v ) {
+  inline Vector3& multiply( const Vector3& v ) {
 
     x *= v.x;
     y *= v.y;
@@ -146,7 +148,7 @@ public:
 
   }
 
-  Vector3& multiplyScalar( float s ) {
+  inline Vector3& multiplyScalar( float s ) {
 
     x *= s;
     y *= s;
@@ -156,7 +158,7 @@ public:
 
   }
 
-  Vector3& multiplyVectors( const Vector3& a, const Vector3& b ) {
+  inline Vector3& multiplyVectors( const Vector3& a, const Vector3& b ) {
 
     x = a.x * b.x;
     y = a.y * b.y;
@@ -176,7 +178,7 @@ public:
 
   Vector3& transformDirection( const Matrix4& m );
 
-  Vector3& divide( const Vector3& v ) {
+  inline Vector3& divide( const Vector3& v ) {
 
     // @todo what's the desired/correct behavior?
 
@@ -196,7 +198,7 @@ public:
 
   }
 
-  Vector3& divideScalar( float s ) {
+  inline Vector3& divideScalar( float s ) {
 
     if ( s != 0.f ) {
       auto invScalar = 1.f / s;
@@ -215,7 +217,7 @@ public:
 
   }
 
-  Vector3& min( const Vector3& v ) {
+  inline Vector3& min( const Vector3& v ) {
 
     if ( x > v.x ) {
       x = v.x;
@@ -233,7 +235,7 @@ public:
 
   }
 
-  Vector3& max( const Vector3& v ) {
+  inline Vector3& max( const Vector3& v ) {
 
     if ( x < v.x ) {
       x = v.x;
@@ -251,7 +253,7 @@ public:
 
   }
 
-  Vector3& clamp( const Vector3& min, const Vector3&  max ) {
+  inline Vector3& clamp( const Vector3& min, const Vector3&  max ) {
 
     // This function assumes min < max, if this assumption isn't true it will not operate correctly
 
@@ -277,49 +279,49 @@ public:
 
   }
 
-  Vector3& negate() {
+  inline Vector3& negate() {
 
     return multiplyScalar( -1.f );
 
   }
 
-  float dot( const Vector3& v ) const {
+  inline float dot( const Vector3& v ) const {
 
     return x * v.x + y * v.y + z * v.z;
 
   }
 
-  float lengthSq() const {
+  inline float lengthSq() const {
 
     return x * x + y * y + z * z;
 
   }
 
-  float length() const {
+  inline float length() const {
 
     return Math::sqrt( lengthSq() );
 
   }
 
-  float lengthManhattan() const {
+  inline float lengthManhattan() const {
 
     return Math::abs( x ) + Math::abs( y ) + Math::abs( z );
 
   }
 
-  Vector3& normalize() {
+  inline Vector3& normalize() {
 
     return divideScalar( length() );
 
   }
 
-  Vector3& setLength( float l ) {
+  inline Vector3& setLength( float l ) {
 
     return normalize().multiplyScalar( l );
 
   }
 
-  Vector3& lerp( const Vector3& v, float alpha ) {
+  inline Vector3& lerp( const Vector3& v, float alpha ) {
 
     x += ( v.x - x ) * alpha;
     y += ( v.y - y ) * alpha;
@@ -329,7 +331,7 @@ public:
 
   }
 
-  Vector3& cross( const Vector3& v) {
+  inline Vector3& cross( const Vector3& v) {
 
     x = y * v.z - z * v.y;
     y = z * v.x - x * v.z;
@@ -339,7 +341,7 @@ public:
 
   }
 
-  Vector3& crossVectors( const Vector3& a, const Vector3& b ) {
+  inline Vector3& crossVectors( const Vector3& a, const Vector3& b ) {
 
     x = a.y * b.z - a.z * b.y;
     y = a.z * b.x - a.x * b.z;
@@ -349,7 +351,7 @@ public:
 
   }
 
-  float angleTo( const Vector3& v ) {
+  inline float angleTo( const Vector3& v ) {
 
     //@todo near zero correct behavior?
     auto l = length() * v.length();
@@ -360,13 +362,13 @@ public:
 
   }
 
-  float distanceTo( const Vector3& v ) const {
+  inline float distanceTo( const Vector3& v ) const {
 
     return Math::sqrt( distanceToSquared( v ) );
 
   }
 
-  float distanceToSquared( const Vector3& v ) const {
+  inline float distanceToSquared( const Vector3& v ) const {
 
     return Vector3().subVectors( *this, v ).lengthSq();
 
@@ -378,19 +380,19 @@ public:
 
   Vector3& setFromMatrixColumn( const size_t& index, const Matrix4& matrix );
 
-  bool equals( const Vector3& v ) const {
+  inline bool equals( const Vector3& v ) const {
 
     return ( ( v.x == x ) && ( v.y == y ) && ( v.z == z ) );
 
   }
 
-  Vector3 clone() const {
+  inline Vector3 clone() const {
 
     return *this;
 
   }
 
-  bool isZero() const {
+  inline bool isZero() const {
 
     return ( lengthSq() < 0.0001f /* almostZero */ );
 
@@ -400,7 +402,7 @@ public:
 
   Vector3& applyAxisAngle( const Vector3& axis, float angle );
 
-  Vector3& projectOnVector( const Vector3& vector ) {
+  inline Vector3& projectOnVector( const Vector3& vector ) {
 
     auto v1 = Vector3();
     v1.copy( vector ).normalize();
@@ -410,7 +412,7 @@ public:
 
   }
 
-  Vector3& projectOnPlane( const Vector3& planeNormal ) {
+  inline Vector3& projectOnPlane( const Vector3& planeNormal ) {
 
     auto v1 = Vector3();
     v1.copy( *this ).projectOnVector( planeNormal );
@@ -419,7 +421,7 @@ public:
 
   }
 
-  Vector3& reflect( const Vector3& vector ) {
+  inline Vector3& reflect( const Vector3& vector ) {
 
     auto v1 = Vector3();
     v1.copy( *this ).projectOnVector( vector ).multiplyScalar( 2 );
@@ -429,8 +431,6 @@ public:
   }
 
 };
-
-static_assert( sizeof( Vector3 ) == sizeof( float ) * 3, "Invalid Vector3 storage size" );
 
 inline Vector3 add( const Vector3& a, const Vector3& b ) {
   return Vector3().addVectors( a, b );
