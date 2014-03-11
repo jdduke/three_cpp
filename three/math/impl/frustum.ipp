@@ -17,26 +17,33 @@ namespace three {
 
 
   Frustum& Frustum::set( const Plane& p0, const Plane& p1, const Plane& p2, const Plane& p3, const Plane& p4, const Plane& p5 ){
+
     planes[0].copy( p0 );
     planes[1].copy( p1 );
     planes[2].copy( p2 );
     planes[3].copy( p3 );
     planes[4].copy( p4 );
     planes[5].copy( p5 );
+
     return *this;
+
   }
 
   Frustum& Frustum::copy( const Frustum& frustum ) {
 
     for( char i = 0; i < 6; i ++ ) {
+
       planes[i].copy( frustum.planes[i] );
+
     }
 
     return *this;
   }
 
   Frustum& Frustum::setFromMatrix( const Matrix4& m ) {
+
     const auto& me = m.elements;
+
     auto me0 = me[0], me1 = me[1], me2 = me[2], me3 = me[3];
     auto me4 = me[4], me5 = me[5], me6 = me[6], me7 = me[7];
     auto me8 = me[8], me9 = me[9], me10 = me[10], me11 = me[11];
@@ -53,8 +60,11 @@ namespace three {
   }
 
   bool Frustum::intersectsObject( const Object3D& object ) {
+
     if ( !object.geometry ) {
+
       return false;
+
     }
     //_sphere.reset(new Sphere);
 
@@ -69,6 +79,7 @@ namespace three {
     _sphere.applyMatrix4( object.matrixWorld );
 
     return intersectsSphere( _sphere );
+
   }
 
   bool Frustum::intersectsSphere( const Sphere& sphere ) const {
@@ -76,20 +87,26 @@ namespace three {
     const auto& center = sphere.center;
     float negRadius = -sphere.radius;
 
-    for ( unsigned char i = 0; i < 6; i ++ ) {
+    for ( char i = 0; i < 6; i ++ ) {
 
       auto distance = planes[ i ].distanceToPoint( center );
 
       if ( distance < negRadius ) {
+
         return false;
+
       }
+
     }
+
     return true;
+
   }
 
   bool Frustum::intersectsBox( const Box3& box ) {
 
       for ( unsigned char i = 0; i < 6 ; i ++ ) {
+
         const auto& plane = planes[i];
 
         _p1.x = plane.normal.x > 0 ? box.min.x : box.max.x;
@@ -104,28 +121,39 @@ namespace three {
 
         // if both outside plane, no intersection
         if ( d1 < 0 && d2 < 0 ) {
+
           return false;
+
         }
+
       }
 
       return true;
+
   }
 
   bool Frustum::contains( const Object3D& object ) const {
+
     // DEPRECATED, REMOVE
     return false;
+
   }
 
   bool Frustum::containsPoint( const Vector3& point ) const {
+
     for ( unsigned char i = 0; i < 6; i ++ ) {
+
       if ( planes[ i ].distanceToPoint( point ) < 0 ) {
+
         return false;
+
       }
+
     }
+
     return true;
+
   }
-
-
 
 } // namespace three
 

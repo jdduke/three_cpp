@@ -38,7 +38,7 @@ public:
 
   }
 
-// @todo point should be vec3?
+  // @todo point should be vec3?
   Plane& setFromNormalAndCoplanarPoint( const Vector3& normal, const Vector3& point ) {
 
     this->normal.copy( normal );
