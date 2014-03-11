@@ -44,7 +44,7 @@ public:
 
   Matrix3& getNormalMatrix( const Matrix4& m );
 
-  const Matrix3& transposeIntoArray( float* r ) const;
+  const Matrix3& transposeIntoArray( std::array<float, 9> r ) const;
 
   Matrix3 clone();
 

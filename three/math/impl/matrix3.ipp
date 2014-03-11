@@ -146,7 +146,7 @@ namespace three {
   }
 
 
-  const Matrix3& Matrix3::transposeIntoArray( float* r ) const {
+  const Matrix3& Matrix3::transposeIntoArray( std::array<float, 9> r ) const {
     r[ 0 ] = te[ 0 ];
     r[ 1 ] = te[ 3 ];
     r[ 2 ] = te[ 6 ];
