@@ -22,6 +22,8 @@
 
 namespace three {
 
+unsigned int GeometryIdCount = 0;
+
 struct MorphTarget {
   std::string name;
   std::vector<Vertex> vertices;
@@ -69,6 +71,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   int id;
+  UUID uuid = Math::generateUUID();
 
   std::string name;
 

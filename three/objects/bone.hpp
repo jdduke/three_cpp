@@ -1,62 +1,76 @@
-/*#ifndef THREE_MESH_HPP
-#define THREE_MESH_HPP
+#ifndef THREE_BONE_HPP
+#define THREE_BONE_HPP
+
+
+#include <three/common.hpp>
+#include <three/utils/memory.hpp>
+#include <three/core/object3d.hpp>
+#include <three/objects/skinned_mesh.hpp>
+#include <memory>
 
 namespace three {
 
-class Bone : public Object3D {
+class Bone  : Object3d {
 
-	typedef std::shared_ptr<Mesh>Ptr
-THREE.Bone = function( belongsToSkin ) {
+  typedef std::shared_ptr<Bone> Ptr;
 
-	THREE.Object3D.call( this );
+  static Ptr create( const SkinnedMesh::Ptr& belongsToSkin ) {
+  	return make_shared<Bone>(belongsToSkin)
+  }
 
-	this.skin = belongsToSkin;
-	this.skinMatrix = new THREE.Matrix4();
+  SkinnedMesh::Ptr skin;
+  Matrix4 skinMatrix;
 
+  THREE_IMPL_OBJECT(Bone)
+
+  void update( const Matrix4::Ptr& parentSkinMatrix, bool forceUpdate = false) {
+  	
+  	// update local
+
+  	if ( matrixAutoUpdate ) {
+
+  		forceUpdate |= updateMatrix();
+
+  	}
+
+  	// update skin matrix
+
+  	if ( forceUpdate || matrixWorldNeedsUpdate ) {
+
+  		if( parentSkinMatrix ) {
+
+  			skinMatrix.multiplyMatrices( parentSkinMatrix, matrix );
+
+  		} else {
+
+  			skinMatrix.copy( matrix );
+
+  		}
+
+  		matrixWorldNeedsUpdate = false;
+  		this->forceUpdate = true;
+
+  	}
+
+  	// update children
+
+  	size_t i, l = children.size();
+
+  	for ( auto& child : children ) {
+
+  		child.update( skinMatrix, forceUpdate );
+
+  	}
+    
+  }
+
+protected:
+
+  Bone( const SkinnedMesh::Ptr& belongsToSkin ) 
+    : skin ( belongsToSkin ), skinMatrix( Matrix4() ) {}
+	
 };
 
-THREE.Bone.prototype = Object.create( THREE.Object3D.prototype );
+}; // end namespace
 
-THREE.Bone.prototype.update = function( parentSkinMatrix, forceUpdate ) {
-
-	// update local
-
-	if ( this.matrixAutoUpdate ) {
-
-		forceUpdate |= this.updateMatrix();
-
-	}
-
-	// update skin matrix
-
-	if ( forceUpdate || this.matrixWorldNeedsUpdate ) {
-
-		if( parentSkinMatrix ) {
-
-			this.skinMatrix.multiply( parentSkinMatrix, this.matrix );
-
-		} else {
-
-			this.skinMatrix.copy( this.matrix );
-
-		}
-
-		this.matrixWorldNeedsUpdate = false;
-		forceUpdate = true;
-
-	}
-
-	// update children
-
-	var child, i, l = this.children.length;
-
-	for ( i = 0; i < l; i ++ ) {
-
-		this.children[ i ].update( this.skinMatrix, forceUpdate );
-
-	}
-
-};
-
-} // namespace three
-#endif // THREE_MESH_HPP*/
+#endif // THREE_BONE_HPP

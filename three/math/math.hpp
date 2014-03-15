@@ -13,11 +13,54 @@
 
 namespace three {
 
-namespace Math {
+  typedef std::string UUID;
 
-inline const float PI()   { return MATH_PI; }//std::atan(1.f)/4;
-inline const float LN2()  { return MATH_LN2; }
-inline const float INF()  { return std::numeric_limits<float>::max(); }//std::numeric_limits<float>::infinity();
+  namespace Math {
+
+
+    inline const float PI()   { return MATH_PI; }
+    inline const float LN2()  { return MATH_LN2; }
+    inline const float INF()  { return std::numeric_limits<float>::max(); }
+    
+    inline const UUID generateUUID() {
+
+      const char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+      UUID uuid;
+
+      int rnd = 0, r;
+
+      for ( auto i = 0; i < 36; i ++ ) {
+
+        if ( i == 8 || i == 13 || i == 18 || i == 23 ) {
+
+          uuid.append("-");
+
+        } else if ( i == 14 ) {
+
+          uuid.append("4");
+
+        } else {
+
+          if (rnd <= 0x02) rnd = 0x2000000 + (random()*0x1000000)|0;
+          r = rnd & 0xf;
+          rnd = rnd >> 4;
+          uuid.append(&chars[(i == 19) ? (r & 0x3) | 0x8 : r]);
+
+        }
+      }
+      return uuid;
+    };
+/*
+() {
+
+    // http://www.broofa.com/Tools/Math.uuid.htm
+
+    
+
+      return uuid.join('');
+  }*/
+
 
 template < typename T > inline T sqrt( T t ) { return std::sqrt( t ); }
 template < typename T > inline T abs( T t )  { return std::abs( t ); }
@@ -54,87 +97,87 @@ template < typename T > inline T clampBottom( T x, T a ) { return x < a ? a : x;
 
 // Linear mapping from range <a1, a2> to range <b1, b2>
 template < typename T >
-inline T mapLinear( T x, T a1, T a2, T b1, T b2 ) {
-  return b1 + ( x - a1 ) * ( b2 - b1 ) / ( a2 - a1 );
-}
+      inline T mapLinear( T x, T a1, T a2, T b1, T b2 ) {
+        return b1 + ( x - a1 ) * ( b2 - b1 ) / ( a2 - a1 );
+      }
 
 // MinGW crashes on std::random_device initialization
 #if !defined(__MINGW32__)
 
 template < typename T >
-inline typename std::enable_if<std::is_floating_point<T>::value,T>::type
-randomT( T low , T high ) {
-  static std::random_device rd;
-  static std::mt19937 rng( rd() );
-  std::uniform_real_distribution<T> dis( low, high );
-  return dis( rng );
-}
+      inline typename std::enable_if<std::is_floating_point<T>::value,T>::type
+      randomT( T low , T high ) {
+        static std::random_device rd;
+        static std::mt19937 rng( rd() );
+        std::uniform_real_distribution<T> dis( low, high );
+        return dis( rng );
+      }
 
 template < typename T >
-inline typename std::enable_if<!std::is_floating_point<T>::value,T>::type
-randomT( T low , T high ) {
-  static std::random_device rd;
-  static std::mt19937 rng( rd() );
-  std::uniform_int_distribution<T> dis( low, high );
-  return dis( rng );
-}
+      inline typename std::enable_if<!std::is_floating_point<T>::value,T>::type
+      randomT( T low , T high ) {
+        static std::random_device rd;
+        static std::mt19937 rng( rd() );
+        std::uniform_int_distribution<T> dis( low, high );
+        return dis( rng );
+      }
 
 #else
 
 template< typename T >
-inline T randomT( T low, T high ) {
-  return ( low + static_cast<double>(rand())/((unsigned long long)RAND_MAX+1) * ( high - low ));
-}
+      inline T randomT( T low, T high ) {
+        return ( low + static_cast<double>(rand())/((unsigned long long)RAND_MAX+1) * ( high - low ));
+      }
 
 #endif // !defined(__MINGW32__)
 
-inline float random( float low = 0, float high = 1 ) {
-  return randomT( low, high );
-}
+      inline float random( float low = 0, float high = 1 ) {
+        return randomT( low, high );
+      }
 
 // Random float from <0, 1> with 16 bits of randomness
 // (standard Math.random() creates repetitive patterns when applied over larger space)
-inline float random16() {
-  return ( 65280 * random() + 255 * random() ) / 65535;
-}
+      inline float random16() {
+        return ( 65280 * random() + 255 * random() ) / 65535;
+      }
 
 // Random integer from <low, high> interval
-inline int randInt( int low, int high ) {
-  return low + ( int )floor( random() * ( high - low + 1 ) );
-}
+      inline int randInt( int low, int high ) {
+        return low + ( int )floor( random() * ( high - low + 1 ) );
+      }
 
 // Random float from <low, high> interval
-inline float randFloat( float low, float high ) {
-  return random( low, high );
-}
+      inline float randFloat( float low, float high ) {
+        return random( low, high );
+      }
 
 // Random float from <-range/2, range/2> interval
-inline float randFloatSpread( float range ) {
-  return range * ( 0.5f - random() );
-}
+      inline float randFloatSpread( float range ) {
+        return range * ( 0.5f - random() );
+      }
 
 template < typename T >
-inline int sign( T x ) {
-  return ( x < 0 ) ? -1 : ( ( x > 0 ) ? 1 : 0 );
-}
+      inline int sign( T x ) {
+        return ( x < 0 ) ? -1 : ( ( x > 0 ) ? 1 : 0 );
+      }
 
-inline bool isPowerOfTwo( int value ) {
-  return ( value != 0 ) && ( ( value & ( value - 1 ) ) == 0 );
-}
+      inline bool isPowerOfTwo( int value ) {
+        return ( value != 0 ) && ( ( value & ( value - 1 ) ) == 0 );
+      }
 
-inline int upperPowerOfTwo( int value ) {
-  return (int)pow( 2.f, ceil( log( (float)value ) / LN2() ) );
-}
+      inline int upperPowerOfTwo( int value ) {
+        return (int)pow( 2.f, ceil( log( (float)value ) / LN2() ) );
+      }
 
-inline int lowerPowerOfTwo( int value ) {
-  return (int)pow( 2.f, floor( log( (float)value ) / LN2() ) );
-}
+      inline int lowerPowerOfTwo( int value ) {
+        return (int)pow( 2.f, floor( log( (float)value ) / LN2() ) );
+      }
 
-inline int nearestPowerOfTwo( int value ) {
-  return (int)pow( 2.f, round( log( (float)value ) / LN2() ) );
-}
+      inline int nearestPowerOfTwo( int value ) {
+        return (int)pow( 2.f, round( log( (float)value ) / LN2() ) );
+      }
 
-}
+    }
 
 } // namespace three
 

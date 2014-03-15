@@ -3,7 +3,7 @@
 
 #include <three/common.hpp>
 
-#include <three/core/bone.hpp>
+
 #include <three/math/vector3.hpp>
 #include <three/math/quaternion.hpp>
 #include <three/math/matrix3.hpp>
@@ -89,7 +89,7 @@ public:
   bool sortParticles;
 
   bool useVertexTexture;
-  std::vector<Bone> bones;
+  THREE_TODO("Bone shouldnt be a pointer") std::vector<Bone*> bones;
   std::vector<Matrix4> boneMatrices;
   Texture::Ptr boneTexture;
   int boneTextureWidth, boneTextureHeight;

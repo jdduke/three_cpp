@@ -10,20 +10,29 @@
 namespace three {
 
 class Fog : public IFog, NonCopyable {
+
 public:
 
   typedef std::shared_ptr<Fog> Ptr;
 
   static Ptr create( int hex, float near = 1, float far = 1000 ) {
+
     return three::make_shared<Fog>( hex, near, far );
+
   }
 
-  enums::FogType type() const { return enums::Fog; }
+  virtual enums::FogType type() const { return enums::Fog; }
 
-  /////////////////////////////////////////////////////////////////////////
+  Ptr clone() {
+    return Fog::create(color.getHex(), near, far);
+  }
+
+  std::string name;
 
   Color color;
-  float near, far;
+  
+  float near;
+  float far;
 
 protected:
 
