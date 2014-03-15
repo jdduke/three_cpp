@@ -24,7 +24,9 @@ public:
   virtual enums::FogType type() const { return enums::Fog; }
 
   Ptr clone() {
+
     return Fog::create(color.getHex(), near, far);
+    
   }
 
   std::string name;
