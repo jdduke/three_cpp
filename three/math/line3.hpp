@@ -142,5 +142,6 @@ public:
   
 };
     
-}
+} // namespace three
+
 #endif //THREE_LINE3_HPP

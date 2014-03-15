@@ -96,6 +96,6 @@ Plane& Plane::applyMatrix4( const Matrix4& matrix, const Matrix3& normalMatrix) 
 }
 
 
-}
+} // namespace three
 
 #endif //THREE_PLANE_IPP

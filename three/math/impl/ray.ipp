@@ -424,6 +424,6 @@ namespace three {
     return *this;
   }
 
-}; // namespace three
+} // namespace three
 
-#endif // THREE
+#endif // THREE_RAY_IPP

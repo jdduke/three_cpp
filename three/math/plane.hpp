@@ -187,6 +187,6 @@ inline Plane clone() {
 
 };
 
-}
+} // namespace three
 
 #endif //THREE_PLANE_HPP

@@ -133,6 +133,6 @@ public:
 
 };
 
-} // end namespace
+} // namespace three
 
 #endif //THREE_SPHERE_HPP

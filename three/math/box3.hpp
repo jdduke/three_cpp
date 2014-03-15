@@ -356,7 +356,7 @@ public:
 
   Vector3 min, max;
 
-}; // end namespace
+}; // namespace three
 
 static_assert( sizeof( Box3 ) == sizeof( Vector3 ) * 2, "Invalid Box3 storage size" );
 

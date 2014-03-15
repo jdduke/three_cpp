@@ -59,6 +59,6 @@ namespace three {
 
   }
 
-}
+} // namespace three
 
 #endif // THREE_TRIANGLE_IPP

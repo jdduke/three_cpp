@@ -53,6 +53,6 @@ namespace three {
 
   }
 
-}; // end namespace
+} // end namespace
 
 #endif //THREE_SPHERE_IPP

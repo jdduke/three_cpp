@@ -186,6 +186,6 @@ public:
 
 };
 
-}; // end namespace
+} // end namespace
 
 #endif // THREE_TRIANGLE_HPP
