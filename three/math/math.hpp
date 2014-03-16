@@ -22,7 +22,7 @@ namespace three {
     inline const float LN2()  { return MATH_LN2; }
     inline const float INF()  { return std::numeric_limits<float>::max(); }
     
-    inline UUID generateUUID() {
+    static UUID generateUUID() {
 
       char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
