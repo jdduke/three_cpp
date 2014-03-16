@@ -65,15 +65,19 @@ public:
 
   typedef std::shared_ptr<Geometry> Ptr;
 
-  static Ptr create() { return make_shared<Geometry>(); }
+  static Ptr create() {
+    return make_shared<Geometry>();
+  }
 
-  virtual enums::GeometryType type() const { return enums::Geometry; }
+  virtual enums::GeometryType type() const {
+    return enums::Geometry;
+  }
 
   /////////////////////////////////////////////////////////////////////////
 
   int id;
-  
-  const std::string& uuid = Math::generateUUID();
+
+  const std::string& uuid;
 
   std::string name;
 
@@ -97,10 +101,14 @@ public:
   std::vector<Vector3> skinVerticesA;
   std::vector<Vector3> skinVerticesB;
   std::vector<Vector4> skinWeights;
-  struct SkinIndices { int x, y, z, w; };
+  struct SkinIndices {
+    int x, y, z, w;
+  };
   std::vector<SkinIndices> skinIndices;
 
-  struct Offset { int index, count, start; };
+  struct Offset {
+    int index, count, start;
+  };
   std::vector<Offset> offsets;
 
   Box    boundingBox;
@@ -137,7 +145,9 @@ public:
 
 protected:
 
-  Geometry();
+  Geometry()
+    : uuid( Math::generateUUID() ) {}
+
   virtual ~Geometry();
 
 private:

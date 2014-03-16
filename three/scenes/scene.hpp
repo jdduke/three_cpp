@@ -14,23 +14,23 @@ public:
 
   typedef std::shared_ptr<Scene> Ptr;
 
-  static Ptr create() { 
+  static Ptr create() {
 
-    return make_shared<Scene>(); 
+    return make_shared<Scene>();
 
   }
 
-  virtual enums::Type type() const { 
+  virtual enums::Type type() const {
 
-    return enums::Scene; 
+    return enums::Scene;
 
   }
 
   IFog::Ptr fog;
   Material* overrideMaterial;
 
-  bool autoUpdate = true;
-  bool matrixAutoUpdate = false;
+  bool autoUpdate;
+  bool matrixAutoUpdate;
 
   std::vector<Light*>    __lights;
 

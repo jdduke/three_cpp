@@ -16,12 +16,17 @@ namespace three {
 Scene::Scene()
   : Object3D(),
     overrideMaterial( nullptr ),
+    autoUpdate( true ),
     matrixAutoUpdate( false ) { }
 
 Scene::~Scene() { }
 
-void Scene::visit( Visitor& v )            { v( *this ); }
-void Scene::visit( ConstVisitor& v ) const { v( *this ); }
+void Scene::visit( Visitor& v )            {
+  v( *this );
+}
+void Scene::visit( ConstVisitor& v ) const {
+  v( *this );
+}
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -29,13 +34,25 @@ namespace detail {
 
 struct FallbackVisitor : public Visitor {
   //TODO: virtual void operator()( Bone& o )     { fallback(o); }
-  virtual void operator()( Camera& o )   { fallback(o); }
-  virtual void operator()( Light& o )    { fallback(o); }
-  virtual void operator()( Scene& o )    { fallback(o); }
-  virtual void operator()( Particle& o ) { fallback(o); }
+  virtual void operator()( Camera& o )   {
+    fallback(o);
+  }
+  virtual void operator()( Light& o )    {
+    fallback(o);
+  }
+  virtual void operator()( Scene& o )    {
+    fallback(o);
+  }
+  virtual void operator()( Particle& o ) {
+    fallback(o);
+  }
   //TODO: virtual void operator()( Sprite& o )   { fallback(o); }
-  virtual void operator()( Mesh& o )     { fallback(o); }
-  virtual void operator()( Line& o )     { fallback(o); }
+  virtual void operator()( Mesh& o )     {
+    fallback(o);
+  }
+  virtual void operator()( Line& o )     {
+    fallback(o);
+  }
 };
 
 struct Add : public FallbackVisitor {
@@ -72,7 +89,9 @@ struct Remove : public FallbackVisitor {
     }
   }
 
-  void operator()( Light& o ) { erase( s.__lights, &o ); }
+  void operator()( Light& o ) {
+    erase( s.__lights, &o );
+  }
   void operator()( Camera& o ) { }
 
   Scene& s;
