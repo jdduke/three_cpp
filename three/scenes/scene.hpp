@@ -14,15 +14,28 @@ public:
 
   typedef std::shared_ptr<Scene> Ptr;
 
-  static Ptr create() { return make_shared<Scene>(); }
+  static Ptr create() { 
 
-  /////////////////////////////////////////////////////////////////////////
+    return make_shared<Scene>(); 
+
+  }
+
+  virtual enums::Type type() const { 
+
+    return enums::Scene; 
+
+  }
 
   IFog::Ptr fog;
   Material* overrideMaterial;
-  bool matrixAutoUpdate;
 
-  /////////////////////////////////////////////////////////////////////////
+  bool autoUpdate = true;
+  bool matrixAutoUpdate = false;
+
+  std::vector<Light*>    __lights;
+
+  std::vector<Object3D::Ptr> __objectsAdded;
+  std::vector<Object3D::Ptr> __objectsRemoved;
 
   struct GLObject : RenderableObject {
     explicit GLObject( GeometryBuffer* buffer = nullptr,
@@ -49,27 +62,21 @@ public:
   std::vector<Object3D*> __glFlares;
 
   std::vector<Object3D*> __objects;
-  std::vector<Light*>    __lights;
-
-  std::vector<Object3D::Ptr> __objectsAdded;
-  std::vector<Object3D::Ptr> __objectsRemoved;
-
-  //////////////////////////////////////////////////////////////////////////
-
-protected:
-
-  virtual void __addObject( const Object3D::Ptr& object );
-  virtual void __removeObject( const Object3D::Ptr& object );
 
 protected:
 
   Scene();
+
   ~Scene();
 
-  virtual enums::Type type() const { return enums::Scene; }
+  virtual void __addObject( const Object3D::Ptr& object );
+
+  virtual void __removeObject( const Object3D::Ptr& object );
 
   virtual void visit( Visitor& v );
+
   virtual void visit( ConstVisitor& v ) const;
+
 };
 
 } // namespace three

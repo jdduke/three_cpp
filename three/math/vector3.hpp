@@ -42,7 +42,7 @@ public:
 
   const float operator[]( const int i ) const { return xyz[i]; }
 
-  virtual enums::Type type() const { return enums::Vector3; }
+  enums::Type type() const { return enums::Vector3; }
 
   inline Vector3& set( float xIn, float yIn, float zIn ) {
 

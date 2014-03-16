@@ -84,6 +84,9 @@ protected:
 
   }
 
+  virtual void visit( Visitor& v ) { v( *this ); }
+  virtual void visit( ConstVisitor& v ) const { v( *this ); }
+
 };
 
 } // namespace three

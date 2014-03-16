@@ -27,7 +27,7 @@ static unsigned jenkins_hash(const T& value, unsigned initval = 0) {
   int length = sizeof(T);
   unsigned char* k = (unsigned char*)(&value);
 
-  register ub4 a,b,c,len;
+  ub4 a,b,c,len;
 
   /* Set up the internal state */
   len = length;
