@@ -32,6 +32,8 @@ public:
   Vector3( float xIn, float yIn, float zIn )
     : x( xIn ), y( yIn ), z( zIn ) {}
 
+  virtual ~Vector3();
+
   explicit Vector3( float value )
     : x( value ), y( value ), z( value ) {}
 
@@ -42,7 +44,7 @@ public:
 
   const float operator[]( const int i ) const { return xyz[i]; }
 
-  enums::Type type() const { return enums::Vector3; }
+  virtual enums::Type type() const { return enums::Vector3; }
 
   inline Vector3& set( float xIn, float yIn, float zIn ) {
 

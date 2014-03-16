@@ -60,6 +60,7 @@ struct Box {
 
 
 class Geometry : public IGeometry, public GeometryBuffer {
+
 public:
 
   typedef std::shared_ptr<Geometry> Ptr;
@@ -71,7 +72,8 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   int id;
-  std::string uuid = Math::generateUUID();
+  
+  const std::string& uuid = Math::generateUUID();
 
   std::string name;
 
