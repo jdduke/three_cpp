@@ -71,7 +71,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
 
   int id;
-  const UUID uuid = Math::generateUUID();
+  UUID uuid = Math::generateUUID();
 
   std::string name;
 
