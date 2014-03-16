@@ -13,8 +13,6 @@
 
 namespace three {
 
-  typedef std::string UUID;
-
   namespace Math {
 
 
@@ -22,11 +20,11 @@ namespace three {
     inline const float LN2()  { return MATH_LN2; }
     inline const float INF()  { return std::numeric_limits<float>::max(); }
     
-    static UUID generateUUID() {
+    static std::string generateUUID() {
 
       char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-      UUID uuid;
+      std::string uuid;
 
       int rnd = 0, r;
 
@@ -49,17 +47,10 @@ namespace three {
 
         }
       }
+
       return uuid;
+      
     };
-/*
-() {
-
-    // http://www.broofa.com/Tools/Math.uuid.htm
-
-    
-
-      return uuid.join('');
-  }*/
 
 
 template < typename T > inline T sqrt( T t ) { return std::sqrt( t ); }
