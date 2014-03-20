@@ -8,21 +8,24 @@
 namespace three {
 
 class HemisphereLight : public Light {
+  
 public:
 
   typedef std::shared_ptr<HemisphereLight> Ptr;
 
   static Ptr create( int skyColorHex, int groundColorHex, float intensity = 1 ) {
+
     return make_shared<HemisphereLight>( skyColorHex, groundColorHex, intensity );
+
   }
 
-  virtual enums::Type type() const { return enums::HemisphereLight; }
+  virtual enums::Type type() const { 
 
-  //////////////////////////////////////////////////////////////////////////
+    return enums::HemisphereLight; 
+
+  }
 
   Color groundColor;
-
-  //////////////////////////////////////////////////////////////////////////
 
 protected:
 
@@ -30,7 +33,7 @@ protected:
     : Light( skyColorHex, intensity ),
       groundColor( groundColorHex ) {
 
-    position = Vector3( 0, 100, 0 );
+    position.set( 0, 100, 0 );
 
   }
 

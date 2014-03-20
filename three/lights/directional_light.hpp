@@ -8,17 +8,22 @@
 namespace three {
 
 class DirectionalLight : public Light {
+
 public:
 
   typedef std::shared_ptr<DirectionalLight> Ptr;
 
   static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
+
     return make_shared<DirectionalLight>( hex, intensity, distance );
+
   }
 
-  virtual enums::Type type() const { return enums::DirectionalLight; }
+  virtual enums::Type type() const { 
 
-  /////////////////////////////////////////////////////////////////////////
+    return enums::DirectionalLight; 
+
+  }
 
   float shadowCameraNear;
   float shadowCameraFar;
@@ -48,14 +53,10 @@ public:
 
   std::vector<Light::Ptr> shadowCascadeArray;
 
-  //
-
   Texture::Ptr shadowMap;
   std::array<int, 2> shadowMapSize;
   Camera::Ptr shadowCamera;
   Matrix4 shadowMatrix;
-
-  /////////////////////////////////////////////////////////////////////////
 
 protected:
 
@@ -85,6 +86,7 @@ protected:
   }
 
   virtual void visit( Visitor& v ) { v( *this ); }
+  
   virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 };

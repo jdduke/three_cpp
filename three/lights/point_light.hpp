@@ -8,15 +8,22 @@
 namespace three {
 
 class PointLight : public Light {
+	
 public:
 
   typedef std::shared_ptr<PointLight> Ptr;
 
   static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
+
     return make_shared<PointLight>( hex, intensity, distance );
+
   }
 
-  virtual enums::Type type() const { return enums::PointLight; }
+  virtual enums::Type type() const { 
+
+  	return enums::PointLight; 
+
+  }
 
 protected:
 

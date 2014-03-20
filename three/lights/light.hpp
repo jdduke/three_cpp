@@ -10,13 +10,12 @@
 namespace three {
 
 class Light : public Object3D {
+
 public:
 
   typedef std::shared_ptr<Light> Ptr;
 
   virtual enums::Type type() const { return enums::Light; }
-
-  /////////////////////////////////////////////////////////////////////////
 
   Color color;
   float intensity;
@@ -25,8 +24,6 @@ public:
   Object3D::Ptr target;
 
   bool castShadow, onlyShadow, shadowCascade;
-
-  /////////////////////////////////////////////////////////////////////////
 
 protected:
 
@@ -41,6 +38,7 @@ protected:
       shadowCascade( false ) { }
 
   virtual void visit( Visitor& v ) { v( *this ); }
+  
   virtual void visit( ConstVisitor& v ) const { v( *this ); }
 
 };

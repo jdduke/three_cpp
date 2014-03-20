@@ -40,6 +40,7 @@
 
 
 #include <three/lights/ambient_light.hpp>
+#include <three/lights/area_light.hpp>
 #include <three/lights/directional_light.hpp>
 #include <three/lights/hemisphere_light.hpp>
 #include <three/lights/light.hpp>

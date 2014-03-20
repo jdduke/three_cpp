@@ -138,6 +138,7 @@ enum Type {
   Camera,
   Light,
   AmbientLight,
+  AreaLight,
   PointLight,
   DirectionalLight,
   HemisphereLight,

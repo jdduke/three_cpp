@@ -8,17 +8,27 @@
 namespace three {
 
 class AmbientLight : public Light {
+
 public:
 
   typedef std::shared_ptr<AmbientLight> Ptr;
 
-  static Ptr create( int hex ) { return make_shared<AmbientLight>( hex ); }
+  static Ptr create( int hex ) { 
 
-  virtual enums::Type type() const { return enums::AmbientLight; }
+  	return make_shared<AmbientLight>( hex ); 
+
+  }
+
+  virtual enums::Type type() const { 
+
+  	return enums::AmbientLight; 
+
+  }
 
 protected:
 
-  AmbientLight( int hex ) : Light( hex ) { }
+  AmbientLight( int hex ) 
+  	: Light( hex ) {}
 
 };
 

@@ -8,17 +8,22 @@
 namespace three {
 
 class SpotLight : public Light {
+
 public:
 
   typedef std::shared_ptr<SpotLight> Ptr;
 
-  static Ptr create( int hex, float intensity = 1, float distance = 0, float angle = Math::PI() / 2, float exponent = 10 ) {
+  static Ptr create( int hex, float intensity = 1, float distance = 0, float angle = Math::PI() / 3, float exponent = 10 ) {
+
     return make_shared<SpotLight>( hex, intensity, distance, angle, exponent );
+
   }
 
-  virtual enums::Type type() const { return enums::SpotLight; }
+  virtual enums::Type type() const { 
 
-  /////////////////////////////////////////////////////////////////////////
+    return enums::SpotLight; 
+
+  }
 
   float angle;
   float exponent;
@@ -35,21 +40,19 @@ public:
   int shadowMapWidth;
   int shadowMapHeight;
 
-  // TODO:
-
-  // shadowMap = null;
-  //this.shadowMapSize = null;
-  //this.shadowCamera = null;
-  //this.shadowMatrix = null;
-
-  /////////////////////////////////////////////////////////////////////////
+  Texture::Ptr shadowMap;
+  std::array<int, 2> shadowMapSize;
+  Camera::Ptr shadowCamera;
+  Matrix4 shadowMatrix;
 
 protected:
 
   SpotLight( int hex, float intensity, float distance, float angle, float exponent )
     : Light( hex, intensity, distance ),
       angle( angle ), exponent( exponent ),
-      shadowCameraNear( 50 ), shadowCameraFar( 5000 ), shadowCameraFov( 50 ),
+      shadowCameraNear( 50 ), 
+      shadowCameraFar( 5000 ), 
+      shadowCameraFov( 50 ),
       shadowCameraVisible( false ),
       shadowBias( 0 ),
       shadowDarkness( 0.5 ),
