@@ -10,42 +10,40 @@
 namespace three {
 
 class Camera : public Object3D {
+
 public:
 
   typedef std::shared_ptr<Camera> Ptr;
 
   static Ptr create() {
+
     return three::make_shared<Camera>();
+
   }
 
-  /////////////////////////////////////////////////////////////////////////
-
   mutable Matrix4 matrixWorldInverse;
+
   Matrix4 projectionMatrix;
-  mutable Matrix4 projectionMatrixInverse;
 
   float near, far;
 
   std::array<float, 16> _viewMatrixArray;
   std::array<float, 16> _projectionMatrixArray;
 
-  /////////////////////////////////////////////////////////////////////////
-
   void lookAt( const Vector3& vector ) {
-    //@todo priv mmeber
-    auto m1 = Matrix4();
-    m1.lookAt( position, vector, up );
-    quaternion.setFromRotationMatrix( m1 );
-  }
 
-  /////////////////////////////////////////////////////////////////////////
+    auto m1 = Matrix4();
+
+    m1.lookAt( position, vector, up );
+
+    quaternion.setFromRotationMatrix( m1 );
+
+  }
 
 protected:
 
   Camera( float near = .1f, float far = 2000.f )
     : Object3D(), near( near ), far( far ) { }
-
-  /////////////////////////////////////////////////////////////////////////
 
   THREE_IMPL_OBJECT(Camera)
 

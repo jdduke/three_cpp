@@ -15,7 +15,6 @@
 #include <three/math/impl/matrix3.ipp>
 #include <three/math/impl/matrix4.ipp>
 #include <three/math/impl/plane.ipp>
-#include <three/math/impl/projector.ipp>
 #include <three/math/impl/quaternion.ipp>
 #include <three/math/impl/ray.ipp>
 #include <three/math/impl/sphere.ipp>
@@ -23,6 +22,8 @@
 #include <three/math/impl/triangle.ipp>
 #include <three/math/impl/vector3.ipp>
 #include <three/math/impl/vector4.ipp>
+
+#include <three/core/impl/projector.ipp>
 
 
 #include <three/objects/impl/mesh.ipp>

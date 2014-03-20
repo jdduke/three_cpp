@@ -2,6 +2,7 @@
 #define THREE_PROJECTOR_IPP
 
 #include <three/core/projector.hpp>
+#include <three/core/face.hpp>
 
 #include <three/cameras/camera.hpp>
 
@@ -115,8 +116,8 @@ static bool clipLine( Vector4& s1, Vector4& s2 ) {
       return false;
     } else {
       // Update the s1 and s2 vertices to match the clipped line segment.
-      s1.lerpSelf( s2, alpha1 );
-      s2.lerpSelf( s1, 1 - alpha2 );
+      s1.lerp( s2, alpha1 );
+      s2.lerp( s1, 1 - alpha2 );
       return true;
     }
   }
@@ -143,7 +144,7 @@ struct SceneVisitor : public ConstVisitor {
 
     auto rotationMatrix = object.matrixRotationWorld.extractRotation( modelMatrix );
 
-    auto isFaceMaterial = object.material->type() == THREE::MeshFaceMaterial;
+    auto isFaceMaterial = object.material->type() == enums::MeshFaceMaterial;
 
     for ( const auto& v : vertices ) {
 
@@ -174,7 +175,7 @@ struct SceneVisitor : public ConstVisitor {
 
       auto side = material->side;
 
-      if ( face.type() == THREE::Face3 ) {
+      if ( face.type() == enums::Face3 ) {
 
         const auto& v1 = p._vertices.pool[ face.a ];
         const auto& v2 = p._vertices.pool[ face.b ];
@@ -185,7 +186,7 @@ struct SceneVisitor : public ConstVisitor {
           const auto visible = ( ( v3.positionScreen.x - v1.positionScreen.x ) * ( v2.positionScreen.y - v1.positionScreen.y ) -
                                  ( v3.positionScreen.y - v1.positionScreen.y ) * ( v2.positionScreen.x - v1.positionScreen.x ) ) < 0;
 
-          if ( side == THREE::DoubleSide || visible == ( side == THREE::FrontSide ) ) {
+          if ( side == enums::DoubleSide || visible == ( side == enums::FrontSide ) ) {
 
             auto& face = p._faces.next();
 
@@ -205,7 +206,7 @@ struct SceneVisitor : public ConstVisitor {
 
         }
 
-      } else if ( face.type() == THREE::Face4 ) {
+      } else if ( face.type() == enums::Face4 ) {
 
         const auto& v1 = p._vertices.pool[ face.a ];
         const auto& v2 = p._vertices.pool[ face.b ];
@@ -220,7 +221,7 @@ struct SceneVisitor : public ConstVisitor {
                                ( v2.positionScreen.y - v3.positionScreen.y ) * ( v4.positionScreen.x - v3.positionScreen.x ) < 0;
 
 
-          if ( side == THREE::DoubleSide || visible == ( side == THREE::FrontSide ) ) {
+          if ( side == enums::DoubleSide || visible == ( side == enums::FrontSide ) ) {
 
             auto& _face = p._faces.next();
 
@@ -246,7 +247,7 @@ struct SceneVisitor : public ConstVisitor {
       auto& _face = p._faces.current();
       _face.normalWorld.copy( face.normal );
 
-      if ( !visible && ( side == THREE::BackSide || side == THREE::DoubleSide ) ) _face.normalWorld.negate();
+      if ( !visible && ( side == enums::BackSide || side == enums::DoubleSide ) ) _face.normalWorld.negate();
       rotationMatrix.multiplyVector3( _face.normalWorld );
 
       _face.centroidWorld.copy( face.centroid );
@@ -262,7 +263,7 @@ struct SceneVisitor : public ConstVisitor {
         auto& normal = _face.vertexNormalsWorld[ n ];
         normal.copy( faceVertexNormals[ n ] );
 
-        if ( !visible && ( side == THREE::BackSide || side == THREE::DoubleSide ) ) normal.negate();
+        if ( !visible && ( side == enums::BackSide || side == enums::DoubleSide ) ) normal.negate();
 
         rotationMatrix.multiplyVector3( normal );
 
@@ -292,7 +293,7 @@ struct SceneVisitor : public ConstVisitor {
 
   virtual void operator()( const Line& object ) {
 
-    p._modelViewProjectionMatrix.multiply( p._viewProjectionMatrix, modelMatrix );
+    p._modelViewProjectionMatrix.multiplyMatrices( p._viewProjectionMatrix, modelMatrix );
 
     auto& vertices = object.geometry->vertices;
 
@@ -301,7 +302,7 @@ struct SceneVisitor : public ConstVisitor {
     p._modelViewProjectionMatrix.multiplyVector4( v1.positionScreen );
 
     // Handle LineStrip and LinePieces
-    auto step = object.lineType == THREE::LinePieces ? 2 : 1;
+    auto step = object.lineType == enums::LinePieces ? 2 : 1;
 
     for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
@@ -391,7 +392,7 @@ Vector3& Projector::projectVector( Vector3& vector, const Camera& camera ) {
 
   camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
-  d._viewProjectionMatrix.multiply( camera.projectionMatrix, camera.matrixWorldInverse );
+  d._viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
   d._viewProjectionMatrix.multiplyVector3( vector );
 
   return vector;
@@ -400,15 +401,16 @@ Vector3& Projector::projectVector( Vector3& vector, const Camera& camera ) {
 
 Vector3& Projector::unprojectVector( Vector3& vector, const Camera& camera ) {
 
-  auto& d = *impl;
+auto& d = *impl;
 
-  camera.projectionMatrixInverse.getInverse( camera.projectionMatrix );
+    auto projectionMatrixInverse = Matrix4();
 
-  d._viewProjectionMatrix.multiply( camera.matrixWorld, camera.projectionMatrixInverse );
-  d._viewProjectionMatrix.multiplyVector3( vector );
 
-  return vector;
 
+      projectionMatrixInverse.getInverse( camera.projectionMatrix );
+      d._viewProjectionMatrix.multiplyMatrices( camera.matrixWorld, projectionMatrixInverse );
+
+      return vector.applyProjection( d._viewProjectionMatrix );
 }
 
 Ray Projector::pickingRay( Vector3 vector, const Camera& camera ) {
@@ -443,7 +445,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
     if ( !object.visible ) return;
 
-    if ( ( object.type() == THREE::Mesh || object.type() == THREE::Line ) &&
+    if ( ( object.type() == enums::Mesh || object.type() == enums::Line ) &&
     ( !object.frustumCulled || d._frustum.contains( object ) ) ) {
 
       Vector3 vector3 = object.matrixWorld.getPosition();
@@ -455,7 +457,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
       d._renderData.objects.push_back( renderable );
 
-    } else if ( object.type() == THREE::Sprite || object.type() == THREE::Particle ) {
+    } else if ( object.type() == enums::Sprite || object.type() == enums::Particle ) {
 
       Vector3 vector3 = object.matrixWorld.getPosition();
       d._viewProjectionMatrix.multiplyVector3( vector3 );
@@ -466,7 +468,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
       d._renderData.sprites.push_back( renderable );
 
-    } else if ( object.type() == THREE::Light ) {
+    } else if ( object.type() == enums::Light ) {
 
       d._renderData.lights.push_back( &object );
 
@@ -508,7 +510,7 @@ Projector::RenderData& Projector::projectScene( Scene& scene, Camera& camera, bo
 
   camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
-  d._viewProjectionMatrix.multiply( camera.projectionMatrix, camera.matrixWorldInverse );
+  d._viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
 
   d._frustum.setFromMatrix( d._viewProjectionMatrix );
 
