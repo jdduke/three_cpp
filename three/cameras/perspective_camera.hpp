@@ -114,10 +114,24 @@ public:
 
   }
 
+  THREE_REVIEW("Correct cloning here?")
   Ptr clone() {
 
-    return PerspectiveCamera::create( fov, aspect, near, far );
+    Camera::Ptr camera = Camera::clone();
     
+    Ptr perspectiveCamera = static_pointer_cast<PerspectiveCamera>(camera);
+
+    perspectiveCamera->fov = fov;
+    perspectiveCamera->aspect = aspect;
+    perspectiveCamera->fullWidth = fullWidth;
+    perspectiveCamera->fullHeight = fullHeight;
+    perspectiveCamera->x = x;
+    perspectiveCamera->y = y;
+    perspectiveCamera->width = width;
+    perspectiveCamera->height = height;
+
+    return perspectiveCamera;
+
   }
 
 protected:

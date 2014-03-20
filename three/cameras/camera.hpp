@@ -15,9 +15,9 @@ public:
 
   typedef std::shared_ptr<Camera> Ptr;
 
-  static Ptr create() {
+  static Ptr create( float near = .1f, float far = 2000.f ) {
 
-    return three::make_shared<Camera>();
+    return three::make_shared<Camera>( near, far );
 
   }
 
@@ -37,22 +37,18 @@ public:
 
   }
 
-  Ptr clone( Ptr camera = nullptr ) const {
+  THREE_REVIEW("Correct cloning here?")
+  Ptr clone() const {
 
-    if( camera ) {
-      camera->far = far;
-      camera->near = near;
-    } else {
-      camera = Camera::create();
-    } 
-      
-    camera->projectionMatrix = projectionMatrix;
+    Ptr camera =  three::make_shared<Camera>( near, far );
+
     camera->matrixWorldInverse = matrixWorldInverse;
+    camera->projectionMatrix = projectionMatrix;
     camera->_viewMatrixArray = _viewMatrixArray;
     camera->_projectionMatrixArray = _projectionMatrixArray;
 
     return camera;
-    
+
   }
 
 protected:
@@ -65,7 +61,6 @@ protected:
 private:
   
   friend class GLRenderer;
-  friend class Camera;
 
   std::array<float, 16> _viewMatrixArray;
   

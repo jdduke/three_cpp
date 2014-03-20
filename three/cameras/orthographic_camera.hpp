@@ -2,8 +2,10 @@
 #define THREE_ORTHOGRAPHIC_CAMERA_HPP
 
 #include <three/common.hpp>
-
+#include <three/math/math.hpp>
 #include <three/cameras/camera.hpp>
+
+#include <memory>
 
 namespace three {
 
@@ -29,9 +31,19 @@ public:
 
   }
 
+  THREE_REVIEW("Correct cloning here?")
   Ptr clone() {
 
-    return OrthographicCamera::create( left, right, top, bottom, near, far );
+    Camera::Ptr camera = Camera::clone();
+    
+    Ptr orthographicCamera = std::static_pointer_cast<OrthographicCamera>(camera);
+
+    orthographicCamera->left = left;
+    orthographicCamera->right = right;
+    orthographicCamera->top = top;
+    orthographicCamera->bottom = bottom;
+
+    return orthographicCamera;
 
   }
 
