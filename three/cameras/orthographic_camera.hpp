@@ -8,26 +8,32 @@
 namespace three {
 
 class OrthographicCamera : public Camera {
+
 public:
 
   typedef std::shared_ptr<OrthographicCamera> Ptr;
 
   static Ptr create( float left, float right, float top, float bottom, float near = 0.1f, float far = 2000 ) {
-    return make_shared<OrthographicCamera>( left, right, top, bottom, near, far );
-  }
 
-  /////////////////////////////////////////////////////////////////////////
+    return make_shared<OrthographicCamera>( left, right, top, bottom, near, far );
+
+  }
 
   float left, right;
+
   float top, bottom;
 
-  /////////////////////////////////////////////////////////////////////////
-
   void updateProjectionMatrix() {
+
     projectionMatrix.makeOrthographic( left, right, top, bottom, near, far );
+
   }
 
-  /////////////////////////////////////////////////////////////////////////
+  Ptr clone() {
+
+    return OrthographicCamera::create( left, right, top, bottom, near, far );
+
+  }
 
 protected:
 
