@@ -27,9 +27,6 @@ public:
 
   float near, far;
 
-  std::array<float, 16> _viewMatrixArray;
-  std::array<float, 16> _projectionMatrixArray;
-
   void lookAt( const Vector3& vector ) {
 
     auto m1 = Matrix4();
@@ -46,6 +43,14 @@ protected:
     : Object3D(), near( near ), far( far ) { }
 
   THREE_IMPL_OBJECT(Camera)
+
+private:
+  
+  friend class GLRenderer;
+
+  std::array<float, 16> _viewMatrixArray;
+  
+  std::array<float, 16> _projectionMatrixArray;
 
 };
 
