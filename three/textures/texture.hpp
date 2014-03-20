@@ -53,17 +53,22 @@ struct TextureDesc {
 };
 
 class Texture : public TextureBuffer {
+
 public:
 
   typedef std::shared_ptr<Texture> Ptr;
 
-  static Ptr create( const TextureDesc& desc ) { return three::make_shared<Texture>( desc ); }
+  static Ptr create( const TextureDesc& desc ) { 
 
-  virtual enums::TextureType type() const { return enums::Texture; }
+    return three::make_shared<Texture>( desc ); 
 
-  /////////////////////////////////////////////////////////////////////////
+  }
 
-  int id;
+  const int id;
+
+  const std::string uuid;
+
+  std::string name;
 
   std::vector<Image> image;
 
@@ -86,11 +91,45 @@ public:
   bool premultiplyAlpha;
   bool flipY;
 
-  mutable bool needsUpdate;
-
   std::function<void( void )> onUpdate;
 
-  /////////////////////////////////////////////////////////////////////////
+  virtual enums::TextureType type() const { 
+
+    return enums::Texture; 
+
+  }
+
+  inline bool needsUpdate() const {
+
+    return _needsUpdate;
+
+  }
+
+  inline void needsUpdate( bool value ) {
+
+    if(value) {
+
+      update();
+
+    }
+
+    _needsUpdate = value;
+
+  }
+
+  THREE_TODO("dispatcher")
+  inline void update() const {
+
+    //this.dispatchEvent( { type: 'update' } );
+
+  }
+
+  THREE_TODO("dispatcher")
+  inline void dispose() const {
+
+    //this.dispatchEvent( { type: 'dispose' } );
+
+  }
 
   Texture::Ptr clone( ) const {
 
@@ -126,6 +165,7 @@ protected:
 
   Texture( const TextureDesc& desc )
     : id( TextureCount()++ ),
+      uuid( Math::generateUUID() ),
       image( 1, desc.image ),
       mapping( desc.mapping ),
       wrapS( desc.wrapS ),
@@ -140,14 +180,19 @@ protected:
       generateMipmaps( true ),
       premultiplyAlpha( false ),
       flipY( true ),
-      needsUpdate( true ) { }
+      _needsUpdate( true ) { }
 
 private:
 
   static int& TextureCount() {
+
     static int sTextureCount = 0;
+
     return sTextureCount;
+
   }
+
+  mutable bool _needsUpdate;
 
 };
 

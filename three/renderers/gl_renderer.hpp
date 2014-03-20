@@ -283,10 +283,10 @@ private:
 
   }
 
-  void setTexture( const Texture& texture, int slot );
+  void setTexture( Texture& texture, int slot );
   static Image& clampToMaxSize( Image& image, int maxSize );
-  void setCubeTexture( const Texture& texture, int slot );
-  void setCubeTextureDynamic( const Texture& texture, int slot );
+  void setCubeTexture( Texture& texture, int slot );
+  void setCubeTextureDynamic( Texture& texture, int slot );
 
 
   // Render targets

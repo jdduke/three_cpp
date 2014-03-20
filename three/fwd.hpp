@@ -56,6 +56,7 @@ typedef Vector3 Vertex;
 class Material;
 class Program;
 class Texture;
+class DataTexture;
 class Shader;
 class Uniform;
 

@@ -81,5 +81,6 @@
 #include <three/scenes/scene.hpp>
 
 #include <three/textures/texture.hpp>
+#include <three/textures/data_texture.hpp>
 
 #endif // THREE_HPP

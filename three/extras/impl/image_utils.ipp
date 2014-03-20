@@ -377,7 +377,7 @@ Texture::Ptr ImageUtils::generateDataTexture( int width, int height, Color color
   auto texture = Texture::create(
     TextureDesc( Image(data, width, height), enums::RGBFormat )
   );
-  texture->needsUpdate = true;
+  texture->needsUpdate(true);
 
   return texture;
 

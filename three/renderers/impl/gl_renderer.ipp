@@ -5512,9 +5512,9 @@ Buffer GLRenderer::getShader( enums::ShaderType type, const std::string& source 
 
 // Textures
 
-void GLRenderer::setTexture( const Texture& texture, int slot ) {
+void GLRenderer::setTexture( Texture& texture, int slot ) {
 
-  if ( texture.needsUpdate ) {
+  if ( texture.needsUpdate() ) {
 
     if ( ! texture.__glInit ) {
 
@@ -5553,7 +5553,7 @@ void GLRenderer::setTexture( const Texture& texture, int slot ) {
     if ( texture.generateMipmaps && isImagePowerOfTwo )
       glGenerateMipmap( GL_TEXTURE_2D );
 
-    texture.needsUpdate = false;
+    texture.needsUpdate(false);
 
     if ( texture.onUpdate ) texture.onUpdate();
 
@@ -5599,11 +5599,11 @@ Image& GLRenderer::clampToMaxSize( Image& image, int maxSize ) {
 
 }
 
-void GLRenderer::setCubeTexture( const Texture& texture, int slot ) {
+void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
 
   if ( texture.image.size() == 6 ) {
 
-    if ( texture.needsUpdate ) {
+    if ( texture.needsUpdate() ) {
 
       if ( ! texture.__glTextureCube ) {
 
@@ -5651,7 +5651,7 @@ void GLRenderer::setCubeTexture( const Texture& texture, int slot ) {
         glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
       }
 
-      texture.needsUpdate = false;
+      texture.needsUpdate(false);
 
       if ( texture.onUpdate ) texture.onUpdate();
 
@@ -5664,7 +5664,7 @@ void GLRenderer::setCubeTexture( const Texture& texture, int slot ) {
 
 }
 
-void GLRenderer::setCubeTextureDynamic( const Texture& texture, int slot ) {
+void GLRenderer::setCubeTextureDynamic( Texture& texture, int slot ) {
 
   glActiveTexture( GL_TEXTURE0 + slot );
   glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTexture );
