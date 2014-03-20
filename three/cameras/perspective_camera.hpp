@@ -9,26 +9,30 @@
 namespace three {
 
 class PerspectiveCamera : public Camera {
+
 public:
 
   typedef std::shared_ptr<PerspectiveCamera> Ptr;
 
   static Ptr create( float fov = 50, float aspect = 1, float near = 0.1f, float far = 2000 ) {
+
     return make_shared<PerspectiveCamera>( fov, aspect, near, far );
+
   }
 
-  /////////////////////////////////////////////////////////////////////////
-
   float fov, aspect;
+
   float fullWidth, fullHeight;
+
   float x, y;
+
   float width, height;
 
-  /////////////////////////////////////////////////////////////////////////
 
   void setLens( float focalLength, float frameHeight = 24 ) {
 
-    fov = 2.f * Math::atan( frameHeight / ( focalLength * 2 ) ) * ( 180 / Math::PI() );
+    fov = 2.f * Math::radToDeg( Math::atan( frameHeight / ( focalLength * 2 ) ) );
+
     updateProjectionMatrix();
 
   }
@@ -87,18 +91,18 @@ public:
 
     if ( fullWidth != 0.f ) {
 
-      auto asp    = fullWidth / fullHeight;
-      auto top    = Math::tan( fov * Math::PI() / 360 ) * near;
+      auto aspect = fullWidth / fullHeight;
+      auto top = Math::tan( Math::degToRad( fov * 0.5 ) ) * near;
       auto bottom = -top;
-      auto left   = asp * bottom;
-      auto right  = asp * top;
-      auto w      = Math::abs( right - left );
-      auto h      = Math::abs( top - bottom );
+      auto left = aspect * bottom;
+      auto right = aspect * top;
+      auto width = Math::abs( right - left );
+      auto height = Math::abs( top - bottom );
 
-      projectionMatrix.makeFrustum( left + x * w / fullWidth,
-                                    left + ( x + width ) * w / fullWidth,
-                                    top - ( y + height ) * h / fullHeight,
-                                    top - y * h / fullHeight,
+      projectionMatrix.makeFrustum( left + x * width / fullWidth,
+                                    left + ( x + width ) * width / fullWidth,
+                                    top - ( y + height ) * height / fullHeight,
+                                    top - y * height / fullHeight,
                                     near,
                                     far );
 
@@ -110,7 +114,11 @@ public:
 
   }
 
-  /////////////////////////////////////////////////////////////////////////
+  Ptr clone() {
+
+    return PerspectiveCamera::create( fov, aspect, near, far );
+    
+  }
 
 protected:
 
