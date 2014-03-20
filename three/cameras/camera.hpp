@@ -37,6 +37,24 @@ public:
 
   }
 
+  Ptr clone( Ptr camera = nullptr ) const {
+
+    if( camera ) {
+      camera->far = far;
+      camera->near = near;
+    } else {
+      camera = Camera::create();
+    } 
+      
+    camera->projectionMatrix = projectionMatrix;
+    camera->matrixWorldInverse = matrixWorldInverse;
+    camera->_viewMatrixArray = _viewMatrixArray;
+    camera->_projectionMatrixArray = _projectionMatrixArray;
+
+    return camera;
+    
+  }
+
 protected:
 
   Camera( float near = .1f, float far = 2000.f )
@@ -47,6 +65,7 @@ protected:
 private:
   
   friend class GLRenderer;
+  friend class Camera;
 
   std::array<float, 16> _viewMatrixArray;
   
