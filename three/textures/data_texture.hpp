@@ -26,6 +26,8 @@ public:
 		return enums::DataTexture;
 		
 	}
+
+  THREE_TODO("clone")
 	
 protected:
 

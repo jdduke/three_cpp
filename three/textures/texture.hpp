@@ -131,6 +131,7 @@ public:
 
   }
 
+  THREE_REVIEW("Why a vector with Image?")
   Texture::Ptr clone( ) const {
 
     auto texture = create( TextureDesc( image[0] ) );
