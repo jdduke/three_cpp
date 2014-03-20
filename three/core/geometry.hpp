@@ -77,7 +77,7 @@ public:
 
   int id;
 
-  const std::string& uuid;
+  const std::string uuid;
 
   std::string name;
 
