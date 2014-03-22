@@ -1,5 +1,5 @@
-#ifndef THREE_GL_SHADERS_IPP
-#define THREE_GL_SHADERS_IPP
+#ifndef THREE_GL_SHADERS_CPP
+#define THREE_GL_SHADERS_CPP
 
 #include <three/config.h>
 
@@ -1896,4 +1896,4 @@ const Shader& ShaderLib::depthRGBA() {
 
 } // namespace three
 
-#endif // THREE_GL_SHADERS_IPP
+#endif // THREE_GL_SHADERS_CPP

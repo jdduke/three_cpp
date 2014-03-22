@@ -1,5 +1,5 @@
-#ifndef THREE_CUBE_GEOMETRY_HPP
-#define THREE_CUBE_GEOMETRY_HPP
+#ifndef THREE_CUBE_GEOMETRY_H
+#define THREE_CUBE_GEOMETRY_H
 
 #include <three/core/geometry.h>
 #include <three/core/face4.h>
@@ -171,4 +171,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_CUBE_GEOMETRY_HPP
+#endif // THREE_CUBE_GEOMETRY_H

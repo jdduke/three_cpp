@@ -1,5 +1,5 @@
-#ifndef THREE_QUATERNION_HPP
-#define THREE_QUATERNION_HPP
+#ifndef THREE_QUATERNION_H
+#define THREE_QUATERNION_H
 
 #include <three/common.h>
 #include <three/utils/memory.h>
@@ -200,4 +200,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_QUATERNION_HPP
+#endif // THREE_QUATERNION_H

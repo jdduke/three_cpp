@@ -1,5 +1,5 @@
-#ifndef THREE_GEOMETRY_HPP
-#define THREE_GEOMETRY_HPP
+#ifndef THREE_GEOMETRY_H
+#define THREE_GEOMETRY_H
 
 #include <three/common.h>
 
@@ -167,4 +167,4 @@ private:
 # include <three/core/impl/geometry.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_GEOMETRY_HPP
+#endif // THREE_GEOMETRY_H

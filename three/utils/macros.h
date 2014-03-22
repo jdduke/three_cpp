@@ -1,5 +1,5 @@
-#ifndef THREE_MACROS_UTILS_HPP
-#define THREE_MACROS_UTILS_HPP
+#ifndef THREE_MACROS_UTILS_H
+#define THREE_MACROS_UTILS_H
 
 /*
 
@@ -21,4 +21,4 @@ MS only
 
 */
 
-#endif //THREE_MACROS_UTILS_HPP
+#endif //THREE_MACROS_UTILS_H

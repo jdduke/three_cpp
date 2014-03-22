@@ -1,5 +1,5 @@
-#ifndef THREE_MATRIX4_IPP
-#define THREE_MATRIX4_IPP
+#ifndef THREE_MATRIX4_CPP
+#define THREE_MATRIX4_CPP
 
 #include <three/math/math.h>
 #include <three/math/matrix4.h>
@@ -786,4 +786,4 @@ Matrix4& Matrix4::set( float n11, float n12, float n13, float n14,
 
 } // namespace three
 
-#endif // THREE_MATRIX4_IPP
+#endif // THREE_MATRIX4_CPP

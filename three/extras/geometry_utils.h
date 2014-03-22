@@ -1,5 +1,5 @@
-#ifndef THREE_GEOMETRY_UTILS_HPP
-#define THREE_GEOMETRY_UTILS_HPP
+#ifndef THREE_GEOMETRY_UTILS_H
+#define THREE_GEOMETRY_UTILS_H
 
 #include <three/core/face3.h>
 #include <three/core/face4.h>
@@ -134,7 +134,7 @@ public:
 
 } // namespace three
 
-#endif // THREE_GEOMETRY_UTILS_HPP
+#endif // THREE_GEOMETRY_UTILS_H
 
 
 

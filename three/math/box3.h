@@ -1,5 +1,5 @@
-#ifndef THREE_BOX3_HPP
-#define THREE_BOX3_HPP
+#ifndef THREE_BOX3_H
+#define THREE_BOX3_H
 
 #include <three/common.h>
 
@@ -362,4 +362,4 @@ static_assert( sizeof( Box3 ) == sizeof( Vector3 ) * 2, "Invalid Box3 storage si
 
 }
 
-#endif // THREE_BOX3_HPP
+#endif // THREE_BOX3_H

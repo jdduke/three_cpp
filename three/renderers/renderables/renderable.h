@@ -1,5 +1,5 @@
-#ifndef THREE_RENDERABLE_HPP
-#define THREE_RENDERABLE_HPP
+#ifndef THREE_RENDERABLE_H
+#define THREE_RENDERABLE_H
 
 #include <three/common.h>
 
@@ -17,4 +17,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_RENDERABLE_OBJECT_HPP
+#endif // THREE_RENDERABLE_OBJECT_H

@@ -1,5 +1,5 @@
-#ifndef THREE_GL_RENDERER_IPP
-#define THREE_GL_RENDERER_IPP
+#ifndef THREE_GL_RENDERER_CPP
+#define THREE_GL_RENDERER_CPP
 
 #include <three/renderers/gl_renderer.h>
 
@@ -6010,4 +6010,4 @@ int GLRenderer::allocateShadows( Lights& lights ) {
 
 } // namespace three
 
-#endif // THREE_GL_RENDERER_IPP
+#endif // THREE_GL_RENDERER_CPP

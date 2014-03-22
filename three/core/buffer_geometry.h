@@ -1,5 +1,5 @@
-#ifndef THREE_BUFFER_GEOMETRY_HPP
-#define THREE_BUFFER_GEOMETRY_HPP
+#ifndef THREE_BUFFER_GEOMETRY_H
+#define THREE_BUFFER_GEOMETRY_H
 
 #include <three/common.h>
 
@@ -46,4 +46,4 @@ protected:
 # include <three/core/impl/buffer_geometry.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_BUFFER_GEOMETRY_HPP
+#endif // THREE_BUFFER_GEOMETRY_H

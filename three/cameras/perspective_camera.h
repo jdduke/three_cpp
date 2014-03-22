@@ -1,5 +1,5 @@
-#ifndef THREE_PERSPECTIVE_CAMERA_HPP
-#define THREE_PERSPECTIVE_CAMERA_HPP
+#ifndef THREE_PERSPECTIVE_CAMERA_H
+#define THREE_PERSPECTIVE_CAMERA_H
 
 #include <three/common.h>
 
@@ -148,4 +148,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_PERSPECTIVE_CAMERA_HPP
+#endif // THREE_PERSPECTIVE_CAMERA_H

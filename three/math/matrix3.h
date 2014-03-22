@@ -1,5 +1,5 @@
-#ifndef THREE_MATRIX3_HPP
-#define THREE_MATRIX3_HPP
+#ifndef THREE_MATRIX3_H
+#define THREE_MATRIX3_H
 
 #include <three/common.h>
 #include <vector>
@@ -170,4 +170,4 @@ public:
 # include <three/core/impl/matrix3.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_MATRIX3_HPP
+#endif // THREE_MATRIX3_H

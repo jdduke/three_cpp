@@ -1,5 +1,5 @@
-#ifndef THREE_SHADER_MATERIAL_HPP
-#define THREE_SHADER_MATERIAL_HPP
+#ifndef THREE_SHADER_MATERIAL_H
+#define THREE_SHADER_MATERIAL_H
 
 #include <three/common.h>
 
@@ -95,5 +95,5 @@ protected:
 
 } // namespace three
 
-#endif // THREE_MATERIAL_HPP
+#endif // THREE_MATERIAL_H
 

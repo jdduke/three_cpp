@@ -1,5 +1,5 @@
-#ifndef THREE_SCENE_HPP
-#define THREE_SCENE_HPP
+#ifndef THREE_SCENE_H
+#define THREE_SCENE_H
 
 #include <three/common.h>
 
@@ -86,4 +86,4 @@ protected:
 # include <three/scenes/impl/scene.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_SCENE_HPP
+#endif // THREE_SCENE_H

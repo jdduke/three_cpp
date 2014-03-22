@@ -1,5 +1,5 @@
-#ifndef THREE_TRIANGLE_HPP
-#define THREE_TRIANGLE_HPP
+#ifndef THREE_TRIANGLE_H
+#define THREE_TRIANGLE_H
 
 #include <three/common.h>
 
@@ -188,4 +188,4 @@ public:
 
 } // end namespace
 
-#endif // THREE_TRIANGLE_HPP
+#endif // THREE_TRIANGLE_H

@@ -1,5 +1,5 @@
-#ifndef THREE_FRUSTUM_IPP
-#define THREE_FRUSTUM_IPP
+#ifndef THREE_FRUSTUM_CPP
+#define THREE_FRUSTUM_CPP
 
 #include <three/math/frustum.h>
 
@@ -157,4 +157,4 @@ namespace three {
 
 } // namespace three
 
-#endif // THREE_FRUSTUM_IPP
+#endif // THREE_FRUSTUM_CPP

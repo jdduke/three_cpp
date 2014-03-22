@@ -1,5 +1,5 @@
-#ifndef THREE_TEXT_2D_MATERIAL_HPP
-#define THREE_TEXT_2D_MATERIAL_HPP
+#ifndef THREE_TEXT_2D_MATERIAL_H
+#define THREE_TEXT_2D_MATERIAL_H
 
 #include <three/common.h>
 
@@ -24,5 +24,5 @@ public:
 # include <three/materials/impl/text_2d_material.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_TEXT_2D_MATERIAL_HPP
+#endif // THREE_TEXT_2D_MATERIAL_H
 

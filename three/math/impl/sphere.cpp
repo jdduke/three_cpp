@@ -1,5 +1,5 @@
-#ifndef THREE_SPHERE_IPP
-#define THREE_SPHERE_IPP
+#ifndef THREE_SPHERE_CPP
+#define THREE_SPHERE_CPP
 
 #include <three/math/sphere.h>
 #include <three/math/box3.h>
@@ -55,4 +55,4 @@ namespace three {
 
 } // end namespace
 
-#endif //THREE_SPHERE_IPP
+#endif //THREE_SPHERE_CPP

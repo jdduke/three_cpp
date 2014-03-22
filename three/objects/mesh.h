@@ -1,5 +1,5 @@
-#ifndef THREE_MESH_HPP
-#define THREE_MESH_HPP
+#ifndef THREE_MESH_H
+#define THREE_MESH_H
 
 #include <three/core/object3d.h>
 #include <three/core/geometry.h>
@@ -51,4 +51,4 @@ namespace three {
 # include <three/objects/impl/mesh.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_MESH_HPP
+#endif // THREE_MESH_H

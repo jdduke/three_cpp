@@ -1,5 +1,5 @@
-#ifndef THREE_TEMPLATE_UTILS_HPP
-#define THREE_TEMPLATE_UTILS_HPP
+#ifndef THREE_TEMPLATE_UTILS_H
+#define THREE_TEMPLATE_UTILS_H
 
 #include <algorithm>
 #include <functional>
@@ -75,4 +75,4 @@ Deferred defer( F&& f ) {
 
 } // namespace three
 
-#endif // THREE_TEMPLATE_UTILS_HPP
+#endif // THREE_TEMPLATE_UTILS_H

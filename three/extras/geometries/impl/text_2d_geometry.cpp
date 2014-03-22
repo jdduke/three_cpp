@@ -1,5 +1,5 @@
-#ifndef THREE_TEXT_2D_GEOMETRY_IPP
-#define THREE_TEXT_2D_GEOMETRY_IPP
+#ifndef THREE_TEXT_2D_GEOMETRY_CPP
+#define THREE_TEXT_2D_GEOMETRY_CPP
 
 #include <three/extras/geometries/text_2d_geometry.h>
 
@@ -56,4 +56,4 @@ void Text2DGeometry::update() {
 
 } // namespace three
 
-#endif // THREE_TEXT_2D_GEOMETRY_IPP
+#endif // THREE_TEXT_2D_GEOMETRY_CPP

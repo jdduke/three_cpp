@@ -1,5 +1,5 @@
-#ifndef THREE_ANIM_HPP
-#define THREE_ANIM_HPP
+#ifndef THREE_ANIM_H
+#define THREE_ANIM_H
 
 #include <functional>
 
@@ -19,4 +19,4 @@ void gameLoop( Update update, Render render, float frameRate = 60 );
 # include <three/extras/impl/anim.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_ANIM_HPP
+#endif // THREE_ANIM_H

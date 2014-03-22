@@ -1,5 +1,5 @@
-#ifndef THREE_TRIANGLE_IPP
-#define THREE_TRIANGLE_IPP
+#ifndef THREE_TRIANGLE_CPP
+#define THREE_TRIANGLE_CPP
 
 #include <three/math/triangle.h>
 
@@ -61,4 +61,4 @@ namespace three {
 
 } // namespace three
 
-#endif // THREE_TRIANGLE_IPP
+#endif // THREE_TRIANGLE_CPP

@@ -1,5 +1,5 @@
-#ifndef THREE_EULER_HPP
-#define THREE_EULER_HPP
+#ifndef THREE_EULER_H
+#define THREE_EULER_H
 
 #include <three/common.h>
 
@@ -185,4 +185,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_EULER_HPP
+#endif // THREE_EULER_H

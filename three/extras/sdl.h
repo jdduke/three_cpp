@@ -1,5 +1,5 @@
-#ifndef THREE_SDL_HPP
-#define THREE_SDL_HPP
+#ifndef THREE_SDL_H
+#define THREE_SDL_H
 
 #include <three/gl.h>
 #include <three/math/color.h>
@@ -49,4 +49,4 @@ private:
 # include <three/extras/impl/sdl.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_SDL_HPP
+#endif // THREE_SDL_H

@@ -1,5 +1,5 @@
-#ifndef THREE_CAMERA_HPP
-#define THREE_CAMERA_HPP
+#ifndef THREE_CAMERA_H
+#define THREE_CAMERA_H
 
 #include <three/common.h>
 
@@ -70,4 +70,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_CAMERA_HPP
+#endif // THREE_CAMERA_H

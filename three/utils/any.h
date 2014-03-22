@@ -1,5 +1,5 @@
-#ifndef THREE_ANY_HPP
-#define THREE_ANY_HPP
+#ifndef THREE_ANY_H
+#define THREE_ANY_H
 
 #include <stdexcept>
 #include <typeinfo>
@@ -240,4 +240,4 @@ inline std::ostream& operator <<(std::ostream& out, const any& any_val) {
 
 } // namespace three
 
-#endif // THREE_ANY_HPP
+#endif // THREE_ANY_H

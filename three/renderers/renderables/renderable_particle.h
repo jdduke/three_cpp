@@ -1,5 +1,5 @@
-#ifndef THREE_RENDERABLE_PARTICLE_HPP
-#define THREE_RENDERABLE_PARTICLE_HPP
+#ifndef THREE_RENDERABLE_PARTICLE_H
+#define THREE_RENDERABLE_PARTICLE_H
 
 #include <three/common.h>
 
@@ -29,4 +29,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_RENDERABLE_LINE_HPP
+#endif // THREE_RENDERABLE_LINE_H

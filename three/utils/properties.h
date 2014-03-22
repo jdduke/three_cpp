@@ -1,5 +1,5 @@
-#ifndef THREE_PROPERTIES_HPP
-#define THREE_PROPERTIES_HPP
+#ifndef THREE_PROPERTIES_H
+#define THREE_PROPERTIES_H
 
 #include <three/config.h>
 
@@ -93,4 +93,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_PROPERTIES_HPP
+#endif // THREE_PROPERTIES_H

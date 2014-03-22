@@ -1,5 +1,5 @@
-#ifndef THREE_MESH_DEPTH_MATERIAL_HPP
-#define THREE_MESH_DEPTH_MATERIAL_HPP
+#ifndef THREE_MESH_DEPTH_MATERIAL_H
+#define THREE_MESH_DEPTH_MATERIAL_H
 
 #include <three/common.h>
 
@@ -44,5 +44,5 @@ protected:
 
 } // namespace three
 
-#endif // THREE_MESH_DEPTH_MATERIAL_HPP
+#endif // THREE_MESH_DEPTH_MATERIAL_H
 

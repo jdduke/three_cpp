@@ -1,5 +1,5 @@
-#ifndef THREE_RAY_IPP
-#define THREE_RAY_IPP
+#ifndef THREE_RAY_CPP
+#define THREE_RAY_CPP
 
 #include <three/math/math.h>
 
@@ -425,4 +425,4 @@ Ray Ray::clone() {
 
 } // namespace three
 
-#endif // THREE_RAY_IPP
+#endif // THREE_RAY_CPP

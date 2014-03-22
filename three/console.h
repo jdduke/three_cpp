@@ -1,5 +1,5 @@
-#ifndef THREE_CONSOLE_HPP
-#define THREE_CONSOLE_HPP
+#ifndef THREE_CONSOLE_H
+#define THREE_CONSOLE_H
 
 #include <three/config.h>
 
@@ -91,4 +91,4 @@ static Console& console() {
 
 } // namespace three
 
-#endif // THREE_CONSOLE_HPP
+#endif // THREE_CONSOLE_H

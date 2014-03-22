@@ -1,5 +1,5 @@
-#ifndef THREE_GEOMETRY_GROUP_HPP
-#define THREE_GEOMETRY_GROUP_HPP
+#ifndef THREE_GEOMETRY_GROUP_H
+#define THREE_GEOMETRY_GROUP_H
 
 #include <three/common.h>
 
@@ -55,4 +55,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_GEOMETRY_GROUP_HPP
+#endif // THREE_GEOMETRY_GROUP_H

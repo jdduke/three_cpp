@@ -1,5 +1,5 @@
-#ifndef THREE_EVENT_TARGET_HPP
-#define THREE_EVENT_TARGET_HPP
+#ifndef THREE_EVENT_TARGET_H
+#define THREE_EVENT_TARGET_H
 
 #include <three/common.h>
 
@@ -57,4 +57,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_EVENT_TARGET_HPP
+#endif // THREE_EVENT_TARGET_H

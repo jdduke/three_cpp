@@ -1,5 +1,5 @@
-#ifndef THREE_UNIFORM_HPP
-#define THREE_UNIFORM_HPP
+#ifndef THREE_UNIFORM_H
+#define THREE_UNIFORM_H
 
 #include <three/common.h>
 

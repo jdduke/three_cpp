@@ -1,5 +1,5 @@
-#ifndef THREE_BOX2_HPP
-#define THREE_BOX2_HPP
+#ifndef THREE_BOX2_H
+#define THREE_BOX2_H
 
 #include <three/common.h>
 #include <three/math/math.h>
@@ -282,4 +282,4 @@ static_assert( sizeof( Box2 ) == sizeof( Vector2 ) * 2, "Invalid Box2 storage si
 
 } // namespace three
 
-#endif // THREE_BOX2_HPP
+#endif // THREE_BOX2_H

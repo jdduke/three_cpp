@@ -1,5 +1,5 @@
-#ifndef THREE_EXTRAS_HPP
-#define THREE_EXTRAS_HPP
+#ifndef THREE_EXTRAS_H
+#define THREE_EXTRAS_H
 
 #include <three/common.h>
 
@@ -11,4 +11,4 @@
 #include <three/extras/image_utils.h>
 #include <three/extras/scene_utils.h>
 
-#endif // THREE_EXTRAS_HPP
+#endif // THREE_EXTRAS_H

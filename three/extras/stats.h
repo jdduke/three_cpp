@@ -1,5 +1,5 @@
-#ifndef THREE_STATS_HPP
-#define THREE_STATS_HPP
+#ifndef THREE_STATS_H
+#define THREE_STATS_H
 
 #include <three/utils/noncopyable.h>
 
@@ -30,4 +30,4 @@ private:
 # include <three/extras/impl/stats.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_ANIM_HPP
+#endif // THREE_ANIM_H

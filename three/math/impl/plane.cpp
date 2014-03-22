@@ -1,5 +1,5 @@
-#ifndef THREE_PLANE_IPP
-#define THREE_PLANE_IPP
+#ifndef THREE_PLANE_CPP
+#define THREE_PLANE_CPP
 
 #include <three/math/plane.h>
 #include <three/math/line3.h>
@@ -98,4 +98,4 @@ Plane& Plane::applyMatrix4( const Matrix4& matrix, const Matrix3& normalMatrix) 
 
 } // namespace three
 
-#endif //THREE_PLANE_IPP
+#endif //THREE_PLANE_CPP

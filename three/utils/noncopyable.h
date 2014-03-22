@@ -1,5 +1,5 @@
-#ifndef THREE_NONCOPYABLE_HPP
-#define THREE_NONCOPYABLE_HPP
+#ifndef THREE_NONCOPYABLE_H
+#define THREE_NONCOPYABLE_H
 
 namespace three {
 
@@ -14,4 +14,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_NONCOPYABLE_HPP
+#endif // THREE_NONCOPYABLE_H

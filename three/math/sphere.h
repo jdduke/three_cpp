@@ -1,5 +1,5 @@
-#ifndef THREE_SPHERE_HPP
-#define THREE_SPHERE_HPP
+#ifndef THREE_SPHERE_H
+#define THREE_SPHERE_H
 
 #include <three/common.h>
 #include <three/math/matrix4.h>
@@ -135,4 +135,4 @@ public:
 
 } // namespace three
 
-#endif //THREE_SPHERE_HPP
+#endif //THREE_SPHERE_H

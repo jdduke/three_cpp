@@ -1,5 +1,5 @@
-#ifndef THREE_RENDERABLE_VERTEX_HPP
-#define THREE_RENDERABLE_VERTEX_HPP
+#ifndef THREE_RENDERABLE_VERTEX_H
+#define THREE_RENDERABLE_VERTEX_H
 
 #include <three/common.h>
 
@@ -22,4 +22,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_RENDERABLE_VERTEX_HPP
+#endif // THREE_RENDERABLE_VERTEX_H

@@ -1,5 +1,5 @@
-#ifndef enums_TEXTURE_HPP
-#define enums_TEXTURE_HPP
+#ifndef enums_TEXTURE_H
+#define enums_TEXTURE_H
 
 #include <three/common.h>
 #include <three/constants.h>
@@ -199,4 +199,4 @@ private:
 
 } // namespace three
 
-#endif // enums_TEXTURE_HPP
+#endif // enums_TEXTURE_H

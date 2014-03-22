@@ -1,5 +1,5 @@
-#ifndef THREE_SCENE_IPP
-#define THREE_SCENE_IPP
+#ifndef THREE_SCENE_CPP
+#define THREE_SCENE_CPP
 
 #include <three/scenes/scene.h>
 
@@ -126,4 +126,4 @@ void Scene::__removeObject( const Object3D::Ptr& object ) {
 
 } // namespace three
 
-#endif // THREE_SCENE_IPP
+#endif // THREE_SCENE_CPP

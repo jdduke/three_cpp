@@ -1,5 +1,5 @@
-#ifndef THREE_COMMON_HPP
-#define THREE_COMMON_HPP
+#ifndef THREE_COMMON_H
+#define THREE_COMMON_H
 
 #include <three/config.h>
 
@@ -10,4 +10,4 @@
 
 
 
-#endif // THREE_COMMON_HPP
+#endif // THREE_COMMON_H

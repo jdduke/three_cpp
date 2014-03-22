@@ -1,5 +1,5 @@
-#ifndef THREE_HPP
-#define THREE_HPP
+#ifndef THREE_H
+#define THREE_H
 
 #include <three/common.h>
 
@@ -83,4 +83,4 @@
 #include <three/textures/texture.h>
 #include <three/textures/data_texture.h>
 
-#endif // THREE_HPP
+#endif // THREE_H

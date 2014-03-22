@@ -1,5 +1,5 @@
-#ifndef THREE_PROGRAM_HPP
-#define THREE_PROGRAM_HPP
+#ifndef THREE_PROGRAM_H
+#define THREE_PROGRAM_H
 
 #include <three/common.h>
 
@@ -41,4 +41,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_PROGRAM_HPP
+#endif // THREE_PROGRAM_H

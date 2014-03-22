@@ -1,5 +1,5 @@
-#ifndef THREE_GL_RENDER_TARGET_BUFFER_HPP
-#define THREE_GL_RENDER_TARGET_BUFFER_HPP
+#ifndef THREE_GL_RENDER_TARGET_BUFFER_H
+#define THREE_GL_RENDER_TARGET_BUFFER_H
 
 #include <three/utils/noncopyable.h>
 
@@ -23,4 +23,4 @@ struct GLRenderTargetBuffer : NonCopyable {
 
 } // namespace three
 
-#endif // THREE_GL_RENDER_TARGET_BUFFER_HPP
+#endif // THREE_GL_RENDER_TARGET_BUFFER_H

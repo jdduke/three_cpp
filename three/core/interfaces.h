@@ -1,5 +1,5 @@
-#ifndef THREE_INTERFACES_HPP
-#define THREE_INTERFACES_HPP
+#ifndef THREE_INTERFACES_H
+#define THREE_INTERFACES_H
 
 #include <three/fwd.h>
 #include <three/constants.h>
@@ -34,4 +34,4 @@ public:
 
 }
 
-#endif // THREE_INTERFACES_HPP
+#endif // THREE_INTERFACES_H

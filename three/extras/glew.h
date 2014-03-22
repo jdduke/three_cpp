@@ -1,5 +1,5 @@
-#ifndef THREE_GLEW_HPP
-#define THREE_GLEW_HPP
+#ifndef THREE_GLEW_H
+#define THREE_GLEW_H
 
 #include <three/console.h>
 #include <three/renderers/gl_renderer.h>
@@ -24,4 +24,4 @@ inline bool init( RendererParameters& parameters ) {
 } // namespace glew
 } // namespace three
 
-#endif // THREE_GLEW_HPP
+#endif // THREE_GLEW_H

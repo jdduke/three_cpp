@@ -1,5 +1,5 @@
-#ifndef THREE_BOX3_IPP
-#define THREE_BOX3_IPP
+#ifndef THREE_BOX3_CPP
+#define THREE_BOX3_CPP
 
 #include <three/math/box3.h>
 
@@ -39,4 +39,4 @@ Box3& setFromObject ( Object3D& object ) {
 
 } // namespace three
 
-#endif // THREE_BOX3_IPP
+#endif // THREE_BOX3_CPP

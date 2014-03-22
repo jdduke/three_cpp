@@ -1,5 +1,5 @@
-#ifndef THREE_MATERIAL_HPP
-#define THREE_MATERIAL_HPP
+#ifndef THREE_MATERIAL_H
+#define THREE_MATERIAL_H
 
 #include <three/common.h>
 
@@ -172,4 +172,4 @@ private:
 # include <three/materials/impl/material.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_MATERIAL_HPP
+#endif // THREE_MATERIAL_H

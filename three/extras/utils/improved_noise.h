@@ -1,5 +1,5 @@
-#ifndef THREE_IMPROVED_NOISE_HPP
-#define THREE_IMPROVED_NOISE_HPP
+#ifndef THREE_IMPROVED_NOISE_H
+#define THREE_IMPROVED_NOISE_H
 
 #include <three/math/math.h>
 
@@ -97,5 +97,5 @@ private:
 
 } // namespace three
 
-#endif // THREE_IMPROVED_NOISE_HPP
+#endif // THREE_IMPROVED_NOISE_H
 

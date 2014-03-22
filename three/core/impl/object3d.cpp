@@ -1,5 +1,5 @@
-#ifndef THREE_OBJECT3D_IPP
-#define THREE_OBJECT3D_IPP
+#ifndef THREE_OBJECT3D_CPP
+#define THREE_OBJECT3D_CPP
 
 #include <three/core/object3d.h>
 
@@ -212,4 +212,4 @@ void Object3D::__removeObject( const Ptr& object ) { }
 
 } // namespace three
 
-#endif // THREE_OBJECT3D_IPP
+#endif // THREE_OBJECT3D_CPP

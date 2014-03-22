@@ -1,5 +1,5 @@
-#ifndef THREE_VECTOR4_IPP
-#define THREE_VECTOR4_IPP
+#ifndef THREE_VECTOR4_CPP
+#define THREE_VECTOR4_CPP
 
 #include <three/math/vector3.h>
 #include <three/math/vector4.h>
@@ -168,4 +168,4 @@ namespace three {
 
 } // namespace three
 
-#endif // THREE_VECTOR4_IPP
+#endif // THREE_VECTOR4_CPP

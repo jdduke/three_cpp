@@ -1,5 +1,5 @@
-#ifndef THREE_FONT_HPP
-#define THREE_FONT_HPP
+#ifndef THREE_FONT_H
+#define THREE_FONT_H
 
 #include <three/fwd.h>
 
@@ -54,4 +54,4 @@ private:
 # include <three/extras/utils/impl/font.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_FONT_HPP
+#endif // THREE_FONT_H

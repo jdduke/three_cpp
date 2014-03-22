@@ -1,5 +1,5 @@
-#ifndef THREE_FWD_HPP
-#define THREE_FWD_HPP
+#ifndef THREE_FWD_H
+#define THREE_FWD_H
 
 namespace three {
 
@@ -67,4 +67,4 @@ class Properties;
 
 } // namespace three
 
-#endif // THREE_FWD_HPP
+#endif // THREE_FWD_H

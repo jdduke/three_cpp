@@ -1,5 +1,5 @@
-#ifndef THREE_BUFFER_GEOMETRY_IPP
-#define THREE_BUFFER_GEOMETRY_IPP
+#ifndef THREE_BUFFER_GEOMETRY_CPP
+#define THREE_BUFFER_GEOMETRY_CPP
 
 #include <three/common.h>
 #include <three/console.h>
@@ -360,4 +360,4 @@ BufferGeometry::BufferGeometry()
 
 } // namespace three
 
-#endif // THREE_BUFFER_GEOMETRY_IPP
+#endif // THREE_BUFFER_GEOMETRY_CPP

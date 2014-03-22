@@ -1,5 +1,5 @@
-#ifndef THREE_IMAGE_UTILS_IPP
-#define THREE_IMAGE_UTILS_IPP
+#ifndef THREE_IMAGE_UTILS_CPP
+#define THREE_IMAGE_UTILS_CPP
 
 #include <three/extras/image_utils.h>
 
@@ -501,4 +501,4 @@ enums::Mapping mapping = enums::UVMapping ) {
 
 } // namespace three
 
-#endif // THREE_IMAGE_UTILS_IPP
+#endif // THREE_IMAGE_UTILS_CPP

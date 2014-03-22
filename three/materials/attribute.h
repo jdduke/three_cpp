@@ -1,5 +1,5 @@
-#ifndef enums_ATTRIBUTE_HPP
-#define enums_ATTRIBUTE_HPP
+#ifndef enums_ATTRIBUTE_H
+#define enums_ATTRIBUTE_H
 
 #include <three/common.h>
 #include <three/constants.h>

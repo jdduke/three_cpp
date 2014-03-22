@@ -1,5 +1,5 @@
-#ifndef THREE_ANIM_IPP
-#define THREE_ANIM_IPP
+#ifndef THREE_ANIM_CPP
+#define THREE_ANIM_CPP
 
 #include <three/extras/anim.h>
 
@@ -91,4 +91,4 @@ void gameLoop( Update update, Render render, float frameRate /*= 60*/ ) {
 } // namespace anim
 } // namespace three
 
-#endif // THREE_ANIM_IPP
+#endif // THREE_ANIM_CPP

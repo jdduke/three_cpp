@@ -1,5 +1,5 @@
-#ifndef THREE_EULER_IPP
-#define THREE_EULER_IPP
+#ifndef THREE_EULER_CPP
+#define THREE_EULER_CPP
 
 #include <three/math/euler.h>
 
@@ -162,4 +162,4 @@ return *this;
 
 } // namespace three
 
-#endif // THREE_EULER_IPP
+#endif // THREE_EULER_CPP

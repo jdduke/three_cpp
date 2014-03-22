@@ -1,5 +1,5 @@
-#ifndef THREE_EXAMPLES_COMMON_HPP
-#define THREE_EXAMPLES_COMMON_HPP
+#ifndef THREE_EXAMPLES_COMMON_H
+#define THREE_EXAMPLES_COMMON_H
 
 #include <three/config.h>
 
@@ -44,4 +44,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_EXAMPLES_COMMON_HPP
+#endif // THREE_EXAMPLES_COMMON_H

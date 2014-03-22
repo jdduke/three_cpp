@@ -1,5 +1,5 @@
-#ifndef THREE_STATS_IPP
-#define THREE_STATS_IPP
+#ifndef THREE_STATS_CPP
+#define THREE_STATS_CPP
 
 #include <three/extras/stats.h>
 
@@ -112,4 +112,4 @@ void Stats::update( float deltaTime, bool render ) {
 } // namespace stats
 } // namespace three
 
-#endif // THREE_STATS_HPP
+#endif // THREE_STATS_H

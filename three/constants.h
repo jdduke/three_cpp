@@ -1,5 +1,5 @@
-#ifndef THREE_CONSTANTS_HPP
-#define THREE_CONSTANTS_HPP
+#ifndef THREE_CONSTANTS_H
+#define THREE_CONSTANTS_H
 
 namespace three {
 
@@ -263,4 +263,4 @@ inline void UVMapping() {}
 
 } // namespace three
 
-#endif // THREE_CONSTANTS_HPP
+#endif // THREE_CONSTANTS_H

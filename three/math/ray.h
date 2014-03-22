@@ -1,5 +1,5 @@
-#ifndef THREE_RAY_HPP
-#define THREE_RAY_HPP
+#ifndef THREE_RAY_H
+#define THREE_RAY_H
 
 #include <three/common.h>
 

@@ -1,5 +1,5 @@
-#ifndef THREE_RENDERER_PARAMETERS_HPP
-#define THREE_RENDERER_PARAMETERS_HPP
+#ifndef THREE_RENDERER_PARAMETERS_H
+#define THREE_RENDERER_PARAMETERS_H
 
 #include <three/common.h>
 #include <three/constants.h>
@@ -37,4 +37,4 @@ struct RendererParameters {
 
 } // namespace three
 
-#endif // THREE_RENDERER_PARAMETERS_HPP
+#endif // THREE_RENDERER_PARAMETERS_H

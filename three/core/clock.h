@@ -1,5 +1,5 @@
-#ifndef THREE_CLOCK_HPP
-#define THREE_CLOCK_HPP
+#ifndef THREE_CLOCK_H
+#define THREE_CLOCK_H
 
 #include <three/common.h>
 
@@ -60,4 +60,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_CLOCK_HPP
+#endif // THREE_CLOCK_H

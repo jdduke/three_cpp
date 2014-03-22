@@ -1,5 +1,5 @@
-#ifndef THREE_MATRIX3_IPP
-#define THREE_MATRIX3_IPP
+#ifndef THREE_MATRIX3_CPP
+#define THREE_MATRIX3_CPP
 
 #include <three/math/matrix3.h>
 
@@ -48,4 +48,4 @@ namespace three {
 
 } // namespace three
 
-#endif // THREE_MATRIX4_HPP
+#endif // THREE_MATRIX4_H

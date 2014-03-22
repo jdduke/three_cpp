@@ -1,5 +1,5 @@
-#ifndef THREE_GL_SHADERS_HPP
-#define THREE_GL_SHADERS_HPP
+#ifndef THREE_GL_SHADERS_H
+#define THREE_GL_SHADERS_H
 
 #include <three/materials/uniform.h>
 
@@ -115,4 +115,4 @@ public:
 # include <three/renderers/impl/gl_shaders.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_GL_SHADERS_HPP
+#endif // THREE_GL_SHADERS_H

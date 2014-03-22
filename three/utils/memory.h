@@ -1,5 +1,5 @@
-#ifndef THREE_MEMORY_UTILS_HPP
-#define THREE_MEMORY_UTILS_HPP
+#ifndef THREE_MEMORY_UTILS_H
+#define THREE_MEMORY_UTILS_H
 
 #include <memory>
 
@@ -110,4 +110,4 @@ inline shared_ptr<T> make_shared( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3
 
 } // namespace three
 
-#endif // THREE_UTILS_HPP
+#endif // THREE_UTILS_H

@@ -1,5 +1,5 @@
-#ifndef THREE_FRUSTUM_HPP
-#define THREE_FRUSTUM_HPP
+#ifndef THREE_FRUSTUM_H
+#define THREE_FRUSTUM_H
 
 #include <three/common.h>
 
@@ -50,4 +50,4 @@ namespace three {
 # include <three/core/impl/frustum.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_FRUSTUM_HPP
+#endif // THREE_FRUSTUM_H

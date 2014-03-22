@@ -1,5 +1,5 @@
-#ifndef THREE_FOG_EXP2_HPP
-#define THREE_FOG_EXP2_HPP
+#ifndef THREE_FOG_EXP2_H
+#define THREE_FOG_EXP2_H
 
 #include <three/common.h>
 
@@ -43,4 +43,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_FOG_EXP2_HPP
+#endif // THREE_FOG_EXP2_H

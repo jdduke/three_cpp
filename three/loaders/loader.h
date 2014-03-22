@@ -1,5 +1,5 @@
-#ifndef THREE_LOADER_HPP
-#define THREE_LOADER_HPP
+#ifndef THREE_LOADER_H
+#define THREE_LOADER_H
 
 #include <three/common.h>
 
@@ -327,4 +327,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_LOADER_HPP
+#endif // THREE_LOADER_H

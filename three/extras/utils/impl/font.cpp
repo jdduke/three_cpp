@@ -1,5 +1,5 @@
-#ifndef THREE_FONT_IPP
-#define THREE_FONT_IPP
+#ifndef THREE_FONT_CPP
+#define THREE_FONT_CPP
 
 #include <three/extras/utils/font.h>
 
@@ -244,4 +244,4 @@ const Texture::Ptr& Font::texture() const {
 
 } // namespace three
 
-#endif // THREE_FONT2_IPP
+#endif // THREE_FONT2_CPP

@@ -1,5 +1,5 @@
-#ifndef THREE_SCENE_UTILS_HPP
-#define THREE_SCENE_UTILS_HPP
+#ifndef THREE_SCENE_UTILS_H
+#define THREE_SCENE_UTILS_H
 
 namespace three {
 
@@ -220,7 +220,7 @@ public:
 
 } // namespace three
 
-#endif // THREE_SCENE_UTILS_HPP
+#endif // THREE_SCENE_UTILS_H
 
 
 

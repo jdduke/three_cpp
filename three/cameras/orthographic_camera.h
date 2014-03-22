@@ -1,5 +1,5 @@
-#ifndef THREE_ORTHOGRAPHIC_CAMERA_HPP
-#define THREE_ORTHOGRAPHIC_CAMERA_HPP
+#ifndef THREE_ORTHOGRAPHIC_CAMERA_H
+#define THREE_ORTHOGRAPHIC_CAMERA_H
 
 #include <three/common.h>
 #include <three/math/math.h>
@@ -60,4 +60,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_ORTHOGRAPHIC_CAMERA_HPP
+#endif // THREE_ORTHOGRAPHIC_CAMERA_H

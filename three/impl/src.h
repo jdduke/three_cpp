@@ -1,5 +1,5 @@
-#ifndef THREE_SRC_HPP
-#define THREE_SRC_HPP
+#ifndef THREE_SRC_H
+#define THREE_SRC_H
 
 #include <three/config.h>
 

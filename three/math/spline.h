@@ -1,5 +1,5 @@
-#ifndef THREE_SPLINE_HPP
-#define THREE_SPLINE_HPP
+#ifndef THREE_SPLINE_H
+#define THREE_SPLINE_H
 
 #include <three/common.h>
 
@@ -56,4 +56,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_SPLINE_HPP
+#endif // THREE_SPLINE_H

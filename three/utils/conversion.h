@@ -1,5 +1,5 @@
-#ifndef THREE_CONVERSION_UTILS_HPP
-#define THREE_CONVERSION_UTILS_HPP
+#ifndef THREE_CONVERSION_UTILS_H
+#define THREE_CONVERSION_UTILS_H
 
 #include <three/config.h>
 
@@ -50,4 +50,4 @@ inline std::string toString( const std::pair<T, U>& p ) {
 
 } // namespace three
 
-#endif // THREE_UTILS_HPP
+#endif // THREE_UTILS_H

@@ -1,5 +1,5 @@
-#ifndef THREE_SPLINE_IPP
-#define THREE_SPLINE_IPP
+#ifndef THREE_SPLINE_CPP
+#define THREE_SPLINE_CPP
 
 #include <three/common.h>
 
@@ -129,4 +129,4 @@ namespace three {
 
 } // namespace three
 
-#endif // THREE_SPLINE_IPP
+#endif // THREE_SPLINE_CPP

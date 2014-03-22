@@ -1,5 +1,5 @@
-#ifndef THREE_TEXTURE_BUFFER_HPP
-#define THREE_TEXTURE_BUFFER_HPP
+#ifndef THREE_TEXTURE_BUFFER_H
+#define THREE_TEXTURE_BUFFER_H
 
 #include <three/utils/noncopyable.h>
 
@@ -25,4 +25,4 @@ struct TextureBuffer : NonCopyable {
 
 }
 
-#endif // THREE_TEXTURE_BUFFER_HPP
+#endif // THREE_TEXTURE_BUFFER_H

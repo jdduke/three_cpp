@@ -1,5 +1,5 @@
-#ifndef THREE_MESH_IPP
-#define THREE_MESH_IPP
+#ifndef THREE_MESH_CPP
+#define THREE_MESH_CPP
 
 #include <three/objects/mesh.h>
 
@@ -49,4 +49,4 @@ Mesh::Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material )
 
 } // namespace three
 
-#endif // THREE_MESH_IPP
+#endif // THREE_MESH_CPP

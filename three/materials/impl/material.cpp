@@ -1,5 +1,5 @@
-#ifndef THREE_MATERIAL_IPP
-#define THREE_MATERIAL_IPP
+#ifndef THREE_MATERIAL_CPP
+#define THREE_MATERIAL_CPP
 
 #include <three/materials/material.h>
 
@@ -240,4 +240,4 @@ void Material::setParameters( const Parameters& parameters,
 
 } // namespace three
 
-#endif // THREE_MATERIAL_HPP
+#endif // THREE_MATERIAL_H

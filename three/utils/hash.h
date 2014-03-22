@@ -1,5 +1,5 @@
-#ifndef THREE_HASH_HPP
-#define THREE_HASH_HPP
+#ifndef THREE_HASH_H
+#define THREE_HASH_H
 
 #include <cstdint>
 
@@ -71,4 +71,4 @@ static unsigned jenkins_hash(const T& value, unsigned initval = 0) {
 
 }
 
-#endif // THREE_HASH_HPP
+#endif // THREE_HASH_H

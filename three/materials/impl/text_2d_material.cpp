@@ -1,5 +1,5 @@
-#ifndef THREE_TEXT_2D_MATERIAL_IPP
-#define THREE_TEXT_2D_MATERIAL_IPP
+#ifndef THREE_TEXT_2D_MATERIAL_CPP
+#define THREE_TEXT_2D_MATERIAL_CPP
 
 #include <three/materials/text_2d_material.h>
 
@@ -59,5 +59,5 @@ ShaderMaterial::Ptr Text2DMaterial::create( const Font& font,
 
 } // namespace three
 
-#endif // THREE_TEXT_2D_MATERIAL_IPP
+#endif // THREE_TEXT_2D_MATERIAL_CPP
 

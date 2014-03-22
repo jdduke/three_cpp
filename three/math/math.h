@@ -1,5 +1,5 @@
-#ifndef THREE_HPP
-#define THREE_HPP
+#ifndef THREE_H
+#define THREE_H
 
 #include <three/common.h>
 
@@ -224,4 +224,4 @@ inline int nearestPowerOfTwo( int value ) {
 
 } // namespace three
 
-#endif // THREE_HPP
+#endif // THREE_H

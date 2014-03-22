@@ -1,5 +1,5 @@
-#ifndef THREE_VISITOR_HPP
-#define THREE_VISITOR_HPP
+#ifndef THREE_VISITOR_H
+#define THREE_VISITOR_H
 
 #include <three/config.h>
 #include <three/fwd.h>
@@ -40,4 +40,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_VISITOR_HPP
+#endif // THREE_VISITOR_H

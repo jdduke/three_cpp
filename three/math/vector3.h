@@ -1,5 +1,5 @@
-#ifndef THREE_VECTOR3_HPP
-#define THREE_VECTOR3_HPP
+#ifndef THREE_VECTOR3_H
+#define THREE_VECTOR3_H
 
 #include <three/common.h>
 #include <three/utils/memory.h>
@@ -494,4 +494,4 @@ inline Vector3 cross( const Vector3& a, const Vector3& b ) {
 
 } // namespace three
 
-#endif // THREE_VECTOR3_HPP
+#endif // THREE_VECTOR3_H

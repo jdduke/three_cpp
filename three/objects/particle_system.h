@@ -1,5 +1,5 @@
-#ifndef THREE_PARTICLE_SYSTEM_HPP
-#define THREE_PARTICLE_SYSTEM_HPP
+#ifndef THREE_PARTICLE_SYSTEM_H
+#define THREE_PARTICLE_SYSTEM_H
 
 #include <three/common.h>
 
@@ -44,4 +44,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_PARTICLE_SYSTEM_HPP
+#endif // THREE_PARTICLE_SYSTEM_H

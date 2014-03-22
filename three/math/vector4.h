@@ -1,5 +1,5 @@
-#ifndef THREE_VECTOR4_HPP
-#define THREE_VECTOR4_HPP
+#ifndef THREE_VECTOR4_H
+#define THREE_VECTOR4_H
 
 #include <three/common.h>
 
@@ -358,4 +358,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_VECTOR4_HPP
+#endif // THREE_VECTOR4_H

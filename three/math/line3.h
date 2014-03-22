@@ -1,5 +1,5 @@
-#ifndef THREE_LINE3_HPP
-#define THREE_LINE3_HPP
+#ifndef THREE_LINE3_H
+#define THREE_LINE3_H
 
 #include <three/common.h>
 
@@ -144,4 +144,4 @@ public:
     
 } // namespace three
 
-#endif //THREE_LINE3_HPP
+#endif //THREE_LINE3_H

@@ -1,5 +1,5 @@
-#ifndef THREE_SKINNED_MESH_HPP
-#define THREE_SKINNED_MESH_HPP
+#ifndef THREE_SKINNED_MESH_H
+#define THREE_SKINNED_MESH_H
 
 #include <three/objects/mesh.h>
 
@@ -198,4 +198,4 @@ protected:
 
 #endif // TODO_SKINNED_MESH
 
-#endif // THREE_SKINNED_MESH_HPP
+#endif // THREE_SKINNED_MESH_H

@@ -1,5 +1,5 @@
-#ifndef THREE_POINT_LIGHT_HPP
-#define THREE_POINT_LIGHT_HPP
+#ifndef THREE_POINT_LIGHT_H
+#define THREE_POINT_LIGHT_H
 
 #include <three/common.h>
 
@@ -38,4 +38,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_POINT_LIGHT_HPP
+#endif // THREE_POINT_LIGHT_H

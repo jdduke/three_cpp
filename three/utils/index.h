@@ -1,5 +1,5 @@
-#ifndef THREE_INDEX_HPP
-#define THREE_INDEX_HPP
+#ifndef THREE_INDEX_H
+#define THREE_INDEX_H
 
 #include <cstdint>
 #include <map>
@@ -39,4 +39,4 @@ namespace std {
   };
 } // namespace std
 
-#endif // THREE_PROPERTIES_HPP
+#endif // THREE_PROPERTIES_H

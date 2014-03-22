@@ -1,5 +1,5 @@
-#ifndef THREE_AREA_LIGHT_HPP
-#define THREE_AREA_LIGHT_HPP
+#ifndef THREE_AREA_LIGHT_H
+#define THREE_AREA_LIGHT_H
 
 #include <three/common.h>
 
@@ -51,4 +51,4 @@ protected:
 
 }
 
-#endif // THREE_AREA_LIGHT_HPP
+#endif // THREE_AREA_LIGHT_H

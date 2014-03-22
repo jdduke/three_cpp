@@ -1,5 +1,5 @@
-#ifndef THREE_BONE_HPP
-#define THREE_BONE_HPP
+#ifndef THREE_BONE_H
+#define THREE_BONE_H
 
 
 #include <three/common.h>
@@ -73,4 +73,4 @@ protected:
 
 }; // end namespace
 
-#endif // THREE_BONE_HPP
+#endif // THREE_BONE_H

@@ -1,5 +1,5 @@
-#ifndef THREE_JSON_LOADER_HPP
-#define THREE_JSON_LOADER_HPP
+#ifndef THREE_JSON_LOADER_H
+#define THREE_JSON_LOADER_H
 
 #include <three/loaders/loader.h>
 
@@ -381,4 +381,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_JSON_LOADER_HPP
+#endif // THREE_JSON_LOADER_H

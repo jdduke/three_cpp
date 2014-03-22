@@ -1,5 +1,5 @@
-#ifndef THREE_PLANE_HPP
-#define THREE_PLANE_HPP
+#ifndef THREE_PLANE_H
+#define THREE_PLANE_H
 
 #include <three/common.h>
 #include <three/math/line3.h>
@@ -189,4 +189,4 @@ inline Plane clone() {
 
 } // namespace three
 
-#endif //THREE_PLANE_HPP
+#endif //THREE_PLANE_H

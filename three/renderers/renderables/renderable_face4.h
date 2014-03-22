@@ -1,5 +1,5 @@
-#ifndef THREE_RENDERABLE_FACE4_HPP
-#define THREE_RENDERABLE_FACE4_HPP
+#ifndef THREE_RENDERABLE_FACE4_H
+#define THREE_RENDERABLE_FACE4_H
 
 #include <three/common.h>
 
@@ -12,4 +12,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_RENDERABLE_FACE4_HPP
+#endif // THREE_RENDERABLE_FACE4_H

@@ -1,5 +1,5 @@
-#ifndef THREE_LINE_HPP
-#define THREE_LINE_HPP
+#ifndef THREE_LINE_H
+#define THREE_LINE_H
 
 #include <three/common.h>
 
@@ -55,4 +55,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_MESH_HPP
+#endif // THREE_MESH_H

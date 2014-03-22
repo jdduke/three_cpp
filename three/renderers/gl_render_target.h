@@ -1,5 +1,5 @@
-#ifndef THREE_GL_RENDER_TARGET_HPP
-#define THREE_GL_RENDER_TARGET_HPP
+#ifndef THREE_GL_RENDER_TARGET_H
+#define THREE_GL_RENDER_TARGET_H
 
 #include <three/common.h>
 
@@ -130,4 +130,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_GL_RENDER_TARGET_HPP
+#endif // THREE_GL_RENDER_TARGET_H

@@ -1,5 +1,5 @@
-#ifndef THREE_OBJECT3D_HPP
-#define THREE_OBJECT3D_HPP
+#ifndef THREE_OBJECT3D_H
+#define THREE_OBJECT3D_H
 
 #include <three/common.h>
 
@@ -188,4 +188,4 @@ private:
 # include <three/core/impl/object3d.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_OBJECT3D_HPP
+#endif // THREE_OBJECT3D_H

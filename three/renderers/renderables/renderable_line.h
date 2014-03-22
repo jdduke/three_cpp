@@ -1,5 +1,5 @@
-#ifndef THREE_RENDERABLE_LINE_HPP
-#define THREE_RENDERABLE_LINE_HPP
+#ifndef THREE_RENDERABLE_LINE_H
+#define THREE_RENDERABLE_LINE_H
 
 #include <three/common.h>
 
@@ -19,4 +19,4 @@ public:
 
 } // namespace three
 
-#endif // THREE_RENDERABLE_LINE_HPP
+#endif // THREE_RENDERABLE_LINE_H

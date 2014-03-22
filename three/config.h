@@ -1,5 +1,5 @@
-#ifndef THREE_CONFIG_HPP
-#define THREE_CONFIG_HPP
+#ifndef THREE_CONFIG_H
+#define THREE_CONFIG_H
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #define THREE_HAS_DECLSPEC
@@ -144,4 +144,4 @@
 #  define THREE_EXPLICIT
 #endif
 
-#endif // THREE_CONFIG_HPP
+#endif // THREE_CONFIG_H

@@ -1,5 +1,5 @@
-#ifndef THREE_IMAGE_UTILS_HPP
-#define THREE_IMAGE_UTILS_HPP
+#ifndef THREE_IMAGE_UTILS_H
+#define THREE_IMAGE_UTILS_H
 
 #include <three/math/color.h>
 
@@ -48,4 +48,4 @@ public:
 # include <three/extras/impl/image_utils.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_IMAGE_UTILS_HPP
+#endif // THREE_IMAGE_UTILS_H

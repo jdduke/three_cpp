@@ -1,5 +1,5 @@
-#ifndef THREE_GEOMETRY_IPP
-#define THREE_GEOMETRY_IPP
+#ifndef THREE_GEOMETRY_CPP
+#define THREE_GEOMETRY_CPP
 
 #include <three/core/geometry.h>
 
@@ -315,4 +315,4 @@ Geometry::~Geometry() { }
 
 } // namespace three
 
-#endif // THREE_GEOMETRY_IPP
+#endif // THREE_GEOMETRY_CPP

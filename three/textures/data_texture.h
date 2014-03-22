@@ -1,5 +1,5 @@
-#ifndef THREE_DATA_TEXTURE_HPP
-#define THREE_DATA_TEXTURE_HPP
+#ifndef THREE_DATA_TEXTURE_H
+#define THREE_DATA_TEXTURE_H
 
 #include <three/common.h>
 
@@ -42,4 +42,4 @@ protected:
 
 }
 
-#endif // THREE_DATA_TEXTURE_HPP
+#endif // THREE_DATA_TEXTURE_H

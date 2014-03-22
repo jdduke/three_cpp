@@ -1,5 +1,5 @@
-#ifndef THREE_PROJECTOR_HPP
-#define THREE_PROJECTOR_HPP
+#ifndef THREE_PROJECTOR_H
+#define THREE_PROJECTOR_H
 
 #include <three/common.h>
 
@@ -49,4 +49,4 @@ protected:
 # include <three/core/impl/projector.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_PROJECTOR_HPP
+#endif // THREE_PROJECTOR_H

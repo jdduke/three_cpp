@@ -1,5 +1,5 @@
-#ifndef THREE_GL_HPP
-#define THREE_GL_HPP
+#ifndef THREE_GL_H
+#define THREE_GL_H
 
 #ifndef THREE_GLES
 #  ifndef THREE_GLEW
@@ -169,4 +169,4 @@ inline void glEnableVSync( bool enable ) {
 
 } // namespace three
 
-#endif // THREE_GL_HPP
+#endif // THREE_GL_H

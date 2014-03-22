@@ -1,5 +1,5 @@
-#ifndef THREE_FRUSTUM_IPP
-#define THREE_FRUSTUM_IPP
+#ifndef THREE_FRUSTUM_CPP
+#define THREE_FRUSTUM_CPP
 
 #include <three/math/frustum.h>
 
@@ -57,4 +57,4 @@ bool Frustum::contains( const Object3D& object ) const {
 
 } // namespace three
 
-#endif // THREE_FRUSTUM_IPP
+#endif // THREE_FRUSTUM_CPP

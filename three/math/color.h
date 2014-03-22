@@ -1,5 +1,5 @@
-#ifndef THREE_COLOR_HPP
-#define THREE_COLOR_HPP
+#ifndef THREE_COLOR_H
+#define THREE_COLOR_H
 
 #include <three/common.h>
 
@@ -288,4 +288,4 @@ private:
 
 } // namespace three
 
-#endif // THREE_COLOR_HPP
+#endif // THREE_COLOR_H

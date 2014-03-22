@@ -1,5 +1,5 @@
-#ifndef THREE_FACE4_HPP
-#define THREE_FACE4_HPP
+#ifndef THREE_FACE4_H
+#define THREE_FACE4_H
 
 #include <three/core/face.h>
 
@@ -9,4 +9,4 @@ typedef Face Face4;
 
 }
 
-#endif // THREE_FACE4_HPP
+#endif // THREE_FACE4_H

@@ -1,5 +1,5 @@
-#ifndef THREE_SPHERE_GEOMETRY_HPP
-#define THREE_SPHERE_GEOMETRY_HPP
+#ifndef THREE_SPHERE_GEOMETRY_H
+#define THREE_SPHERE_GEOMETRY_H
 
 #include <three/core/geometry.h>
 #include <three/core/face3.h>
@@ -128,4 +128,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_SPHERE_GEOMETRY_HPP
+#endif // THREE_SPHERE_GEOMETRY_H

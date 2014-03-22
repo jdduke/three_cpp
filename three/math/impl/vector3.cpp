@@ -1,5 +1,5 @@
-#ifndef THREE_VECTOR3_IPP
-#define THREE_VECTOR3_IPP
+#ifndef THREE_VECTOR3_CPP
+#define THREE_VECTOR3_CPP
 
 #include <three/math/vector3.h>
 #include <three/math/vector4.h>
@@ -132,4 +132,4 @@ Vector3& Vector3::applyAxisAngle( const Vector3& axis, float angle ) {
 
 } // namespace three
 
-#endif // THREE_VECTOR3_IPP
+#endif // THREE_VECTOR3_CPP

@@ -1,5 +1,5 @@
-#ifndef THREE_QUATERNION_IPP
-#define THREE_QUATERNION_IPP
+#ifndef THREE_QUATERNION_CPP
+#define THREE_QUATERNION_CPP
 
 
 #include <three/common.h>
@@ -245,4 +245,4 @@ namespace three {
 
 } // namespace three
 
-#endif // THREE_QUATERNION_IPP
+#endif // THREE_QUATERNION_CPP

@@ -1,5 +1,5 @@
-#ifndef enums_FACE_HPP
-#define enums_FACE_HPP
+#ifndef enums_FACE_H
+#define enums_FACE_H
 
 #include <three/common.h>
 #include <three/constants.h>
@@ -75,4 +75,4 @@ private:
 
 } // namespace three
 
-#endif // enums_FACE_HPP
+#endif // enums_FACE_H

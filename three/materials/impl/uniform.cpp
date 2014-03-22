@@ -1,5 +1,5 @@
-#ifndef THREE_UNIFORM_IPP
-#define THREE_UNIFORM_IPP
+#ifndef THREE_UNIFORM_CPP
+#define THREE_UNIFORM_CPP
 
 #include <three/materials/uniform.h>
 
@@ -188,4 +188,4 @@ void Uniform::load( int location ) {
 
 } // namespace three
 
-#endif // THREE_UNIFORM_IPP
+#endif // THREE_UNIFORM_CPP

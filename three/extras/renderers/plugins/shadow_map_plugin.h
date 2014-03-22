@@ -1,5 +1,5 @@
-#ifndef THREE_SHADOW_MAP_PLUGIN_HPP
-#define THREE_SHADOW_MAP_PLUGIN_HPP
+#ifndef THREE_SHADOW_MAP_PLUGIN_H
+#define THREE_SHADOW_MAP_PLUGIN_H
 
 #include <three/common.h>
 
@@ -432,4 +432,4 @@ class ShadowMapPlugin : public IPlugin {
 
 } // namespace three
 
-#endif // THREE_SHADOW_MAP_PLUGIN_HPP
+#endif // THREE_SHADOW_MAP_PLUGIN_H

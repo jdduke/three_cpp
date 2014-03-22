@@ -1,5 +1,5 @@
-#ifndef THREE_TEXT_2D_GEOMETRY_HPP
-#define THREE_TEXT_2D_GEOMETRY_HPP
+#ifndef THREE_TEXT_2D_GEOMETRY_H
+#define THREE_TEXT_2D_GEOMETRY_H
 
 #include <three/core/geometry.h>
 
@@ -37,4 +37,4 @@ protected:
 # include <three/extras/geometries/impl/text_2d_geometry.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_TEXT_2D_GEOMETRY_HPP
+#endif // THREE_TEXT_2D_GEOMETRY_H

@@ -1,5 +1,5 @@
-#ifndef THREE_PLANE_GEOMETRY_HPP
-#define THREE_PLANE_GEOMETRY_HPP
+#ifndef THREE_PLANE_GEOMETRY_H
+#define THREE_PLANE_GEOMETRY_H
 
 #include <three/core/geometry.h>
 #include <three/core/face4.h>
@@ -93,4 +93,4 @@ protected:
 
 } // namespace three
 
-#endif // THREE_PLANE_GEOMETRY_HPP
+#endif // THREE_PLANE_GEOMETRY_H

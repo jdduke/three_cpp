@@ -1,5 +1,5 @@
-#ifndef THREE_VECTOR2_HPP
-#define THREE_VECTOR2_HPP
+#ifndef THREE_VECTOR2_H
+#define THREE_VECTOR2_H
 
 #include <three/common.h>
 
@@ -359,4 +359,4 @@ static_assert( sizeof( Vector2 ) == sizeof( float ) * 2, "Invalid Vector2 storag
 
 } // namespace three
 
-#endif // THREE_VECTOR2_HPP
+#endif // THREE_VECTOR2_H

@@ -1,5 +1,5 @@
-#ifndef THREE_GEOMETRY_BUFFER_HPP
-#define THREE_GEOMETRY_BUFFER_HPP
+#ifndef THREE_GEOMETRY_BUFFER_H
+#define THREE_GEOMETRY_BUFFER_H
 
 #include <three/constants.h>
 #include <three/materials/attribute.h>
@@ -129,4 +129,4 @@ public:
 
 }
 
-#endif // THREE_GEOMETRY_BUFFER_HPP
+#endif // THREE_GEOMETRY_BUFFER_H

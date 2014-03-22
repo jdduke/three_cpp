@@ -1,5 +1,5 @@
-#ifndef THREE_EVENTS_HPP
-#define THREE_EVENTS_HPP
+#ifndef THREE_EVENTS_H
+#define THREE_EVENTS_H
 
 #include <functional>
 
@@ -58,4 +58,4 @@ private:
 # include <three/extras/impl/events.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
-#endif // THREE_SDL_HPP
+#endif // THREE_SDL_H
