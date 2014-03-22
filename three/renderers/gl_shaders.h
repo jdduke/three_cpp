@@ -111,8 +111,4 @@ public:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/renderers/impl/gl_shaders.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_GL_SHADERS_H

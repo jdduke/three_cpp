@@ -15,8 +15,4 @@ void gameLoop( Update update, Render render, float frameRate = 60 );
 } // namespace anim
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/anim.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_ANIM_H

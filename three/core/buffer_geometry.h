@@ -42,8 +42,4 @@ protected:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/buffer_geometry.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_BUFFER_GEOMETRY_H

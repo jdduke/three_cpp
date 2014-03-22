@@ -33,8 +33,4 @@ protected:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/extras/geometries/impl/text_2d_geometry.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_TEXT_2D_GEOMETRY_H

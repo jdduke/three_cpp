@@ -173,8 +173,4 @@ private:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/materials/impl/material.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_MATERIAL_H

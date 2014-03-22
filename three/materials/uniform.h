@@ -127,8 +127,4 @@ DECLARE_UNIFORM_KEY(shadowBias)
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/materials/impl/uniform.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_GL_SHADERS_H

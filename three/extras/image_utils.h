@@ -44,8 +44,4 @@ public:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/image_utils.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_IMAGE_UTILS_H

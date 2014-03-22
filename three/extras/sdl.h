@@ -45,8 +45,4 @@ private:
 } // namespace sdl
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/sdl.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_SDL_H

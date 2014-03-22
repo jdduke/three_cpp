@@ -45,8 +45,4 @@ protected:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/projector.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_PROJECTOR_H

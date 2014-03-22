@@ -81,9 +81,4 @@ protected:
 
 } // namespace three
 
-
-#if defined(THREE_HEADER_ONLY)
-# include <three/scenes/impl/scene.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_SCENE_H

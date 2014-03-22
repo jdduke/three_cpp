@@ -8,6 +8,7 @@
 #include <three/math/color.h>
 #include <three/math/vector2.h>
 #include <three/math/vector3.h>
+#include <three/math/vector4.h>
 #include <three/math/matrix4.h>
 
 #include <three/utils/any.h>

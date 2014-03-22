@@ -46,9 +46,4 @@ protected:
 
 } // namespace three
 
-
-#if defined(THREE_HEADER_ONLY)
-# include <three/objects/impl/mesh.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_MESH_H

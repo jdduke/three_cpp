@@ -127,8 +127,4 @@ static_assert( sizeof( Matrix4 ) == sizeof( float ) * 16, "Invalid Matrix4 stora
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/matrix4.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_MATRIX4_H

@@ -21,15 +21,13 @@ public:
 
   }
 
-  THREE_IMPL_OBJECT(Camera)
-
   mutable Matrix4 matrixWorldInverse;
 
   Matrix4 projectionMatrix;
 
   float near, far;
 
-  void lookAt( const Vector3& vector ) {
+  void lookAt( const Vector3& vector ) override {
 
     auto m1 = Matrix4();
 
@@ -55,8 +53,16 @@ public:
 
 protected:
 
-  Camera( float near = .1f, float far = 2000.f )
+  explicit Camera( float near = .1f, float far = 2000.f )
     : Object3D(), near( near ), far( far ) { }
+
+  virtual void visit( Visitor& v ) {
+    v( *this );
+  }
+
+  virtual void visit( ConstVisitor& v ) const {
+    v( *this );
+  }
 
 private:
 

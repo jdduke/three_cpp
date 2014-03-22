@@ -161,8 +161,4 @@ private:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/geometry.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_GEOMETRY_H

@@ -41,8 +41,6 @@ public:
   void processEvents() = 0;
 };
 
-/////////////////////////////////////////////////////////////////////////
-
 class ScopedEventListener : public NonCopyable {
 public:
   ScopedEventListener( EventType, EventListener );
@@ -53,9 +51,5 @@ private:
 
 } // namespace sdl
 } // namespace three
-
-#if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/events.cpp>
-#endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_SDL_H

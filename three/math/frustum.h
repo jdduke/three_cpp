@@ -46,8 +46,4 @@ namespace three {
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/frustum.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_FRUSTUM_H

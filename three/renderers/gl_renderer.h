@@ -484,8 +484,4 @@ private:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/renderers/impl/gl_renderer.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_GL_RENDERER

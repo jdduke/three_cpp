@@ -50,8 +50,4 @@ private:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/extras/utils/impl/font.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_FONT_H

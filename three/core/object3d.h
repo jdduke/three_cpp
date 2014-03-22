@@ -188,8 +188,4 @@ private:
 
 } // namespace three
 
-#if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/object3d.cpp>
-#endif // defined(THREE_HEADER_ONLY)
-
 #endif // THREE_OBJECT3D_H
