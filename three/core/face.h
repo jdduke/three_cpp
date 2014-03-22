@@ -73,7 +73,7 @@ private:
   enums::FaceType mType;
   int mSize;
 
-  Face( ) {} THREE_DECL_DELETE;
+  Face(){}
 
 };
 

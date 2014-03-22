@@ -7,7 +7,9 @@
 #include <three/utils/index.h>
 #include <three/utils/properties.h>
 
+#include <vector>
 #include <string>
+#include <utility>
 
 namespace three {
 

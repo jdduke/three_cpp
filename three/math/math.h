@@ -26,6 +26,7 @@ inline const float INF()  {
   return std::numeric_limits<float>::max();
 }
 
+THREE_TODO("Move this to a diff header")
 static std::string generateUUID() {
 
   char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -46,7 +47,7 @@ static std::string generateUUID() {
 
     } else {
 
-      if (rnd <= 0x02) rnd = 0x2000000 + (std::rand()*0x1000000)|0;
+      if (rnd <= 0x02) rnd = 0x2000000 + ((std::rand()*0x1000000)|0);
       r = rnd & 0xf;
       rnd = rnd >> 4;
       uuid.append(&chars[(i == 19) ? (r & 0x3) | 0x8 : r]);

@@ -27,7 +27,7 @@ public:
 
   float near, far;
 
-  void lookAt( const Vector3& vector ) override {
+  void lookAt( const Vector3& vector ) {
 
     auto m1 = Matrix4();
 
