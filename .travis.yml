@@ -13,5 +13,5 @@ install:
 script: 
   - mkdir build
   - cd build
-  - cmake ../ -DTHREE_HEADER_ONLY:BOOL=OFF
+  - cmake ..
   - make

@@ -245,8 +245,12 @@ if (NOT THREE_HEADER_ONLY)
   if (NOT THREE_LIBRARY_STATIC)
     add_definitions(-DTHREE_DYN_LINK)
   endif()
-  
-  set(THREE_LIB_SOURCE_FILES three/impl/src.cpp three/impl/src_extras.cpp)
+
+  # TODO Refactor, add groupings, etc
+  file(GLOB_RECURSE THREE_SOURCES three/*.cpp)
+  file(GLOB_RECURSE THREE_HEADERS three/*.h)
+
+  set(THREE_LIB_SOURCE_FILES ${THREE_SOURCES} ${THREE_HEADERS})
 
   if(${CMAKE_GENERATOR} STREQUAL Xcode)
     set(THREE_LIB_SOURCE_FILES ${THREE_LIB_SOURCE_FILES} externals/sdl-1.2.15/xcode/SDLMain.m)
