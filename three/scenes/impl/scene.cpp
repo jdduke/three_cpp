@@ -34,9 +34,9 @@ namespace detail {
 
 struct FallbackVisitor : public Visitor {
   //TODO: virtual void operator()( Bone& o )     { fallback(o); }
-  virtual void operator()( Camera& o )   {
-    fallback(o);
-  }
+  /* virtual void operator()( Camera& o )   {
+     fallback(o);
+   }*/
   virtual void operator()( Light& o )    {
     fallback(o);
   }
@@ -47,9 +47,9 @@ struct FallbackVisitor : public Visitor {
     fallback(o);
   }
   //TODO: virtual void operator()( Sprite& o )   { fallback(o); }
-  virtual void operator()( Mesh& o )     {
-    fallback(o);
-  }
+  /* virtual void operator()( Mesh& o )     {
+     fallback(o);
+   }*/
   virtual void operator()( Line& o )     {
     fallback(o);
   }
