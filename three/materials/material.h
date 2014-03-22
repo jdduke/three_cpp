@@ -24,6 +24,7 @@
 namespace three {
 
 class Material : public NonCopyable {
+
 public:
 
   typedef Properties<std::string, any> Parameters;
@@ -39,29 +40,19 @@ public:
     return enums::Material;
   }
 
-  /////////////////////////////////////////////////////////////////////////
+public:
 
   int id;
 
   std::string name;
 
-  Attributes attributes;
-  //AttributeLocations attributeLocations;
-
   enums::Side side;
 
-  Color color, ambient, emissive, specular;
-  float shininess;
   float opacity;
   bool transparent;
 
-  float size;
-  bool sizeAttenuation;
-
-  enums::Shading shading;
-  enums::Colors vertexColors;
-
   enums::Blending blending;
+
   enums::BlendFactor blendSrc;
   enums::BlendFactor blendDst;
   enums::BlendEquation blendEquation;
@@ -75,11 +66,26 @@ public:
 
   float alphaTest;
 
+  THREE_REVIEW("Needed?")
   bool overdraw; // Boolean for fixing antialiasing gaps in CanvasRenderer
 
   bool visible;
 
   bool needsUpdate;
+
+
+  // Custom?
+
+  Attributes attributes;
+
+  Color color, ambient, emissive, specular;
+  float shininess;
+
+  float size;
+  bool sizeAttenuation;
+
+  enums::Shading shading;
+  enums::Colors vertexColors;
 
   bool skinning;
   bool morphTargets;
@@ -118,15 +124,11 @@ public:
   bool lights;
   bool shadowPass;
 
-  /////////////////////////////////////////////////////////////////////////
-
   Material& clone( Material& material ) const;
 
 protected:
 
   Material( );
-
-  /////////////////////////////////////////////////////////////////////////
 
   template < typename MaterialType >
   static std::shared_ptr<MaterialType> clone( const MaterialType& src ) {
@@ -134,8 +136,6 @@ protected:
     static_cast<const Material&>( src ).clone( *material );
     return material;
   }
-
-  /////////////////////////////////////////////////////////////////////////
 
   void setParameters( const Parameters& parameters,
                       const ParameterKeys& keys = ParameterKeys() );

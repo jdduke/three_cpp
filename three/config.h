@@ -25,15 +25,15 @@
 #endif // !defined(THREE_DECL)
 
 #if !defined(THREE_OBSOLETE)
-  #define THREE_OBSOLETE
+#define THREE_OBSOLETE
 #endif
 
 #if !defined(THREE_REVIEW)
-  #define THREE_REVIEW(msg)
+#define THREE_REVIEW(msg)
 #endif
 
 #if !defined(THREE_TODO)
-  #define THREE_TODO(msg)
+#define THREE_TODO(msg)
 #endif
 
 #ifndef THREE_DATA_DIR
@@ -43,9 +43,6 @@
 #ifndef THREE_CLASS
 #define THREE_CLASS
 #endif
-
-//////////////////////////////////////////////////////////////////////////
-
 
 // C++11 support
 #if defined(__GNUC__)

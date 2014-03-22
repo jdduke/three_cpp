@@ -24,11 +24,7 @@ public:
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////
-
   THREE_IMPL_OBJECT(Line)
-
-  /////////////////////////////////////////////////////////////////////////
 
   enums::LineType lineType;
 
@@ -48,8 +44,8 @@ protected:
 
   static Material::Ptr defaultMaterial() {
     return LineBasicMaterial::create(
-      Material::Parameters().add( "color", Color( (int)(Math::random() * 0xFFFFFF) ) )
-    );
+             Material::Parameters().add( "color", Color( (int)(Math::random() * 0xFFFFFF) ) )
+           );
   }
 };
 

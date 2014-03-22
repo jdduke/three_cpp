@@ -28,8 +28,6 @@ void Scene::visit( ConstVisitor& v ) const {
   v( *this );
 }
 
-/////////////////////////////////////////////////////////////////////////
-
 namespace detail {
 
 struct FallbackVisitor : public Visitor {

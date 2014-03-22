@@ -234,8 +234,6 @@ void GLRenderer::setDefaultGLState() {
 
 }
 
-/////////////////////////////////////////////////////////////////////////
-
 void GLRenderer::setSize( int width, int height ) {
   // TODO: Implement
   _width = width;

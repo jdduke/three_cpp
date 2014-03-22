@@ -17,7 +17,9 @@ public:
     : showStatus( showStatus ) {
 
     if ( showStatus )
-      onStatus = []( const char * status ) { console().log( status ); };
+      onStatus = []( const char * status ) {
+      console().log( status );
+    };
 
   }
 
@@ -32,8 +34,6 @@ protected:
   Callback onLoadStart;
   Callback onLoadProgress;
   Callback onLoadComplete;
-
-  //////////////////////////////////////////////////////////////////////////
 
   struct Progress {
     float total;
@@ -134,8 +134,10 @@ protected:
 
       if ( wrap ) {
         var wrapMap = {
-"repeat": THREE.RepeatWrapping,
-"mirror": THREE.MirroredRepeatWrapping
+"repeat":
+          THREE.RepeatWrapping,
+"mirror":
+          THREE.MirroredRepeatWrapping
         }
         if ( wrapMap[ wrap[ 0 ] ] != = undefined ) where[ name ].wrapS = wrapMap[ wrap[ 0 ] ];
         if ( wrapMap[ wrap[ 1 ] ] != = undefined ) where[ name ].wrapT = wrapMap[ wrap[ 1 ] ];
@@ -159,8 +161,8 @@ protected:
 
     const char* mtype = "MeshLambertMaterial";
     Parameters mpars = Parameters().add("color", Color(0xeeeeee))
-                                   .add("opacity", 1.0)
-                                   .add("wireframe", false);
+                       .add("opacity", 1.0)
+                       .add("wireframe", false);
 
     // parameters from model file
     if ( m.shading ) {

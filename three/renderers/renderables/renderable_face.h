@@ -16,8 +16,6 @@ public:
     : Renderable( 0 ), material( nullptr ), faceMaterial( nullptr ),
       mType( type ), mSize( type == enums::Face3 ? 3 : 4 ) { }
 
-  /////////////////////////////////////////////////////////////////////////
-
   RenderableVertex v1, v2, v3, v4;
 
   Vector3 centroidWorld;

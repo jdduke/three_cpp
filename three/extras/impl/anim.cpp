@@ -75,8 +75,6 @@ public:
 
 } // namespace detail
 
-/////////////////////////////////////////////////////////////////////////
-
 void gameLoop( Update update, float frameRate /*= 60*/ ) {
   detail::AnimFrameRequest requestAnimFrame( frameRate );
   while ( requestAnimFrame( update ) ) ;

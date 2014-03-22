@@ -19,20 +19,14 @@ typedef SDL_EventType                     EventType;
 typedef std::pair<SDL_EventType, int>     EventKey;
 typedef std::function<void(const Event&)> EventListener;
 
-/////////////////////////////////////////////////////////////////////////
-
 bool init( RendererParameters& parameters );
 bool swapBuffers();
 void quit();
-
-/////////////////////////////////////////////////////////////////////////
 
 EventKey addEventListener( EventType, EventListener );
 void removeEventListener( EventKey );
 void clearEventListeners();
 void processEvents();
-
-/////////////////////////////////////////////////////////////////////////
 
 class ScopedEventListener : public NonCopyable {
 public:

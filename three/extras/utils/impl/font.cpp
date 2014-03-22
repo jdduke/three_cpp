@@ -34,8 +34,6 @@ inline std::vector<unsigned char> load( const std::string& file ) {
 } // namespace detail
 
 
-/////////////////////////////////////////////////////////////////////////
-
 struct Font::Impl {
   Impl( )
     : fontSize( 15 ),
@@ -53,8 +51,6 @@ struct Font::Impl {
   int countCharacter;
   Texture::Ptr texture;
 };
-
-/////////////////////////////////////////////////////////////////////////
 
 Font::Ptr Font::create( const std::string& ttf,
                         float size,
@@ -223,8 +219,6 @@ void Font::generate( const std::string& text,
     }
   }
 }
-
-/////////////////////////////////////////////////////////////////////////
 
 Font::Font() : impl( new Impl() ) { }
 

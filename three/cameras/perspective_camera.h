@@ -28,7 +28,6 @@ public:
 
   float width, height;
 
-
   void setLens( float focalLength, float frameHeight = 24 ) {
 
     fov = 2.f * Math::radToDeg( Math::atan( frameHeight / ( focalLength * 2 ) ) );
@@ -36,7 +35,6 @@ public:
     updateProjectionMatrix();
 
   }
-
 
   /**
    * Sets an offset in a larger frustum. This is useful for multi-window or
@@ -86,7 +84,6 @@ public:
 
   }
 
-
   void updateProjectionMatrix() {
 
     if ( fullWidth != 0.f ) {
@@ -118,7 +115,7 @@ public:
   Ptr clone() {
 
     Camera::Ptr camera = Camera::clone();
-    
+
     Ptr perspectiveCamera = static_pointer_cast<PerspectiveCamera>(camera);
 
     perspectiveCamera->fov = fov;

@@ -61,8 +61,6 @@ void quit() {
   SDL_Quit();
 }
 
-/////////////////////////////////////////////////////////////////////////
-
 namespace detail {
 
 struct EventHandler {
@@ -135,8 +133,6 @@ void clearEventListeners() {
 void processEvents() {
   detail::EventHandler::instance().process();
 }
-
-/////////////////////////////////////////////////////////////////////////
 
 ScopedEventListener::ScopedEventListener( EventType type, EventListener listener )
   : eventKey( addEventListener( type, std::move(listener) ) ) { }

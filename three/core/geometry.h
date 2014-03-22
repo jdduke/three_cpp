@@ -22,8 +22,6 @@
 
 namespace three {
 
-unsigned int GeometryIdCount = 0;
-
 struct MorphTarget {
   std::string name;
   std::vector<Vertex> vertices;
@@ -72,8 +70,6 @@ public:
   virtual enums::GeometryType type() const {
     return enums::Geometry;
   }
-
-  /////////////////////////////////////////////////////////////////////////
 
   int id;
 
@@ -128,8 +124,6 @@ public:
   bool tangentsNeedUpdate;
   bool colorsNeedUpdate;
 
-  /////////////////////////////////////////////////////////////////////////
-
   virtual void applyMatrix( Matrix4& matrix );
 
   virtual void computeCentroids();
@@ -140,8 +134,6 @@ public:
   virtual void computeBoundingSphere();
 
   void mergeVertices();
-
-  /////////////////////////////////////////////////////////////////////////
 
 protected:
 

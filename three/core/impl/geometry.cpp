@@ -24,8 +24,6 @@ struct PointHash {
   }
 };
 
-/////////////////////////////////////////////////////////////////////////
-
 void Geometry::applyMatrix( Matrix4& matrix ) {
 
   Matrix4 matrixRotation;
@@ -298,8 +296,6 @@ void Geometry::mergeVertices() {
   vertices = std::move( unique );
 
 }
-
-/////////////////////////////////////////////////////////////////////////
 
 Geometry::Geometry()
   : id( GeometryCount()++ ),

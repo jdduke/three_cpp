@@ -15,7 +15,6 @@ namespace three {
 
 namespace Math {
 
-
 inline const float PI()   {
   return MATH_PI;
 }

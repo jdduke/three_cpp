@@ -113,7 +113,7 @@ enum PixelFormat {
   RGBA_S3TC_DXT5_Format = 2004
 };
 
-enum EulerRotationOrder { 
+enum EulerRotationOrder {
   XYZ = 0,
   YZX,
   ZXY,
@@ -246,8 +246,6 @@ enum UniformType {
 };
 
 typedef UniformType AttributeType;
-
-/////////////////////////////////////////////////////////////////////////
 
 // TODO: Implement?
 typedef void ( *Mapping ) ( void );

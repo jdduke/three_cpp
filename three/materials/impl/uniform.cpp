@@ -42,8 +42,6 @@ Uniform& Uniform::swap( Uniform& other ) {
 }
 
 
-/////////////////////////////////////////////////////////////////////////
-
 template < typename T, typename F >
 void load1( const F& f, int location, const any& value ) {
   const auto& t = value.cast<T>();
@@ -85,8 +83,6 @@ void loadmv( const F& f, int location, const any& value ) {
   const auto pv = reinterpret_cast<const float*>( v.data() );
   GL_CALL( f( location, count, false, pv ) );
 }
-
-/////////////////////////////////////////////////////////////////////////
 
 template < int UniformType > struct UniformToType { };
 

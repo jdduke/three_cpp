@@ -35,9 +35,9 @@ void Object3D::lookAt( const Vector3& vector ) {
   // @todo priv member
   auto m1 = Matrix4();
 
-    m1.lookAt( vector, position, up );
+  m1.lookAt( vector, position, up );
 
-    quaternion.setFromRotationMatrix( m1 );
+  quaternion.setFromRotationMatrix( m1 );
 
 }
 
@@ -134,25 +134,25 @@ void Object3D::updateMatrix() {
 
 void Object3D::updateMatrixWorld( bool force /*= false*/ ) {
 
-    if ( matrixAutoUpdate == true ) updateMatrix();
+  if ( matrixAutoUpdate == true ) updateMatrix();
 
-    if ( matrixWorldNeedsUpdate == true || force == true ) {
+  if ( matrixWorldNeedsUpdate == true || force == true ) {
 
-      if ( parent ) {
+    if ( parent ) {
 
-        matrixWorld.copy( matrix );
+      matrixWorld.copy( matrix );
 
-      } else {
+    } else {
 
-        matrixWorld.multiplyMatrices( parent->matrixWorld, matrix );
-
-      }
-
-      matrixWorldNeedsUpdate = false;
-
-      force = true;
+      matrixWorld.multiplyMatrices( parent->matrixWorld, matrix );
 
     }
+
+    matrixWorldNeedsUpdate = false;
+
+    force = true;
+
+  }
 
   // update children
 
@@ -175,8 +175,6 @@ void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
     renderCallback( *this );
   }
 }
-
-/////////////////////////////////////////////////////////////////////////
 
 Object3D::Object3D( const Material::Ptr& material /*= Material::Ptr()*/,
                     const Geometry::Ptr& geometry /*= Geometry::Ptr()*/ )

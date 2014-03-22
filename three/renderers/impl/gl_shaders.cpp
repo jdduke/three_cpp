@@ -1284,8 +1284,6 @@ const char* ShaderChunk::linear_to_gamma_fragment() {
 }
 
 
-/////////////////////////////////////////////////////////////////////////
-
 typedef std::pair<std::string, Uniform> Pair;
 
 Uniforms UniformsLib::common() {
@@ -1384,8 +1382,6 @@ Uniforms UniformsLib::shadowmap() {
   return uniforms;
 }
 
-/////////////////////////////////////////////////////////////////////////
-
 namespace detail {
 
 class UniformsUtils {
@@ -1410,8 +1406,6 @@ public:
   }
 
 };
-
-//////////////////////////////////////////////////////////////////////////
 
 static Shader depthCreate() {
   Uniforms uniforms;

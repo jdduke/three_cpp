@@ -70,8 +70,6 @@ public:
   static const char* linear_to_gamma_fragment();
 };
 
-/////////////////////////////////////////////////////////////////////////
-
 class UniformsLib {
 public:
 
@@ -84,8 +82,6 @@ public:
 
 };
 
-/////////////////////////////////////////////////////////////////////////
-
 class Shader {
 public:
   Shader( Uniforms uniforms, std::string vs, std::string fs )
@@ -93,8 +89,6 @@ public:
   Uniforms uniforms;
   std::string vertexShader, fragmentShader;
 };
-
-/////////////////////////////////////////////////////////////////////////
 
 class ShaderLib {
 public:

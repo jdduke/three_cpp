@@ -16,9 +16,9 @@ public:
     return three::make_shared<MeshLambertMaterial>( parameters );
   }
 
-  virtual enums::MaterialType type() const { return enums::MeshLambertMaterial; }
-
-  /////////////////////////////////////////////////////////////////////////
+  virtual enums::MaterialType type() const {
+    return enums::MeshLambertMaterial;
+  }
 
   Ptr clone( ) {
     return Material::clone( *this );

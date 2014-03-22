@@ -28,8 +28,6 @@ public:
     return enums::ShaderMaterial;
   }
 
-  /////////////////////////////////////////////////////////////////////////
-
   Ptr clone( ) {
     auto material = create();
     static_cast<const Material&>(*this).clone( *material );

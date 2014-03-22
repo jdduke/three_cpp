@@ -14,25 +14,23 @@
 
 namespace three {
 
-class Attribute /*: public NonCopyable*/ {
+class Attribute { /*: public NonCopyable*/
 public:
 
   explicit Attribute( enums::AttributeType type = enums::v3, int arraySize = 0 )
     : type( type ),
-    buffer( 0 ),
-    createUniqueBuffers( false ),
-    needsUpdate( false ),
-    size( 0 ),
-    itemSize( 1 ),
-    __glInitialized( false ),
-    __original( nullptr ) {
+      buffer( 0 ),
+      createUniqueBuffers( false ),
+      needsUpdate( false ),
+      size( 0 ),
+      itemSize( 1 ),
+      __glInitialized( false ),
+      __original( nullptr ) {
 
-      if ( arraySize > 0 )
-        array.resize( arraySize );
+    if ( arraySize > 0 )
+      array.resize( arraySize );
 
   }
-
-  /////////////////////////////////////////////////////////////////////////
 
   enums::AttributeType type;
 
@@ -56,13 +54,8 @@ public:
 
 };
 
-//////////////////////////////////////////////////////////////////////////
-
-//typedef std::unordered_map<std::string, Attribute> Attributes;
 typedef Properties<std::string, Attribute> Attributes;
 typedef std::unordered_map<std::string, Index> AttributeLocations;
-
-//////////////////////////////////////////////////////////////////////////
 
 namespace detail {
 
@@ -71,9 +64,6 @@ struct FillerImpl {
   enum { Stride = sizeof(T) / sizeof(float) };
 
   inline void fill( const std::vector<T>& src, std::vector<float>& dst ) {
-    /*const auto srcData = (const float*)src.data();
-    const auto srcDataSize = src.size() * Stride;
-    std::copy( srcData, srcData + srcDataSize, dst.data() );*/
     const auto count = src.size();
     for ( size_t i = 0, offset = 0; i < count; ++i, offset += Stride ) {
       for ( int j = 0; j < Stride; ++j ) {
@@ -117,8 +107,6 @@ struct Filler : public FillerImpl<T, sizeof(T) <= sizeof(float)> { };
 
 } // namespace detail
 
-//////////////////////////////////////////////////////////////////////////
-
 template < typename T >
 void fillFromAny( const any& src, std::vector<float>& dst ) {
   detail::Filler< T > filler;
@@ -130,8 +118,6 @@ void fillFromAny( const any& src, const SortArray& sortArray, std::vector<float>
   detail::Filler< T > filler;
   filler.fill( src.cast<std::vector<T>>(), sortArray, dst );
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 namespace AttributeKey {
 
@@ -145,18 +131,18 @@ namespace AttributeKey {
 #define DECLARE_ATTRIBUTE_KEY(a) inline const char* a () { return #a; }
 #endif
 
-  DECLARE_ATTRIBUTE_KEY(position)
-  DECLARE_ATTRIBUTE_KEY(normal)
-  DECLARE_ATTRIBUTE_KEY(index)
-  DECLARE_ATTRIBUTE_KEY(color)
-  DECLARE_ATTRIBUTE_KEY(uv)
-  DECLARE_ATTRIBUTE_KEY(uv2)
-  DECLARE_ATTRIBUTE_KEY(tangent)
-  DECLARE_ATTRIBUTE_KEY(skinVertexA)
-  DECLARE_ATTRIBUTE_KEY(skinVertexB)
-  DECLARE_ATTRIBUTE_KEY(skinWeight)
-  DECLARE_ATTRIBUTE_KEY(skinIndex)
-  DECLARE_ATTRIBUTE_KEY(morphTarget)
+DECLARE_ATTRIBUTE_KEY(position)
+DECLARE_ATTRIBUTE_KEY(normal)
+DECLARE_ATTRIBUTE_KEY(index)
+DECLARE_ATTRIBUTE_KEY(color)
+DECLARE_ATTRIBUTE_KEY(uv)
+DECLARE_ATTRIBUTE_KEY(uv2)
+DECLARE_ATTRIBUTE_KEY(tangent)
+DECLARE_ATTRIBUTE_KEY(skinVertexA)
+DECLARE_ATTRIBUTE_KEY(skinVertexB)
+DECLARE_ATTRIBUTE_KEY(skinWeight)
+DECLARE_ATTRIBUTE_KEY(skinIndex)
+DECLARE_ATTRIBUTE_KEY(morphTarget)
 
 #undef DECLARE_ATTRIBUTE_KEY
 

@@ -16,9 +16,9 @@ public:
     return three::make_shared<MeshDepthMaterial>( parameters );
   }
 
-  virtual enums::MaterialType type() const { return enums::MeshDepthMaterial; }
-
-  /////////////////////////////////////////////////////////////////////////
+  virtual enums::MaterialType type() const {
+    return enums::MeshDepthMaterial;
+  }
 
   Ptr clone( ) {
     return Material::clone( *this );

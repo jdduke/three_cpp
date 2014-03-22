@@ -286,8 +286,6 @@ function( image, depth ) {
 
 } // namespace detail
 
-/////////////////////////////////////////////////////////////////////////
-
 Texture::Ptr ImageUtils::loadTexture( const std::string& url ) {
   //,enums::Mapping mapping /*= enums::UVMapping*/ ) {
 

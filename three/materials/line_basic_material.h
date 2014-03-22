@@ -16,9 +16,9 @@ public:
     return three::make_shared<LineBasicMaterial>( parameters );
   }
 
-  virtual enums::MaterialType type() const { return enums::LineBasicMaterial; }
-
-  /////////////////////////////////////////////////////////////////////////
+  virtual enums::MaterialType type() const {
+    return enums::LineBasicMaterial;
+  }
 
   Ptr clone( ) {
     return Material::clone( *this );

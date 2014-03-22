@@ -1,7 +1,6 @@
 #ifndef THREE_FRUSTUM_CPP
 #define THREE_FRUSTUM_CPP
 
-
 #include <three/core/object3d.h>
 #include <three/core/geometry.h>
 

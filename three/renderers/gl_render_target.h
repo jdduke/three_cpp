@@ -47,9 +47,9 @@ public:
     return make_shared<GLRenderTarget>( width, height, desc );
   }
 
-  virtual enums::TextureType type() const { return enums::GLRenderTarget; }
-
-  /////////////////////////////////////////////////////////////////////////
+  virtual enums::TextureType type() const {
+    return enums::GLRenderTarget;
+  }
 
   int width, height;
 
@@ -71,8 +71,6 @@ public:
   bool generateMipmaps;
 
   std::function<void( void )> onUpdate;
-
-  /////////////////////////////////////////////////////////////////////////
 
   Ptr clone( ) const {
 

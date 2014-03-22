@@ -44,8 +44,6 @@ struct Stats::Impl : public NonCopyable {
 
 };
 
-/////////////////////////////////////////////////////////////////////////
-
 Stats::Stats( GLRenderer& renderer ) : impl( new Impl( renderer ) ) { }
 
 Stats::~Stats() { }
@@ -67,7 +65,8 @@ void Stats::update( float deltaTime, bool render ) {
       s.framesSinceReport = 0;
     }
 
-    std::stringstream ss; ss << "FPS: " << s.fps;
+    std::stringstream ss;
+    ss << "FPS: " << s.fps;
 
     if ( render ) {
 

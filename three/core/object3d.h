@@ -33,13 +33,9 @@ public:
 
   typedef std::shared_ptr<Object3D> Ptr;
 
-  /////////////////////////////////////////////////////////////////////////
-
   static Ptr create() {
     return three::make_shared<Object3D>();
   }
-
-  //////////////////////////////////////////////////////////////////////////
 
   virtual enums::Type type() const {
     return enums::Object3D;
@@ -47,8 +43,6 @@ public:
   virtual void visit( Visitor& v ) { };
   virtual void visit( ConstVisitor& v ) const { };
   virtual ~Object3D();
-
-  /////////////////////////////////////////////////////////////////////////
 
   int id;
 
@@ -144,8 +138,6 @@ public:
 
   typedef std::function<void( const Program*, void*, const Frustum* )> RenderCallback;
   RenderCallback immediateRenderCallback;
-
-  /////////////////////////////////////////////////////////////////////////
 
   virtual void lookAt( const Vector3& vector );
   void applyMatrix( Matrix4& m );

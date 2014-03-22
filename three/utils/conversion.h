@@ -21,8 +21,6 @@ inline std::string threeDataPath( const std::string& relativePath ) {
   return path;
 }
 
-/////////////////////////////////////////////////////////////////////////
-
 template < typename T >
 inline std::array<T, 4> toArray( const T& t0, const T& t1, const T& t2, const T& t3 = T() ) {
   std::array<T, 4> a = { t0, t1, t2, t3 };
@@ -30,9 +28,13 @@ inline std::array<T, 4> toArray( const T& t0, const T& t1, const T& t2, const T&
 }
 
 template < typename T >
-void* toOffset( T t ) { return reinterpret_cast<void*>( t ); }
+void* toOffset( T t ) {
+  return reinterpret_cast<void*>( t );
+}
 
-inline int toInt( bool b ) { return b ? 1 : 0; }
+inline int toInt( bool b ) {
+  return b ? 1 : 0;
+}
 
 template < typename T, typename U >
 inline std::string toString( const T& t, const U& u ) {

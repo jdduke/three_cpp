@@ -23,8 +23,6 @@ public:
     return three::make_shared<Program>( program, id );
   }
 
-  /////////////////////////////////////////////////////////////////////////
-
   UniformLocations uniforms;
   AttributeLocations attributes;
 
@@ -36,8 +34,6 @@ protected:
   Program( Buffer program, int id )
     : program( program ), id( id ) { }
 };
-
-//////////////////////////////////////////////////////////////////////////
 
 } // namespace three
 

@@ -72,8 +72,6 @@ struct Projector::Impl : public NonCopyable {
 
 };
 
-/////////////////////////////////////////////////////////////////////////
-
 namespace detail {
 
 static bool clipLine( Vector4& s1, Vector4& s2 ) {
@@ -123,8 +121,6 @@ static bool clipLine( Vector4& s1, Vector4& s2 ) {
     }
   }
 }
-
-/////////////////////////////////////////////////////////////////////////
 
 struct SceneVisitor : public ConstVisitor {
   Projector::Impl& p;
@@ -382,8 +378,6 @@ struct SpriteVisitor : public Visitor {
 //
 
 } // namespace detail
-
-/////////////////////////////////////////////////////////////////////////
 
 Projector::Projector() : impl( new Impl() ) { }
 

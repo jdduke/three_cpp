@@ -54,8 +54,6 @@ inline bool push_unique( C& c, T && elem ) {
   return false;
 }
 
-/////////////////////////////////////////////////////////////////////////
-
 struct Deferred {
   typedef std::function<void(void)> DeferredFunc;
   explicit Deferred( DeferredFunc&& f ) : f ( std::move(f) ) { }

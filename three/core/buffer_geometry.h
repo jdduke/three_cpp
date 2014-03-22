@@ -17,15 +17,15 @@ public:
 
   typedef std::shared_ptr<BufferGeometry> Ptr;
 
-  Ptr create() { return make_shared<BufferGeometry>(); }
+  Ptr create() {
+    return make_shared<BufferGeometry>();
+  }
 
-  virtual enums::GeometryType type() const { return enums::BufferGeometry; }
-
-  /////////////////////////////////////////////////////////////////////////
+  virtual enums::GeometryType type() const {
+    return enums::BufferGeometry;
+  }
 
   std::vector<Offset> offsets;
-
-  /////////////////////////////////////////////////////////////////////////
 
   virtual void applyMatrix( Matrix4& matrix ) ;
 
