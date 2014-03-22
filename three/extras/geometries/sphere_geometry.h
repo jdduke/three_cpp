@@ -1,10 +1,10 @@
 #ifndef THREE_SPHERE_GEOMETRY_HPP
 #define THREE_SPHERE_GEOMETRY_HPP
 
-#include <three/core/geometry.hpp>
-#include <three/core/face3.hpp>
-#include <three/core/face4.hpp>
-#include <three/math/math.hpp>
+#include <three/core/geometry.h>
+#include <three/core/face3.h>
+#include <three/core/face4.h>
+#include <three/math/math.h>
 
 namespace three {
 

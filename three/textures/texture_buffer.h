@@ -1,7 +1,7 @@
 #ifndef THREE_TEXTURE_BUFFER_HPP
 #define THREE_TEXTURE_BUFFER_HPP
 
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/noncopyable.h>
 
 namespace three {
 

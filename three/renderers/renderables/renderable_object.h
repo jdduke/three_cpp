@@ -1,9 +1,9 @@
 #ifndef THREE_RENDERABLE_OBJECT_HPP
 #define THREE_RENDERABLE_OBJECT_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/renderers/renderables/renderable.hpp>
+#include <three/renderers/renderables/renderable.h>
 
 namespace three {
 

@@ -1,7 +1,7 @@
 #ifndef THREE_MATERIAL_IPP
 #define THREE_MATERIAL_IPP
 
-#include <three/materials/material.hpp>
+#include <three/materials/material.h>
 
 namespace three {
 

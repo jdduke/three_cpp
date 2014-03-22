@@ -1,7 +1,7 @@
 #ifndef THREE_CLOCK_HPP
 #define THREE_CLOCK_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
 #include <chrono>
 

@@ -2,10 +2,10 @@
 #define THREE_BONE_HPP
 
 
-#include <three/common.hpp>
-#include <three/utils/memory.hpp>
-#include <three/core/object3d.hpp>
-#include <three/objects/skinned_mesh.hpp>
+#include <three/common.h>
+#include <three/utils/memory.h>
+#include <three/core/object3d.h>
+#include <three/objects/skinned_mesh.h>
 #include <memory>
 
 namespace three {

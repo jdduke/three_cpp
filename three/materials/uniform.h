@@ -1,11 +1,11 @@
 #ifndef THREE_UNIFORM_HPP
 #define THREE_UNIFORM_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/utils/any.hpp>
-#include <three/utils/index.hpp>
-#include <three/utils/properties.hpp>
+#include <three/utils/any.h>
+#include <three/utils/index.h>
+#include <three/utils/properties.h>
 
 #include <string>
 
@@ -137,7 +137,7 @@ DECLARE_UNIFORM_KEY(shadowBias)
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/materials/impl/uniform.ipp>
+# include <three/materials/impl/uniform.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_GL_SHADERS_H

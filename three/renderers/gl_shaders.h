@@ -1,7 +1,7 @@
 #ifndef THREE_GL_SHADERS_HPP
 #define THREE_GL_SHADERS_HPP
 
-#include <three/materials/uniform.hpp>
+#include <three/materials/uniform.h>
 
 namespace three {
 
@@ -112,7 +112,7 @@ public:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/renderers/impl/gl_shaders.ipp>
+# include <three/renderers/impl/gl_shaders.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_GL_SHADERS_HPP

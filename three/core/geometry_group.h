@@ -1,11 +1,11 @@
 #ifndef THREE_GEOMETRY_GROUP_HPP
 #define THREE_GEOMETRY_GROUP_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/core/geometry_buffer.hpp>
+#include <three/core/geometry_buffer.h>
 
-#include <three/utils/memory.hpp>
+#include <three/utils/memory.h>
 
 #include <vector>
 

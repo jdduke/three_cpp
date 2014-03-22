@@ -1,10 +1,10 @@
 #ifndef THREE_FONT_HPP
 #define THREE_FONT_HPP
 
-#include <three/fwd.hpp>
+#include <three/fwd.h>
 
-#include <three/textures/texture.hpp>
-#include <three/utils/noncopyable.hpp>
+#include <three/textures/texture.h>
+#include <three/utils/noncopyable.h>
 
 #include <array>
 #include <memory>
@@ -51,7 +51,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/utils/impl/font.ipp>
+# include <three/extras/utils/impl/font.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_FONT_HPP

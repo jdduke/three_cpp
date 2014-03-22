@@ -1,8 +1,8 @@
 #ifndef THREE_INTERFACES_HPP
 #define THREE_INTERFACES_HPP
 
-#include <three/fwd.hpp>
-#include <three/constants.hpp>
+#include <three/fwd.h>
+#include <three/constants.h>
 
 namespace three {
 

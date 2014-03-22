@@ -1,10 +1,10 @@
 #ifndef THREE_FRUSTUM_HPP
 #define THREE_FRUSTUM_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/utils/noncopyable.hpp>
-#include <three/math/plane.hpp>
+#include <three/utils/noncopyable.h>
+#include <three/math/plane.h>
 
 #include <array>
 
@@ -47,7 +47,7 @@ namespace three {
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/frustum.ipp>
+# include <three/core/impl/frustum.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_FRUSTUM_HPP

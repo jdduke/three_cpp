@@ -1,10 +1,10 @@
 #ifndef THREE_RENDERER_PARAMETERS_HPP
 #define THREE_RENDERER_PARAMETERS_HPP
 
-#include <three/common.hpp>
-#include <three/constants.hpp>
+#include <three/common.h>
+#include <three/constants.h>
 
-#include <three/math/color.hpp>
+#include <three/math/color.h>
 
 namespace three {
 

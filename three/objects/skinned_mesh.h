@@ -1,7 +1,7 @@
 #ifndef THREE_SKINNED_MESH_HPP
 #define THREE_SKINNED_MESH_HPP
 
-#include <three/objects/mesh.hpp>
+#include <three/objects/mesh.h>
 
 #ifdef TODO_SKINNED_MESH
 

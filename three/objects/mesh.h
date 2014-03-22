@@ -1,10 +1,10 @@
 #ifndef THREE_MESH_HPP
 #define THREE_MESH_HPP
 
-#include <three/core/object3d.hpp>
-#include <three/core/geometry.hpp>
-#include <three/visitor.hpp>
-#include <three/materials/material.hpp>
+#include <three/core/object3d.h>
+#include <three/core/geometry.h>
+#include <three/visitor.h>
+#include <three/materials/material.h>
 
 #include <vector>
 #include <unordered_map>
@@ -48,7 +48,7 @@ namespace three {
 
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/objects/impl/mesh.ipp>
+# include <three/objects/impl/mesh.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_MESH_HPP

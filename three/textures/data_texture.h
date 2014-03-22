@@ -1,9 +1,9 @@
 #ifndef THREE_DATA_TEXTURE_HPP
 #define THREE_DATA_TEXTURE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/textures/texture.hpp>
+#include <three/textures/texture.h>
 
 namespace three{
 

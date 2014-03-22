@@ -1,9 +1,9 @@
 #ifndef THREE_MATRIX4_HPP
 #define THREE_MATRIX4_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/math.hpp>
+#include <three/math/math.h>
 #include <array>
 
 namespace three {
@@ -123,7 +123,7 @@ static_assert( sizeof( Matrix4 ) == sizeof( float ) * 16, "Invalid Matrix4 stora
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/matrix4.ipp>
+# include <three/core/impl/matrix4.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_MATRIX4_HPP

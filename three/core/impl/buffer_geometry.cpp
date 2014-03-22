@@ -1,12 +1,12 @@
 #ifndef THREE_BUFFER_GEOMETRY_IPP
 #define THREE_BUFFER_GEOMETRY_IPP
 
-#include <three/common.hpp>
-#include <three/console.hpp>
+#include <three/common.h>
+#include <three/console.h>
 
-#include <three/core/buffer_geometry.hpp>
-#include <three/math/matrix4.hpp>
-#include <three/core/geometry.hpp>
+#include <three/core/buffer_geometry.h>
+#include <three/math/matrix4.h>
+#include <three/core/geometry.h>
 
 namespace three {
 

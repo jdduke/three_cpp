@@ -1,7 +1,7 @@
 #ifndef THREE_CONSOLE_HPP
 #define THREE_CONSOLE_HPP
 
-#include <three/config.hpp>
+#include <three/config.h>
 
 #include <memory>
 #include <iostream>

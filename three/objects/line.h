@@ -1,11 +1,11 @@
 #ifndef THREE_LINE_HPP
 #define THREE_LINE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/core/object3d.hpp>
-#include <three/core/geometry.hpp>
-#include <three/materials/line_basic_material.hpp>
+#include <three/core/object3d.h>
+#include <three/core/geometry.h>
+#include <three/materials/line_basic_material.h>
 
 namespace three {
 

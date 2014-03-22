@@ -1,8 +1,8 @@
 #ifndef THREE_CUBE_GEOMETRY_HPP
 #define THREE_CUBE_GEOMETRY_HPP
 
-#include <three/core/geometry.hpp>
-#include <three/core/face4.hpp>
+#include <three/core/geometry.h>
+#include <three/core/face4.h>
 
 namespace three {
 

@@ -1,20 +1,20 @@
 #ifndef THREE_GEOMETRY_HPP
 #define THREE_GEOMETRY_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/core/geometry_buffer.hpp>
-#include <three/core/geometry_group.hpp>
+#include <three/core/geometry_buffer.h>
+#include <three/core/geometry_group.h>
 
-#include <three/math/math.hpp>
-#include <three/math/color.hpp>
-#include <three/math/vector3.hpp>
-#include <three/math/sphere.hpp>
-#include <three/core/interfaces.hpp>
+#include <three/math/math.h>
+#include <three/math/color.h>
+#include <three/math/vector3.h>
+#include <three/math/sphere.h>
+#include <three/core/interfaces.h>
 
-#include <three/materials/material.hpp>
+#include <three/materials/material.h>
 
-#include <three/utils/memory.hpp>
+#include <three/utils/memory.h>
 
 #include <array>
 #include <unordered_map>
@@ -164,7 +164,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/geometry.ipp>
+# include <three/core/impl/geometry.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_GEOMETRY_HPP

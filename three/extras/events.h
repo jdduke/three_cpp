@@ -55,7 +55,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/events.ipp>
+# include <three/extras/impl/events.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_SDL_HPP

@@ -1,9 +1,9 @@
 #ifndef THREE_VECTOR4_HPP
 #define THREE_VECTOR4_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/math.hpp>
+#include <three/math/math.h>
 
 namespace three {
 

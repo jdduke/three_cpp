@@ -1,10 +1,10 @@
 #ifndef THREE_RENDERABLE_FACE_HPP
 #define THREE_RENDERABLE_FACE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/renderers/renderables/renderable.hpp>
-#include <three/renderers/renderables/renderable_vertex.hpp>
+#include <three/renderers/renderables/renderable.h>
+#include <three/renderers/renderables/renderable_vertex.h>
 
 namespace three {
 

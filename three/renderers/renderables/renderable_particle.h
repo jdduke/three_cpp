@@ -1,11 +1,11 @@
 #ifndef THREE_RENDERABLE_PARTICLE_HPP
 #define THREE_RENDERABLE_PARTICLE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/vector2.hpp>
+#include <three/math/vector2.h>
 
-#include <three/renderers/renderables/renderable.hpp>
+#include <three/renderers/renderables/renderable.h>
 
 namespace three {
 

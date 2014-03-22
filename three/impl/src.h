@@ -1,40 +1,40 @@
 #ifndef THREE_SRC_HPP
 #define THREE_SRC_HPP
 
-#include <three/config.hpp>
+#include <three/config.h>
 
 #if defined(THREE_HEADER_ONLY)
 # error Do not compile Three.cpp library source with THREE_HEADER_ONLY defined
 #endif
 
-#include <three/core/impl/buffer_geometry.ipp>
-#include <three/core/impl/object3d.ipp>
+#include <three/core/impl/buffer_geometry.cpp>
+#include <three/core/impl/object3d.cpp>
 
-#include <three/math/impl/euler.ipp>
-#include <three/math/impl/frustum.ipp>
-#include <three/math/impl/matrix3.ipp>
-#include <three/math/impl/matrix4.ipp>
-#include <three/math/impl/plane.ipp>
-#include <three/math/impl/quaternion.ipp>
-#include <three/math/impl/ray.ipp>
-#include <three/math/impl/sphere.ipp>
-#include <three/math/impl/spline.ipp>
-#include <three/math/impl/triangle.ipp>
-#include <three/math/impl/vector3.ipp>
-#include <three/math/impl/vector4.ipp>
+#include <three/math/impl/euler.cpp>
+#include <three/math/impl/frustum.cpp>
+#include <three/math/impl/matrix3.cpp>
+#include <three/math/impl/matrix4.cpp>
+#include <three/math/impl/plane.cpp>
+#include <three/math/impl/quaternion.cpp>
+#include <three/math/impl/ray.cpp>
+#include <three/math/impl/sphere.cpp>
+#include <three/math/impl/spline.cpp>
+#include <three/math/impl/triangle.cpp>
+#include <three/math/impl/vector3.cpp>
+#include <three/math/impl/vector4.cpp>
 
-#include <three/core/impl/projector.ipp>
+#include <three/core/impl/projector.cpp>
 
 
-#include <three/objects/impl/mesh.ipp>
+#include <three/objects/impl/mesh.cpp>
 
-#include <three/materials/impl/material.ipp>
-#include <three/materials/impl/text_2d_material.ipp>
-#include <three/materials/impl/uniform.ipp>
+#include <three/materials/impl/material.cpp>
+#include <three/materials/impl/text_2d_material.cpp>
+#include <three/materials/impl/uniform.cpp>
 
-#include <three/renderers/impl/gl_shaders.ipp>
-#include <three/renderers/impl/gl_renderer.ipp>
+#include <three/renderers/impl/gl_shaders.cpp>
+#include <three/renderers/impl/gl_renderer.cpp>
 
-#include <three/scenes/impl/scene.ipp>
+#include <three/scenes/impl/scene.cpp>
 
 #endif

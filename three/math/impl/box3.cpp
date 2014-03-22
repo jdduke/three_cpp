@@ -1,7 +1,7 @@
 #ifndef THREE_BOX3_IPP
 #define THREE_BOX3_IPP
 
-#include <three/math/box3.hpp>
+#include <three/math/box3.h>
 
 namespace three {
 

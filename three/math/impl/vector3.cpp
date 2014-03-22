@@ -1,8 +1,8 @@
 #ifndef THREE_VECTOR3_IPP
 #define THREE_VECTOR3_IPP
 
-#include <three/math/vector3.hpp>
-#include <three/math/vector4.hpp>
+#include <three/math/vector3.h>
+#include <three/math/vector4.h>
 
 namespace three {
 

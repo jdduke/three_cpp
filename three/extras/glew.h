@@ -1,8 +1,8 @@
 #ifndef THREE_GLEW_HPP
 #define THREE_GLEW_HPP
 
-#include <three/console.hpp>
-#include <three/renderers/gl_renderer.hpp>
+#include <three/console.h>
+#include <three/renderers/gl_renderer.h>
 
 namespace three {
 namespace glew {

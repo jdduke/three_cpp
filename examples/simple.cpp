@@ -1,12 +1,12 @@
-#include "common.hpp"
+#include "common.h"
 
-#include <three/core/geometry.hpp>
-#include <three/cameras/perspective_camera.hpp>
-#include <three/lights/point_light.hpp>
-#include <three/objects/mesh.hpp>
-#include <three/extras/geometries/sphere_geometry.hpp>
-#include <three/extras/stats.hpp>
-#include <three/materials/mesh_lambert_material.hpp>
+#include <three/core/geometry.h>
+#include <three/cameras/perspective_camera.h>
+#include <three/lights/point_light.h>
+#include <three/objects/mesh.h>
+#include <three/extras/geometries/sphere_geometry.h>
+#include <three/extras/stats.h>
+#include <three/materials/mesh_lambert_material.h>
 
 using namespace three;
 

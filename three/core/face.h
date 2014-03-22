@@ -1,10 +1,10 @@
 #ifndef enums_FACE_HPP
 #define enums_FACE_HPP
 
-#include <three/common.hpp>
-#include <three/constants.hpp>
-#include <three/math/vector3.hpp>
-#include <three/math/color.hpp>
+#include <three/common.h>
+#include <three/constants.h>
+#include <three/math/vector3.h>
+#include <three/math/color.h>
 #include <array>
 
 namespace three {

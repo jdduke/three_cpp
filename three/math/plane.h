@@ -1,8 +1,8 @@
 #ifndef THREE_PLANE_HPP
 #define THREE_PLANE_HPP
 
-#include <three/common.hpp>
-#include <three/math/line3.hpp>
+#include <three/common.h>
+#include <three/math/line3.h>
 
 namespace three {
 

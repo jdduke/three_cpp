@@ -1,7 +1,7 @@
 #ifndef THREE_EVENT_TARGET_HPP
 #define THREE_EVENT_TARGET_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
 namespace three {
 

@@ -1,13 +1,13 @@
 #ifndef THREE_PROGRAM_HPP
 #define THREE_PROGRAM_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/utils/memory.hpp>
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/memory.h>
+#include <three/utils/noncopyable.h>
 
-#include <three/materials/attribute.hpp>
-#include <three/materials/uniform.hpp>
+#include <three/materials/attribute.h>
+#include <three/materials/uniform.h>
 
 #include <map>
 #include <string>

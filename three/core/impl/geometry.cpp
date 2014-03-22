@@ -1,7 +1,7 @@
 #ifndef THREE_GEOMETRY_IPP
 #define THREE_GEOMETRY_IPP
 
-#include <three/core/geometry.hpp>
+#include <three/core/geometry.h>
 
 namespace three {
 

@@ -1,9 +1,9 @@
 #ifndef THREE_IMAGE_UTILS_IPP
 #define THREE_IMAGE_UTILS_IPP
 
-#include <three/extras/image_utils.hpp>
+#include <three/extras/image_utils.h>
 
-#include <three/console.hpp>
+#include <three/console.h>
 #include <three/extras/utils/impl/stb_image.h>
 
 #include <vector>

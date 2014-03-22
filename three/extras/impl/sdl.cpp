@@ -1,10 +1,10 @@
 #ifndef THREE_SDL_IPP
 #define THREE_SDL_IPP
 
-#include <three/extras/sdl.hpp>
+#include <three/extras/sdl.h>
 
-#include <three/console.hpp>
-#include <three/renderers/renderer_parameters.hpp>
+#include <three/console.h>
+#include <three/renderers/renderer_parameters.h>
 
 #include <SDL.h>
 #include <SDL_opengl.h>

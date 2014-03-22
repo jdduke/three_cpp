@@ -1,11 +1,11 @@
 #ifndef enums_TEXTURE_HPP
 #define enums_TEXTURE_HPP
 
-#include <three/common.hpp>
-#include <three/constants.hpp>
-#include <three/utils/memory.hpp>
-#include <three/math/vector2.hpp>
-#include <three/textures/texture_buffer.hpp>
+#include <three/common.h>
+#include <three/constants.h>
+#include <three/utils/memory.h>
+#include <three/math/vector2.h>
+#include <three/textures/texture_buffer.h>
 
 #include <functional>
 

@@ -1,15 +1,15 @@
 #ifndef THREE_SCENE_IPP
 #define THREE_SCENE_IPP
 
-#include <three/scenes/scene.hpp>
+#include <three/scenes/scene.h>
 
-#include <three/visitor.hpp>
+#include <three/visitor.h>
 
-#include <three/objects/particle.hpp>
-#include <three/objects/line.hpp>
-#include <three/lights/light.hpp>
+#include <three/objects/particle.h>
+#include <three/objects/line.h>
+#include <three/lights/light.h>
 
-#include <three/utils/template.hpp>
+#include <three/utils/template.h>
 
 namespace three {
 

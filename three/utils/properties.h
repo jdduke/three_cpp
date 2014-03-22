@@ -1,7 +1,7 @@
 #ifndef THREE_PROPERTIES_HPP
 #define THREE_PROPERTIES_HPP
 
-#include <three/config.hpp>
+#include <three/config.h>
 
 #include <unordered_map>
 //#include <map>

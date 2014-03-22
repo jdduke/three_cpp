@@ -1,19 +1,19 @@
 #ifndef THREE_OBJECT3D_HPP
 #define THREE_OBJECT3D_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
 
-#include <three/math/vector3.hpp>
-#include <three/math/quaternion.hpp>
-#include <three/math/matrix3.hpp>
-#include <three/math/matrix4.hpp>
+#include <three/math/vector3.h>
+#include <three/math/quaternion.h>
+#include <three/math/matrix3.h>
+#include <three/math/matrix4.h>
 
-#include <three/materials/material.hpp>
-#include <three/core/geometry.hpp>
+#include <three/materials/material.h>
+#include <three/core/geometry.h>
 
-#include <three/utils/memory.hpp>
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/memory.h>
+#include <three/utils/noncopyable.h>
 
 #include <algorithm>
 #include <functional>
@@ -185,7 +185,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/object3d.ipp>
+# include <three/core/impl/object3d.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_OBJECT3D_HPP

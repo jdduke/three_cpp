@@ -1,7 +1,7 @@
 #ifndef THREE_STATS_HPP
 #define THREE_STATS_HPP
 
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/noncopyable.h>
 
 #include <memory>
 
@@ -27,7 +27,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/stats.ipp>
+# include <three/extras/impl/stats.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_ANIM_HPP

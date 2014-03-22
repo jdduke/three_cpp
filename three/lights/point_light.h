@@ -1,9 +1,9 @@
 #ifndef THREE_POINT_LIGHT_HPP
 #define THREE_POINT_LIGHT_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/lights/light.hpp>
+#include <three/lights/light.h>
 
 namespace three {
 

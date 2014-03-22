@@ -1,15 +1,15 @@
-#include "common.hpp"
+#include "common.h"
 
-#include <three/cameras/perspective_camera.hpp>
-#include <three/core/geometry.hpp>
-#include <three/lights/point_light.hpp>
-#include <three/materials/line_basic_material.hpp>
-#include <three/objects/line.hpp>
-#include <three/renderers/renderer_parameters.hpp>
-#include <three/renderers/gl_renderer.hpp>
-#include <three/scenes/fog.hpp>
+#include <three/cameras/perspective_camera.h>
+#include <three/core/geometry.h>
+#include <three/lights/point_light.h>
+#include <three/materials/line_basic_material.h>
+#include <three/objects/line.h>
+#include <three/renderers/renderer_parameters.h>
+#include <three/renderers/gl_renderer.h>
+#include <three/scenes/fog.h>
 
-#include <three/extras/utils/font.hpp>
+#include <three/extras/utils/font.h>
 
 #include <array>
 

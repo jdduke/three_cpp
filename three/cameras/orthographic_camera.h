@@ -1,9 +1,9 @@
 #ifndef THREE_ORTHOGRAPHIC_CAMERA_HPP
 #define THREE_ORTHOGRAPHIC_CAMERA_HPP
 
-#include <three/common.hpp>
-#include <three/math/math.hpp>
-#include <three/cameras/camera.hpp>
+#include <three/common.h>
+#include <three/math/math.h>
+#include <three/cameras/camera.h>
 
 #include <memory>
 

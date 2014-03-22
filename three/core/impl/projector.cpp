@@ -1,26 +1,26 @@
 #ifndef THREE_PROJECTOR_IPP
 #define THREE_PROJECTOR_IPP
 
-#include <three/core/projector.hpp>
-#include <three/core/face.hpp>
+#include <three/core/projector.h>
+#include <three/core/face.h>
 
-#include <three/cameras/camera.hpp>
+#include <three/cameras/camera.h>
 
-#include <three/math/math.hpp>
+#include <three/math/math.h>
 
-#include <three/math/frustum.hpp>
-#include <three/math/matrix4.hpp>
+#include <three/math/frustum.h>
+#include <three/math/matrix4.h>
 
-#include <three/objects/line.hpp>
-#include <three/objects/mesh.hpp>
-#include <three/objects/particle.hpp>
+#include <three/objects/line.h>
+#include <three/objects/mesh.h>
+#include <three/objects/particle.h>
 
-#include <three/renderers/renderables/renderable_vertex.hpp>
-#include <three/renderers/renderables/renderable_face.hpp>
-#include <three/renderers/renderables/renderable_line.hpp>
-#include <three/renderers/renderables/renderable_particle.hpp>
+#include <three/renderers/renderables/renderable_vertex.h>
+#include <three/renderers/renderables/renderable_face.h>
+#include <three/renderers/renderables/renderable_line.h>
+#include <three/renderers/renderables/renderable_particle.h>
 
-#include <three/scenes/scene.hpp>
+#include <three/scenes/scene.h>
 
 #include <functional>
 

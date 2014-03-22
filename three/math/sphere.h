@@ -1,8 +1,8 @@
 #ifndef THREE_SPHERE_HPP
 #define THREE_SPHERE_HPP
 
-#include <three/common.hpp>
-#include <three/math/matrix4.hpp>
+#include <three/common.h>
+#include <three/math/matrix4.h>
 
 namespace three {
 

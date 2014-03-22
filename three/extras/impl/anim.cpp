@@ -1,12 +1,12 @@
 #ifndef THREE_ANIM_IPP
 #define THREE_ANIM_IPP
 
-#include <three/extras/anim.hpp>
+#include <three/extras/anim.h>
 
-#include <three/core/clock.hpp>
-#include <three/utils/noncopyable.hpp>
+#include <three/core/clock.h>
+#include <three/utils/noncopyable.h>
 
-#include <three/extras/sdl.hpp>
+#include <three/extras/sdl.h>
 
 #include <thread>
 

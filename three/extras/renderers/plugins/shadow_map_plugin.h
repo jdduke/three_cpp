@@ -1,7 +1,7 @@
 #ifndef THREE_SHADOW_MAP_PLUGIN_HPP
 #define THREE_SHADOW_MAP_PLUGIN_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
 namespace three {
 

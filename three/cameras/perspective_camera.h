@@ -1,10 +1,10 @@
 #ifndef THREE_PERSPECTIVE_CAMERA_HPP
 #define THREE_PERSPECTIVE_CAMERA_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/math.hpp>
-#include <three/cameras/camera.hpp>
+#include <three/math/math.h>
+#include <three/cameras/camera.h>
 
 namespace three {
 

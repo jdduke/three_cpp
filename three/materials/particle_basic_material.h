@@ -1,9 +1,9 @@
 #ifndef THREE_PARTICLE_BASIC_MATERIAL_HPP
 #define THREE_PARTICLE_BASIC_MATERIAL_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/materials/material.hpp>
+#include <three/materials/material.h>
 
 namespace three {
 

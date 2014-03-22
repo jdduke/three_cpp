@@ -1,11 +1,11 @@
 #ifndef THREE_GL_SHADERS_IPP
 #define THREE_GL_SHADERS_IPP
 
-#include <three/config.hpp>
+#include <three/config.h>
 
-#include <three/renderers/gl_shaders.hpp>
+#include <three/renderers/gl_shaders.h>
 
-#include <three/materials/uniform.hpp>
+#include <three/materials/uniform.h>
 
 #include <array>
 

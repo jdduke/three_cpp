@@ -1,16 +1,16 @@
 #ifndef THREE_UNIFORM_IPP
 #define THREE_UNIFORM_IPP
 
-#include <three/materials/uniform.hpp>
+#include <three/materials/uniform.h>
 
-#include <three/math/color.hpp>
-#include <three/math/vector2.hpp>
-#include <three/math/vector3.hpp>
-#include <three/math/matrix4.hpp>
+#include <three/math/color.h>
+#include <three/math/vector2.h>
+#include <three/math/vector3.h>
+#include <three/math/matrix4.h>
 
-#include <three/utils/any.hpp>
+#include <three/utils/any.h>
 
-#include <three/gl.hpp>
+#include <three/gl.h>
 
 namespace three {
 

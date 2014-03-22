@@ -1,15 +1,15 @@
 #ifndef THREE_FRUSTUM_IPP
 #define THREE_FRUSTUM_IPP
 
-#include <three/math/frustum.hpp>
+#include <three/math/frustum.h>
 
-#include <three/core/object3d.hpp>
-#include <three/core/geometry.hpp>
-#include <three/math/vector4.hpp>
-#include <three/math/sphere.hpp>
-#include <three/math/box3.hpp>
+#include <three/core/object3d.h>
+#include <three/core/geometry.h>
+#include <three/math/vector4.h>
+#include <three/math/sphere.h>
+#include <three/math/box3.h>
 
-#include <three/objects/mesh.hpp>
+#include <three/objects/mesh.h>
 
 #include <array>
 

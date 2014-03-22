@@ -1,10 +1,10 @@
 #ifndef THREE_RAY_HPP
 #define THREE_RAY_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/math.hpp>
-#include <three/objects/mesh.hpp>
+#include <three/math/math.h>
+#include <three/objects/mesh.h>
 
 namespace three {
     

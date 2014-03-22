@@ -1,9 +1,9 @@
 #ifndef THREE_QUATERNION_HPP
 #define THREE_QUATERNION_HPP
 
-#include <three/common.hpp>
-#include <three/utils/memory.hpp>
-#include <three/math/math.hpp>
+#include <three/common.h>
+#include <three/utils/memory.h>
+#include <three/math/math.h>
 #include <memory>
 
 namespace three {

@@ -1,15 +1,15 @@
 #ifndef THREE_STATS_IPP
 #define THREE_STATS_IPP
 
-#include <three/extras/stats.hpp>
+#include <three/extras/stats.h>
 
-#include <three/cameras/orthographic_camera.hpp>
-#include <three/materials/text_2d_material.hpp>
-#include <three/objects/mesh.hpp>
-#include <three/renderers/gl_renderer.hpp>
-#include <three/utils/conversion.hpp>
+#include <three/cameras/orthographic_camera.h>
+#include <three/materials/text_2d_material.h>
+#include <three/objects/mesh.h>
+#include <three/renderers/gl_renderer.h>
+#include <three/utils/conversion.h>
 
-#include <three/extras/geometries/text_2d_geometry.hpp>
+#include <three/extras/geometries/text_2d_geometry.h>
 
 #include <sstream>
 

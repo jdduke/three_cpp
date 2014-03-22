@@ -1,7 +1,7 @@
 #ifndef THREE_RENDERABLE_HPP
 #define THREE_RENDERABLE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
 namespace three {
 

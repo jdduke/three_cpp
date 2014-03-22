@@ -1,9 +1,9 @@
 #ifndef THREE_BUFFER_GEOMETRY_HPP
 #define THREE_BUFFER_GEOMETRY_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/core/geometry.hpp>
+#include <three/core/geometry.h>
 
 namespace three {
 
@@ -43,7 +43,7 @@ protected:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/buffer_geometry.ipp>
+# include <three/core/impl/buffer_geometry.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_BUFFER_GEOMETRY_HPP

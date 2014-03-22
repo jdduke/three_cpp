@@ -1,7 +1,7 @@
 #ifndef THREE_HPP
 #define THREE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
 #include <cmath>
 #include <random>

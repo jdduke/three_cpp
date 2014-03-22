@@ -1,11 +1,11 @@
 #ifndef THREE_CAMERA_HPP
 #define THREE_CAMERA_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/visitor.hpp>
-#include <three/core/object3d.hpp>
-#include <three/math/matrix4.hpp>
+#include <three/visitor.h>
+#include <three/core/object3d.h>
+#include <three/math/matrix4.h>
 
 namespace three {
 

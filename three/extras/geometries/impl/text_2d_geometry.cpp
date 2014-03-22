@@ -1,9 +1,9 @@
 #ifndef THREE_TEXT_2D_GEOMETRY_IPP
 #define THREE_TEXT_2D_GEOMETRY_IPP
 
-#include <three/extras/geometries/text_2d_geometry.hpp>
+#include <three/extras/geometries/text_2d_geometry.h>
 
-#include <three/console.hpp>
+#include <three/console.h>
 
 namespace three {
 

@@ -1,9 +1,9 @@
 #ifndef THREE_GL_RENDER_TARGET_HPP
 #define THREE_GL_RENDER_TARGET_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/renderers/gl_render_target_buffer.hpp>
+#include <three/renderers/gl_render_target_buffer.h>
 
 namespace three {
 

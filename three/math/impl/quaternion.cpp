@@ -2,10 +2,10 @@
 #define THREE_QUATERNION_IPP
 
 
-#include <three/common.hpp>
-#include <three/math/math.hpp>
-#include <three/math/euler.hpp>
-#include <three/math/quaternion.hpp>
+#include <three/common.h>
+#include <three/math/math.h>
+#include <three/math/euler.h>
+#include <three/math/quaternion.h>
 
 namespace three {
 

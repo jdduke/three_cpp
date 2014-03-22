@@ -1,11 +1,11 @@
 #ifndef THREE_FOG_HPP
 #define THREE_FOG_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/color.hpp>
+#include <three/math/color.h>
 
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/noncopyable.h>
 
 namespace three {
 

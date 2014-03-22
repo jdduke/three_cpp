@@ -1,20 +1,20 @@
 #ifndef THREE_MATERIAL_HPP
 #define THREE_MATERIAL_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/color.hpp>
+#include <three/math/color.h>
 
-#include <three/materials/attribute.hpp>
-#include <three/materials/program.hpp>
-#include <three/materials/uniform.hpp>
+#include <three/materials/attribute.h>
+#include <three/materials/program.h>
+#include <three/materials/uniform.h>
 
-#include <three/textures/texture.hpp>
+#include <three/textures/texture.h>
 
-#include <three/utils/any.hpp>
-#include <three/utils/memory.hpp>
-#include <three/utils/noncopyable.hpp>
-#include <three/utils/properties.hpp>
+#include <three/utils/any.h>
+#include <three/utils/memory.h>
+#include <three/utils/noncopyable.h>
+#include <three/utils/properties.h>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -169,7 +169,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/materials/impl/material.ipp>
+# include <three/materials/impl/material.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_MATERIAL_HPP

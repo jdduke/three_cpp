@@ -1,7 +1,7 @@
 #ifndef THREE_MATRIX3_HPP
 #define THREE_MATRIX3_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 #include <vector>
 
 namespace three {
@@ -167,7 +167,7 @@ public:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/matrix3.ipp>
+# include <three/core/impl/matrix3.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_MATRIX3_HPP

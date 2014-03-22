@@ -1,12 +1,12 @@
-#include "common.hpp"
+#include "common.h"
 
-#include <three/core/geometry.hpp>
-#include <three/cameras/camera.hpp>
-#include <three/objects/mesh.hpp>
-#include <three/extras/geometries/plane_geometry.hpp>
-#include <three/materials/shader_material.hpp>
-#include <three/renderers/renderer_parameters.hpp>
-#include <three/renderers/gl_renderer.hpp>
+#include <three/core/geometry.h>
+#include <three/cameras/camera.h>
+#include <three/objects/mesh.h>
+#include <three/extras/geometries/plane_geometry.h>
+#include <three/materials/shader_material.h>
+#include <three/renderers/renderer_parameters.h>
+#include <three/renderers/gl_renderer.h>
 
 std::string vertexShader() {
   return std::string(

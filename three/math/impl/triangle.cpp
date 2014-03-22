@@ -1,7 +1,7 @@
 #ifndef THREE_TRIANGLE_IPP
 #define THREE_TRIANGLE_IPP
 
-#include <three/math/triangle.hpp>
+#include <three/math/triangle.h>
 
 namespace three {
 

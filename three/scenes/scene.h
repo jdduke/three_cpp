@@ -1,11 +1,11 @@
 #ifndef THREE_SCENE_HPP
 #define THREE_SCENE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/core/object3d.hpp>
+#include <three/core/object3d.h>
 
-#include <three/renderers/renderables/renderable_object.hpp>
+#include <three/renderers/renderables/renderable_object.h>
 
 namespace three {
 
@@ -83,7 +83,7 @@ protected:
 
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/scenes/impl/scene.ipp>
+# include <three/scenes/impl/scene.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_SCENE_HPP

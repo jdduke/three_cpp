@@ -1,20 +1,20 @@
 #ifndef THREE_GL_RENDERER
 #define THREE_GL_RENDERER
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/gl.hpp>
+#include <three/gl.h>
 
-#include <three/math/frustum.hpp>
-#include <three/math/vector3.hpp>
-#include <three/math/matrix4.hpp>
-#include <three/core/interfaces.hpp>
+#include <three/math/frustum.h>
+#include <three/math/vector3.h>
+#include <three/math/matrix4.h>
+#include <three/core/interfaces.h>
 
-#include <three/scenes/scene.hpp>
-#include <three/materials/program.hpp>
-#include <three/textures/texture.hpp>
+#include <three/scenes/scene.h>
+#include <three/materials/program.h>
+#include <three/textures/texture.h>
 
-#include <three/renderers/gl_render_target.hpp>
+#include <three/renderers/gl_render_target.h>
 
 #ifndef TEXTURE_MAX_ANISOTROPY_EXT
 #define TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
@@ -485,7 +485,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/renderers/impl/gl_renderer.ipp>
+# include <three/renderers/impl/gl_renderer.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_GL_RENDERER

@@ -1,9 +1,9 @@
 #ifndef THREE_OBJECT3D_IPP
 #define THREE_OBJECT3D_IPP
 
-#include <three/core/object3d.hpp>
+#include <three/core/object3d.h>
 
-#include <three/console.hpp>
+#include <three/console.h>
 
 namespace three {
 

@@ -1,9 +1,9 @@
 #ifndef THREE_SPLINE_HPP
 #define THREE_SPLINE_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/math.hpp>
+#include <three/math/math.h>
 
 #include <vector>
 #include <tuple>

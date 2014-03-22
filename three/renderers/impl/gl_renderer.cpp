@@ -1,41 +1,41 @@
 #ifndef THREE_GL_RENDERER_IPP
 #define THREE_GL_RENDERER_IPP
 
-#include <three/renderers/gl_renderer.hpp>
+#include <three/renderers/gl_renderer.h>
 
-#include <three/common.hpp>
-#include <three/console.hpp>
-#include <three/gl.hpp>
+#include <three/common.h>
+#include <three/console.h>
+#include <three/gl.h>
 
-#include <three/cameras/camera.hpp>
+#include <three/cameras/camera.h>
 
-#include <three/math/frustum.hpp>
-#include <three/core/interfaces.hpp>
-#include <three/core/buffer_geometry.hpp>
-#include <three/core/geometry.hpp>
-#include <three/core/geometry_group.hpp>
+#include <three/math/frustum.h>
+#include <three/core/interfaces.h>
+#include <three/core/buffer_geometry.h>
+#include <three/core/geometry.h>
+#include <three/core/geometry_group.h>
 
-#include <three/lights/spot_light.hpp>
-#include <three/lights/hemisphere_light.hpp>
+#include <three/lights/spot_light.h>
+#include <three/lights/hemisphere_light.h>
 
-#include <three/materials/program.hpp>
+#include <three/materials/program.h>
 
-#include <three/objects/line.hpp>
+#include <three/objects/line.h>
 
-#include <three/renderers/gl_render_target.hpp>
-#include <three/renderers/gl_shaders.hpp>
-#include <three/renderers/renderer_parameters.hpp>
-#include <three/renderers/renderables/renderable_object.hpp>
+#include <three/renderers/gl_render_target.h>
+#include <three/renderers/gl_shaders.h>
+#include <three/renderers/renderer_parameters.h>
+#include <three/renderers/renderables/renderable_object.h>
 
-#include <three/scenes/scene.hpp>
-#include <three/scenes/fog.hpp>
-#include <three/scenes/fog_exp2.hpp>
+#include <three/scenes/scene.h>
+#include <three/scenes/fog.h>
+#include <three/scenes/fog_exp2.h>
 
-#include <three/textures/texture.hpp>
+#include <three/textures/texture.h>
 
-#include <three/utils/hash.hpp>
-#include <three/utils/conversion.hpp>
-#include <three/utils/template.hpp>
+#include <three/utils/hash.h>
+#include <three/utils/conversion.h>
+#include <three/utils/template.h>
 
 namespace three {
 

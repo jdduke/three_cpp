@@ -1,9 +1,9 @@
 #ifndef THREE_COMMON_HPP
 #define THREE_COMMON_HPP
 
-#include <three/config.hpp>
+#include <three/config.h>
 
-#include <three/fwd.hpp>
+#include <three/fwd.h>
 
 
 

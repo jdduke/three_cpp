@@ -1,9 +1,9 @@
 #ifndef THREE_LOADER_HPP
 #define THREE_LOADER_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/noncopyable.h>
 
 #include <iomanip>
 #include <functional>

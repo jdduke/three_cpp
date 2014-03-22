@@ -1,11 +1,11 @@
 #ifndef THREE_PARTICLE_SYSTEM_HPP
 #define THREE_PARTICLE_SYSTEM_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/visitor.hpp>
-#include <three/core/object3d.hpp>
-#include <three/materials/material.hpp>
+#include <three/visitor.h>
+#include <three/core/object3d.h>
+#include <three/materials/material.h>
 
 namespace three {
 

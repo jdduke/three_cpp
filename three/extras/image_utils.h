@@ -1,9 +1,9 @@
 #ifndef THREE_IMAGE_UTILS_HPP
 #define THREE_IMAGE_UTILS_HPP
 
-#include <three/math/color.hpp>
+#include <three/math/color.h>
 
-#include <three/textures/texture.hpp>
+#include <three/textures/texture.h>
 
 namespace three {
 
@@ -45,7 +45,7 @@ public:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/image_utils.ipp>
+# include <three/extras/impl/image_utils.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_IMAGE_UTILS_HPP

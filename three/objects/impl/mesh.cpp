@@ -1,9 +1,9 @@
 #ifndef THREE_MESH_IPP
 #define THREE_MESH_IPP
 
-#include <three/objects/mesh.hpp>
+#include <three/objects/mesh.h>
 
-#include <three/console.hpp>
+#include <three/console.h>
 
 namespace three {
 

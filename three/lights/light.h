@@ -1,11 +1,11 @@
 #ifndef THREE_LIGHT_HPP
 #define THREE_LIGHT_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/visitor.hpp>
-#include <three/math/color.hpp>
-#include <three/core/object3d.hpp>
+#include <three/visitor.h>
+#include <three/math/color.h>
+#include <three/core/object3d.h>
 
 namespace three {
 

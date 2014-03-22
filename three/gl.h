@@ -32,7 +32,7 @@
 #  include <GL/gl.h>
 #endif
 
-#include <three/console.hpp>
+#include <three/console.h>
 
 namespace three {
 

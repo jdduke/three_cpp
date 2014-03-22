@@ -1,9 +1,9 @@
 #ifndef THREE_TEXT_2D_GEOMETRY_HPP
 #define THREE_TEXT_2D_GEOMETRY_HPP
 
-#include <three/core/geometry.hpp>
+#include <three/core/geometry.h>
 
-#include <three/extras/utils/font.hpp>
+#include <three/extras/utils/font.h>
 
 namespace three {
 
@@ -34,7 +34,7 @@ protected:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/geometries/impl/text_2d_geometry.ipp>
+# include <three/extras/geometries/impl/text_2d_geometry.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_TEXT_2D_GEOMETRY_HPP

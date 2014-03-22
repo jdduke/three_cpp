@@ -1,8 +1,8 @@
 #ifndef THREE_VISITOR_HPP
 #define THREE_VISITOR_HPP
 
-#include <three/config.hpp>
-#include <three/fwd.hpp>
+#include <three/config.h>
+#include <three/fwd.h>
 
 namespace three {
 

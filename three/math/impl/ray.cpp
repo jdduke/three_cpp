@@ -1,9 +1,9 @@
 #ifndef THREE_RAY_IPP
 #define THREE_RAY_IPP
 
-#include <three/math/math.hpp>
+#include <three/math/math.h>
 
-#include <three/math/ray.hpp>
+#include <three/math/ray.h>
 
 namespace three {
 

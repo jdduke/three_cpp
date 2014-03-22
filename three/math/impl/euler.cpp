@@ -1,7 +1,7 @@
 #ifndef THREE_EULER_IPP
 #define THREE_EULER_IPP
 
-#include <three/math/euler.hpp>
+#include <three/math/euler.h>
 
 namespace three {
 

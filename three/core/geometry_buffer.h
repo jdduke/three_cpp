@@ -1,9 +1,9 @@
 #ifndef THREE_GEOMETRY_BUFFER_HPP
 #define THREE_GEOMETRY_BUFFER_HPP
 
-#include <three/constants.hpp>
-#include <three/materials/attribute.hpp>
-#include <three/utils/noncopyable.hpp>
+#include <three/constants.h>
+#include <three/materials/attribute.h>
+#include <three/utils/noncopyable.h>
 
 #include <memory>
 

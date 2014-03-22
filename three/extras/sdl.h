@@ -1,10 +1,10 @@
 #ifndef THREE_SDL_HPP
 #define THREE_SDL_HPP
 
-#include <three/gl.hpp>
-#include <three/math/color.hpp>
-#include <three/utils/noncopyable.hpp>
-#include <three/renderers/renderer_parameters.hpp>
+#include <three/gl.h>
+#include <three/math/color.h>
+#include <three/utils/noncopyable.h>
+#include <three/renderers/renderer_parameters.h>
 
 #include <SDL_main.h>
 #include <SDL_events.h>
@@ -46,7 +46,7 @@ private:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/sdl.ipp>
+# include <three/extras/impl/sdl.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_SDL_HPP

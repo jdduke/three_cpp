@@ -1,9 +1,9 @@
 #ifndef THREE_COLOR_HPP
 #define THREE_COLOR_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/math.hpp>
+#include <three/math/math.h>
 
 namespace three {
 

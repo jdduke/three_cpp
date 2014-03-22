@@ -1,9 +1,9 @@
 #ifndef THREE_SPHERE_IPP
 #define THREE_SPHERE_IPP
 
-#include <three/math/sphere.hpp>
-#include <three/math/box3.hpp>
-#include <three/math/vector3.hpp>
+#include <three/math/sphere.h>
+#include <three/math/box3.h>
+#include <three/math/vector3.h>
 
 namespace three {
 

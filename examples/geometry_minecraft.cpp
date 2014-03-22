@@ -1,20 +1,20 @@
-#include "common.hpp"
+#include "common.h"
 
-#include <three/cameras/perspective_camera.hpp>
-#include <three/core/geometry.hpp>
-#include <three/lights/ambient_light.hpp>
-#include <three/lights/directional_light.hpp>
-#include <three/materials/mesh_lambert_material.hpp>
-#include <three/materials/mesh_face_material.hpp>
-#include <three/objects/mesh.hpp>
-#include <three/renderers/renderer_parameters.hpp>
-#include <three/renderers/gl_renderer.hpp>
+#include <three/cameras/perspective_camera.h>
+#include <three/core/geometry.h>
+#include <three/lights/ambient_light.h>
+#include <three/lights/directional_light.h>
+#include <three/materials/mesh_lambert_material.h>
+#include <three/materials/mesh_face_material.h>
+#include <three/objects/mesh.h>
+#include <three/renderers/renderer_parameters.h>
+#include <three/renderers/gl_renderer.h>
 
-#include <three/extras/geometries/cube_geometry.hpp>
-#include <three/extras/geometry_utils.hpp>
-#include <three/extras/image_utils.hpp>
-#include <three/extras/scene_utils.hpp>
-#include <three/extras/utils/improved_noise.hpp>
+#include <three/extras/geometries/cube_geometry.h>
+#include <three/extras/geometry_utils.h>
+#include <three/extras/image_utils.h>
+#include <three/extras/scene_utils.h>
+#include <three/extras/utils/improved_noise.h>
 
 using namespace three;
 

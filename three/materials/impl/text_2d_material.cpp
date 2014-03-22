@@ -1,9 +1,9 @@
 #ifndef THREE_TEXT_2D_MATERIAL_IPP
 #define THREE_TEXT_2D_MATERIAL_IPP
 
-#include <three/materials/text_2d_material.hpp>
+#include <three/materials/text_2d_material.h>
 
-#include <three/extras/utils/font.hpp>
+#include <three/extras/utils/font.h>
 namespace three {
 
 namespace detail {

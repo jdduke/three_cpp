@@ -1,7 +1,7 @@
 #ifndef THREE_EULER_HPP
 #define THREE_EULER_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
 namespace three {
     

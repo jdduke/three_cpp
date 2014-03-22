@@ -1,12 +1,12 @@
 #ifndef enums_ATTRIBUTE_HPP
 #define enums_ATTRIBUTE_HPP
 
-#include <three/common.hpp>
-#include <three/constants.hpp>
+#include <three/common.h>
+#include <three/constants.h>
 
-#include <three/utils/any.hpp>
-#include <three/utils/index.hpp>
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/any.h>
+#include <three/utils/index.h>
+#include <three/utils/noncopyable.h>
 
 #include <unordered_map>
 #include <vector>

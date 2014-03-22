@@ -1,14 +1,14 @@
 #ifndef THREE_SPLINE_IPP
 #define THREE_SPLINE_IPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/math.hpp>
+#include <three/math/math.h>
 
 #include <vector>
 #include <tuple>
 
-#include <three/math/spline.hpp>
+#include <three/math/spline.h>
 
 namespace three {
 

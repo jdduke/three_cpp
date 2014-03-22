@@ -1,7 +1,7 @@
 #ifndef THREE_JSON_LOADER_HPP
 #define THREE_JSON_LOADER_HPP
 
-#include <three/loaders/loader.hpp>
+#include <three/loaders/loader.h>
 
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>

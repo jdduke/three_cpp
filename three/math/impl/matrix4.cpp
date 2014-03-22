@@ -1,9 +1,9 @@
 #ifndef THREE_MATRIX4_IPP
 #define THREE_MATRIX4_IPP
 
-#include <three/math/math.hpp>
-#include <three/math/matrix4.hpp>
-#include <three/math/euler.hpp>
+#include <three/math/math.h>
+#include <three/math/matrix4.h>
+#include <three/math/euler.h>
 
 namespace three {
 

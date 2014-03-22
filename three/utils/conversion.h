@@ -1,7 +1,7 @@
 #ifndef THREE_CONVERSION_UTILS_HPP
 #define THREE_CONVERSION_UTILS_HPP
 
-#include <three/config.hpp>
+#include <three/config.h>
 
 #include <array>
 #include <sstream>

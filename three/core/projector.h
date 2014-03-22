@@ -1,14 +1,14 @@
 #ifndef THREE_PROJECTOR_HPP
 #define THREE_PROJECTOR_HPP
 
-#include <three/common.hpp>
+#include <three/common.h>
 
-#include <three/math/ray.hpp>
-#include <three/math/vector3.hpp>
+#include <three/math/ray.h>
+#include <three/math/vector3.h>
 
-#include <three/renderers/renderables/renderable_object.hpp>
+#include <three/renderers/renderables/renderable_object.h>
 
-#include <three/utils/noncopyable.hpp>
+#include <three/utils/noncopyable.h>
 
 #include <vector>
 
@@ -46,7 +46,7 @@ protected:
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/core/impl/projector.ipp>
+# include <three/core/impl/projector.cpp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_PROJECTOR_HPP
