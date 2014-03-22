@@ -21,6 +21,8 @@ public:
 
   }
 
+  THREE_IMPL_OBJECT(Camera)
+
   mutable Matrix4 matrixWorldInverse;
 
   Matrix4 projectionMatrix;
@@ -56,14 +58,12 @@ protected:
   Camera( float near = .1f, float far = 2000.f )
     : Object3D(), near( near ), far( far ) { }
 
-  THREE_IMPL_OBJECT(Camera)
-
 private:
-  
+
   friend class GLRenderer;
 
   std::array<float, 16> _viewMatrixArray;
-  
+
   std::array<float, 16> _projectionMatrixArray;
 
 };

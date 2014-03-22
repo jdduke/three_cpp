@@ -2,12 +2,13 @@
 #define THREE_MATRIX4_H
 
 #include <three/common.h>
-
 #include <three/math/math.h>
+
 #include <array>
+#include <vector>
 
 namespace three {
-    
+
 class Matrix4 {
 public:
 
@@ -19,22 +20,26 @@ public:
   Matrix4();
 
   Matrix4( float n11, float n12, float n13, float n14,
-                     float n21, float n22, float n23, float n24,
-                     float n31, float n32, float n33, float n34,
-                     float n41, float n42, float n43, float n44 );
+           float n21, float n22, float n23, float n24,
+           float n31, float n32, float n33, float n34,
+           float n41, float n42, float n43, float n44 );
 
   Matrix4( const Matrix4& other );
 
   Matrix4& operator= ( const Matrix4& other );
 
-  float& operator[]( const int i ) { return elements[i]; }
+  float& operator[]( const int i ) {
+    return elements[i];
+  }
 
-  const float operator[]( const int i ) const { return elements[i]; }
+  const float operator[]( const int i ) const {
+    return elements[i];
+  }
 
   Matrix4& set( float n11, float n12, float n13, float n14,
-                           float n21, float n22, float n23, float n24,
-                           float n31, float n32, float n33, float n34,
-                           float n41, float n42, float n43, float n44 );
+                float n21, float n22, float n23, float n24,
+                float n31, float n32, float n33, float n34,
+                float n41, float n42, float n43, float n44 );
 
   Matrix4& identity();
 
@@ -109,7 +114,7 @@ public:
   Matrix4& makeFrustum( float left, float right, float bottom, float top, float near, float far );
 
   Matrix4& makePerspective( float fov, float aspect, float near, float far );
-  
+
   Matrix4& makeOrthographic( float left, float right, float top, float bottom, float near, float far );
 
   Matrix4 clone() {

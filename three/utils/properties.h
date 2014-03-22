@@ -16,9 +16,13 @@ public:
   //typedef std::map<Key, Value> MapType;
 
   Properties() { }
-  Properties(Properties&& other) { swap(other); }
+  Properties(Properties&& other) {
+    swap(other);
+  }
   Properties(const Properties& other) : contents( other.contents ) { }
-  Properties& operator=(Properties other) { return swap(other); }
+  Properties& operator=(Properties other) {
+    return swap(other);
+  }
 
   Properties& add(Key key, Value value) {
     contents.insert( std::make_pair(std::move(key), std::move(value)) );
@@ -45,9 +49,15 @@ public:
   }
 #endif // THREE_HAS_VARIADIC_TEMPLATES
 
-  THREE_EXPLICIT operator bool() const { return contents.size() > 0; }
-  size_t size() const { return contents.size(); }
-  bool empty() const { return contents.empty(); }
+  THREE_EXPLICIT operator bool() const {
+    return contents.size() > 0;
+  }
+  size_t size() const {
+    return contents.size();
+  }
+  bool empty() const {
+    return contents.empty();
+  }
 
   inline bool contains( const Key& key ) const {
     return contents.find( key ) != contents.end();
@@ -58,8 +68,12 @@ public:
     return contains( Key(key) );
   }
 
-  Value& operator[]( const char* key ) { return contents[Key(key)]; }
-  Value& operator[]( const Key& key ) { return contents[key]; }
+  Value& operator[]( const char* key ) {
+    return contents[Key(key)];
+  }
+  Value& operator[]( const Key& key ) {
+    return contents[key];
+  }
 
   const Value* get( const Key& key ) const {
     auto it = contents.find( key );
@@ -71,12 +85,24 @@ public:
     return it == contents.end() ? nullptr : &it->second;
   }
 
-  typename MapType::iterator       find( const Key& key ) { return contents.find( key ); }
-  typename MapType::const_iterator find( const Key& key ) const { return contents.find( key ); }
-  typename MapType::iterator       begin()       { return contents.begin(); }
-  typename MapType::const_iterator begin() const { return contents.cbegin(); }
-  typename MapType::iterator       end()         { return contents.end(); }
-  typename MapType::const_iterator end() const   { return contents.cend(); }
+  typename MapType::iterator       find( const Key& key ) {
+    return contents.find( key );
+  }
+  typename MapType::const_iterator find( const Key& key ) const {
+    return contents.find( key );
+  }
+  typename MapType::iterator       begin()       {
+    return contents.begin();
+  }
+  typename MapType::const_iterator begin() const {
+    return contents.cbegin();
+  }
+  typename MapType::iterator       end()         {
+    return contents.end();
+  }
+  typename MapType::const_iterator end() const   {
+    return contents.cend();
+  }
 
   //////////////////////////////////////////////////////////////////////////
 

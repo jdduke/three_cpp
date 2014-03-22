@@ -12,9 +12,8 @@
 namespace three {
 
 class Uniform {
-public:
 
-  //////////////////////////////////////////////////////////////////////////
+public:
 
   Uniform( );
   Uniform( Uniform&& );
@@ -24,24 +23,18 @@ public:
 
   void load( int location );
 
-  //////////////////////////////////////////////////////////////////////////
-
   enums::UniformType type;
   any value;
 
-  //////////////////////////////////////////////////////////////////////////
-
 private:
-  Uniform& swap( Uniform& other );
-};
 
-/////////////////////////////////////////////////////////////////////////
+  Uniform& swap( Uniform& other );
+
+};
 
 typedef Properties<std::string, Uniform> Uniforms;
 typedef std::unordered_map<std::string, Index> UniformLocations;
 typedef std::vector<std::pair<Uniform*, std::string>> UniformsList;
-
-/////////////////////////////////////////////////////////////////////////
 
 inline int uniformLocation( const UniformLocations& uniforms, const std::string& name ) {
   auto uniformIndexIt = uniforms.find( name );
@@ -55,8 +48,6 @@ inline int uniformLocation( const UniformLocations& uniforms, const std::string&
 inline bool validUniformLocation( int index ) {
   return index != -1;
 }
-
-/////////////////////////////////////////////////////////////////////////
 
 namespace UniformKey {
 

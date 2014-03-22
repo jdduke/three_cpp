@@ -17,11 +17,11 @@ namespace detail {
 
 typedef std::function<void(float)> Callback;
 
-class ScopedTimer : public NonCopyable{
+class ScopedTimer : public NonCopyable {
 public:
 
   ScopedTimer( Clock& clock, Callback callback )
-  : clock( clock ), startTime( clock.getElapsedTime() ), callback ( std::move( callback ) ) { }
+    : clock( clock ), startTime( clock.getElapsedTime() ), callback ( std::move( callback ) ) { }
 
   ~ScopedTimer() {
     if ( callback )

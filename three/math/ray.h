@@ -2,12 +2,11 @@
 #define THREE_RAY_H
 
 #include <three/common.h>
-
 #include <three/math/math.h>
 #include <three/objects/mesh.h>
 
 namespace three {
-    
+
 class Ray {
 
 public:
@@ -15,10 +14,10 @@ public:
   Ray()
     : origin( Vector3() ), direction( Vector3() ) { };
 
-  Ray( const Vector3& originIn ) 
+  Ray( const Vector3& originIn )
     : origin( originIn ), direction( Vector3() ) { }
 
-  Ray( const Vector3& originIn, const Vector3& directionIn ) 
+  Ray( const Vector3& originIn, const Vector3& directionIn )
     : origin( originIn ), direction( directionIn ) { }
 
   Vector3 origin;

@@ -2,6 +2,9 @@
 #define THREE_GEOMETRY_CPP
 
 #include <three/core/geometry.h>
+#include <three/core/face.h>
+#include <three/math/vector3.h>
+#include <three/math/vector4.h>
 
 namespace three {
 
@@ -72,7 +75,7 @@ void Geometry::computeFaceNormals() {
 
     auto cb = sub( vC, vB );
     auto ab = sub( vA, vB );
-    cb.crossSelf( ab );
+    cb.cross( ab );
 
     if ( !cb.isZero() ) {
 
@@ -88,8 +91,8 @@ void Geometry::computeFaceNormals() {
 
 void Geometry::computeVertexNormals() {
 
-    // create internal buffers for reuse when calling this method repeatedly
-    // (otherwise memory allocation / deallocation every frame is big resource hog)
+  // create internal buffers for reuse when calling this method repeatedly
+  // (otherwise memory allocation / deallocation every frame is big resource hog)
 
   if ( normals.size() == 0 ) {
     normals.resize( vertices.size() );
@@ -117,13 +120,13 @@ void Geometry::computeVertexNormals() {
 
 void Geometry::computeTangents() {
 
-    // based on http://www.terathon.com/code/tangent.html
-    // tangents go to vertices
+  // based on http://www.terathon.com/code/tangent.html
+  // tangents go to vertices
 
   std::vector<Vector3> tan1( vertices.size() );
   std::vector<Vector3> tan2( vertices.size() );
 
-  auto handleTriangle = [&, this]( const std::array<UV, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
+  auto handleTriangle = [&, this]( const std::array<Vector2, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
 
     const auto& vA = vertices[ a ];
     const auto& vB = vertices[ b ];
@@ -140,18 +143,18 @@ void Geometry::computeTangents() {
     const auto z1 = vB.z - vA.z;
     const auto z2 = vC.z - vA.z;
 
-    const auto s1 = uvB.u - uvA.u;
-    const auto s2 = uvC.u - uvA.u;
-    const auto t1 = uvB.v - uvA.v;
-    const auto t2 = uvC.v - uvA.v;
+    const auto s1 = uvB.x - uvA.x;
+    const auto s2 = uvC.x - uvA.x;
+    const auto t1 = uvB.y - uvA.y;
+    const auto t2 = uvC.y - uvA.y;
 
     const auto r = 1.0f / ( s1 * t2 - s2 * t1 );
     Vector3 sdir( ( t2 * x1 - t1 * x2 ) * r,
-                 ( t2 * y1 - t1 * y2 ) * r,
-                 ( t2 * z1 - t1 * z2 ) * r );
+                  ( t2 * y1 - t1 * y2 ) * r,
+                  ( t2 * z1 - t1 * z2 ) * r );
     Vector3 tdir( ( s1 * x2 - s2 * x1 ) * r,
-                 ( s1 * y2 - s2 * y1 ) * r,
-                 ( s1 * z2 - s2 * z1 ) * r );
+                  ( s1 * y2 - s2 * y1 ) * r,
+                  ( s1 * z2 - s2 * z1 ) * r );
 
     tan1[ a ].add( sdir );
     tan1[ b ].add( sdir );
@@ -168,11 +171,11 @@ void Geometry::computeTangents() {
     auto& face = faces[ f ];
     auto& uv = faceVertexUvs[ 0 ][ f ]; // use UV layer 0 for tangents
 
-    if ( face.type() == THREE::Face3 ) {
+    if ( face.type() == enums::Face3 ) {
 
       handleTriangle( uv, face.a, face.b, face.c, 0, 1, 2 );
 
-    } else if ( face.type() == THREE::Face4 ) {
+    } else if ( face.type() == enums::Face4 ) {
 
       handleTriangle( uv, face.a, face.b, face.c, 0, 1, 2 );
       handleTriangle( uv, face.a, face.b, face.d, 0, 1, 3 );
@@ -200,7 +203,7 @@ void Geometry::computeTangents() {
 
       // Calculate handedness
 
-      tmp2.cross( face.vertexNormals[ i ], t );
+      tmp2.crossVectors( face.vertexNormals[ i ], t );
       const auto test = tmp2.dot( tan2[ vertexIndex ] );
       const auto w = ( test < 0.0f ) ? -1.0f : 1.0f;
 
@@ -300,6 +303,7 @@ void Geometry::mergeVertices() {
 
 Geometry::Geometry()
   : id( GeometryCount()++ ),
+    uuid( Math::generateUUID() ),
     faceVertexUvs( 2 ),
     hasTangents( false ),
     dynamic( true ),

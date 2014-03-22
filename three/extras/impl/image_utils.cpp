@@ -184,7 +184,8 @@ inline DDS parseDDS( const std::vector<unsigned char>& buffer, bool loadMipmaps 
 
 #ifdef TODO_NORMAL_MAP
 
-inline getNormalMap: function( image, depth ) {
+inline getNormalMap:
+function( image, depth ) {
 
   // Adapted from http://www.paulbrunt.co.uk/lab/heightnormal/
 
@@ -288,7 +289,7 @@ inline getNormalMap: function( image, depth ) {
 /////////////////////////////////////////////////////////////////////////
 
 Texture::Ptr ImageUtils::loadTexture( const std::string& url ) {
-                                      //,enums::Mapping mapping /*= enums::UVMapping*/ ) {
+  //,enums::Mapping mapping /*= enums::UVMapping*/ ) {
 
   typedef std::unique_ptr<unsigned char, std::function<void(unsigned char*)>> stbi_ptr;
 
@@ -303,16 +304,16 @@ Texture::Ptr ImageUtils::loadTexture( const std::string& url ) {
   }
 
   return Texture::create(
-    TextureDesc( Image(data.get(), w * h * n, w, h),
-                 n == 3 ? enums::RGBFormat : enums::RGBAFormat )
-  );
+           TextureDesc( Image(data.get(), w * h * n, w, h),
+                        n == 3 ? enums::RGBFormat : enums::RGBAFormat )
+         );
 
 }
 
 #ifdef TODO_LOAD_COMPRESSED_TEXTURE
 
 Texture::Ptr ImageUtils::loadCompressedTexture( const std::string& url,
-                                                enums::Mapping mapping /*= enums::UVMapping*/ ) {
+    enums::Mapping mapping /*= enums::UVMapping*/ ) {
 
   var texture = new enums::CompressedTexture();
   texture.mapping = mapping;
@@ -375,8 +376,8 @@ Texture::Ptr ImageUtils::generateDataTexture( int width, int height, Color color
   }
 
   auto texture = Texture::create(
-    TextureDesc( Image(data, width, height), enums::RGBFormat )
-  );
+                   TextureDesc( Image(data, width, height), enums::RGBFormat )
+                 );
   texture->needsUpdate(true);
 
   return texture;
@@ -386,7 +387,7 @@ Texture::Ptr ImageUtils::generateDataTexture( int width, int height, Color color
 #ifdef TODO_LOAD_TEXTURE_CUBE
 
 Texture::Ptr ImageUtils::loadTextureCube( std::array<std: string, 6> array,
-enums::Mapping mapping = enums::UVMapping ) {
+    enums::Mapping mapping = enums::UVMapping ) {
 
   var images = [];
   images.loadCount = 0;
@@ -429,7 +430,7 @@ enums::Mapping mapping = enums::UVMapping ) {
 }
 
 Texture::Ptr ImageUtils::loadCompressedTextureCube( std::array<std: string, 6> array,
-enums::Mapping mapping = enums::UVMapping ) {
+    enums::Mapping mapping = enums::UVMapping ) {
 
   var images = [];
   images.loadCount = 0;

@@ -3,6 +3,8 @@
 
 #include <three/math/plane.h>
 #include <three/math/line3.h>
+#include <three/math/vector3.h>
+#include <three/math/matrix3.h>
 
 namespace three {
 
@@ -15,15 +17,15 @@ Vector3 Plane::intersectLine( const Line3& line) const {
 
   if ( denominator == 0 ) {
 
-      // line is coplanar, return origin
-      if( distanceToPoint( line.start ) == 0 ) {
+    // line is coplanar, return origin
+    if( distanceToPoint( line.start ) == 0 ) {
 
-          return result.copy( line.start );
+      return result.copy( line.start );
 
-      }
+    }
 
-      // Unsure if this is the correct method to handle this case.
-      return result;
+    // Unsure if this is the correct method to handle this case.
+    return result;
 
   }
 
@@ -31,7 +33,7 @@ Vector3 Plane::intersectLine( const Line3& line) const {
 
   if( t < 0 || t > 1 ) {
 
-      return result;
+    return result;
 
   }
 
@@ -41,30 +43,30 @@ Vector3 Plane::intersectLine( const Line3& line) const {
 
 Vector3& Plane::intersectLine( const Line3& line, Vector3& target) {
 
-	auto direction = line.delta();
-	auto denominator = normal.dot( direction );
+  auto direction = line.delta();
+  auto denominator = normal.dot( direction );
 
-	if ( denominator == 0 ) {
-		// line is coplanar, return origin
-		if( distanceToPoint( line.start ) == 0 ) {
+  if ( denominator == 0 ) {
+    // line is coplanar, return origin
+    if( distanceToPoint( line.start ) == 0 ) {
 
-			return target.copy( line.start );
+      return target.copy( line.start );
 
-		}
+    }
 
-		// Unsure if this is the correct method to handle this case.
-		return target;
+    // Unsure if this is the correct method to handle this case.
+    return target;
 
-	}
+  }
 
-	auto t = - ( line.start.dot( normal ) + constant ) / denominator;
+  auto t = - ( line.start.dot( normal ) + constant ) / denominator;
 
-	if( t < 0 || t > 1 ) {
+  if( t < 0 || t > 1 ) {
 
-		return target;
+    return target;
 
-	}
-	return target.copy( direction ).multiplyScalar( t ).add( line.start );
+  }
+  return target.copy( direction ).multiplyScalar( t ).add( line.start );
 }
 
 
@@ -82,8 +84,8 @@ Plane& Plane::applyMatrix4( const Matrix4& matrix, const Matrix3& normalMatrix) 
   auto v2 = Vector3();
   //auto m1 = Matrix3();
 
-  		// compute new normal based on theory here:
-  		// http://www.songho.ca/opengl/gl_normaltransform.html
+  // compute new normal based on theory here:
+  // http://www.songho.ca/opengl/gl_normaltransform.html
   auto newNormal = v1.copy( normal ).applyMatrix3( normalMatrix );
 
   auto newCoplanarPoint = coplanarPoint( v2 );

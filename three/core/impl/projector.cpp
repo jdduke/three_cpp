@@ -10,6 +10,7 @@
 
 #include <three/math/frustum.h>
 #include <three/math/matrix4.h>
+#include <three/math/vector4.h>
 
 #include <three/objects/line.h>
 #include <three/objects/mesh.h>
@@ -401,16 +402,16 @@ Vector3& Projector::projectVector( Vector3& vector, const Camera& camera ) {
 
 Vector3& Projector::unprojectVector( Vector3& vector, const Camera& camera ) {
 
-auto& d = *impl;
+  auto& d = *impl;
 
-    auto projectionMatrixInverse = Matrix4();
+  auto projectionMatrixInverse = Matrix4();
 
 
 
-      projectionMatrixInverse.getInverse( camera.projectionMatrix );
-      d._viewProjectionMatrix.multiplyMatrices( camera.matrixWorld, projectionMatrixInverse );
+  projectionMatrixInverse.getInverse( camera.projectionMatrix );
+  d._viewProjectionMatrix.multiplyMatrices( camera.matrixWorld, projectionMatrixInverse );
 
-      return vector.applyProjection( d._viewProjectionMatrix );
+  return vector.applyProjection( d._viewProjectionMatrix );
 }
 
 Ray Projector::pickingRay( Vector3 vector, const Camera& camera ) {
@@ -446,7 +447,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
     if ( !object.visible ) return;
 
     if ( ( object.type() == enums::Mesh || object.type() == enums::Line ) &&
-    ( !object.frustumCulled || d._frustum.contains( object ) ) ) {
+         ( !object.frustumCulled || d._frustum.contains( object ) ) ) {
 
       Vector3 vector3 = object.matrixWorld.getPosition();
       d._viewProjectionMatrix.multiplyVector3( vector3 );

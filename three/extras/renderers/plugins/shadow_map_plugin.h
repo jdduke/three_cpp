@@ -3,6 +3,15 @@
 
 #include <three/common.h>
 
+#include <three/math/frustum.h>
+
+#include <three/core/interfaces.h>
+#include <three/core/projector.h>
+
+#include <three/renderers/gl_renderer.h>
+#include <three\materials\shader_material.h>
+#include <three\renderers\gl_shaders.h>
+
 namespace three {
 
 class ShadowMapPlugin : public IPlugin {
@@ -25,7 +34,7 @@ class ShadowMapPlugin : public IPlugin {
   virtual void init( GLRenderer& renderer ) {
 
     _gl = renderer.context;
-    _renderer = renderer;
+    _renderer = &renderer;
 
     const auto& depthShader = ShaderLib::depthRGBA();
     Uniforms depthUniforms  = depthShader.uniforms;
@@ -42,7 +51,7 @@ class ShadowMapPlugin : public IPlugin {
 
   }
 
-  void render( Scenee& scene, Camera& camera ) {
+  void render( Scene& scene, Camera& camera ) {
     if ( !( _renderer->shadowMapEnabled &&
             _renderer->shadowMapAutoUpdate ) ) {
       return;
@@ -131,7 +140,7 @@ class ShadowMapPlugin : public IPlugin {
 
       if ( ! light.shadowMap ) {
 
-      	var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat };
+        var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat };
 
         light.shadowMap = GLRenderTarget::create( light.shadowMapWidth, light.shadowMapHeight, pars );
         light.shadowMapSize = Vector2( light.shadowMapWidth, light.shadowMapHeight );
@@ -158,7 +167,7 @@ class ShadowMapPlugin : public IPlugin {
       }
 
       if ( light.shadowCameraVisible && ! light.cameraHelper ) {
-      	// TODO
+        // TODO
         light.cameraHelper = CameraHelper::create( light.shadowCamera );
         light.shadowCamera.add( light.cameraHelper );
       }
@@ -308,31 +317,31 @@ class ShadowMapPlugin : public IPlugin {
     virtualLight->onlyShadow = true;
     virtualLight->castShadow = true;
 
-		virtualLight->shadowCameraNear = light.shadowCameraNear;
-		virtualLight->shadowCameraFar  = light.shadowCameraFar;
+    virtualLight->shadowCameraNear = light.shadowCameraNear;
+    virtualLight->shadowCameraFar  = light.shadowCameraFar;
 
-		virtualLight->shadowCameraLeft   = light.shadowCameraLeft;
-		virtualLight->shadowCameraRight  = light.shadowCameraRight;
-		virtualLight->shadowCameraBottom = light.shadowCameraBottom;
-		virtualLight->shadowCameraTop    = light.shadowCameraTop;
+    virtualLight->shadowCameraLeft   = light.shadowCameraLeft;
+    virtualLight->shadowCameraRight  = light.shadowCameraRight;
+    virtualLight->shadowCameraBottom = light.shadowCameraBottom;
+    virtualLight->shadowCameraTop    = light.shadowCameraTop;
 
     virtualLight->shadowCameraVisible = light.shadowCameraVisible;
 
     virtualLight->shadowDarkness = light.shadowDarkness;
 
-		virtualLight->shadowBias      = light.shadowCascadeBias[ cascade ];
-		virtualLight->shadowMapWidth  = light.shadowCascadeWidth[ cascade ];
-		virtualLight->shadowMapHeight = light.shadowCascadeHeight[ cascade ];
+    virtualLight->shadowBias      = light.shadowCascadeBias[ cascade ];
+    virtualLight->shadowMapWidth  = light.shadowCascadeWidth[ cascade ];
+    virtualLight->shadowMapHeight = light.shadowCascadeHeight[ cascade ];
 
     virtualLight->pointsWorld.resize( 8 );
     virtualLight->pointsFrustum.resize( 8 );
 
-		auto& pointsWorld   = virtualLight->pointsWorld;
-		auto& pointsFrustum = virtualLight->pointsFrustum;
+    auto& pointsWorld   = virtualLight->pointsWorld;
+    auto& pointsFrustum = virtualLight->pointsFrustum;
 
     for ( int i = 0; i < 8; i ++ ) {
-			pointsWorld[ i ]   = new THREE.Vector3();
-			pointsFrustum[ i ] = new THREE.Vector3();
+      pointsWorld[ i ]   = new THREE.Vector3();
+      pointsFrustum[ i ] = new THREE.Vector3();
     }
 
     const auto nearZ = light.shadowCascadeNearZ[ cascade ];
@@ -415,10 +424,10 @@ class ShadowMapPlugin : public IPlugin {
 
     }
 
-		shadowCamera.left   = _min.x;
-		shadowCamera.right  = _max.x;
-		shadowCamera.top    = _max.y;
-		shadowCamera.bottom = _min.y;
+    shadowCamera.left   = _min.x;
+    shadowCamera.right  = _max.x;
+    shadowCamera.top    = _max.y;
+    shadowCamera.bottom = _min.y;
 
     // can't really fit near/far
     //shadowCamera.near = _min.z;

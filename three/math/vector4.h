@@ -4,6 +4,7 @@
 #include <three/common.h>
 
 #include <three/math/math.h>
+#include <three/math/vector3.h>
 
 namespace three {
 
@@ -12,33 +13,39 @@ class Vector4 {
 public:
 
   union {
-    struct { float x, y, z, w; };
+    struct {
+      float x, y, z, w;
+    };
     float xyzw[4];
   };
 
-  Vector4() 
-      : x( 0 ), y( 0 ), z( 0 ), w( 1.f ) {}
+  Vector4()
+    : x( 0 ), y( 0 ), z( 0 ), w( 1.f ) {}
 
-  Vector4( float xIn, float yIn, float zIn, float wIn = 1.f ) 
-      : x( xIn ), y( yIn ), z( zIn ), w( wIn ) {}
+  Vector4( float xIn, float yIn, float zIn, float wIn = 1.f )
+    : x( xIn ), y( yIn ), z( zIn ), w( wIn ) {}
 
-  explicit Vector4( float value ) 
-   : x( value ), y( value ), z( value ), w( value ) { }
+  explicit Vector4( float value )
+    : x( value ), y( value ), z( value ), w( value ) { }
 
   explicit Vector4( float* values ) : x( values[0] ), y( values[1] ), z( values[2] ), w( values[3] ) { }
 
-  float& operator[]( const int i ) { return xyzw[i]; }
+  float& operator[]( const int i ) {
+    return xyzw[i];
+  }
 
-  const float operator[]( const int i ) const { return xyzw[i]; }
+  const float operator[]( const int i ) const {
+    return xyzw[i];
+  }
 
   inline Vector4& set( float xIn, float yIn, float zIn, float wIn ) {
 
-      x = xIn;
-      y = yIn;
-      z = zIn;
-      w = wIn;
+    x = xIn;
+    y = yIn;
+    z = zIn;
+    w = wIn;
 
-      return *this;
+    return *this;
   }
 
   inline Vector4& setX( float xIn ) {
@@ -163,7 +170,7 @@ public:
   Vector4& applyMatrix4( const Matrix4& m );
 
   inline Vector4& divideScalar( float s ) {
-    
+
     if ( s != 0.f ) {
 
       return multiplyScalar( 1.f / s );
@@ -237,7 +244,7 @@ public:
     }
 
     return *this;
-    
+
   }
 
   inline Vector4& clamp( const Vector4& min, const Vector4& max ) {
@@ -280,7 +287,7 @@ public:
     } else if ( w > max.w ) {
 
       w = max.w;
-      
+
     }
 
     return *this;
@@ -349,12 +356,12 @@ public:
   inline Vector4 clone() const {
 
     return *this;
-    
+
   }
 
 };
 
-  static_assert( sizeof( Vector4 ) == sizeof( float ) * 4, "Invalid Vector4 storage size" );
+static_assert( sizeof( Vector4 ) == sizeof( float ) * 4, "Invalid Vector4 storage size" );
 
 } // namespace three
 

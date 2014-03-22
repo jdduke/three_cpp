@@ -4,7 +4,10 @@
 #include <three/core/geometry.h>
 #include <three/core/face3.h>
 #include <three/core/face4.h>
+
 #include <three/math/math.h>
+
+#include <three/utils/conversion.h>
 
 namespace three {
 
@@ -40,7 +43,7 @@ protected:
 
     Vector3 center;
 
-    std::vector<UV> tmpUvs;
+    std::vector<Vector2> tmpUvs;
     std::vector<Vector3> tmpNormals;
 
     for ( int j = 0; j <= segmentsR; j++ ) {
@@ -60,7 +63,7 @@ protected:
 
         vertices.push_back( vertex );
 
-        tmpUvs.push_back( UV( (float)i / segmentsT, (float)j / segmentsR ) );
+        tmpUvs.push_back( Vector2( (float)i / segmentsT, (float)j / segmentsR ) );
         tmpNormals.push_back( vertex.clone().sub( center ).normalize() );
 
       }

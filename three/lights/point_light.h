@@ -8,7 +8,7 @@
 namespace three {
 
 class PointLight : public Light {
-	
+
 public:
 
   typedef std::shared_ptr<PointLight> Ptr;
@@ -19,9 +19,9 @@ public:
 
   }
 
-  virtual enums::Type type() const { 
+  virtual enums::Type type() const {
 
-  	return enums::PointLight; 
+    return enums::PointLight;
 
   }
 

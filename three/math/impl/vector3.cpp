@@ -3,6 +3,9 @@
 
 #include <three/math/vector3.h>
 #include <three/math/vector4.h>
+#include <three/math/matrix3.h>
+#include <three/math/matrix4.h>
+#include <three/math/quaternion.h>
 
 namespace three {
 
@@ -93,7 +96,7 @@ Vector3& Vector3::setFromMatrixPosition( const Matrix4& m ) {
 }
 
 Vector3& Vector3::setFromMatrixScale( const Matrix4& m ) {
-  
+
   x = set( m.elements[ 0 ], m.elements[ 1 ], m.elements[  2 ] ).length();
   y = set( m.elements[ 4 ], m.elements[ 5 ], m.elements[  6 ] ).length();
   z = set( m.elements[ 8 ], m.elements[ 9 ], m.elements[ 10 ] ).length();

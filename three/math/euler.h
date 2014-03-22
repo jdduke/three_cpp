@@ -3,8 +3,12 @@
 
 #include <three/common.h>
 
+#include <three/constants.h>
+
+#include <three/math/quaternion.h>
+
 namespace three {
-    
+
 class Euler {
 
 public:
@@ -157,29 +161,29 @@ public:
 
   inline Euler clone() {
 
-      return *this;
-      
+    return *this;
+
   }
 
 private:
-    
-    inline void _updateQuaternion() {
 
-      _quaternion->setFromEuler( *this, false );
+  inline void _updateQuaternion() {
 
-    }
+    _quaternion->setFromEuler( *this, false );
 
-    inline float _clamp( float x ) {
+  }
 
-      return Math::min( Math::max( x, -1.f ), 1.f );
+  inline float _clamp( float x ) {
 
-    }
-    
-    float _x, _y, _z;
-    
-    enums::EulerRotationOrder _order;
-    
-    std::shared_ptr<Quaternion> _quaternion;
+    return Math::min( Math::max( x, -1.f ), 1.f );
+
+  }
+
+  float _x, _y, _z;
+
+  enums::EulerRotationOrder _order;
+
+  std::shared_ptr<Quaternion> _quaternion;
 
 };
 

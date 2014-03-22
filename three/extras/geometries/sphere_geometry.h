@@ -4,7 +4,10 @@
 #include <three/core/geometry.h>
 #include <three/core/face3.h>
 #include <three/core/face4.h>
+
 #include <three/math/math.h>
+
+#include <three/utils/conversion.h>
 
 namespace three {
 
@@ -48,12 +51,12 @@ protected:
     const auto segmentsY = Math::max( 2, ( int )Math::floor( segmentsHeight ) );
 
     std::vector<std::vector<int>> indices;
-    std::vector<std::vector<UV>> uvs;
+    std::vector<std::vector<Vector2>> uvs;
 
     for ( int y = 0; y <= segmentsY; y ++ ) {
 
       std::vector<int> indicesRow;
-      std::vector<UV> uvsRow;
+      std::vector<Vector2> uvsRow;
 
       for ( int x = 0; x <= segmentsX; x ++ ) {
 
@@ -68,7 +71,7 @@ protected:
         vertices.push_back( vertex );
 
         indicesRow.push_back( ( int )vertices.size() - 1 );
-        uvsRow.push_back( UV( u, 1 - v ) );
+        uvsRow.push_back( Vector2( u, 1 - v ) );
 
       }
 

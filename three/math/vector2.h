@@ -89,9 +89,9 @@ public:
     } else {
 
       return y;
-      
+
     }
-      
+
   }
 
   inline Vector2& copy( const Vector2& v ) {
@@ -350,7 +350,7 @@ public:
   inline bool isZero() const {
 
     return ( lengthSq() < 0.0001 /* almostZero */ );
-    
+
   }
 
 };

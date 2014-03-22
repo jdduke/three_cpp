@@ -17,7 +17,9 @@ struct Image {
     : data( buffer, buffer + bufferLength ), width( width ), height( height ), __glTextureCube( 0 ) { }
   Image( std::vector<unsigned char> data, int width, int height )
     : data( std::move( data ) ), width( width ), height( height ), __glTextureCube( 0 ) { }
-  bool valid() const { return data.size() > 0 && width > 0 && height > 0; }
+  bool valid() const {
+    return data.size() > 0 && width > 0 && height > 0;
+  }
   std::vector<unsigned char> data;
   int width, height;
   unsigned __glTextureCube;
@@ -58,9 +60,9 @@ public:
 
   typedef std::shared_ptr<Texture> Ptr;
 
-  static Ptr create( const TextureDesc& desc ) { 
+  static Ptr create( const TextureDesc& desc ) {
 
-    return three::make_shared<Texture>( desc ); 
+    return three::make_shared<Texture>( desc );
 
   }
 
@@ -93,9 +95,9 @@ public:
 
   std::function<void( void )> onUpdate;
 
-  virtual enums::TextureType type() const { 
+  virtual enums::TextureType type() const {
 
-    return enums::Texture; 
+    return enums::Texture;
 
   }
 

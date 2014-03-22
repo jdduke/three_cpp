@@ -13,7 +13,7 @@ public:
   typedef std::shared_ptr<Text2DGeometry> Ptr;
 
   static Ptr create( const std::string& text,
-                                const Font::Ptr& font );
+                     const Font::Ptr& font );
 
 #ifdef TODO_THREE_DYNAMIC_GEOMETRY
   void update( const std::string& text );
@@ -22,7 +22,7 @@ public:
 protected:
 
   Text2DGeometry( const std::string& text,
-                             const Font::Ptr& font );
+                  const Font::Ptr& font );
 
   void update();
 

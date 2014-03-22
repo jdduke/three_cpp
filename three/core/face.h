@@ -4,7 +4,9 @@
 #include <three/common.h>
 #include <three/constants.h>
 #include <three/math/vector3.h>
+#include <three/math/vector4.h>
 #include <three/math/color.h>
+
 #include <array>
 
 namespace three {
@@ -48,7 +50,9 @@ public:
 public:
 
   union {
-    struct { int a, b, c, d; };
+    struct {
+      int a, b, c, d;
+    };
     int abcd[4];
   };
 
@@ -69,7 +73,7 @@ private:
   enums::FaceType mType;
   int mSize;
 
-  Face( ) THREE_DECL_DELETE;
+  Face( ) {} THREE_DECL_DELETE;
 
 };
 

@@ -9,11 +9,16 @@
 
 #include <three/cameras/camera.h>
 
-#include <three/math/frustum.h>
+#include <three/math/vector2.h>
+#include <three/math/vector3.h>
+#include <three/math/vector4.h>
+#include <three/math/color.h>
+
 #include <three/core/interfaces.h>
 #include <three/core/buffer_geometry.h>
 #include <three/core/geometry.h>
 #include <three/core/geometry_group.h>
+#include <three/core/face.h>
 
 #include <three/lights/spot_light.h>
 #include <three/lights/hemisphere_light.h>
@@ -21,6 +26,7 @@
 #include <three/materials/program.h>
 
 #include <three/objects/line.h>
+#include <three/objects/mesh.h>
 
 #include <three/renderers/gl_render_target.h>
 #include <three/renderers/gl_shaders.h>
@@ -805,8 +811,8 @@ enums::Shading GLRenderer::bufferGuessNormalType( const Material* material ) {
   // only MeshBasicMaterial and MeshDepthMaterial don't need normals
 
   if ( material &&
-      (( material->type() == enums::MeshBasicMaterial && !material->envMap ) ||
-       ( material->type() == enums::MeshDepthMaterial )) ) {
+       (( material->type() == enums::MeshBasicMaterial && !material->envMap ) ||
+        ( material->type() == enums::MeshDepthMaterial )) ) {
     return enums::NoShading;
   }
 
@@ -897,7 +903,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     std::sort( sortArray.begin(),
                sortArray.end(),
-               []( const SortPair & a, const SortPair & b ) {
+    []( const SortPair & a, const SortPair & b ) {
       return a.first > b.first;
     } );
 
@@ -1197,7 +1203,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       offset_skin        = 0,
       offset_morphTarget = 0,
       offset_custom      = 0;
-      // UNUSED: offset_customSrc = 0;
+  // UNUSED: offset_customSrc = 0;
 
   auto& vertexArray  = geometryGroup.__vertexArray;
   auto& uvArray      = geometryGroup.__uvArray;
@@ -2711,7 +2717,7 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
 
   if ( dispose ) {
 
-for ( auto& attribute : geometry.attributes ) {
+    for ( auto& attribute : geometry.attributes ) {
 
       attribute.second.array.clear();
 
@@ -3171,20 +3177,20 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
   } else if ( attributes[AttributeKey::position()].valid() ) {
 
-  glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
+    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
     glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
   if ( object.morphTargetForcedOrder.size() ) {
 
-  // set forced order
+    // set forced order
 
-  auto m = 0;
-  auto& order = object.morphTargetForcedOrder;
-  auto& influences = object.glData.morphTargetInfluences;
+    auto m = 0;
+    auto& order = object.morphTargetForcedOrder;
+    auto& influences = object.glData.morphTargetInfluences;
 
-  while ( m < material.numSupportedMorphTargets && m < order.size() ) {
+    while ( m < material.numSupportedMorphTargets && m < order.size() ) {
 
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ order[ m ] ] );
       glVertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
@@ -3285,7 +3291,7 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
   if ( material.program.uniforms.morphTargetInfluences.size() > 0 ) {
 
-  glUniform1fv( material.program.uniforms.morphTargetInfluences, object.__glMorphTargetInfluences );
+    glUniform1fv( material.program.uniforms.morphTargetInfluences, object.__glMorphTargetInfluences );
 
   }
 
@@ -3735,10 +3741,10 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
 void GLRenderer::initGLObjects( Scene& scene ) {
 
-    /*scene.__glObjects.clear();
-    scene.__glObjectsImmediate.clear();
-    scene.__glSprites.clear();
-    scene.__glFlares.clear();*/
+  /*scene.__glObjects.clear();
+  scene.__glObjectsImmediate.clear();
+  scene.__glSprites.clear();
+  scene.__glFlares.clear();*/
 
   while ( scene.__objectsAdded.size() ) {
     addObject( *scene.__objectsAdded[ 0 ], scene );
@@ -5199,10 +5205,10 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( physicallyBasedShading ) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
 
     ss << "#define MAX_DIR_LIGHTS "   << parameters.maxDirLights << std::endl <<
-          "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
-          "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
-          "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl <<
-          "#define MAX_BONES "        << parameters.maxBones << std::endl;
+    "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
+    "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
+    "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl <<
+    "#define MAX_BONES "        << parameters.maxBones << std::endl;
 
     if ( parameters.map )          ss << "#define USE_MAP" << std::endl;
     if ( parameters.envMap )       ss << "#define USE_ENVMAP" << std::endl;
@@ -5301,9 +5307,9 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.bumpMap ) ss << "#extension GL_OES_standard_derivatives : enable" << std::endl;
 
     ss << "#define MAX_DIR_LIGHTS "   << parameters.maxDirLights << std::endl <<
-          "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
-          "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
-          "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl;
+    "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
+    "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
+    "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl;
 
     if ( parameters.alphaTest ) ss << "#define ALPHATEST " << parameters.alphaTest << std::endl;
 
@@ -5332,7 +5338,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" <<  std::endl;
 
     ss << "uniform mat4 viewMatrix;" << std::endl <<
-          "uniform vec3 cameraPosition;" << std::endl;
+    "uniform vec3 cameraPosition;" << std::endl;
 
     return ss.str();
 
@@ -5854,56 +5860,97 @@ int GLRenderer::paramThreeToGL( int p ) {
 
   switch ( p ) {
 
-  case enums::RepeatWrapping: return GL_REPEAT;
-  case enums::ClampToEdgeWrapping: return GL_CLAMP_TO_EDGE;
-  case enums::MirroredRepeatWrapping: return GL_MIRRORED_REPEAT;
+  case enums::RepeatWrapping:
+    return GL_REPEAT;
+  case enums::ClampToEdgeWrapping:
+    return GL_CLAMP_TO_EDGE;
+  case enums::MirroredRepeatWrapping:
+    return GL_MIRRORED_REPEAT;
 
-  case enums::NearestFilter: return GL_NEAREST;
-  case enums::NearestMipMapNearestFilter: return GL_NEAREST_MIPMAP_NEAREST;
-  case enums::NearestMipMapLinearFilter: return GL_NEAREST_MIPMAP_LINEAR;
+  case enums::NearestFilter:
+    return GL_NEAREST;
+  case enums::NearestMipMapNearestFilter:
+    return GL_NEAREST_MIPMAP_NEAREST;
+  case enums::NearestMipMapLinearFilter:
+    return GL_NEAREST_MIPMAP_LINEAR;
 
-  case enums::LinearFilter: return GL_LINEAR;
-  case enums::LinearMipMapNearestFilter: return GL_LINEAR_MIPMAP_NEAREST;
-  case enums::LinearMipMapLinearFilter: return GL_LINEAR_MIPMAP_LINEAR;
+  case enums::LinearFilter:
+    return GL_LINEAR;
+  case enums::LinearMipMapNearestFilter:
+    return GL_LINEAR_MIPMAP_NEAREST;
+  case enums::LinearMipMapLinearFilter:
+    return GL_LINEAR_MIPMAP_LINEAR;
 
-  case enums::UnsignedByteType: return GL_UNSIGNED_BYTE;
-  case enums::UnsignedShort4444Type: return GL_UNSIGNED_SHORT_4_4_4_4;
-  case enums::UnsignedShort5551Type: return GL_UNSIGNED_SHORT_5_5_5_1;
-  case enums::UnsignedShort565Type: return GL_UNSIGNED_SHORT_5_6_5;
+  case enums::UnsignedByteType:
+    return GL_UNSIGNED_BYTE;
+  case enums::UnsignedShort4444Type:
+    return GL_UNSIGNED_SHORT_4_4_4_4;
+  case enums::UnsignedShort5551Type:
+    return GL_UNSIGNED_SHORT_5_5_5_1;
+  case enums::UnsignedShort565Type:
+    return GL_UNSIGNED_SHORT_5_6_5;
 
-  case enums::ByteType: return GL_BYTE;
-  case enums::ShortType: return GL_SHORT;
-  case enums::UnsignedShortType: return GL_UNSIGNED_SHORT;
-  case enums::IntType: return GL_INT;
-  case enums::UnsignedIntType: return GL_UNSIGNED_INT;
-  case enums::FloatType: return GL_FLOAT;
+  case enums::ByteType:
+    return GL_BYTE;
+  case enums::ShortType:
+    return GL_SHORT;
+  case enums::UnsignedShortType:
+    return GL_UNSIGNED_SHORT;
+  case enums::IntType:
+    return GL_INT;
+  case enums::UnsignedIntType:
+    return GL_UNSIGNED_INT;
+  case enums::FloatType:
+    return GL_FLOAT;
 
-  case enums::AlphaFormat: return GL_ALPHA;
-  case enums::RGBFormat: return GL_RGB;
-  case enums::RGBAFormat: return GL_RGBA;
-  case enums::BGRFormat: return GL_BGR;
-  case enums::BGRAFormat: return GL_BGRA;
-  case enums::LuminanceFormat: return GL_LUMINANCE;
-  case enums::LuminanceAlphaFormat: return GL_LUMINANCE_ALPHA;
+  case enums::AlphaFormat:
+    return GL_ALPHA;
+  case enums::RGBFormat:
+    return GL_RGB;
+  case enums::RGBAFormat:
+    return GL_RGBA;
+  case enums::BGRFormat:
+    return GL_BGR;
+  case enums::BGRAFormat:
+    return GL_BGRA;
+  case enums::LuminanceFormat:
+    return GL_LUMINANCE;
+  case enums::LuminanceAlphaFormat:
+    return GL_LUMINANCE_ALPHA;
 
-  case enums::AddEquation: return GL_FUNC_ADD;
-  case enums::SubtractEquation: return GL_FUNC_SUBTRACT;
-  case enums::ReverseSubtractEquation: return GL_FUNC_REVERSE_SUBTRACT;
+  case enums::AddEquation:
+    return GL_FUNC_ADD;
+  case enums::SubtractEquation:
+    return GL_FUNC_SUBTRACT;
+  case enums::ReverseSubtractEquation:
+    return GL_FUNC_REVERSE_SUBTRACT;
 
-  case enums::ZeroFactor: return GL_ZERO;
-  case enums::OneFactor: return GL_ONE;
-  case enums::SrcColorFactor: return GL_SRC_COLOR;
-  case enums::OneMinusSrcColorFactor: return GL_ONE_MINUS_SRC_COLOR;
-  case enums::SrcAlphaFactor: return GL_SRC_ALPHA;
-  case enums::OneMinusSrcAlphaFactor: return GL_ONE_MINUS_SRC_ALPHA;
-  case enums::DstAlphaFactor: return GL_DST_ALPHA;
-  case enums::OneMinusDstAlphaFactor: return GL_ONE_MINUS_DST_ALPHA;
+  case enums::ZeroFactor:
+    return GL_ZERO;
+  case enums::OneFactor:
+    return GL_ONE;
+  case enums::SrcColorFactor:
+    return GL_SRC_COLOR;
+  case enums::OneMinusSrcColorFactor:
+    return GL_ONE_MINUS_SRC_COLOR;
+  case enums::SrcAlphaFactor:
+    return GL_SRC_ALPHA;
+  case enums::OneMinusSrcAlphaFactor:
+    return GL_ONE_MINUS_SRC_ALPHA;
+  case enums::DstAlphaFactor:
+    return GL_DST_ALPHA;
+  case enums::OneMinusDstAlphaFactor:
+    return GL_ONE_MINUS_DST_ALPHA;
 
-  case enums::DstColorFactor: return GL_DST_COLOR;
-  case enums::OneMinusDstColorFactor: return GL_ONE_MINUS_DST_COLOR;
-  case enums::SrcAlphaSaturateFactor: return GL_SRC_ALPHA_SATURATE;
+  case enums::DstColorFactor:
+    return GL_DST_COLOR;
+  case enums::OneMinusDstColorFactor:
+    return GL_ONE_MINUS_DST_COLOR;
+  case enums::SrcAlphaSaturateFactor:
+    return GL_SRC_ALPHA_SATURATE;
 
-  default: return 0;
+  default:
+    return 0;
 
   }
 }

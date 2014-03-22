@@ -1,6 +1,8 @@
 #ifndef THREE_NONCOPYABLE_H
 #define THREE_NONCOPYABLE_H
 
+#include <three/common.h>
+
 namespace three {
 
 class NonCopyable {

@@ -2,8 +2,12 @@
 #define THREE_VECTOR3_H
 
 #include <three/common.h>
-#include <three/utils/memory.h>
+
+#include <three/constants.h>
+
 #include <three/math/math.h>
+
+#include <three/utils/memory.h>
 
 #include <memory>
 
@@ -32,7 +36,7 @@ public:
   Vector3( float xIn, float yIn, float zIn )
     : x( xIn ), y( yIn ), z( zIn ) {}
 
-  virtual ~Vector3();
+  virtual ~Vector3() {}
 
   explicit Vector3( float value )
     : x( value ), y( value ), z( value ) {}
@@ -40,11 +44,17 @@ public:
   explicit Vector3( float* values )
     : x( values[0] ), y( values[1] ), z( values[2] ) {}
 
-  float& operator[]( const int i ) { return xyz[i]; }
+  float& operator[]( const int i ) {
+    return xyz[i];
+  }
 
-  const float operator[]( const int i ) const { return xyz[i]; }
+  const float operator[]( const int i ) const {
+    return xyz[i];
+  }
 
-  virtual enums::Type type() const { return enums::Vector3; }
+  virtual enums::Type type() const {
+    return enums::Vector3;
+  }
 
   inline Vector3& set( float xIn, float yIn, float zIn ) {
 

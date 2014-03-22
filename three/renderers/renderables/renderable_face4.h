@@ -2,6 +2,9 @@
 #define THREE_RENDERABLE_FACE4_H
 
 #include <three/common.h>
+#include <three/constants.h>
+
+#include <three/renderers/renderables/renderable_face.h>
 
 namespace three {
 

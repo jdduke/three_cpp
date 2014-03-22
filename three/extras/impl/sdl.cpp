@@ -97,7 +97,9 @@ struct EventHandler {
   }
 
 private:
-  EventHandler() { listenerCounts.fill( 0 ); }
+  EventHandler() {
+    listenerCounts.fill( 0 );
+  }
 
   void processEvent( const SDL_Event& event ) {
 

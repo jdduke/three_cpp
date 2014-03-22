@@ -11,7 +11,7 @@
 namespace three {
 
 class Spline {
-  
+
 public:
 
   Spline( std::vector<Vector3> points )

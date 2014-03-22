@@ -18,13 +18,15 @@ public:
                      const Attributes& attributes = Attributes(),
                      const Parameters& parameters = Parameters() ) {
     return three::make_shared<ShaderMaterial>( std::move(vertexShader),
-                                               std::move(fragmentShader),
-                                               uniforms,
-                                               attributes,
-                                               parameters );
+           std::move(fragmentShader),
+           uniforms,
+           attributes,
+           parameters );
   }
 
-  virtual enums::MaterialType type() const { return enums::ShaderMaterial; }
+  virtual enums::MaterialType type() const {
+    return enums::ShaderMaterial;
+  }
 
   /////////////////////////////////////////////////////////////////////////
 

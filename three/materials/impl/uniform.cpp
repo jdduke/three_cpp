@@ -1,6 +1,8 @@
 #ifndef THREE_UNIFORM_CPP
 #define THREE_UNIFORM_CPP
 
+#include <three/constants.h>
+
 #include <three/materials/uniform.h>
 
 #include <three/math/color.h>
@@ -21,7 +23,9 @@ Uniform::Uniform( enums::UniformType type, any value /*= any()*/ )
   : type( type ), value( std::move( value ) ) { }
 
 Uniform::Uniform( Uniform&& other )
-  : type( enums::INVALID_UNIFORM ) { swap( other ); }
+  : type( enums::INVALID_UNIFORM ) {
+  swap( other );
+}
 
 Uniform::Uniform( const Uniform& other )
   : type( other.type ), value( other.value ) { }
@@ -129,35 +133,50 @@ void Uniform::load( int location ) {
     switch ( type ) {
 
     case enums::i: // single integer
-      UniformToType<enums::i>::load( location, value ); break;
+      UniformToType<enums::i>::load( location, value );
+      break;
     case enums::f: // single float
-      UniformToType<enums::f>::load( location, value ); break;
+      UniformToType<enums::f>::load( location, value );
+      break;
     case enums::v2: // single enums::Vector2
-      UniformToType<enums::v2>::load( location, value ); break;
+      UniformToType<enums::v2>::load( location, value );
+      break;
     case enums::v3: // single enums::Vector3
-      UniformToType<enums::v3>::load( location, value ); break;
+      UniformToType<enums::v3>::load( location, value );
+      break;
     case enums::v4: // single enums::Vector4
-      UniformToType<enums::v4>::load( location, value ); break;
+      UniformToType<enums::v4>::load( location, value );
+      break;
     case enums::c: // single enums::Color
-      UniformToType<enums::c>::load( location, value ); break;
+      UniformToType<enums::c>::load( location, value );
+      break;
     case enums::iv1: // flat array of integers (JS or typed array)
-      UniformToType<enums::iv1>::load( location, value ); break;
+      UniformToType<enums::iv1>::load( location, value );
+      break;
     case enums::iv: // flat array of integers with 3 x N size (JS or typed array)
-      UniformToType<enums::iv>::load( location, value ); break;
+      UniformToType<enums::iv>::load( location, value );
+      break;
     case enums::fv1: // flat array of floats (JS or typed array)
-      UniformToType<enums::fv1>::load( location, value ); break;
+      UniformToType<enums::fv1>::load( location, value );
+      break;
     case enums::fv: // flat array of floats with 3 x N size (JS or typed array)
-      UniformToType<enums::fv>::load( location, value ); break;
+      UniformToType<enums::fv>::load( location, value );
+      break;
     case enums::v2v: // array of enums::Vector2
-      UniformToType<enums::v2v>::load( location, value ); break;
+      UniformToType<enums::v2v>::load( location, value );
+      break;
     case enums::v3v: // array of enums::Vector3
-      UniformToType<enums::v3v>::load( location, value ); break;
+      UniformToType<enums::v3v>::load( location, value );
+      break;
     case enums::v4v: // array of enums::Vector4
-      UniformToType<enums::v4v>::load( location, value ); break;
+      UniformToType<enums::v4v>::load( location, value );
+      break;
     case enums::m4: // single enums::Matrix4
-      UniformToType<enums::m4>::load( location, value ); break;
+      UniformToType<enums::m4>::load( location, value );
+      break;
     case enums::m4v: // array of enums::Matrix4
-      UniformToType<enums::m4v>::load( location, value ); break;
+      UniformToType<enums::m4v>::load( location, value );
+      break;
     case enums::t: // single enums::Texture (2d or cube)
       break;
       //UniformToType<enums::t>::load( location, value ); break;

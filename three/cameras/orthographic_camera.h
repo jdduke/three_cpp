@@ -35,7 +35,7 @@ public:
   Ptr clone() {
 
     Camera::Ptr camera = Camera::clone();
-    
+
     Ptr orthographicCamera = std::static_pointer_cast<OrthographicCamera>(camera);
 
     orthographicCamera->left = left;

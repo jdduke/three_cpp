@@ -4,6 +4,7 @@
 #include <three/common.h>
 
 #include <three/math/color.h>
+#include <three/math/vector3.h>
 
 #include <three/materials/attribute.h>
 #include <three/materials/program.h>
@@ -30,9 +31,13 @@ public:
 
   typedef std::shared_ptr<Material> Ptr;
 
-  static Ptr create() { return make_shared<Material>( ); }
+  static Ptr create() {
+    return make_shared<Material>( );
+  }
 
-  virtual enums::MaterialType type() const { return enums::Material; }
+  virtual enums::MaterialType type() const {
+    return enums::Material;
+  }
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -133,7 +138,7 @@ protected:
   /////////////////////////////////////////////////////////////////////////
 
   void setParameters( const Parameters& parameters,
-                                 const ParameterKeys& keys = ParameterKeys() );
+                      const ParameterKeys& keys = ParameterKeys() );
 
   static const ParameterKeys& defaultKeys() {
     static std::array<std::string, 15> sKeys = {

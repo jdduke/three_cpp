@@ -10,17 +10,17 @@ namespace three {
 
 struct RendererParameters {
   RendererParameters()
-  : width( 1024 ), height( 768 ),
-    vsync ( true ),
-    precision( enums::PrecisionHigh ),
-    alpha( true ),
-    premultipliedAlpha( true ),
-    antialias( false ),
-    stencil( true ),
-    preserveDrawingBuffer( false ),
-    clearColor( 0 ),
-    clearAlpha( 0 ),
-    maxLights( 4 ) { }
+    : width( 1024 ), height( 768 ),
+      vsync ( true ),
+      precision( enums::PrecisionHigh ),
+      alpha( true ),
+      premultipliedAlpha( true ),
+      antialias( false ),
+      stencil( true ),
+      preserveDrawingBuffer( false ),
+      clearColor( 0 ),
+      clearAlpha( 0 ),
+      maxLights( 4 ) { }
 
   int width, height;
   bool vsync;

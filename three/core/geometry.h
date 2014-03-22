@@ -145,9 +145,7 @@ public:
 
 protected:
 
-  Geometry()
-    : uuid( Math::generateUUID() ) {}
-
+  Geometry();
   virtual ~Geometry();
 
 private:

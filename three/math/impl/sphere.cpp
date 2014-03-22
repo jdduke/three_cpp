@@ -7,51 +7,51 @@
 
 namespace three {
 
-  Sphere& Sphere::setFromPoints( const std::vector<Vector3>& points) {
+Sphere& Sphere::setFromPoints( const std::vector<Vector3>& points) {
 
-    auto box = Box3();
-    auto center = Vector3();
+  auto box = Box3();
+  auto center = Vector3();
 
-    box.setFromPoints( points ).center( center );
+  box.setFromPoints( points ).center( center );
 
-    return setFromPoints(points, center);
+  return setFromPoints(points, center);
 
+}
+
+Sphere& Sphere::setFromPoints( const std::vector<Vector3>& points, const Vector3& center  ) {
+
+  this->center.copy( center );
+
+  auto maxRadiusSq = 0.f;
+
+  for ( auto it = points.begin(); it < points.end(); it++ ) {
+    maxRadiusSq = Math::max( maxRadiusSq, center.distanceToSquared( *it ) );
   }
 
-  Sphere& Sphere::setFromPoints( const std::vector<Vector3>& points, const Vector3& center  ) {
+  radius = Math::sqrt( maxRadiusSq );
 
-    this->center.copy( center );
+  return *this;
 
-    auto maxRadiusSq = 0.f;
+}
 
-    for ( auto it = points.begin(); it < points.end(); it++ ) {
-      maxRadiusSq = Math::max( maxRadiusSq, center.distanceToSquared( *it ) );
-    }
+Box3 Sphere::getBoundingBox( ) const {
 
-    radius = Math::sqrt( maxRadiusSq );
+  auto result = Box3();
 
-    return *this;     
+  getBoundingBox( result );
 
-  }
+  return result;
 
-  Box3 Sphere::getBoundingBox( ) const {
+}
 
-    auto result = Box3();
+Box3& Sphere::getBoundingBox( Box3& target ) const {
 
-    getBoundingBox( result );
+  target.set( center, center );
+  target.expandByScalar( radius );
 
-    return result;
+  return target;
 
-  }
-
-  Box3& Sphere::getBoundingBox( Box3& target ) const {
-
-    target.set( center, center );
-    target.expandByScalar( radius );
-
-    return target;
-
-  }
+}
 
 } // end namespace
 

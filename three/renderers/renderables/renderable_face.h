@@ -2,6 +2,7 @@
 #define THREE_RENDERABLE_FACE_H
 
 #include <three/common.h>
+#include <three/constants.h>
 
 #include <three/renderers/renderables/renderable.h>
 #include <three/renderers/renderables/renderable_vertex.h>
@@ -30,9 +31,13 @@ public:
 
   std::array<std::vector<Vector2>, 4> uvs;
 
-  enums::FaceType type() const { return mType; }
+  enums::FaceType type() const {
+    return mType;
+  }
 
-  int size() { return mSize; }
+  int size() {
+    return mSize;
+  }
 
 private:
 

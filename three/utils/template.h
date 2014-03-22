@@ -59,7 +59,9 @@ inline bool push_unique( C& c, T && elem ) {
 struct Deferred {
   typedef std::function<void(void)> DeferredFunc;
   explicit Deferred( DeferredFunc&& f ) : f ( std::move(f) ) { }
-  Deferred( Deferred&& other ) { std::swap( f, other.f ); }
+  Deferred( Deferred&& other ) {
+    std::swap( f, other.f );
+  }
 private:
   DeferredFunc f;
   Deferred();

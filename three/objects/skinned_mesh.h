@@ -111,7 +111,7 @@ protected:
 
     if ( geometry && geometry->bones.size() > 0 ) {
 
-    	for ( auto& gbone : geometry->bones ) {
+      for ( auto& gbone : geometry->bones ) {
 
         const auto& p = gbone.pos;
         const auto& q = gbone.rotq;

@@ -4,6 +4,7 @@
 #include <three/common.h>
 
 #include <three/math/math.h>
+#include <three/math/plane.h>
 
 namespace three {
 
@@ -12,16 +13,14 @@ class TriangleHelper {
 public:
 
   inline static Vector3 normal( const Vector3& a, const Vector3& b, const Vector3& c) {
-    
+
     auto target = Vector3();
-    
+
     TriangleHelper::normal( a, b, c, target );
-    
+
     return target;
 
   }
-
-  static Vector3& normal( const Vector3& a, const Vector3& b, const Vector3& c, Vector3& target );
 
   inline static Vector3 barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c) {
 
@@ -33,8 +32,6 @@ public:
 
   }
 
-  static Vector3& barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c, Vector3& target );
-
   inline static bool containsPoint ( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c ) {
 
     auto v1 = Vector3();
@@ -44,9 +41,57 @@ public:
 
   }
 
+  static Vector3& normal( const Vector3& a, const Vector3& b, const Vector3& c, Vector3& target ) {
+    auto v0 = Vector3();
+
+    target.subVectors( c, b );
+    v0.subVectors( a, b );
+    target.cross( v0 );
+
+    float resultLengthSq = target.lengthSq();
+    if( resultLengthSq > 0 ) {
+      return target.multiplyScalar( 1 / Math::sqrt( resultLengthSq ) );
+    }
+
+    return target.set( 0, 0, 0 );
+  }
+
+  static Vector3& barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c, Vector3& target ) {
+    auto v0 = Vector3();
+    auto v1 = Vector3();
+    auto v2 = Vector3();
+
+
+    v0.subVectors( c, a );
+    v1.subVectors( b, a );
+    v2.subVectors( point, a );
+
+    auto dot00 = v0.dot( v0 );
+    auto dot01 = v0.dot( v1 );
+    auto dot02 = v0.dot( v2 );
+    auto dot11 = v1.dot( v1 );
+    auto dot12 = v1.dot( v2 );
+
+    auto denom = ( dot00 * dot11 - dot01 * dot01 );
+
+    // colinear or singular triangle
+    if( denom == 0 ) {
+      // arbitrary location outside of triangle?
+      // not sure if this is the best idea, maybe should be returning undefined
+      return target.set( -2, -1, -1 );
+    }
+
+    auto invDenom = 1.f / denom;
+    auto u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+    auto v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+
+    // barycoordinates must always sum to 1
+    return target.set( 1 - u - v, v, u );
+  }
+
 private:
 
-  TriangleHelper();
+  TriangleHelper() {}
 
 };
 
@@ -55,16 +100,16 @@ class Triangle {
 public:
 
   Triangle()
-    : a( Vector3() ), b( Vector3() ), c( Vector3() ) {} 
+    : a( Vector3() ), b( Vector3() ), c( Vector3() ) {}
 
   Triangle( const Vector3& aIn )
-    : a( aIn ), b( Vector3() ), c( Vector3() ) {} 
+    : a( aIn ), b( Vector3() ), c( Vector3() ) {}
 
   Triangle( const Vector3& aIn, const Vector3& bIn )
-    : a( aIn ), b( bIn ), c( Vector3() ) {} 
+    : a( aIn ), b( bIn ), c( Vector3() ) {}
 
   Triangle( const Vector3& aIn, const Vector3& bIn, const Vector3& cIn )
-    : a( aIn ), b( bIn ), c( cIn ) {} 
+    : a( aIn ), b( bIn ), c( cIn ) {}
 
   Vector3 a, b, c;
 
@@ -95,7 +140,7 @@ public:
     c.copy( triangle.c );
 
     return *this;
-    
+
   }
 
   inline float area() const {
@@ -113,7 +158,7 @@ public:
   inline Vector3 midpoint() const {
 
     auto target = Vector3();
-    
+
     midpoint( target );
 
     return target;

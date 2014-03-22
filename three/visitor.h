@@ -19,7 +19,9 @@ public:
   virtual void operator()( Line3& ) { }
   virtual ~Visitor() { }
   template < typename T >
-  void fallback( T& object ) { ( *this )( static_cast<Object3D&>( object ) ); }
+  void fallback( T& object ) {
+    ( *this )( static_cast<Object3D&>( object ) );
+  }
 };
 
 class ConstVisitor {
@@ -35,7 +37,9 @@ public:
   virtual void operator()( const Line3& ) { }
   virtual ~ConstVisitor() { }
   template < typename T >
-  void fallback( const T& object ) { ( *this )( static_cast<const Object3D&>( object ) ); }
+  void fallback( const T& object ) {
+    ( *this )( static_cast<const Object3D&>( object ) );
+  }
 };
 
 } // namespace three

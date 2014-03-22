@@ -117,17 +117,25 @@ void Font::generate( const std::string& text,
 
       x += bakedchar.xadvance;
 
-      vert[ 0 ].x = quad.x1; vert[ 0 ].y = quad.y0;
-      uv  [ 0 ].x = quad.s1; uv  [ 0 ].y = quad.t0;
+      vert[ 0 ].x = quad.x1;
+      vert[ 0 ].y = quad.y0;
+      uv  [ 0 ].x = quad.s1;
+      uv  [ 0 ].y = quad.t0;
 
-      vert[ 1 ].x = quad.x0; vert[ 1 ].y = quad.y0;
-      uv  [ 1 ].x = quad.s0; uv  [ 1 ].y = quad.t0;
+      vert[ 1 ].x = quad.x0;
+      vert[ 1 ].y = quad.y0;
+      uv  [ 1 ].x = quad.s0;
+      uv  [ 1 ].y = quad.t0;
 
-      vert[ 2 ].x = quad.x0; vert[ 2 ].y = quad.y1;
-      uv  [ 2 ].x = quad.s0; uv  [ 2 ].y = quad.t1;
+      vert[ 2 ].x = quad.x0;
+      vert[ 2 ].y = quad.y1;
+      uv  [ 2 ].x = quad.s0;
+      uv  [ 2 ].y = quad.t1;
 
-      vert[ 3 ].x = quad.x1; vert[ 3 ].y = quad.y1;
-      uv  [ 3 ].x = quad.s1; uv  [ 3 ].y = quad.t1;
+      vert[ 3 ].x = quad.x1;
+      vert[ 3 ].y = quad.y1;
+      uv  [ 3 ].x = quad.s1;
+      uv  [ 3 ].y = quad.t1;
 
 #elif 1
 
@@ -140,17 +148,25 @@ void Font::generate( const std::string& text,
                          &quad,
                          1);//1=opengl,0=old d3d
 
-      vert[ 0 ].x = quad.x0; vert[ 0 ].y = quad.y0;
-      uv  [ 0 ].u = quad.s0; uv  [ 0 ].v = quad.t1;
+      vert[ 0 ].x = quad.x0;
+      vert[ 0 ].y = quad.y0;
+      uv  [ 0 ].u = quad.s0;
+      uv  [ 0 ].v = quad.t1;
 
-      vert[ 1 ].x = quad.x1; vert[ 1 ].y = quad.y0;
-      uv  [ 1 ].u = quad.s1; uv  [ 1 ].v = quad.t1;
+      vert[ 1 ].x = quad.x1;
+      vert[ 1 ].y = quad.y0;
+      uv  [ 1 ].u = quad.s1;
+      uv  [ 1 ].v = quad.t1;
 
-      vert[ 2 ].x = quad.x1; vert[ 2 ].y = quad.y1;
-      uv  [ 2 ].u = quad.s1; uv  [ 2 ].v = quad.t0;
+      vert[ 2 ].x = quad.x1;
+      vert[ 2 ].y = quad.y1;
+      uv  [ 2 ].u = quad.s1;
+      uv  [ 2 ].v = quad.t0;
 
-      vert[ 3 ].x = quad.x0; vert[ 3 ].y = quad.y1;
-      uv  [ 3 ].u = quad.s0; uv  [ 3 ].v = quad.t0;
+      vert[ 3 ].x = quad.x0;
+      vert[ 3 ].y = quad.y1;
+      uv  [ 3 ].u = quad.s0;
+      uv  [ 3 ].v = quad.t0;
 
 #else
 
@@ -171,17 +187,25 @@ void Font::generate( const std::string& text,
 
       x += bakedchar.xadvance;
 
-      vert[ 0 ].x = quad.x1; vert[ 0 ].y = quad.y0;
-      uv  [ 0 ].u = quad.s1; uv  [ 0 ].v = quad.t0;
+      vert[ 0 ].x = quad.x1;
+      vert[ 0 ].y = quad.y0;
+      uv  [ 0 ].u = quad.s1;
+      uv  [ 0 ].v = quad.t0;
 
-      vert[ 1 ].x = quad.x0; vert[ 1 ].y = quad.y0;
-      uv  [ 1 ].u = quad.s0; uv  [ 1 ].v = quad.t0;
+      vert[ 1 ].x = quad.x0;
+      vert[ 1 ].y = quad.y0;
+      uv  [ 1 ].u = quad.s0;
+      uv  [ 1 ].v = quad.t0;
 
-      vert[ 2 ].x = quad.x0; vert[ 2 ].y = quad.y1;
-      uv  [ 2 ].u = quad.s0; uv  [ 2 ].v = quad.t1;
+      vert[ 2 ].x = quad.x0;
+      vert[ 2 ].y = quad.y1;
+      uv  [ 2 ].u = quad.s0;
+      uv  [ 2 ].v = quad.t1;
 
-      vert[ 3 ].x = quad.x1; vert[ 3 ].y = quad.y1;
-      uv  [ 3 ].u = quad.s1; uv  [ 3 ].v = quad.t1;
+      vert[ 3 ].x = quad.x1;
+      vert[ 3 ].y = quad.y1;
+      uv  [ 3 ].u = quad.s1;
+      uv  [ 3 ].v = quad.t1;
 
 #endif
 
@@ -231,9 +255,9 @@ bool Font::initialize( const std::string& ttf,
                         countCharacter,
                         impl->characterData.data() );
   impl->texture = Texture::create(
-    TextureDesc( Image(texels, textureWidth, textureHeight),
-                 enums::AlphaFormat )
-  );
+                    TextureDesc( Image(texels, textureWidth, textureHeight),
+                                 enums::AlphaFormat )
+                  );
 
   return !!impl->texture;
 }

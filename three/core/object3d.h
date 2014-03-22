@@ -35,11 +35,15 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  static Ptr create() { return three::make_shared<Object3D>(); }
+  static Ptr create() {
+    return three::make_shared<Object3D>();
+  }
 
   //////////////////////////////////////////////////////////////////////////
 
-  virtual enums::Type type() const { return enums::Object3D; }
+  virtual enums::Type type() const {
+    return enums::Object3D;
+  }
   virtual void visit( Visitor& v ) { };
   virtual void visit( ConstVisitor& v ) const { };
   virtual ~Object3D();
@@ -108,7 +112,7 @@ public:
     Matrix4 _modelViewMatrix;
     Matrix3 _normalMatrix;
 
-	// Obsolete?
+    // Obsolete?
     std::array<float, 16> _normalMatrixArray;
     std::array<float, 16> _modelViewMatrixArray;
     std::array<float, 16> _modelMatrixArray;
@@ -168,7 +172,7 @@ public:
 protected:
 
   Object3D( const Material::Ptr& material = Material::Ptr(),
-                       const Geometry::Ptr& geometry = Geometry::Ptr() );
+            const Geometry::Ptr& geometry = Geometry::Ptr() );
 
   virtual void __addObject( const Ptr& object );
   virtual void __removeObject( const Ptr& object );

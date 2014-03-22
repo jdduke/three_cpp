@@ -2,7 +2,9 @@
 #define THREE_SPHERE_H
 
 #include <three/common.h>
+
 #include <three/math/matrix4.h>
+#include <three/math/vector3.h>
 
 namespace three {
 
@@ -10,17 +12,17 @@ class Sphere {
 
 public:
 
-  Sphere() 
+  Sphere()
     : center( Vector3() ), radius( 0.f ) {}
 
-  Sphere( Vector3 centerIn ) 
+  Sphere( Vector3 centerIn )
     : center( centerIn), radius( 0.f ) {}
 
-  Sphere( Vector3 centerIn, float radiusIn) 
+  Sphere( Vector3 centerIn, float radiusIn)
     : center(centerIn), radius(radiusIn) {}
 
   Vector3 center;
-  
+
   float radius;
 
   inline Sphere& set( const Vector3& center, float radius ) {
@@ -33,7 +35,7 @@ public:
   }
 
   Sphere& setFromPoints( const std::vector<Vector3>& points);
-  
+
   Sphere& setFromPoints( const std::vector<Vector3>& points, const Vector3& center  );
 
   inline Sphere& copy( const Sphere& sphere ) {

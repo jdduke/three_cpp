@@ -19,9 +19,9 @@ public:
 
   }
 
-  virtual enums::Type type() const { 
+  virtual enums::Type type() const {
 
-    return enums::SpotLight; 
+    return enums::SpotLight;
 
   }
 
@@ -50,8 +50,8 @@ protected:
   SpotLight( int hex, float intensity, float distance, float angle, float exponent )
     : Light( hex, intensity, distance ),
       angle( angle ), exponent( exponent ),
-      shadowCameraNear( 50 ), 
-      shadowCameraFar( 5000 ), 
+      shadowCameraNear( 50 ),
+      shadowCameraFar( 5000 ),
       shadowCameraFov( 50 ),
       shadowCameraVisible( false ),
       shadowBias( 0 ),

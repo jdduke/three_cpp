@@ -1,9 +1,9 @@
 #ifndef THREE_RAY_CPP
 #define THREE_RAY_CPP
 
-#include <three/math/math.h>
-
 #include <three/math/ray.h>
+#include <three/math/plane.h>
+#include <three/math/box3.h>
 
 namespace three {
 

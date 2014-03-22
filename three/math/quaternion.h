@@ -2,8 +2,9 @@
 #define THREE_QUATERNION_H
 
 #include <three/common.h>
-#include <three/utils/memory.h>
 #include <three/math/math.h>
+#include <three/math/vector3.h>
+#include <three/utils/memory.h>
 #include <memory>
 
 namespace three {
@@ -12,11 +13,11 @@ class Quaternion {
 
 public:
 
-  Quaternion() 
-  : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ) {}
+  Quaternion()
+    : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ) {}
 
-  Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f ) 
-  : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) {}
+  Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f )
+    : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) {}
 
   inline float x() const {
 
@@ -112,8 +113,8 @@ public:
 
   inline Quaternion& setFromAxisAngle( const Vector3& axis, float angle ) {
 
-  // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
-  // axis have to be normalized
+    // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
+    // axis have to be normalized
 
     auto halfAngle = angle / 2.f, s = Math::sin( halfAngle );
 
@@ -188,7 +189,9 @@ public:
 private:
 
   union {
-    struct { float _x, _y, _z, _w; };
+    struct {
+      float _x, _y, _z, _w;
+    };
     float _xyzw[4];
   };
 

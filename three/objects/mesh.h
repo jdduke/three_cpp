@@ -12,37 +12,37 @@
 
 namespace three {
 
-  class Mesh : public Object3D {
-  public:
+class Mesh : public Object3D {
+public:
 
-    typedef std::shared_ptr<Mesh> Ptr;
+  typedef std::shared_ptr<Mesh> Ptr;
 
-    static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
+  static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
 
-    /////////////////////////////////////////////////////////////////////////
+  virtual enums::Type type() const {
+    return enums::Mesh;
+  }
+  virtual void visit( Visitor& v ) {
+    v( *this );
+  }
+  virtual void visit( ConstVisitor& v ) const {
+    v( *this );
+  }
 
-    virtual enums::Type type() const { return enums::Mesh; }
-    virtual void visit( Visitor& v ) { v( *this ); }
-    virtual void visit( ConstVisitor& v ) const { v( *this ); }
+  float boundRadius;
+  int morphTargetBase;
 
-    /////////////////////////////////////////////////////////////////////////
+  std::vector<int> morphTargetForcedOrder;
+  std::vector<int> morphTargetInfluences;
+  std::unordered_map<std::string, int> morphTargetDictionary;
 
-    float boundRadius;
-    int morphTargetBase;
+  int getMorphTargetIndexByName( const std::string& name );
 
-    std::vector<int> morphTargetForcedOrder;
-    std::vector<int> morphTargetInfluences;
-    std::unordered_map<std::string, int> morphTargetDictionary;
+protected:
 
-    /////////////////////////////////////////////////////////////////////////
+  Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material );
 
-    int getMorphTargetIndexByName( const std::string& name );
-
-  protected:
-
-    Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material );
-
-  };
+};
 
 } // namespace three
 
