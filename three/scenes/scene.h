@@ -10,21 +10,20 @@
 namespace three {
 
 class Scene : public Object3D {
+
 public:
 
   typedef std::shared_ptr<Scene> Ptr;
 
   static Ptr create() {
-
     return make_shared<Scene>();
-
   }
 
   virtual enums::Type type() const {
-
     return enums::Scene;
-
   }
+
+public:
 
   IFog::Ptr fog;
   Material* overrideMaterial;
@@ -32,6 +31,7 @@ public:
   bool autoUpdate;
   bool matrixAutoUpdate;
 
+  THREE_REVIEW("Proper cleanup of light pointers?")
   std::vector<Light*>    __lights;
 
   std::vector<Object3D::Ptr> __objectsAdded;
@@ -62,6 +62,8 @@ public:
   std::vector<Object3D*> __glFlares;
 
   std::vector<Object3D*> __objects;
+
+  THREE_TODO("Scene::clone")
 
 protected:
 

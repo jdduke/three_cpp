@@ -2,7 +2,7 @@
 #define THREE_DIRECTIONAL_LIGHT_H
 
 #include <three/common.h>
-
+#include <three/cameras/camera.h>
 #include <three/lights/light.h>
 
 namespace three {
@@ -19,9 +19,9 @@ public:
 
   }
 
-  virtual enums::Type type() const { 
+  virtual enums::Type type() const {
 
-    return enums::DirectionalLight; 
+    return enums::DirectionalLight;
 
   }
 
@@ -85,9 +85,13 @@ protected:
 
   }
 
-  virtual void visit( Visitor& v ) { v( *this ); }
-  
-  virtual void visit( ConstVisitor& v ) const { v( *this ); }
+  virtual void visit( Visitor& v ) {
+    v( *this );
+  }
+
+  virtual void visit( ConstVisitor& v ) const {
+    v( *this );
+  }
 
 };
 

@@ -257,7 +257,7 @@ inline void SphericalReflectionMapping() {}
 inline void SphericalRefractionMapping() {}
 inline void UVMapping() {}
 
-} // namespace THREE
+} // namespace enums
 
 } // namespace three
 

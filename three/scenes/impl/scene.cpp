@@ -8,8 +8,9 @@
 #include <three/objects/particle.h>
 #include <three/objects/line.h>
 #include <three/lights/light.h>
-
+#include <three/lights/directional_light.h>
 #include <three/utils/template.h>
+
 
 namespace three {
 
@@ -87,8 +88,15 @@ struct Remove : public FallbackVisitor {
     }
   }
 
-  void operator()( Light& o ) {
-    erase( s.__lights, &o );
+  void operator()( Light& light ) {
+    if(light.type() == enums::DirectionalLight) {
+      THREE_REVIEW("Works? :) wtb tests")
+      auto& directionalLight = static_cast<DirectionalLight&>(light);
+      for(auto& shadowCascadeLight : directionalLight.shadowCascadeArray) {
+        Remove(s, shadowCascadeLight);
+      }
+    }
+    erase( s.__lights, &light );
   }
   void operator()( Camera& o ) { }
 
