@@ -8,6 +8,7 @@
 namespace three {
 
 class MeshBasicMaterial : public Material {
+
 public:
 
   typedef std::shared_ptr<MeshBasicMaterial> Ptr;
@@ -33,6 +34,7 @@ protected:
   }
 
   static const ParameterKeys& DefaultKeys() {
+
     static std::array<std::string, 17> sKeys = {
       "color",
       "map",
@@ -52,7 +54,9 @@ protected:
       "skinning",
       "morphTargets"
     };
+
     static ParameterKeys sKeysSet( sKeys.begin(), sKeys.end() );
+
     return sKeysSet;
   }
 

@@ -1,5 +1,5 @@
-#ifndef THREE_PARTICLE_BASIC_MATERIAL_H
-#define THREE_PARTICLE_BASIC_MATERIAL_H
+#ifndef THREE_PARTICLE_SYSTEM_MATERIAL_H
+#define THREE_PARTICLE_SYSTEM_MATERIAL_H
 
 #include <three/common.h>
 
@@ -7,17 +7,17 @@
 
 namespace three {
 
-class ParticleBasicMaterial : public Material {
+class ParticleSystemMaterial : public Material {
 public:
 
-  typedef std::shared_ptr<ParticleBasicMaterial> Ptr;
+  typedef std::shared_ptr<ParticleSystemMaterial> Ptr;
 
   static Ptr create( const Parameters& parameters = Parameters() ) {
-    return three::make_shared<ParticleBasicMaterial>( parameters );
+    return three::make_shared<ParticleSystemMaterial>( parameters );
   }
 
   virtual enums::MaterialType type() const {
-    return enums::ParticleBasicMaterial;
+    return enums::ParticleSystemMaterial;
   }
 
   Ptr clone( ) {
@@ -26,7 +26,7 @@ public:
 
 protected:
 
-  ParticleBasicMaterial( const Parameters& parameters )
+  ParticleSystemMaterial( const Parameters& parameters )
     : Material() {
     fog = true;
     setParameters( parameters, DefaultKeys() );
@@ -51,5 +51,5 @@ protected:
 
 } // namespace three
 
-#endif // THREE_MATERIAL_H
+#endif // THREE_PARTICLE_SYSTEM_MATERIAL_H
 

@@ -72,6 +72,8 @@ Material& Material::clone( Material& material ) const {
   material.numSupportedMorphTargets = numSupportedMorphTargets;
   material.numSupportedMorphNormals = numSupportedMorphNormals;
 
+  THREE_REVIEW("Missing normalMap / normalScale?")
+
   material.fragmentShader      = fragmentShader;
   material.vertexShader        = vertexShader;
   material.uniforms            = uniforms;
@@ -95,6 +97,7 @@ Material& Material::clone( Material& material ) const {
 
 Material::Material( )
   : id( MaterialCount()++ ),
+    uuid( Math::generateUUID() ),
     side( enums::FrontSide ),
     color( 0xffffff ),
     ambient( 0xffffff ),
@@ -117,17 +120,18 @@ Material::Material( )
     polygonOffsetFactor( 0 ),
     polygonOffsetUnits( 0 ),
     alphaTest( 0 ),
-    overdraw( false ),
+    overdraw( .0f ),
     visible( true ),
     needsUpdate( true ),
     skinning( false ),
     morphTargets( false ),
     morphNormals( false ),
+    index0AttributeName( "position" ),
     reflectivity( 1.f ),
     refractionRatio( 0.98f ),
     combine( enums::MultiplyOperation ),
     metal( false ),
-    perPixel( false ),
+    perPixel( true ),
     wrapAround( false ),
     wrapRGB( 1, 1, 1 ),
     wireframe( false ),

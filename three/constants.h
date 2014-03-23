@@ -190,7 +190,7 @@ enum MaterialType {
   MeshPhongMaterial,
   LineBasicMaterial,
   MeshNormalMaterial,
-  ParticleBasicMaterial,
+  ParticleSystemMaterial,
   ShaderMaterial
 };
 

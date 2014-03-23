@@ -56,7 +56,6 @@
 #include <three/materials/mesh_lambert_material.h>
 #include <three/materials/mesh_normal_material.h>
 #include <three/materials/mesh_phong_material.h>
-#include <three/materials/particle_basic_material.h>
 #include <three/materials/shader_material.h>
 
 #include <three/objects/line.h>

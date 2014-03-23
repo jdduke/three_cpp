@@ -4120,7 +4120,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   case enums::LineBasicMaterial:
     setMaterialShaders( material, ShaderLib::basic() );
     break;
-  case enums::ParticleBasicMaterial:
+  case enums::ParticleSystemMaterial:
     setMaterialShaders( material, ShaderLib::particleBasic() );
     break;
   case enums::ShaderMaterial:
@@ -4340,7 +4340,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
     if ( material.type() == enums::LineBasicMaterial ) {
       refreshUniformsLine( m_uniforms, material );
-    } else if ( material.type() == enums::ParticleBasicMaterial ) {
+    } else if ( material.type() == enums::ParticleSystemMaterial ) {
       refreshUniformsParticle( m_uniforms, material );
     } else if ( material.type() == enums::MeshPhongMaterial ) {
       refreshUniformsPhong( m_uniforms, material );

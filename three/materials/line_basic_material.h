@@ -2,12 +2,13 @@
 #define THREE_LINE_BASIC_MATERIAL_H
 
 #include <three/common.h>
-
+#include <three/core/interfaces.h>
 #include <three/materials/material.h>
 
 namespace three {
 
 class LineBasicMaterial : public Material {
+
 public:
 
   typedef std::shared_ptr<LineBasicMaterial> Ptr;

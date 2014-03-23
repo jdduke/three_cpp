@@ -129,4 +129,4 @@ DECLARE_UNIFORM_KEY(shadowBias)
 
 } // namespace three
 
-#endif // THREE_GL_SHADERS_H
+#endif // THREE_UNIFORM_H

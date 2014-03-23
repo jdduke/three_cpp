@@ -4,6 +4,8 @@
 #include <three/fwd.h>
 #include <three/constants.h>
 
+#include <memory>
+
 namespace three {
 
 class IFog {
@@ -21,6 +23,12 @@ public:
   virtual void computeVertexNormals()        = 0;
   virtual void computeTangents()             = 0;
   virtual ~IGeometry() { }
+};
+
+class IMaterial {
+public:
+  typedef std::shared_ptr<IMaterial> Ptr;
+  virtual ~IMaterial() {};
 };
 
 class IPlugin {

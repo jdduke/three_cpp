@@ -10,19 +10,24 @@ namespace three {
 class ShaderMaterial : public Material {
 public:
 
+  typedef Properties<std::string, any> Defines;
   typedef std::shared_ptr<ShaderMaterial> Ptr;
 
   static Ptr create( std::string vertexShader,
                      std::string fragmentShader,
                      const Uniforms& uniforms = Uniforms(),
                      const Attributes& attributes = Attributes(),
-                     const Parameters& parameters = Parameters() ) {
+                     const Parameters& parameters = Parameters(),
+                     const Defines& defines = Defines()) {
     return three::make_shared<ShaderMaterial>( std::move(vertexShader),
            std::move(fragmentShader),
            uniforms,
            attributes,
-           parameters );
+           parameters,
+           defines );
   }
+
+  Defines defines;
 
   virtual enums::MaterialType type() const {
     return enums::ShaderMaterial;
@@ -51,7 +56,8 @@ protected:
                   std::string fragmentShader,
                   const Uniforms& uniforms,
                   const Attributes& attributes,
-                  const Parameters& parameters )
+                  const Parameters& parameters,
+                  const Defines& defines )
     : Material() {
 
     setParameters( parameters, DefaultKeys() );
@@ -62,8 +68,13 @@ protected:
     if (!attributes.empty()) {
       this->attributes = attributes;
     }
+
     if (!uniforms.empty()) {
       this->uniforms = uniforms;
+    }
+
+    if (!defines.empty()) {
+      this->defines = defines;
     }
 
   }
@@ -95,5 +106,5 @@ protected:
 
 } // namespace three
 
-#endif // THREE_MATERIAL_H
+#endif // THREE_SHADER_MATERIAL_H
 

@@ -7,34 +7,33 @@
 
 namespace three {
 
-class MeshFaceMaterial : public Material {
+class MeshFaceMaterial : public IMaterial {
 public:
 
   typedef std::shared_ptr<MeshFaceMaterial> Ptr;
 
-  static Ptr create( const Parameters& parameters = Parameters() ) {
-    return three::make_shared<MeshFaceMaterial>( parameters );
+  static Ptr create( const std::vector<IMaterial>& materials ) {
+    return three::make_shared<MeshFaceMaterial>( materials );
   }
 
   virtual enums::MaterialType type() const {
     return enums::MeshFaceMaterial;
   }
 
+  std::vector<IMaterial> materials;
+
+  THREE_TODO("Clone implementation")
   Ptr clone( ) {
-    return Material::clone( *this );
+    auto clone = *this;
+    for( auto& mat : clone.materials) {
+
+    }
   }
 
 protected:
 
-  MeshFaceMaterial( const Parameters& parameters )
-    : Material() {
-    setParameters( parameters, DefaultKeys() );
-  }
-
-  static const ParameterKeys& DefaultKeys() {
-    static ParameterKeys sKeysSet;
-    return sKeysSet;
-  }
+  MeshFaceMaterial( const std::vector<IMaterial>& materialsIn )
+    : materials( materialsIn ) {}
 
 };
 

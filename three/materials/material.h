@@ -3,6 +3,8 @@
 
 #include <three/common.h>
 
+#include <three/core/interfaces.h>
+
 #include <three/math/color.h>
 #include <three/math/vector3.h>
 
@@ -20,10 +22,12 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <array>
+#include <vector>
+#include <string>
 
 namespace three {
 
-class Material : public NonCopyable {
+class Material : public NonCopyable, public IMaterial {
 
 public:
 
@@ -43,6 +47,7 @@ public:
 public:
 
   int id;
+  std::string uuid;
 
   std::string name;
 
@@ -66,15 +71,12 @@ public:
 
   float alphaTest;
 
-  THREE_REVIEW("Needed?")
-  bool overdraw; // Boolean for fixing antialiasing gaps in CanvasRenderer
+  THREE_REVIEW("Needed? Also: changed to float in r65, was bool in r50.")
+  float overdraw; // Overdrawn pixels (typically between 0 and 1) for fixing antialiasing gaps in CanvasRenderer
 
   bool visible;
 
   bool needsUpdate;
-
-
-  // Custom?
 
   Attributes attributes;
 
@@ -90,6 +92,19 @@ public:
   bool skinning;
   bool morphTargets;
   bool morphNormals;
+
+  THREE_TODO("Implement default values")
+  //// When rendered geometry doesn't include these attributes but the material does,
+  //// use these default values in WebGL. This avoids errors when buffer data is missing.
+  //this.defaultAttributeValues = {
+  //	"color" : [ 1, 1, 1],
+  //	"uv" : [ 0, 0 ],
+  //	"uv2" : [ 0, 0 ]
+  //};
+
+  //// By default, bind position to attribute index 0. In WebGL, attribute 0
+  //// should always be used to avoid potentially expensive emulation.
+  std::string index0AttributeName;
 
   float reflectivity;
   float refractionRatio;
@@ -124,7 +139,16 @@ public:
   bool lights;
   bool shadowPass;
 
+  void setParameters( const Parameters& parameters,
+                      const ParameterKeys& keys = ParameterKeys() );
+
+  THREE_TODO("Clone without passing a parameter")
   Material& clone( Material& material ) const;
+
+  THREE_TODO("Implement")
+  void dispose() {
+    //this.dispatchEvent( { type: 'dispose' } );
+  };
 
 protected:
 
@@ -136,9 +160,6 @@ protected:
     static_cast<const Material&>( src ).clone( *material );
     return material;
   }
-
-  void setParameters( const Parameters& parameters,
-                      const ParameterKeys& keys = ParameterKeys() );
 
   static const ParameterKeys& defaultKeys() {
     static std::array<std::string, 15> sKeys = {
