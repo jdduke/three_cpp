@@ -6,6 +6,7 @@
 
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
+#include <three/math/euler.h>
 #include <three/math/matrix3.h>
 #include <three/math/matrix4.h>
 
@@ -46,9 +47,9 @@ public:
 
   int id;
 
-  std::string name;
+  std::string uuid;
 
-  //properties = {};
+  std::string name;
 
   Object3D* parent;
   std::vector<Object3D::Ptr> children;
@@ -56,9 +57,14 @@ public:
   Vector3 up;
 
   Vector3 position;
-  Vector3 rotation;
-  enums::EulerRotationOrder eulerOrder;
+  Euler _rotation; THREE_TODO("Private?")
+  Quaternion _quaternion; THREE_TODO("Private?")
   Vector3 scale;
+
+  // keep rotation and quaternion in sync
+
+  //this._rotation._quaternion = this.quaternion;
+  //this._quaternion._euler = this.rotation;
 
   float renderDepth;
 
@@ -66,16 +72,9 @@ public:
 
   Matrix4 matrix;
   Matrix4 matrixWorld;
-  mutable Matrix4 matrixRotationWorld;
 
   bool matrixAutoUpdate;
   bool matrixWorldNeedsUpdate;
-
-  Quaternion quaternion;
-  bool useQuaternion;
-
-  float boundRadius;
-  float boundRadiusScale;
 
   bool visible;
 
@@ -171,9 +170,9 @@ protected:
 
 private:
 
-  static int& Object3DCount() {
-    static int sObject3DCount = 0;
-    return sObject3DCount;
+  static int& Object3DIdCount() {
+    static int sObject3DIdCount = 0;
+    return sObject3DIdCount;
   }
 
 };

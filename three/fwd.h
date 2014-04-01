@@ -42,7 +42,7 @@ class Font;
 class RenderableFace;
 class RenderableObject;
 class RenderableLine;
-class RenderableParticle;
+class RenderableSprite;
 class RenderableVertex;
 
 class Spline;

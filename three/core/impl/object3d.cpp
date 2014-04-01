@@ -3,13 +3,15 @@
 
 #include <three/core/object3d.h>
 
+#include <three/math/math.h>
+
 #include <three/console.h>
 
 namespace three {
 
 void Object3D::applyMatrix( Matrix4& matrix ) {
   matrix.multiplyMatrices( matrix, this->matrix );
-  matrix.decompose( position, quaternion, scale );
+  matrix.decompose( position, _quaternion, scale );
 }
 
 void Object3D::translate( float distance, Vector3 axis ) {
@@ -37,7 +39,7 @@ void Object3D::lookAt( const Vector3& vector ) {
 
   m1.lookAt( vector, position, up );
 
-  quaternion.setFromRotationMatrix( m1 );
+  _quaternion.setFromRotationMatrix( m1 );
 
 }
 
@@ -128,7 +130,7 @@ Object3D::Ptr Object3D::getChildByName( const std::string& name, bool recursive 
 }
 
 void Object3D::updateMatrix() {
-  matrix.compose( position, quaternion, scale );
+  matrix.compose( position, _quaternion, scale );
   matrixWorldNeedsUpdate = true;
 }
 
@@ -178,23 +180,19 @@ void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
 
 Object3D::Object3D( const Material::Ptr& material /*= Material::Ptr()*/,
                     const Geometry::Ptr& geometry /*= Geometry::Ptr()*/ )
-  : id( Object3DCount()++ ),
+  : id( Object3DIdCount()++ ),
+    uuid( Math::generateUUID() ), 
     parent( nullptr ),
     up( 0, 1, 0 ),
-    eulerOrder( enums::XYZ ),
     scale( 1, 1, 1 ),
     renderDepth( 0 ),
     rotationAutoUpdate( true ),
     matrixAutoUpdate( true ),
     matrixWorldNeedsUpdate( true ),
-    useQuaternion( false ),
-    boundRadius( 0.0f ),
-    boundRadiusScale( 1.0f ),
     visible( true ),
     castShadow( false ),
     receiveShadow( false ),
     frustumCulled( true ),
-    sortParticles( false ),
     useVertexTexture( false ),
     boneTextureWidth( 0 ),
     boneTextureHeight( 0 ),

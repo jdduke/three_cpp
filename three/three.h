@@ -70,7 +70,7 @@
 #include <three/renderers/renderables/renderable_face.h>
 #include <three/renderers/renderables/renderable_line.h>
 #include <three/renderers/renderables/renderable_object.h>
-#include <three/renderers/renderables/renderable_particle.h>
+#include <three/renderers/renderables/renderable_sprite.h>
 #include <three/renderers/renderables/renderable_vertex.h>
 
 #include <three/scenes/fog.h>

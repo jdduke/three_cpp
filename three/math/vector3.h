@@ -100,6 +100,8 @@ public:
 
   }
 
+  Vector3& copy( const Vector4& v );
+
   inline Vector3& add( const Vector3& v ) {
 
     x += v.x;

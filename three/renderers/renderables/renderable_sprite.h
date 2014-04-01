@@ -1,5 +1,5 @@
-#ifndef THREE_RENDERABLE_PARTICLE_H
-#define THREE_RENDERABLE_PARTICLE_H
+#ifndef THREE_RENDERABLE_SPRITE_H
+#define THREE_RENDERABLE_SPRITE_H
 
 #include <three/common.h>
 
@@ -9,10 +9,10 @@
 
 namespace three {
 
-class RenderableParticle : public Renderable {
+class RenderableSprite : public Renderable {
 public:
 
-  RenderableParticle()
+  RenderableSprite()
     : Renderable( 0 ),
       object( nullptr ),
       x( 0 ), y( 0 ), rotation( 0 ), material( nullptr ) { }

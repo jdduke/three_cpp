@@ -13,19 +13,22 @@ class RenderableFace : public Renderable {
 public:
 
   RenderableFace( enums::FaceType type = enums::Face3 )
-    : Renderable( 0 ), material( nullptr ), faceMaterial( nullptr ),
+    : Renderable( 0 ), vertexNormalsLength( 0 ), color( nullptr ), material( nullptr ),
       mType( type ), mSize( type == enums::Face3 ? 3 : 4 ) { }
 
-  RenderableVertex v1, v2, v3, v4;
+  RenderableVertex v1, v2, v3;
 
   Vector3 centroidWorld;
-  Vector3 centroidScreen;
 
-  Vector3 normalWorld;
-  Vector3 vertexNormalsWorld[ 4 ];
+  Vector3 normalModel;
+  Vector3 normalModelView;
 
+  float vertexNormalsLength;
+  Vector3 vertexNormalsModel[3];
+  Vector3 vertexNormalsModelView[3];
+
+  Color* color;
   Material* material;
-  Material* faceMaterial;
 
   std::array<std::vector<Vector2>, 4> uvs;
 

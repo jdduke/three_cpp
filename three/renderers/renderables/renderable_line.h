@@ -13,8 +13,11 @@ public:
 
   RenderableLine() : Renderable( 0 ), material( nullptr ) { }
 
+  Color vertexColors[2];
+
   RenderableVertex v1, v2;
   Material* material;
+
 };
 
 } // namespace three

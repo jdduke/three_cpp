@@ -27,6 +27,7 @@
 
 #include <three/objects/line.h>
 #include <three/objects/mesh.h>
+#include <three/objects/particle_system.h>
 
 #include <three/renderers/gl_render_target.h>
 #include <three/renderers/gl_shaders.h>
