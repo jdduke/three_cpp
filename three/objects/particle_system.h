@@ -32,7 +32,7 @@ protected:
     if(!material) {
       Properties<std::string, any> params;
         
-        params["color"] =Math::random() * 0xffffff;
+        params["color"] = Math::random() * 0xffffff;
         
         this->material = ParticleSystemMaterial::create( params );
     }

@@ -73,7 +73,7 @@ struct Projector::Impl : public NonCopyable {
   Vector3 _vB;
   Vector3 _vC;
 
-  Vector4 _vector3;
+  Vector3 _vector3;
   Vector4 _vector4;
 
   Box3 _clipBox;
@@ -158,9 +158,7 @@ struct SceneVisitor : public ConstVisitor {
   SceneVisitor( Projector::Impl& p, Camera& c, Matrix4& model, Matrix4& viewProjection )
     : p( p ), c( c ), modelMatrix( model ), viewProjectionMatrix( viewProjection ) { }
 
-  THREE_TODO("r65")
   virtual void operator()( const Particle& object ) { }
-  THREE_TODO("r65")
   virtual void operator()( Mesh& object ) {
     auto& geometry          = *object.geometry;
     auto& geometryMaterials = geometry.materials;
@@ -333,13 +331,12 @@ struct SceneVisitor : public ConstVisitor {
 
       _face->z = p._centroid.z;
 
-      THREE_TODO("FIX!!!")
+      THREE_TODO("JD: FIX!!! EA: Uhhh")
       p._renderData.elements.push_back( _face );
 
     }
   }
 
-THREE_TODO("r65")
   virtual void operator()( const Line& object ) {
 
     p._modelViewProjectionMatrix.multiplyMatrices( p._viewProjectionMatrix, modelMatrix );
@@ -394,28 +391,27 @@ THREE_TODO("r65")
 
   void projectVertex( Projector::Impl& impl, RenderableVertex& vertex ) {
 
-  auto& position = vertex.position;
-  auto& positionWorld = vertex.positionWorld;
-  auto& positionScreen = vertex.positionScreen;
+    auto& position = vertex.position;
+    auto& positionWorld = vertex.positionWorld;
+    auto& positionScreen = vertex.positionScreen;
 
-  positionWorld.copy( position ).applyMatrix4( impl._modelMatrix );
-  positionScreen.copy( positionWorld ).applyMatrix4( impl._viewProjectionMatrix );
+    positionWorld.copy( position ).applyMatrix4( impl._modelMatrix );
+    positionScreen.copy( positionWorld ).applyMatrix4( impl._viewProjectionMatrix );
 
-  auto invW = 1.f / positionScreen.w;
+    auto invW = 1.f / positionScreen.w;
 
-  positionScreen.x *= invW;
-  positionScreen.y *= invW;
-  positionScreen.z *= invW;
+    positionScreen.x *= invW;
+    positionScreen.y *= invW;
+    positionScreen.z *= invW;
 
-  vertex.visible = positionScreen.x >= -1 && positionScreen.x <= 1 &&
-       positionScreen.y >= -1 && positionScreen.y <= 1 &&
-       positionScreen.z >= -1 && positionScreen.z <= 1;
+    vertex.visible = positionScreen.x >= -1 && positionScreen.x <= 1 &&
+         positionScreen.y >= -1 && positionScreen.y <= 1 &&
+         positionScreen.z >= -1 && positionScreen.z <= 1;
 
-}
+  }
 
 };
 
-THREE_TODO("r65")
 struct SpriteVisitor : public Visitor {
 
   SpriteVisitor( Projector::Impl& p, Camera& c )
@@ -424,8 +420,9 @@ struct SpriteVisitor : public Visitor {
   void operator()( Particle& object ) {
 
     const auto& modelMatrix = object.matrixWorld;
-
-    Vector4 vector4( modelMatrix.elements[12], modelMatrix.elements[13], modelMatrix.elements[14], 1 );
+    auto& vector4 = p._vector4;
+      
+    vector4.set( modelMatrix.elements[12], modelMatrix.elements[13], modelMatrix.elements[14], 1 );
     vector4.applyMatrix4( p._viewProjectionMatrix );
 
     float invW = 1 / vector4.w;
@@ -464,7 +461,6 @@ struct SpriteVisitor : public Visitor {
 
 Projector::Projector() : impl( new Impl() ) { }
 
-THREE_TODO("r65")
 Vector3& Projector::projectVector( Vector3& vector, const Camera& camera ) {
 
   auto& d = *impl;
@@ -472,20 +468,16 @@ Vector3& Projector::projectVector( Vector3& vector, const Camera& camera ) {
   camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
   d._viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
-  d._viewProjectionMatrix.multiplyVector3( vector );
 
-  return vector;
+  return vector.applyProjection( d._viewProjectionMatrix );
 
 }
 
-THREE_TODO("r65")
 Vector3& Projector::unprojectVector( Vector3& vector, const Camera& camera ) {
 
   auto& d = *impl;
 
   auto projectionMatrixInverse = Matrix4();
-
-
 
   projectionMatrixInverse.getInverse( camera.projectionMatrix );
   d._viewProjectionMatrix.multiplyMatrices( camera.matrixWorld, projectionMatrixInverse );
@@ -493,7 +485,6 @@ Vector3& Projector::unprojectVector( Vector3& vector, const Camera& camera ) {
   return vector.applyProjection( d._viewProjectionMatrix );
 }
 
-THREE_TODO("r65")
 Ray Projector::pickingRay( Vector3 vector, const Camera& camera ) {
 
   // set two vectors with opposing z values
@@ -506,11 +497,11 @@ Ray Projector::pickingRay( Vector3 vector, const Camera& camera ) {
   // find direction from vector to end
   end.sub( vector ).normalize();
 
+  THREE_TODO("EA: Ray is renamed to Raycaster. Meh.")
   return Ray( vector, end );
 
 }
 
-THREE_TODO("r65")
 Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
   auto& d = *impl;
@@ -525,11 +516,13 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
   projectObject = [&projectObject, &d]( Object3D & object ) {
 
     if ( !object.visible ) return;
-
+      
     if ( ( object.type() == enums::Mesh || object.type() == enums::Line ) &&
          ( !object.frustumCulled || d._frustum.contains( object ) ) ) {
-
-      Vector3 vector3 = object.matrixWorld.getPosition();
+      
+      auto& vector3 = d._vector3;
+        
+      vector3.copy( object.matrixWorld.getPosition() );
       d._viewProjectionMatrix.multiplyVector3( vector3 );
 
       auto& renderable = d._objects.next();
@@ -539,8 +532,10 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
       d._renderData.objects.push_back( renderable );
 
     } else if ( object.type() == enums::Sprite || object.type() == enums::Particle ) {
-
-      Vector3 vector3 = object.matrixWorld.getPosition();
+        
+      auto& vector3 = d._vector3;
+        
+      vector3.copy( object.matrixWorld.getPosition() );
       d._viewProjectionMatrix.multiplyVector3( vector3 );
 
       auto& renderable = d._objects.next();
