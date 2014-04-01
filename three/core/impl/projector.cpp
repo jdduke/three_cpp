@@ -497,7 +497,6 @@ Ray Projector::pickingRay( Vector3 vector, const Camera& camera ) {
   // find direction from vector to end
   end.sub( vector ).normalize();
 
-  THREE_TODO("EA: Ray is renamed to Raycaster. Meh.")
   return Ray( vector, end );
 
 }

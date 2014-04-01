@@ -15,7 +15,7 @@ public:
 
   static Ptr create( int hex , float intensity = 1 ) {
 
-    return make_shared<AreaLight>( hex );
+    return make_shared<AreaLight>( hex, intensity );
 
   }
 

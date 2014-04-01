@@ -14,6 +14,7 @@
 #include <three/core/clock.h>
 #include <three/core/object3d.h>
 #include <three/core/projector.h>
+#include <three/core/raycaster.h>
 
 #include <three/math/box2.h>
 #include <three/math/box3.h>

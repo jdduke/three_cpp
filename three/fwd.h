@@ -4,6 +4,9 @@
 namespace three {
 
 class Object3D;
+class Projector;
+class Raycaster;
+
 class Bone;
 class Camera;
 class Light;
@@ -31,7 +34,6 @@ class Triangle;
 class Vector2;
 class Vector4;
 class Vector3;
-
 
 
 class Visitor;
