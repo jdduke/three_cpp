@@ -7,7 +7,7 @@
 #include <three/math/plane.h>
 #include <three/objects/sprite.h>
 #include <three/objects/LOD.h>
-#include <three\objects\line.h>
+#include <three/objects/line.h>
 
 namespace three {
 
