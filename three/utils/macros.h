@@ -1,24 +1,10 @@
 #ifndef THREE_MACROS_UTILS_H
 #define THREE_MACROS_UTILS_H
 
-/*
-
-MS only
-
-#define PROPERTY(type,name)  __declspec( property \
-	( put = property__set_##name, get = property__get_##name ) ) type name;\
-	typedef type property__tmp_type_##name
-
-#define READONLY_PROPERTY(type,name) __declspec( property (get = property__get_##name) ) type name;\
-	typedef type property__tmp_type_##name
-
-#define WRITEONLY_PROPERTY(type,name) __declspec( property (put = property__set_##name) ) type name;\
-	typedef type property__tmp_type_##name
-
-#define GET(name) property__tmp_type_##name property__get_##name() 
-
-#define SET(name) property__set_##name(const property__tmp_type_##name& value)
-
-*/
+#define THREE_IMPL_OBJECT(NAME)                                       \
+  virtual enums::Type type() const { return enums::NAME; }  \
+  virtual void visit( Visitor& v ) { v( *this ); }           \
+  virtual void visit( ConstVisitor& v ) const { v( *this ); } \
+  virtual void visit( ConstRawPointerVisitor& v ) const { v( &*this ); }
 
 #endif //THREE_MACROS_UTILS_H

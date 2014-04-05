@@ -40,12 +40,6 @@ public:
 
   struct Impl;
 
-  typedef std::shared_ptr<Raycaster> Ptr;
-
-  Ptr static create( Vector3& origin, Vector3& direction, float near = 0.f, float far = Math::INF() ) {
-    return three::make_shared<Raycaster>( origin, direction, near, far );
-  }
-
   Raycaster( Vector3& origin, Vector3& direction, float near = 0.f, float far = Math::INF() );
 
   Ray ray;

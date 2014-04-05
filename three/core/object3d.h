@@ -15,18 +15,13 @@
 
 #include <three/utils/memory.h>
 #include <three/utils/noncopyable.h>
+#include <three/utils/macros.h>
 
 #include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-
-#define THREE_IMPL_OBJECT(NAME)                                       \
-  virtual enums::Type type() const { return enums::NAME; }  \
-  virtual void visit( Visitor& v ) { v( *this ); }           \
-  virtual void visit( ConstVisitor& v ) const { v( *this ); } \
-  virtual void visit( ConstRawPointerVisitor& v ) const { v( &*this ); }
 
 namespace three {
 
