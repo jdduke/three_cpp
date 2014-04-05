@@ -129,6 +129,21 @@ Object3D::Ptr Object3D::getChildByName( const std::string& name, bool recursive 
 
 }
 
+std::vector<Object3D::Ptr>& Object3D::getDescendants(std::vector<Object3D::Ptr>& descendants) const {
+
+  descendants.insert(descendants.end(), children.begin(), children.end());
+
+  for ( auto& child : children ) {
+
+    child->getDescendants( descendants );
+
+  }
+
+  return descendants;
+
+}
+
+
 void Object3D::updateMatrix() {
   matrix.compose( position, _quaternion, scale );
   matrixWorldNeedsUpdate = true;
@@ -181,7 +196,7 @@ void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
 Object3D::Object3D( const Material::Ptr& material /*= Material::Ptr()*/,
                     const Geometry::Ptr& geometry /*= Geometry::Ptr()*/ )
   : id( Object3DIdCount()++ ),
-    uuid( Math::generateUUID() ), 
+    uuid( Math::generateUUID() ),
     parent( nullptr ),
     up( 0, 1, 0 ),
     scale( 1, 1, 1 ),

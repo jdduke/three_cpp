@@ -14,6 +14,12 @@ namespace three {
 float Raycaster::precision = 0.0001f;
 float Raycaster::linePrecision = 1.f;
 
+struct DescSort {
+  bool operator()( const Intersect& a, const Intersect& b ) const {
+    return a.distance - b.distance < 0.f;
+  }
+};
+
 struct Raycaster::Impl : public NonCopyable {
 
   Impl() {}
@@ -31,6 +37,9 @@ struct Raycaster::Impl : public NonCopyable {
   Vector3 vC;
 
 };
+
+namespace detail {
+
 
 struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
@@ -69,7 +78,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
     impl.matrixPosition.setFromMatrixPosition( object->matrixWorld );
     float distance = raycaster.ray.origin.distanceTo( impl.matrixPosition );
 
-    raycaster.intersectObject( *object->getObjectForDistance( distance ).get() );
+    raycaster.intersectObject( object->getObjectForDistance( distance ) );
 
   }
 
@@ -404,79 +413,10 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
   }
 
-}; // end namespace
-
-/*
+}; // end visitor
 
 
-var intersectObject = function ( object, raycaster, intersects ) {
-
-if ( object instanceof THREE.Sprite ) {
-
-} else if ( object instanceof THREE.LOD ) {
-
-} else if ( object instanceof THREE.Mesh ) {
-
-  var geometry = object.geometry;
-
-  // Checking boundingSphere distance to ray
-
-  if ( geometry.boundingSphere === null ) geometry.computeBoundingSphere();
-
-  sphere.copy( geometry.boundingSphere );
-  sphere.applyMatrix4( object.matrixWorld );
-
-  if ( raycaster.ray.isIntersectionSphere( sphere ) === false ) {
-
-    return intersects;
-
-  }
-
-  // Check boundingBox before continuing
-
-  inverseMatrix.getInverse( object.matrixWorld );
-  localRay.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
-
-  if ( geometry.boundingBox !== null ) {
-
-    if ( localRay.isIntersectionBox( geometry.boundingBox ) === false )  {
-
-      return intersects;
-
-    }
-
-  }
-
-  if ( geometry instanceof THREE.BufferGeometry ) {
-
-
-
-  } else if ( geometry instanceof THREE.Geometry ) {
-
-
-
-  }
-
-} else if ( object instanceof THREE.Line ) {
-
-
-
-}
-
-};
-
-var intersectDescendants = function ( object, raycaster, intersects ) {
-
-var descendants = object.getDescendants();
-
-for ( var i = 0, l = descendants.length; i < l; i ++ ) {
-
-  intersectObject( descendants[ i ], raycaster, intersects );
-
-}
-};
-*/
-
+}; // end namespace detail
 
 
 Raycaster::Raycaster( Vector3& origin, Vector3& direction, float near, float far)
@@ -491,45 +431,70 @@ Raycaster& Raycaster::set( const Vector3& origin, const Vector3& direction ) {
 
 }
 
-Intersects Raycaster::intersectObject ( const Object3D& object, bool recursive ) const {
+Intersects Raycaster::intersectObject ( const Object3D::Ptr& object, bool recursive ) {
 
   Intersects intersects;
 
   if ( recursive == true ) {
 
-    //intersectDescendants( object, *this, intersects );
+    _intersectDescendants( object, intersects );
 
   }
 
-  //intersectObject( object, *this, intersects );
+  _intersectObject( object, intersects );
 
-  //intersects.sort( descSort() );
+  std::sort( intersects.begin(),
+             intersects.end(),
+             DescSort() );
 
   return intersects;
 
 };
 
-Intersects Raycaster::intersectObjects ( const std::vector<Object3D::Ptr>& objects, bool recursive ) const {
+Intersects Raycaster::intersectObjects ( const std::vector<Object3D::Ptr>& objects, bool recursive )  {
 
   Intersects intersects;
 
   for ( auto& obj : objects ) {
 
-    //intersectObject( *obj, *this, intersects );
+    _intersectObject( obj, intersects );
 
     if ( recursive == true ) {
 
-      //intersectDescendants( *obj, *this, intersects );
+      _intersectDescendants( obj, intersects );
 
     }
 
   }
 
-  //intersects.sort( descSort() );
+  std::sort( intersects.begin(),
+             intersects.end(),
+             DescSort() );
 
   return intersects;
 
-};
+}
+
+void Raycaster::_intersectDescendants( const Object3D::Ptr& object, Intersects& intersects ) {
+
+  std::vector<Object3D::Ptr> descendants;
+
+  object->getDescendants(descendants);
+
+  for ( auto& descendant : descendants ) {
+
+    _intersectObject( descendant, intersects );
+
+  }
+
+}
+
+void Raycaster::_intersectObject( const Object3D::Ptr& object, Intersects& intersects ) {
+
+  detail::IntersectObjectVisitor visitor( *this, *impl, intersects );
+
+  object->visit( visitor );
+}
 
 } // end namespace
 

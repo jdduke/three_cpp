@@ -79,6 +79,9 @@ protected:
 
   virtual void visit( ConstVisitor& v ) const;
 
+  virtual void visit( ConstRawPointerVisitor& v ) const;
+
+
 };
 
 } // namespace three

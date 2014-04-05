@@ -39,6 +39,7 @@ class Vector3;
 
 class Visitor;
 class ConstVisitor;
+class ConstRawPointerVisitor;
 
 class Font;
 

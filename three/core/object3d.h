@@ -26,7 +26,7 @@
   virtual enums::Type type() const { return enums::NAME; }  \
   virtual void visit( Visitor& v ) { v( *this ); }           \
   virtual void visit( ConstVisitor& v ) const { v( *this ); } \
-  virtual void visit( ConstRawPointerVisitor& v ) const { v( this ); }
+  virtual void visit( ConstRawPointerVisitor& v ) const { v( &*this ); }
 
 namespace three {
 
@@ -44,6 +44,7 @@ public:
   }
   virtual void visit( Visitor& v ) { };
   virtual void visit( ConstVisitor& v ) const { };
+  virtual void visit( ConstRawPointerVisitor& v ) const { };
   virtual ~Object3D();
 
   int id;
@@ -58,8 +59,10 @@ public:
   Vector3 up;
 
   Vector3 position;
-  Euler _rotation; THREE_TODO("Private?")
-  Quaternion _quaternion; THREE_TODO("Private?")
+  Euler _rotation;
+  THREE_TODO("Private?")
+  Quaternion _quaternion;
+  THREE_TODO("Private?")
   Vector3 scale;
 
   // keep rotation and quaternion in sync
@@ -152,6 +155,7 @@ public:
   void traverse( const std::function<void(const Object3D&)> traverseCallback );
 
   Ptr getChildByName( const std::string& name, bool recursive );
+  std::vector<Object3D::Ptr>& getDescendants( std::vector<Object3D::Ptr>& array ) const;
 
   void updateMatrix();
   void updateMatrixWorld( bool force = false );
