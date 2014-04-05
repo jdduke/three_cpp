@@ -167,6 +167,8 @@ public:
 
 private:
 
+  friend class Object3D;
+
   inline void _updateQuaternion() {
 
     _quaternion->setFromEuler( *this, false );

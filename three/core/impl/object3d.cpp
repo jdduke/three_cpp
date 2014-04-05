@@ -9,26 +9,147 @@
 
 namespace three {
 
-void Object3D::applyMatrix( Matrix4& matrix ) {
+Object3D& Object3D::applyMatrix( Matrix4& matrix ) {
+
   matrix.multiplyMatrices( matrix, this->matrix );
+
   matrix.decompose( position, _quaternion, scale );
+
+  return *this;
+
 }
 
-void Object3D::translate( float distance, Vector3 axis ) {
-  matrix.rotateAxis( axis );
-  position.add( axis.multiplyScalar( distance ) );
+Object3D& Object3D::setRotationFromAxisAngle( Vector3& axis, float angle ) {
+  
+  _quaternion.setFromAxisAngle( axis, angle );
+
+  return *this;
+
 }
 
-void Object3D::translateX( float distance ) {
-  translate( distance, Vector3( 1, 0, 0 ) );
+Object3D& Object3D::setRotationFromEuler( Euler& euler ) {
+  
+  _quaternion.setFromEuler( euler, true );
+
+  return *this;
+
 }
 
-void Object3D::translateY( float distance ) {
-  translate( distance, Vector3( 0, 1, 0 ) );
+Object3D& Object3D::setRotationFromMatrix( Matrix4& m ) {
+
+  // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+  _quaternion.setFromRotationMatrix( m );
+
+  return *this;
+
 }
 
-void Object3D::translateZ( float distance ) {
-  translate( distance, Vector3( 0, 0, 1 ) );
+Object3D& Object3D::setRotationFromQuaternion( Quaternion& q ) {
+
+    // assumes q is normalized
+
+    _quaternion.copy( q );
+
+    return *this;
+
+}
+
+Object3D& Object3D::rotateOnAxis( const Vector3& axis, float angle ) {
+
+  // rotate object on axis in object space
+  // axis is assumed to be normalized
+
+  auto q1 = Quaternion();
+
+  q1.setFromAxisAngle( axis, angle );
+
+  _quaternion.multiply( q1 );
+
+  return *this;
+
+} 
+
+Object3D& Object3D::rotateX( float angle ) {
+
+  auto v1 = Vector3( 1, 0, 0 );
+
+  return rotateOnAxis( v1, angle );
+
+}
+
+Object3D& Object3D::rotateY( float angle ) {
+
+  auto v1 = Vector3( 0, 1, 0 );
+
+  return rotateOnAxis( v1, angle );
+
+}
+
+Object3D& Object3D::rotateZ( float angle ) {
+
+  auto v1 = Vector3( 0, 0, 1 );
+
+  return rotateOnAxis( v1, angle );
+
+}
+
+Object3D& Object3D::translateOnAxis( const Vector3& axis, float distance ) {
+
+  // translate object by distance along axis in object space
+  // axis is assumed to be normalized
+
+  auto v1 = Vector3();
+
+  v1.copy( axis );
+
+  v1.applyQuaternion( _quaternion );
+
+  position.add( v1.multiplyScalar( distance ) );
+
+  return *this;
+  
+}
+
+Object3D& Object3D::translateX( float distance ) {
+    
+  auto v = Vector3( 1, 0, 0 );
+  translateOnAxis( v, distance );
+  
+  return *this;
+
+}
+
+Object3D& Object3D::translateY( float distance ) {
+    
+  auto v = Vector3( 0, 1, 0 );
+  translateOnAxis( v, distance );
+
+  return *this;
+
+}
+
+Object3D& Object3D::translateZ( float distance ) {
+    
+  auto v = Vector3( 0, 0, 1 );
+  translateOnAxis( v, distance );
+
+  return *this;
+
+}
+
+Vector3& Object3D::localToWorld( Vector3& vector ) const {
+
+  return vector.applyMatrix4( matrixWorld );
+
+}
+
+Vector3& Object3D::worldToLocal( Vector3& vector ) const {
+
+  auto m1 = Matrix4();
+
+  return vector.applyMatrix4( m1.getInverse( matrixWorld ) );
+  
 }
 
 void Object3D::lookAt( const Vector3& vector ) {
@@ -58,6 +179,8 @@ void Object3D::add( const Object3D::Ptr& object ) {
   }
 
   object->parent = this;
+  THREE_TODO("EA: Dispatch event")
+  //object.dispatchEvent( { type: 'added' } );
   children.push_back( object );
 
   // add to scene
@@ -82,6 +205,9 @@ void Object3D::remove( const Object3D::Ptr& object ) {
 
     object->parent = nullptr;
     children.erase( index );
+    
+    THREE_TODO("EA: Dispatch event")
+    //object.dispatchEvent( { type: 'removed' } );
 
     // remove from scene
 
@@ -99,14 +225,49 @@ void Object3D::remove( const Object3D::Ptr& object ) {
 
 }
 
-void Object3D::traverse( const std::function<void(const Object3D&)> traverseCallback ) {
+Object3D& Object3D::traverse( const std::function<void(const Object3D&)> traverseCallback ) {
+  
   traverseCallback( *this );
+
   for ( auto it = children.begin(); it != children.end(); it++ ) {
     (*it)->traverse( traverseCallback );
   }
+
+  return *this;
+
 }
 
-Object3D::Ptr Object3D::getChildByName( const std::string& name, bool recursive ) {
+Object3D::Ptr Object3D::getObjectById( unsigned int id, bool recursive ) const {
+  
+  for ( size_t i = 0, l = children.size(); i < l; i ++ ) {
+
+    auto& child = children[ i ];
+
+    if ( child->id == id ) {
+
+      return child;
+
+    }
+
+    if ( recursive == true ) {
+
+      auto recursive_child = child->getObjectById( id, recursive );
+
+      if ( recursive_child != nullptr ) {
+
+        return recursive_child;
+
+      }
+
+    }
+
+  }
+
+  return nullptr;
+
+}
+
+Object3D::Ptr Object3D::getObjectByName( const std::string& name, bool recursive ) {
 
   for ( auto& child : children ) {
 
@@ -116,7 +277,7 @@ Object3D::Ptr Object3D::getChildByName( const std::string& name, bool recursive 
 
     if ( recursive ) {
 
-      auto recursive_child = child->getChildByName( name, recursive );
+      auto recursive_child = child->getObjectByName( name, recursive );
       if ( recursive_child ) {
         return recursive_child;
       }
@@ -144,12 +305,17 @@ std::vector<Object3D::Ptr>& Object3D::getDescendants(std::vector<Object3D::Ptr>&
 }
 
 
-void Object3D::updateMatrix() {
+Object3D& Object3D::updateMatrix() {
+
   matrix.compose( position, _quaternion, scale );
+
   matrixWorldNeedsUpdate = true;
+
+  return *this;
+
 }
 
-void Object3D::updateMatrixWorld( bool force /*= false*/ ) {
+Object3D& Object3D::updateMatrixWorld( bool force ) {
 
   if ( matrixAutoUpdate == true ) updateMatrix();
 
@@ -169,6 +335,14 @@ void Object3D::updateMatrixWorld( bool force /*= false*/ ) {
 
     force = true;
 
+    // update children
+
+    for ( size_t i = 0, l = children.size(); i < l; i ++ ) {
+
+      children[ i ]->updateMatrixWorld( force );
+
+    }
+
   }
 
   // update children
@@ -177,24 +351,12 @@ void Object3D::updateMatrixWorld( bool force /*= false*/ ) {
     child->updateMatrixWorld( force );
   }
 
+  return *this;
+
 }
 
-Vector3 Object3D::worldToLocal( Vector3& vector ) const {
-  return Matrix4().getInverse( matrixWorld ).multiplyVector3( vector );
-}
-
-Vector3 Object3D::localToWorld( Vector3& vector ) const {
-  return matrixWorld.multiplyVector3( vector );
-}
-
-void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
-  if ( renderCallback ) {
-    renderCallback( *this );
-  }
-}
-
-Object3D::Object3D( const Material::Ptr& material /*= Material::Ptr()*/,
-                    const Geometry::Ptr& geometry /*= Geometry::Ptr()*/ )
+Object3D::Object3D( const Material::Ptr& material ,
+                    const Geometry::Ptr& geometry )
   : id( Object3DIdCount()++ ),
     uuid( Math::generateUUID() ),
     parent( nullptr ),
@@ -220,6 +382,12 @@ Object3D::~Object3D() { }
 void Object3D::__addObject( const Ptr& object ) { }
 
 void Object3D::__removeObject( const Ptr& object ) { }
+
+void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
+  if ( renderCallback ) {
+    renderCallback( *this );
+  }
+}
 
 } // namespace three
 

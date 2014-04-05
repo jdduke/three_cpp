@@ -42,7 +42,7 @@ public:
   virtual void visit( ConstRawPointerVisitor& v ) const { };
   virtual ~Object3D();
 
-  int id;
+  unsigned int id;
 
   std::string uuid;
 
@@ -54,16 +54,8 @@ public:
   Vector3 up;
 
   Vector3 position;
-  Euler _rotation;
-  THREE_TODO("Private?")
-  Quaternion _quaternion;
-  THREE_TODO("Private?")
+  
   Vector3 scale;
-
-  // keep rotation and quaternion in sync
-
-  //this._rotation._quaternion = this.quaternion;
-  //this._quaternion._euler = this.rotation;
 
   float renderDepth;
 
@@ -82,6 +74,91 @@ public:
 
   bool frustumCulled;
 
+  //this.userdata = {};
+
+  inline Euler& rotation() {
+
+    return _rotation;
+
+  }
+
+  inline Object3D& rotation( Euler& value ) {
+
+    _rotation = value;
+    _rotation._quaternion->copy(_quaternion);
+    _quaternion._euler->copy(_rotation);
+    _rotation._updateQuaternion();
+
+    return *this;
+
+  }
+
+  inline Quaternion& quaternion() {
+
+    return _quaternion;
+
+  }
+
+  inline Object3D& quaternion( Quaternion& value ) {
+
+    _quaternion = value;
+    _quaternion._euler->copy(_rotation);
+    _rotation._quaternion->copy(_quaternion);
+    _quaternion._updateEuler();
+
+    return *this;
+
+  }
+
+  Object3D& applyMatrix( Matrix4& m );
+
+  Object3D& setRotationFromAxisAngle( Vector3& axis, float angle );
+
+  Object3D& setRotationFromEuler( Euler& euler );
+
+  Object3D& setRotationFromMatrix( Matrix4& m );
+
+  Object3D& setRotationFromQuaternion( Quaternion& q );
+
+  Object3D& rotateOnAxis( const Vector3& axis, float angle );
+
+  Object3D& rotateX( float angle );
+
+  Object3D& rotateY( float angle );
+
+  Object3D& rotateZ( float angle );
+
+  Object3D& translateOnAxis( const Vector3& axis, float distance );
+  
+  Object3D& translateX( float distance );
+
+  Object3D& translateY( float distance );
+
+  Object3D& translateZ( float distance );
+
+  Vector3& localToWorld( Vector3& vector ) const;
+
+  Vector3& worldToLocal( Vector3& vector ) const;
+
+  virtual void lookAt( const Vector3& vector );
+
+  void add( const Ptr& object );
+
+  void remove( const Ptr& object );
+
+  Object3D& traverse( const std::function<void(const Object3D&)> traverseCallback );
+
+  Object3D::Ptr getObjectById( unsigned int id, bool recursive = true ) const;
+
+  Object3D::Ptr getObjectByName( const std::string& name, bool recursive );
+
+  std::vector<Object3D::Ptr>& getDescendants( std::vector<Object3D::Ptr>& array ) const;
+
+  Object3D& updateMatrix();
+  Object3D& updateMatrixWorld( bool force = false );
+
+  THREE_CUSTOM_CODE_START("Either properties from child/subclasses, so no casting is needed during rendering, or render code")
+  
   bool sortParticles;
 
   bool useVertexTexture;
@@ -137,41 +214,28 @@ public:
   typedef std::function<void( const Program*, void*, const Frustum* )> RenderCallback;
   RenderCallback immediateRenderCallback;
 
-  virtual void lookAt( const Vector3& vector );
-  void applyMatrix( Matrix4& m );
-  void translate( float distance, Vector3 axis );
-  void translateX( float distance );
-  void translateY( float distance );
-  void translateZ( float distance );
-
-  void add( const Ptr& object );
-  void remove( const Ptr& object );
-
-  void traverse( const std::function<void(const Object3D&)> traverseCallback );
-
-  Ptr getChildByName( const std::string& name, bool recursive );
-  std::vector<Object3D::Ptr>& getDescendants( std::vector<Object3D::Ptr>& array ) const;
-
-  void updateMatrix();
-  void updateMatrixWorld( bool force = false );
-
-  Vector3 worldToLocal( Vector3& vector ) const;
-  Vector3 localToWorld( Vector3& vector ) const;
-
   void render( const std::function<void( Object3D& )> renderCallback );
+
+  THREE_CUSTOM_CODE_END("-----------------")
 
 protected:
 
   Object3D( const Material::Ptr& material = Material::Ptr(),
             const Geometry::Ptr& geometry = Geometry::Ptr() );
 
+  // Fallback implementation. Used in scene
   virtual void __addObject( const Ptr& object );
   virtual void __removeObject( const Ptr& object );
 
 private:
 
-  static int& Object3DIdCount() {
-    static int sObject3DIdCount = 0;
+  Euler _rotation;
+  Quaternion _quaternion;
+  //this._rotation._quaternion = this.quaternion;
+  //this._quaternion._euler = this.rotation;
+
+  static unsigned & Object3DIdCount() {
+    static unsigned int sObject3DIdCount = 0;
     return sObject3DIdCount;
   }
 

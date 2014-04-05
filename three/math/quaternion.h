@@ -188,6 +188,8 @@ public:
 
 private:
 
+  friend class Object3D;
+
   union {
     struct {
       float _x, _y, _z, _w;

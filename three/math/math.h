@@ -26,8 +26,7 @@ inline const float INF()  {
   return std::numeric_limits<float>::max();
 }
 
-THREE_TODO("Move this to a diff header")
-static std::string generateUUID() {
+inline static std::string generateUUID() {
 
   char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 

@@ -33,7 +33,7 @@ public:
 
     m1.lookAt( position, vector, up );
 
-    _quaternion.setFromRotationMatrix( m1 );
+    quaternion().setFromRotationMatrix( m1 );
 
   }
 

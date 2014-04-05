@@ -797,10 +797,11 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
   }
 
   if ( material->type() == enums::MeshFaceMaterial ) {
-    auto meshFaceMaterial = static_cast<MeshFaceMaterial*>(std::move(material));
+    THREE_REVIEW("EA: Kinda rushed this one. A more succinct solution pls")
+    //auto meshFaceMaterial = static_cast<MeshFaceMaterial*>(std::move(material));
     return material;
   } else if ( geometry && geometryGroup && geometryGroup->materialIndex.valid() ) {
-    THREE_TODO("MEAT")
+    THREE_TODO("MEAT EA: huh?")
     //return geometry->materials[ geometryGroup->materialIndex.value ].get();
   }
 
