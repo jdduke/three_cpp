@@ -18,16 +18,8 @@ public:
   typedef std::shared_ptr<Mesh> Ptr;
 
   static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
-
-  virtual enums::Type type() const {
-    return enums::Mesh;
-  }
-  virtual void visit( Visitor& v ) {
-    v( *this );
-  }
-  virtual void visit( ConstVisitor& v ) const {
-    v( *this );
-  }
+  
+  THREE_IMPL_OBJECT(Mesh)
 
   float boundRadius;
   int morphTargetBase;

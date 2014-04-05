@@ -4,12 +4,19 @@
 #include <three/common.h>
 
 #include <three/math/vector4.h>
+#include <three/math/sphere.h>
 
 namespace three {
 
 class Box3 {
 
 public:
+
+  typedef std::shared_ptr<Box3> Ptr;
+
+  static Ptr create() {
+    return three::make_shared<Box3>();
+  }
 
   Box3()
     : min( Vector3( Math::INF(), Math::INF(), Math::INF() ) ), max( -Math::INF(), -Math::INF(), -Math::INF() ) {}

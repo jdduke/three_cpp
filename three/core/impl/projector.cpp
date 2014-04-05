@@ -149,7 +149,7 @@ static bool clipLine( Vector4& s1, Vector4& s2 ) {
   }
 }
 
-struct SceneVisitor : public ConstVisitor {
+struct SceneVisitor : public Visitor {
   Projector::Impl& p;
   Camera& c;
   Matrix4& modelMatrix;
@@ -158,7 +158,7 @@ struct SceneVisitor : public ConstVisitor {
   SceneVisitor( Projector::Impl& p, Camera& c, Matrix4& model, Matrix4& viewProjection )
     : p( p ), c( c ), modelMatrix( model ), viewProjectionMatrix( viewProjection ) { }
 
-  virtual void operator()( const Particle& object ) { }
+  virtual void operator()( Particle& object ) { }
   virtual void operator()( Mesh& object ) {
     auto& geometry          = *object.geometry;
     auto& geometryMaterials = geometry.materials;
@@ -337,7 +337,7 @@ struct SceneVisitor : public ConstVisitor {
     }
   }
 
-  virtual void operator()( const Line& object ) {
+  virtual void operator()( Line& object ) {
 
     p._modelViewProjectionMatrix.multiplyMatrices( p._viewProjectionMatrix, modelMatrix );
 
@@ -414,16 +414,21 @@ struct SceneVisitor : public ConstVisitor {
 
 struct SpriteVisitor : public Visitor {
 
-  SpriteVisitor( Projector::Impl& p, Camera& c )
-    : p( p ), c( c ) { }
+  SpriteVisitor( Projector::Impl& projectorIn, Camera& cameraIn )
+    : projector( projectorIn ), camera( cameraIn ) { }
+
+private: 
+
+  Projector::Impl& projector;
+  Camera& camera;
 
   void operator()( Particle& object ) {
 
     const auto& modelMatrix = object.matrixWorld;
-    auto& vector4 = p._vector4;
+    auto& vector4 = projector._vector4;
       
     vector4.set( modelMatrix.elements[12], modelMatrix.elements[13], modelMatrix.elements[14], 1 );
-    vector4.applyMatrix4( p._viewProjectionMatrix );
+    vector4.applyMatrix4( projector._viewProjectionMatrix );
 
     float invW = 1 / vector4.w;
 
@@ -431,7 +436,7 @@ struct SpriteVisitor : public Visitor {
 
     if ( vector4.z > 0 && vector4.z < 1 ) {
 
-      auto& _particle = p._particles.next();
+      auto& _particle = projector._particles.next();
       _particle.object = &object;
       _particle.x = vector4.x / vector4.w;
       _particle.y = vector4.y / vector4.w;
@@ -439,19 +444,16 @@ struct SpriteVisitor : public Visitor {
 
       _particle.rotation = object._rotation.z();
 
-      _particle.scale.x = object.scale.x * Math::abs( _particle.x - ( vector4.x + c.projectionMatrix.elements[0] ) / ( vector4.w + c.projectionMatrix.elements[12] ) );
-      _particle.scale.y = object.scale.y * Math::abs( _particle.y - ( vector4.y + c.projectionMatrix.elements[5] ) / ( vector4.w + c.projectionMatrix.elements[13] ) );
+      _particle.scale.x = object.scale.x * Math::abs( _particle.x - ( vector4.x + camera.projectionMatrix.elements[0] ) / ( vector4.w + camera.projectionMatrix.elements[12] ) );
+      _particle.scale.y = object.scale.y * Math::abs( _particle.y - ( vector4.y + camera.projectionMatrix.elements[5] ) / ( vector4.w + camera.projectionMatrix.elements[13] ) );
 
       _particle.material = object.material.get();
 
-      p._renderData.elements.push_back( &_particle );
+      projector._renderData.elements.push_back( &_particle );
 
     }
 
   }
-
-  Projector::Impl& p;
-  Camera& c;
 
 };
 

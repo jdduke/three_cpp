@@ -29,24 +29,73 @@ void BufferGeometry::applyMatrix( Matrix4& matrix ) {
 
 void BufferGeometry::computeBoundingBox() {
 
-  Box bb;
+  if ( boundingBox == nullptr ) {
 
-  if ( auto positionsP = attributes.get( AttributeKey::position() ) ) {
-
-    const auto& positions = positionsP->array;
-
-    if ( positions.size() > 2 ) {
-
-      bb.min = bb.max = Vector3( positions[ 0 ], positions[ 1 ], positions[ 2 ] );
-
-      for ( size_t i = 3, il = positions.size(); i < il; i += 3 ) {
-        boundingBox.bound( Vector3( positions[ i ], positions[ i + 1 ], positions[ i + 2 ] ) );
-      }
-    }
+      boundingBox = Box3::create();
 
   }
 
-  boundingBox = bb;
+    const auto& p = attributes.get( AttributeKey::position() );
+    
+    if ( p ) {
+      const auto& positions = p->array;
+      auto& bb = *boundingBox.get();
+        
+      if( positions.size() >= 3 ) {
+        bb.min.x = bb.max.x = positions[ 0 ];
+        bb.min.y = bb.max.y = positions[ 1 ];
+        bb.min.z = bb.max.z = positions[ 2 ];
+      }
+
+      for ( size_t i = 3, il = positions.size(); i < il; i += 3 ) {
+
+        float x = positions[ i ];
+        float y = positions[ i + 1 ];
+        float z = positions[ i + 2 ];
+
+        // bounding box
+
+        if ( x < bb.min.x ) {
+
+          bb.min.x = x;
+
+        } else if ( x > bb.max.x ) {
+
+          bb.max.x = x;
+
+        }
+
+        if ( y < bb.min.y ) {
+
+          bb.min.y = y;
+
+        } else if ( y > bb.max.y ) {
+
+          bb.max.y = y;
+
+        }
+
+        if ( z < bb.min.z ) {
+
+          bb.min.z = z;
+
+        } else if ( z > bb.max.z ) {
+
+          bb.max.z = z;
+
+        }
+
+      }
+
+    }
+
+    if ( p == nullptr || p->array.size() == 0 ) {
+
+      boundingBox->min.set( 0, 0, 0 );
+      boundingBox->max.set( 0, 0, 0 );
+
+    }
+
 
 }
 
@@ -66,7 +115,7 @@ void BufferGeometry::computeBoundingSphere() {
 
     }
 
-    boundingSphere.radius = Math::sqrt( maxRadiusSq );
+    boundingSphere->radius = Math::sqrt( maxRadiusSq );
 
   }
 
@@ -355,7 +404,7 @@ BufferGeometry::BufferGeometry()
   : Geometry() {
   dynamic = false;
   hasTangents = false;
-  boundingBox = Box( Vector3( Math::INF() ), Vector3( -Math::INF() ) );
+  boundingBox = Box3::create();
 }
 
 } // namespace three

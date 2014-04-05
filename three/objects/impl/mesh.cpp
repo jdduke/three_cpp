@@ -26,11 +26,11 @@ Mesh::Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material )
 
   if ( geometry ) {
 
-    if ( geometry->boundingSphere.radius == 0 ) {
+    if ( geometry->boundingSphere->radius == 0 ) {
       geometry->computeBoundingSphere();
     }
 
-    boundRadius = geometry->boundingSphere.radius;
+    boundRadius = geometry->boundingSphere->radius;
 
     // setup morph targets
 

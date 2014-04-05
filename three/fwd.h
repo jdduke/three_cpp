@@ -8,6 +8,7 @@ class Projector;
 class Raycaster;
 
 class Bone;
+class LOD;
 class Camera;
 class Light;
 class Scene;

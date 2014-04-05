@@ -217,16 +217,13 @@ void Geometry::computeTangents() {
 
 void Geometry::computeBoundingBox() {
 
-  if ( vertices.size() > 0 ) {
-
-    Box bb( vertices[ 0 ], vertices[ 0 ] );
-
-    for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
-      bb.bound( vertices [ v ] );
+    if ( boundingBox == nullptr ) {
+        
+        boundingBox = Box3::create();
+        
     }
-
-    boundingBox = bb;
-  }
+    
+    boundingBox->setFromPoints( vertices );
 
 }
 
@@ -240,7 +237,7 @@ void Geometry::computeBoundingSphere() {
     radius = Math::max( radius, vertex.length() );
   }
 
-  boundingSphere.radius = radius;
+  boundingSphere->radius = radius;
 
 }
 

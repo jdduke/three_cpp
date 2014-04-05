@@ -23,9 +23,10 @@
 #include <vector>
 
 #define THREE_IMPL_OBJECT(NAME)                                       \
-  virtual enums::Type type() const { return enums:: NAME; }  \
+  virtual enums::Type type() const { return enums::NAME; }  \
   virtual void visit( Visitor& v ) { v( *this ); }           \
-  virtual void visit( ConstVisitor& v ) const { v( *this ); }
+  virtual void visit( ConstVisitor& v ) const { v( *this ); } \
+  virtual void visit( ConstRawPointerVisitor& v ) const { v( this ); }
 
 namespace three {
 
@@ -133,7 +134,7 @@ public:
     bool hasPositions, hasNormals, hasUvs, hasColors;
     Buffer __glVertexBuffer, __glNormalBuffer, __glUvBuffer, __glColorBuffer;
     std::vector<float> positionArray, normalArray, uvArray, colorArray;
-  } glImmediateData ;
+  } glImmediateData;
 
   typedef std::function<void( const Program*, void*, const Frustum* )> RenderCallback;
   RenderCallback immediateRenderCallback;

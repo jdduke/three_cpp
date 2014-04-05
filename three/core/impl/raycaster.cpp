@@ -1,64 +1,534 @@
 #ifndef THREE_RAYCASTER_CPP
 #define THREE_RAYCASTER_CPP
 
+#include <three/core/buffer_geometry.h>
 #include <three/core/raycaster.h>
+#include <three/materials/mesh_face_material.h>
+#include <three/math/plane.h>
+#include <three/objects/sprite.h>
+#include <three/objects/LOD.h>
 
 namespace three {
 
   float Raycaster::precision = 0.0001f;
   float Raycaster::linePrecision = 1.f;
 
-  struct Raycaster::Impl {};
-    
-  Raycaster& Raycaster::set( const Vector3& origin, const Vector3& direction ) {
+  struct Raycaster::Impl : public NonCopyable {
 
-    ray.set( origin, direction );
-    // direction is assumed to be normalized (for accurate distance calculations)
+    Impl() {}
+
+    Sphere sphere;
+    Ray localRay;
+    Plane facePlane;
+    Vector3 intersectPoint;
+    Vector3 matrixPosition;
+
+    Matrix4 inverseMatrix;
+
+    Vector3 vA;
+    Vector3 vB;
+    Vector3 vC;
+  };
+
+  struct IntersectObjectVisitor : public ConstRawPointerVisitor {
+
+    IntersectObjectVisitor( Raycaster& raycasterIn, Raycaster::Impl& implIn, Intersects& intersectsIn )
+      : raycaster( raycasterIn ), impl( implIn ), intersects( intersectsIn ) { }
+
+    Raycaster& raycaster;
+    Raycaster::Impl& impl;
+    Intersects& intersects;
+
+    virtual void operator()( const Sprite* object ) {
+
+      impl.matrixPosition.setFromMatrixPosition( object->matrixWorld );
+      float distance = raycaster.ray.distanceToPoint( impl.matrixPosition );
+
+      if ( distance > object->scale.x ) {
+
+        return;
+
+      }
+
+      auto position = object->position;
+        
+      intersects.push_back(Intersect(
+        distance,
+        position,
+        nullptr,
+        nullptr,
+        (Object3D*)object
+      ));
       
-      return *this;
+    }
 
-  }
+    virtual void operator()( const LOD* object ) {
 
-  Intersects Raycaster::intersectObject ( const Object3D& object, bool recursive ) const {
+      impl.matrixPosition.setFromMatrixPosition( object->matrixWorld );
+      float distance = raycaster.ray.origin.distanceTo( impl.matrixPosition );
 
-    Intersects intersects;
-
-    if ( recursive == true ) {
-
-      //intersectDescendants( object, *this, intersects );
+      raycaster.intersectObject( *object->getObjectForDistance( distance ).get() );
 
     }
 
-    //intersectObject( object, *this, intersects );
+    virtual void operator()( const Mesh* object ) {
 
-    //intersects.sort( descSort() );
+      auto& geometry = object->geometry;
 
-    return intersects;
+      // Checking boundingSphere distance to ray
 
-  };
+      if ( geometry->boundingSphere == nullptr ) geometry->computeBoundingSphere();
 
-  Intersects Raycaster::intersectObjects ( const std::vector<Object3D::Ptr>& objects, bool recursive ) const {
+      impl.sphere.copy( *geometry->boundingSphere.get() );
+      impl.sphere.applyMatrix4( object->matrixWorld );
 
-    Intersects intersects;
+      if ( raycaster.ray.isIntersectionSphere( impl.sphere ) == false ) {
 
-    for ( auto& obj : objects ) {
+        return;
 
-      //intersectObject( *obj, *this, intersects );
+      }
 
-      if ( recursive == true ) {
+      // Check boundingBox before continuing
+      
+      impl.inverseMatrix.getInverse( object->matrixWorld );
+      impl.localRay.copy( raycaster.ray ).applyMatrix4( impl.inverseMatrix );
 
-        //intersectDescendants( *obj, *this, intersects );
+      if ( geometry->boundingBox != nullptr ) {
+
+        if ( impl.localRay.isIntersectionBox( *geometry->boundingBox.get() ) == false )  {
+
+          return;
+
+        }
+
+      } 
+
+      if ( geometry->type() == enums::BufferGeometry ) {
+
+        visitMeshBufferGeometry( object, (BufferGeometry*) geometry.get() );
+
+      } else if ( geometry->type() == enums::Geometry ) {
+
+        visitMeshGeometry( object, (Geometry*) geometry.get() );
 
       }
 
     }
 
-    //intersects.sort( descSort() );
+    void visitMeshBufferGeometry( const Mesh* object, const BufferGeometry* geometry ) {
 
-    return intersects;
+    auto& material = object->material;
+
+    if ( material == nullptr ) return;
+    if ( geometry->dynamic == false ) return;
+
+    int a, b, c;
+    float precision = raycaster.precision;
+
+    if ( geometry->attributes.contains( AttributeKey::index() ) ) {
+
+      const auto& offsets = geometry->offsets;
+      const auto& indices   = geometry->attributes.get( AttributeKey::index() )->array;
+      const auto& positions = geometry->attributes.get( AttributeKey::position() )->array;
+
+
+      for ( size_t oi = 0; oi < offsets.size(); ++oi ) {
+
+        int start = offsets[ oi ].start;
+        int count = offsets[ oi ].count;
+        int index = offsets[ oi ].index;
+
+        for ( size_t i = start, il = start + count; i < il; i += 3 ) {
+
+          a = index + indices[ i ];
+          b = index + indices[ i + 1 ];
+          c = index + indices[ i + 2 ];
+
+          impl.vA.set(
+            positions[ a * 3 ],
+            positions[ a * 3 + 1 ],
+            positions[ a * 3 + 2 ]
+            );
+          impl.vB.set(
+            positions[ b * 3 ],
+            positions[ b * 3 + 1 ],
+            positions[ b * 3 + 2 ]
+            );
+          impl.vC.set(
+            positions[ c * 3 ],
+            positions[ c * 3 + 1 ],
+            positions[ c * 3 + 2 ]
+            );
+
+            Vector3::Ptr intersectionPoint;
+          if ( material->side == enums::BackSide ) {
+
+            intersectionPoint = impl.localRay.intersectTriangle( impl.vC, impl.vB, impl.vA, true );
+
+          } else {
+
+            intersectionPoint = impl.localRay.intersectTriangle( impl.vA, impl.vB, impl.vC, material->side != enums::DoubleSide );
+
+          }
+
+          if ( intersectionPoint == nullptr ) continue;
+
+          intersectionPoint->applyMatrix4( object->matrixWorld );
+
+          float distance = raycaster.ray.origin.distanceTo( *intersectionPoint.get() );
+
+          if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
+
+          intersects.push_back(Intersect(
+            distance,
+            *intersectionPoint.get(),
+            nullptr,
+            nullptr,
+            (Object3D*)object
+          ));
+
+        }
+
+      }
+
+    } else {
+
+     const auto& offsets = geometry->offsets;
+     const auto& positions = geometry->attributes.get( AttributeKey::position() )->array;
+
+      for ( size_t i = 0; i < offsets.size(); i += 3 ) {
+
+        a = i;
+        b = i + 1;
+        c = i + 2;
+
+        impl.vA.set(
+          positions[ a * 3 ],
+          positions[ a * 3 + 1 ],
+          positions[ a * 3 + 2 ]
+          );
+        impl.vB.set(
+          positions[ b * 3 ],
+          positions[ b * 3 + 1 ],
+          positions[ b * 3 + 2 ]
+          );
+        impl.vC.set(
+          positions[ c * 3 ],
+          positions[ c * 3 + 1 ],
+          positions[ c * 3 + 2 ]
+          );
+
+          
+          Vector3::Ptr intersectionPoint;
+        if ( material->side == enums::BackSide ) {
+
+           intersectionPoint = impl.localRay.intersectTriangle( impl.vC, impl.vB, impl.vA, true );
+
+        } else {
+
+          intersectionPoint = impl.localRay.intersectTriangle( impl.vA, impl.vB, impl.vC, material->side != enums::DoubleSide );
+
+        }
+
+        if ( intersectionPoint == nullptr ) continue;
+
+        intersectionPoint->applyMatrix4( object->matrixWorld );
+
+        float distance = raycaster.ray.origin.distanceTo( *intersectionPoint.get() );
+
+        if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
+
+        intersects.push_back(Intersect(
+          distance,
+          *intersectionPoint.get(),
+          nullptr,
+          nullptr,
+          (Object3D*)object
+        ));
+
+      }
+
+    }
+
+  }
+
+  void visitMeshGeometry( const Mesh* object, const Geometry* geometry ) {
+
+      bool isFaceMaterial = object->material->type() == enums::MeshFaceMaterial;
+      auto& objectMaterials = ((MeshFaceMaterial*)object)->materials;
+
+    Vector3& a, b, c;
+    float precision = raycaster.precision;
+
+    auto& vertices = geometry.vertices;
+
+    for ( size_t f = 0, fl = geometry.faces.size(); f < fl; f ++ ) {
+
+      auto& face = geometry.faces[ f ];
+
+      auto& material = isFaceMaterial ? objectMaterials[ face.materialIndex ] : object.material;
+
+      if ( material == nullptr ) continue;
+
+      a = vertices[ face.a ];
+      b = vertices[ face.b ];
+      c = vertices[ face.c ];
+
+      if ( material.morphTargets == true ) {
+
+        auto& morphTargets = geometry.morphTargets;
+        auto& morphInfluences = object.morphTargetInfluences;
+
+        vA.set( 0, 0, 0 );
+        vB.set( 0, 0, 0 );
+        vC.set( 0, 0, 0 );
+
+        for ( size_t t = 0, tl = morphTargets.size(); t < tl; t ++ ) {
+
+          float influence = morphInfluences[ t ];
+
+          if ( influence == 0 ) continue;
+
+          auto& targets = morphTargets[ t ].vertices;
+
+          vA.x += ( targets[ face.a ].x - a.x ) * influence;
+          vA.y += ( targets[ face.a ].y - a.y ) * influence;
+          vA.z += ( targets[ face.a ].z - a.z ) * influence;
+
+          vB.x += ( targets[ face.b ].x - b.x ) * influence;
+          vB.y += ( targets[ face.b ].y - b.y ) * influence;
+          vB.z += ( targets[ face.b ].z - b.z ) * influence;
+
+          vC.x += ( targets[ face.c ].x - c.x ) * influence;
+          vC.y += ( targets[ face.c ].y - c.y ) * influence;
+          vC.z += ( targets[ face.c ].z - c.z ) * influence;
+
+        }
+
+        vA.add( a );
+        vB.add( b );
+        vC.add( c );
+
+        a = vA;
+        b = vB;
+        c = vC;
+
+      }
+
+      if ( material.side == enums::BackSide ) {
+          
+        auto& intersectionPoint = localRay.intersectTriangle( c, b, a, true );
+
+      } else {
+            
+        auto& intersectionPoint = localRay.intersectTriangle( a, b, c, material.side != enums::DoubleSide );
+
+      }
+
+      if ( intersectionPoint == nullptr ) continue;
+
+      intersectionPoint.applyMatrix4( object.matrixWorld );
+
+      float distance = raycaster.ray.origin.distanceTo( intersectionPoint );
+
+      if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
+
+      intersects.push_back(Intersect(
+        distance,
+        intersectionPoint,
+        face,
+        f,
+        object
+      ));
+
+    }
+
+  }
+
+  virtual void operator()( const Line3* object ) {
+
+    float precision = raycaster.linePrecision;
+    float precisionSq = precision * precision;
+
+    auto& geometry = object.geometry;
+
+    if ( geometry.boundingSphere == nullptr ) geometry.computeBoundingSphere();
+
+    // Checking boundingSphere distance to ray
+
+    sphere.copy( geometry.boundingSphere );
+    sphere.applyMatrix4( object.matrixWorld );
+    
+    if ( raycaster.ray.isIntersectionSphere( sphere ) == false ) {
+
+      return intersects;
+
+    }
+    
+    inverseMatrix.getInverse( object.matrixWorld );
+    localRay.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
+
+    if ( geometry.type() == enums::Geometry ) {
+
+      const auto& vertices = geometry.vertices;
+      size_t nbVertices = vertices.size();
+      auto interSegment = Vector3();
+      auto interRay = new Vector3();
+      int step = object.type() == enums::LineStrip ? 1 : 2;
+
+      for ( size_t i = 0; i < nbVertices - 1; i = i + step ) {
+
+        float distSq = localRay.distanceSqToSegment( vertices[ i ], vertices[ i + 1 ], interRay, interSegment );
+
+        if ( distSq > precisionSq ) continue;
+
+        float distance = localRay.origin.distanceTo( interRay );
+
+        if ( distance < raycaster.near || distance > raycaster.far ) continue;
+
+        intersects.push_back(Intersect(
+          distance,
+          // What do we want? intersection point on the ray or on the segment??
+          // point: raycaster.ray.at( distance ),
+          interSegment.clone().applyMatrix4( object.matrixWorld ),
+          nullptr,
+          nullptr,
+          object
+        ));
+
+      }
+
+    }
+
+  }
+
+}; // end namespace
+
+    /*
+
+
+  var intersectObject = function ( object, raycaster, intersects ) {
+
+    if ( object instanceof THREE.Sprite ) {
+
+    } else if ( object instanceof THREE.LOD ) {
+
+    } else if ( object instanceof THREE.Mesh ) {
+
+      var geometry = object.geometry;
+
+      // Checking boundingSphere distance to ray
+
+      if ( geometry.boundingSphere === null ) geometry.computeBoundingSphere();
+
+      sphere.copy( geometry.boundingSphere );
+      sphere.applyMatrix4( object.matrixWorld );
+
+      if ( raycaster.ray.isIntersectionSphere( sphere ) === false ) {
+
+        return intersects;
+
+      }
+
+      // Check boundingBox before continuing
+      
+      inverseMatrix.getInverse( object.matrixWorld );  
+      localRay.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
+
+      if ( geometry.boundingBox !== null ) {
+
+        if ( localRay.isIntersectionBox( geometry.boundingBox ) === false )  {
+
+          return intersects;
+
+        }
+
+      } 
+
+      if ( geometry instanceof THREE.BufferGeometry ) {
+
+        
+
+      } else if ( geometry instanceof THREE.Geometry ) {
+
+        
+
+      }
+
+    } else if ( object instanceof THREE.Line ) {
+
+      
+
+    }
 
   };
-    
+
+  var intersectDescendants = function ( object, raycaster, intersects ) {
+
+    var descendants = object.getDescendants();
+
+    for ( var i = 0, l = descendants.length; i < l; i ++ ) {
+
+      intersectObject( descendants[ i ], raycaster, intersects );
+
+    }
+  };
+    */
+
+};
+
+Raycaster::Raycaster( Vector3& origin, Vector3& direction, float near, float far)
+: ray( Ray( origin, direction ) ), near( near ), far( far ), impl( new Impl() ) { }
+
+Raycaster& Raycaster::set( const Vector3& origin, const Vector3& direction ) {
+
+  ray.set( origin, direction );
+    // direction is assumed to be normalized (for accurate distance calculations)
+
+  return *this;
+
+}
+
+Intersects Raycaster::intersectObject ( const Object3D& object, bool recursive ) const {
+
+  Intersects intersects;
+
+  if ( recursive == true ) {
+
+      //intersectDescendants( object, *this, intersects );
+
+  }
+
+    //intersectObject( object, *this, intersects );
+
+    //intersects.sort( descSort() );
+
+  return intersects;
+
+};
+
+Intersects Raycaster::intersectObjects ( const std::vector<Object3D::Ptr>& objects, bool recursive ) const {
+
+  Intersects intersects;
+
+  for ( auto& obj : objects ) {
+
+      //intersectObject( *obj, *this, intersects );
+
+    if ( recursive == true ) {
+
+        //intersectDescendants( *obj, *this, intersects );
+
+    }
+
+  }
+
+    //intersects.sort( descSort() );
+
+  return intersects;
+
+};
+
 } // end namespace
 
 #endif // THREE_RAYCASTER_CPP

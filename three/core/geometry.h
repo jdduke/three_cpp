@@ -9,10 +9,12 @@
 #include <three/math/math.h>
 #include <three/math/color.h>
 #include <three/math/vector3.h>
+#include <three/math/box3.h>
 #include <three/math/sphere.h>
 #include <three/core/interfaces.h>
 
 #include <three/materials/material.h>
+
 
 #include <three/utils/memory.h>
 
@@ -26,36 +28,6 @@ struct MorphTarget {
   std::string name;
   std::vector<Vertex> vertices;
 };
-
-struct Box {
-  Vector3 min;
-  Vector3 max;
-
-  Box() { }
-  Box( const Vector3& min, const Vector3& max )
-    : min( min ), max( max ) { }
-
-  void bound( const Vector3& pos ) {
-    if ( pos.x < min.x ) {
-      min.x = pos.x;
-    } else if ( pos.x > max.x ) {
-      max.x = pos.x;
-    }
-
-    if ( pos.y < min.y ) {
-      min.y = pos.y;
-    } else if ( pos.y > max.y ) {
-      max.y = pos.y;
-    }
-
-    if ( pos.z < min.z ) {
-      min.z = pos.z;
-    } else if ( pos.z > max.z ) {
-      max.z = pos.z;
-    }
-  }
-};
-
 
 class Geometry : public IGeometry, public GeometryBuffer {
 
@@ -107,8 +79,8 @@ public:
   };
   std::vector<Offset> offsets;
 
-  Box    boundingBox;
-  Sphere boundingSphere;
+  Box3::Ptr boundingBox;
+  Sphere::Ptr boundingSphere;
 
   bool hasTangents;
   bool dynamic;
