@@ -63,6 +63,14 @@ public:
 
   typedef std::shared_ptr<Geometry> Ptr;
 
+  struct SkinIndices {
+    int x, y, z, w;
+  };
+
+  struct Offset {
+    int index, count, start;
+  };
+
   static Ptr create() {
     return make_shared<Geometry>();
   }
@@ -72,7 +80,6 @@ public:
   }
 
   int id;
-
   const std::string uuid;
 
   std::string name;
@@ -81,12 +88,11 @@ public:
 
   std::vector<Color> colors; // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
 
-  std::vector<Material::Ptr> materials;
-  Attributes attributes;
+  //std::vector<Material::Ptr> materials;
 
   std::vector<Face> faces;
 
-  std::vector<std::vector<Vector2>> faceUvs;
+  //std::vector<std::vector<Vector2>> faceUvs;
   std::vector<std::vector<std::array<Vector2, 4>>> faceVertexUvs;
 
   std::vector<MorphTarget> morphTargets;
@@ -94,27 +100,17 @@ public:
   //std::vector<Vector3> morphNormals;
   std::vector<Face> morphNormals;
 
-  std::vector<Vector3> skinVerticesA;
-  std::vector<Vector3> skinVerticesB;
   std::vector<Vector4> skinWeights;
-  struct SkinIndices {
-    int x, y, z, w;
-  };
   std::vector<SkinIndices> skinIndices;
 
-  struct Offset {
-    int index, count, start;
-  };
-  std::vector<Offset> offsets;
+  std::vector<float> lineDistances;
 
   Box    boundingBox;
   Sphere boundingSphere;
 
   bool hasTangents;
-  bool dynamic;
 
-  std::unordered_map<std::string, GeometryGroup::Ptr> geometryGroups;
-  std::vector<GeometryGroup*> geometryGroupsList;
+  bool dynamic;
 
   bool verticesNeedUpdate;
   bool morphTargetsNeedUpdate;
@@ -123,6 +119,18 @@ public:
   bool normalsNeedUpdate;
   bool tangentsNeedUpdate;
   bool colorsNeedUpdate;
+  bool lineDistancesNeedUpdate;
+
+  bool buffersNeedUpdate;
+
+  std::vector<Offset> offsets;
+
+  std::unordered_map<std::string, GeometryGroup::Ptr> geometryGroups;
+  std::vector<GeometryGroup*> geometryGroupsList;
+
+  std::vector<Vector3> skinVerticesA;
+  std::vector<Vector3> skinVerticesB;
+  Attributes attributes;
 
   virtual void applyMatrix( Matrix4& matrix );
 

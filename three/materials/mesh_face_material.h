@@ -7,12 +7,14 @@
 
 namespace three {
 
-class MeshFaceMaterial : public IMaterial {
+THREE_REVIEW("Unfortunate bloat here, due to 'required' inheritance of Material")
+class MeshFaceMaterial : public Material {
+
 public:
 
   typedef std::shared_ptr<MeshFaceMaterial> Ptr;
 
-  static Ptr create( const std::vector<IMaterial>& materials ) {
+  static Ptr create( const std::vector<Material>& materials ) {
     return three::make_shared<MeshFaceMaterial>( materials );
   }
 
@@ -20,7 +22,7 @@ public:
     return enums::MeshFaceMaterial;
   }
 
-  std::vector<IMaterial> materials;
+  std::vector<Material> materials;
 
   THREE_TODO("Clone implementation")
   Ptr clone( ) {
@@ -32,7 +34,7 @@ public:
 
 protected:
 
-  MeshFaceMaterial( const std::vector<IMaterial>& materialsIn )
+  MeshFaceMaterial( const std::vector<Material>& materialsIn )
     : materials( materialsIn ) {}
 
 };

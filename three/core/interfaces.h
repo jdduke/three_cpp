@@ -25,12 +25,6 @@ public:
   virtual ~IGeometry() { }
 };
 
-class IMaterial {
-public:
-  typedef std::shared_ptr<IMaterial> Ptr;
-  virtual ~IMaterial() {};
-};
-
 class IPlugin {
 public:
   typedef std::shared_ptr<IPlugin> Ptr;

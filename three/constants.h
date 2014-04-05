@@ -14,6 +14,24 @@ enum Side {
   DoubleSide = 2
 };
 
+enum CullFace {
+  CullFaceNone = 0,
+  CullFaceBack = 1,
+  CullFaceFront = 2,
+  CullFaceFrontBack = 3
+};
+
+enum FrontFaceDirection {
+  FrontFaceDirectionCW = 0,
+  FrontFaceDirectionCCW = 1
+};
+
+enum ShadowTypes {
+  BasicShadowMap = 0,
+  PCFShadowMap = 1,
+  PCFSoftShadowMap = 2
+};
+
 enum Dir {
   CW  = 0,
   CCW = 1
@@ -62,7 +80,8 @@ enum BlendFactor {
 
 enum TextureConstant {
   MultiplyOperation = 0,
-  MixOperation = 1
+  MixOperation = 1,
+  AddOperation = 2
 };
 
 enum Wrapping {

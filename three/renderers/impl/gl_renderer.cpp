@@ -24,6 +24,7 @@
 #include <three/lights/hemisphere_light.h>
 
 #include <three/materials/program.h>
+#include <three/materials/mesh_face_material.h>
 
 #include <three/objects/line.h>
 #include <three/objects/mesh.h>
@@ -682,12 +683,12 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
   }
 
   if ( uvType ) {
-
-    if ( geometry.faceUvs.size() > 0 || geometry.faceVertexUvs.size() > 0 ) {
+    THREE_REVIEW("Removed faceUVs during r65")
+    if ( geometry.faceVertexUvs.size() > 0 ) {
       geometryGroup.__uvArray.resize( nvertices * 2 );
     }
 
-    if ( geometry.faceUvs.size() > 1 || geometry.faceVertexUvs.size() > 1 ) {
+    if ( geometry.faceVertexUvs.size() > 1 ) {
       geometryGroup.__uv2Array.resize( nvertices * 2 );
     }
 
@@ -790,10 +791,16 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
   auto material = object.material.get();
   auto geometry = object.geometry.get();
 
-  if ( material && !( material->type() == enums::MeshFaceMaterial ) ) {
+  if(!material) {
+    return nullptr;
+  }
+
+  if ( material->type() == enums::MeshFaceMaterial ) {
+    auto meshFaceMaterial = static_cast<MeshFaceMaterial*>(std::move(material));
     return material;
   } else if ( geometry && geometryGroup && geometryGroup->materialIndex.valid() ) {
-    return geometry->materials[ geometryGroup->materialIndex.value ].get();
+    THREE_TODO("MEAT")
+    //return geometry->materials[ geometryGroup->materialIndex.value ].get();
   }
 
   return nullptr;
@@ -3632,20 +3639,20 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
     const auto materialIndex = buffer.materialIndex;
 
     if ( materialIndex.valid() ) {
+      THREE_TODO("MEAT")
+      //auto& material = *object.geometry->materials[ materialIndex.value ];
 
-      auto& material = *object.geometry->materials[ materialIndex.value ];
+      //if ( material.transparent ) {
 
-      if ( material.transparent ) {
+      //  globject.transparent = &material;
+      //  globject.opaque = nullptr;
 
-        globject.transparent = &material;
-        globject.opaque = nullptr;
+      //} else {
 
-      } else {
+      //  globject.opaque = &material;
+      //  globject.transparent = nullptr;
 
-        globject.opaque = &material;
-        globject.transparent = nullptr;
-
-      }
+      //}
 
     }
 

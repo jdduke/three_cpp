@@ -134,7 +134,7 @@ struct SceneVisitor : public ConstVisitor {
   virtual void operator()( const Particle& p ) { }
   virtual void operator()( const Mesh& object ) {
     const auto& geometry          = *object.geometry;
-    const auto& geometryMaterials = geometry.materials;
+//    const auto& geometryMaterials = geometry.materials;
     const auto& vertices          = geometry.vertices;
     const auto& faces             = geometry.faces;
     const auto& faceVertexUvs     = geometry.faceVertexUvs;
@@ -166,7 +166,7 @@ struct SceneVisitor : public ConstVisitor {
 
       bool visible = false;
 
-      auto material = isFaceMaterial ? geometryMaterials[ face.materialIndex ] : object.material;
+      auto material = isFaceMaterial ? object.material : nullptr;
 
       if ( material == nullptr ) continue;
 

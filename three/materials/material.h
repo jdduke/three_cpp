@@ -27,7 +27,7 @@
 
 namespace three {
 
-class Material : public NonCopyable, public IMaterial {
+class Material : public NonCopyable {
 
 public:
 
