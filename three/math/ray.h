@@ -60,7 +60,7 @@ public:
 
   Vector3::Ptr intersectBox( const Box3& box, Vector3& target );
 
-  Vector3::Ptr intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3::Ptr optionalTarget );
+  Vector3::Ptr intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3::Ptr optionalTarget = nullptr );
 
   Ray& applyMatrix4( const Matrix4& matrix4 );
 

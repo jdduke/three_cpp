@@ -10,6 +10,7 @@
 #define MATH_PI 3.1415926535897932384f
 #define MATH_LN2 0.6931471805599453094f
 #define MATH_DEG_TO_RAD_FACTOR (3.1415926535897932384f/180)
+#define MATH_RAD_TO_DEG_FACTOR (180.f/MATH_PI)
 
 namespace three {
 
@@ -95,6 +96,10 @@ template < typename T, typename U > inline T pow( T a, U b )   {
 }
 template < typename T > inline T degToRad( T a )   {
   return a * MATH_DEG_TO_RAD_FACTOR;
+}
+
+template < typename T > inline T radToDeg( T a ) {
+    return a * MATH_RAD_TO_DEG_FACTOR;
 }
 
 #if defined(_MSC_VER)

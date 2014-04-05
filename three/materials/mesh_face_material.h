@@ -14,7 +14,7 @@ public:
 
   typedef std::shared_ptr<MeshFaceMaterial> Ptr;
 
-  static Ptr create( const std::vector<Material>& materials ) {
+  static Ptr create( const std::vector<Material::Ptr>& materials ) {
     return three::make_shared<MeshFaceMaterial>( materials );
   }
 
@@ -22,19 +22,13 @@ public:
     return enums::MeshFaceMaterial;
   }
 
-  std::vector<Material> materials;
+  std::vector<Material::Ptr> materials;
 
-  THREE_TODO("Clone implementation")
-  Ptr clone( ) {
-    auto clone = *this;
-    for( auto& mat : clone.materials) {
-
-    }
-  }
+  THREE_TODO("MeshFaceMaterial::clone")
 
 protected:
 
-  MeshFaceMaterial( const std::vector<Material>& materialsIn )
+  MeshFaceMaterial( const std::vector<Material::Ptr>& materialsIn )
     : materials( materialsIn ) {}
 
 };

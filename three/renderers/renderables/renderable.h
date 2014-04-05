@@ -8,11 +8,14 @@ namespace three {
 class Renderable {
 public:
 
+  int id;
+
   float z;
 
 protected:
 
   Renderable( float z ) : z( z ) { }
+
 };
 
 } // namespace three

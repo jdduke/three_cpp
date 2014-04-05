@@ -28,6 +28,7 @@
 
 #include <three/objects/line.h>
 #include <three/objects/mesh.h>
+#include <three/objects/particle_system.h>
 
 #include <three/renderers/gl_render_target.h>
 #include <three/renderers/gl_shaders.h>
@@ -1264,9 +1265,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& v1 = vertices[ face.a ];
-      const auto& v2 = vertices[ face.b ];
-      const auto& v3 = vertices[ face.c ];
+      const auto& v1 = vertices[ face->a ];
+      const auto& v2 = vertices[ face->b ];
+      const auto& v3 = vertices[ face->c ];
 
       vertexArray[ offset ]     = v1.x;
       vertexArray[ offset + 1 ] = v1.y;
@@ -1288,10 +1289,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& v1 = vertices[ face.a ];
-      const auto& v2 = vertices[ face.b ];
-      const auto& v3 = vertices[ face.c ];
-      const auto& v4 = vertices[ face.d ];
+      const auto& v1 = vertices[ face->a ];
+      const auto& v2 = vertices[ face->b ];
+      const auto& v3 = vertices[ face->c ];
+      const auto& v4 = vertices[ face->d ];
 
       vertexArray[ offset ]     = v1.x;
       vertexArray[ offset + 1 ] = v1.y;
@@ -1329,9 +1330,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         // morph positions
 
-        const auto& v1 = morphTargets[ vk ].vertices[ face.a ];
-        const auto& v2 = morphTargets[ vk ].vertices[ face.b ];
-        const auto& v3 = morphTargets[ vk ].vertices[ face.c ];
+        const auto& v1 = morphTargets[ vk ].vertices[ face->a ];
+        const auto& v2 = morphTargets[ vk ].vertices[ face->b ];
+        const auto& v3 = morphTargets[ vk ].vertices[ face->c ];
 
         auto& vka = morphTargetsArrays[ vk ];
 
@@ -1400,10 +1401,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
         // morph positions
 
-        const auto& v1 = morphTargets[ vk ].vertices[ face.a ];
-        const auto& v2 = morphTargets[ vk ].vertices[ face.b ];
-        const auto& v3 = morphTargets[ vk ].vertices[ face.c ];
-        const auto& v4 = morphTargets[ vk ].vertices[ face.d ];
+        const auto& v1 = morphTargets[ vk ].vertices[ face->a ];
+        const auto& v2 = morphTargets[ vk ].vertices[ face->b ];
+        const auto& v3 = morphTargets[ vk ].vertices[ face->c ];
+        const auto& v4 = morphTargets[ vk ].vertices[ face->d ];
 
         auto& vka = morphTargetsArrays[ vk ];
 
@@ -1501,9 +1502,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // weights
 
-      const auto& sw1 = obj_skinWeights[ face.a ];
-      const auto& sw2 = obj_skinWeights[ face.b ];
-      const auto& sw3 = obj_skinWeights[ face.c ];
+      const auto& sw1 = obj_skinWeights[ face->a ];
+      const auto& sw2 = obj_skinWeights[ face->b ];
+      const auto& sw3 = obj_skinWeights[ face->c ];
 
       skinWeightArray[ offset_skin ]     = sw1.x;
       skinWeightArray[ offset_skin + 1 ] = sw1.y;
@@ -1522,9 +1523,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // indices
 
-      const auto& si1 = obj_skinIndices[ face.a ];
-      const auto& si2 = obj_skinIndices[ face.b ];
-      const auto& si3 = obj_skinIndices[ face.c ];
+      const auto& si1 = obj_skinIndices[ face->a ];
+      const auto& si2 = obj_skinIndices[ face->b ];
+      const auto& si3 = obj_skinIndices[ face->c ];
 
       skinIndexArray[ offset_skin ]     = si1.x;
       skinIndexArray[ offset_skin + 1 ] = si1.y;
@@ -1543,9 +1544,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // vertices A
 
-      const auto& sa1 = obj_skinVerticesA[ face.a ];
-      const auto& sa2 = obj_skinVerticesA[ face.b ];
-      const auto& sa3 = obj_skinVerticesA[ face.c ];
+      const auto& sa1 = obj_skinVerticesA[ face->a ];
+      const auto& sa2 = obj_skinVerticesA[ face->b ];
+      const auto& sa3 = obj_skinVerticesA[ face->c ];
 
       skinVertexAArray[ offset_skin ]     = sa1.x;
       skinVertexAArray[ offset_skin + 1 ] = sa1.y;
@@ -1564,9 +1565,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // vertices B
 
-      const auto& sb1 = obj_skinVerticesB[ face.a ];
-      const auto& sb2 = obj_skinVerticesB[ face.b ];
-      const auto& sb3 = obj_skinVerticesB[ face.c ];
+      const auto& sb1 = obj_skinVerticesB[ face->a ];
+      const auto& sb2 = obj_skinVerticesB[ face->b ];
+      const auto& sb3 = obj_skinVerticesB[ face->c ];
 
       skinVertexBArray[ offset_skin ]     = sb1.x;
       skinVertexBArray[ offset_skin + 1 ] = sb1.y;
@@ -1593,10 +1594,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // weights
 
-      const auto& sw1 = obj_skinWeights[ face.a ];
-      const auto& sw2 = obj_skinWeights[ face.b ];
-      const auto& sw3 = obj_skinWeights[ face.c ];
-      const auto& sw4 = obj_skinWeights[ face.d ];
+      const auto& sw1 = obj_skinWeights[ face->a ];
+      const auto& sw2 = obj_skinWeights[ face->b ];
+      const auto& sw3 = obj_skinWeights[ face->c ];
+      const auto& sw4 = obj_skinWeights[ face->d ];
 
       skinWeightArray[ offset_skin ]     = sw1.x;
       skinWeightArray[ offset_skin + 1 ] = sw1.y;
@@ -1620,10 +1621,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // indices
 
-      const auto& si1 = obj_skinIndices[ face.a ];
-      const auto& si2 = obj_skinIndices[ face.b ];
-      const auto& si3 = obj_skinIndices[ face.c ];
-      const auto& si4 = obj_skinIndices[ face.d ];
+      const auto& si1 = obj_skinIndices[ face->a ];
+      const auto& si2 = obj_skinIndices[ face->b ];
+      const auto& si3 = obj_skinIndices[ face->c ];
+      const auto& si4 = obj_skinIndices[ face->d ];
 
       skinIndexArray[ offset_skin ]     = si1.x;
       skinIndexArray[ offset_skin + 1 ] = si1.y;
@@ -1647,10 +1648,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // vertices A
 
-      const auto& sa1 = obj_skinVerticesA[ face.a ];
-      const auto& sa2 = obj_skinVerticesA[ face.b ];
-      const auto& sa3 = obj_skinVerticesA[ face.c ];
-      const auto& sa4 = obj_skinVerticesA[ face.d ];
+      const auto& sa1 = obj_skinVerticesA[ face->a ];
+      const auto& sa2 = obj_skinVerticesA[ face->b ];
+      const auto& sa3 = obj_skinVerticesA[ face->c ];
+      const auto& sa4 = obj_skinVerticesA[ face->d ];
 
       skinVertexAArray[ offset_skin ]     = sa1.x;
       skinVertexAArray[ offset_skin + 1 ] = sa1.y;
@@ -1674,10 +1675,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       // vertices B
 
-      const auto& sb1 = obj_skinVerticesB[ face.a ];
-      const auto& sb2 = obj_skinVerticesB[ face.b ];
-      const auto& sb3 = obj_skinVerticesB[ face.c ];
-      const auto& sb4 = obj_skinVerticesB[ face.d ];
+      const auto& sb1 = obj_skinVerticesB[ face->a ];
+      const auto& sb2 = obj_skinVerticesB[ face->b ];
+      const auto& sb3 = obj_skinVerticesB[ face->c ];
+      const auto& sb4 = obj_skinVerticesB[ face->d ];
 
       skinVertexBArray[ offset_skin ]     = sb1.x;
       skinVertexBArray[ offset_skin + 1 ] = sb1.y;
@@ -1720,10 +1721,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& vertexColors = face.vertexColors;
-      const auto& faceColor = face.color;
+      const auto& vertexColors = face->vertexColors;
+      const auto& faceColor = face->color;
 
-      if ( face.size() == 3 && vertexColorType == enums::VertexColors ) {
+      if ( face->size() == 3 && vertexColorType == enums::VertexColors ) {
 
         c1 = vertexColors[ 0 ];
         c2 = vertexColors[ 1 ];
@@ -1757,10 +1758,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& vertexColors = face.vertexColors;
-      const auto& faceColor = face.color;
+      const auto& vertexColors = face->vertexColors;
+      const auto& faceColor = face->color;
 
-      if ( face.size() == 4 && vertexColorType == enums::VertexColors ) {
+      if ( face->size() == 4 && vertexColorType == enums::VertexColors ) {
 
         c1 = vertexColors[ 0 ];
         c2 = vertexColors[ 1 ];
@@ -1810,7 +1811,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& vertexTangents = face.vertexTangents;
+      const auto& vertexTangents = face->vertexTangents;
 
       const auto& t1 = vertexTangents[ 0 ];
       const auto& t2 = vertexTangents[ 1 ];
@@ -1839,7 +1840,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ chunk_face4 ];
 
-      const auto& vertexTangents = face.vertexTangents;
+      const auto& vertexTangents = face->vertexTangents;
 
       const auto& t1 = vertexTangents[ 0 ];
       const auto& t2 = vertexTangents[ 1 ];
@@ -1882,10 +1883,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& vertexNormals = face.vertexNormals;
-      const auto& faceNormal = face.normal;
+      const auto& vertexNormals = face->vertexNormals;
+      const auto& faceNormal = face->normal;
 
-      if ( face.size() == 3 && needsSmoothNormals ) {
+      if ( face->size() == 3 && needsSmoothNormals ) {
 
         for ( i = 0; i < 3; i ++ ) {
 
@@ -1919,10 +1920,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       const auto& face = obj_faces[ fi ];
 
-      const auto& vertexNormals = face.vertexNormals;
-      const auto& faceNormal = face.normal;
+      const auto& vertexNormals = face->vertexNormals;
+      const auto& faceNormal = face->normal;
 
-      if ( face.size() == 4 && needsSmoothNormals ) {
+      if ( face->size() == 4 && needsSmoothNormals ) {
 
         for ( i = 0; i < 4; i ++ ) {
 
@@ -2139,9 +2140,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          customAttribute.array[ offset_custom ]     = values[ face.a ];
-          customAttribute.array[ offset_custom + 1 ] = values[ face.b ];
-          customAttribute.array[ offset_custom + 2 ] = values[ face.c ];
+          customAttribute.array[ offset_custom ]     = values[ face->a ];
+          customAttribute.array[ offset_custom + 1 ] = values[ face->b ];
+          customAttribute.array[ offset_custom + 2 ] = values[ face->c ];
 
           offset_custom += 3;
 
@@ -2151,10 +2152,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          customAttribute.array[ offset_custom ]     = values[ face.a ];
-          customAttribute.array[ offset_custom + 1 ] = values[ face.b ];
-          customAttribute.array[ offset_custom + 2 ] = values[ face.c ];
-          customAttribute.array[ offset_custom + 3 ] = values[ face.d ];
+          customAttribute.array[ offset_custom ]     = values[ face->a ];
+          customAttribute.array[ offset_custom + 1 ] = values[ face->b ];
+          customAttribute.array[ offset_custom + 2 ] = values[ face->c ];
+          customAttribute.array[ offset_custom + 3 ] = values[ face->d ];
 
           offset_custom += 4;
 
@@ -2200,9 +2201,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = values[ face.a ];
-          const auto& v2 = values[ face.b ];
-          const auto& v3 = values[ face.c ];
+          const auto& v1 = values[ face->a ];
+          const auto& v2 = values[ face->b ];
+          const auto& v3 = values[ face->c ];
 
           customAttribute.array[ offset_custom ]     = v1.x;
           customAttribute.array[ offset_custom + 1 ] = v1.y;
@@ -2221,10 +2222,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = values[ face.a ];
-          const auto& v2 = values[ face.b ];
-          const auto& v3 = values[ face.c ];
-          const auto& v4 = values[ face.d ];
+          const auto& v1 = values[ face->a ];
+          const auto& v2 = values[ face->b ];
+          const auto& v3 = values[ face->c ];
+          const auto& v4 = values[ face->d ];
 
           customAttribute.array[ offset_custom ]     = v1.x;
           customAttribute.array[ offset_custom + 1 ] = v1.y;
@@ -2303,9 +2304,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = values[ face.a ];
-          const auto& v2 = values[ face.b ];
-          const auto& v3 = values[ face.c ];
+          const auto& v1 = values[ face->a ];
+          const auto& v2 = values[ face->b ];
+          const auto& v3 = values[ face->c ];
 
           customAttribute.array[ offset_custom ]     = v1[ 0 ];
           customAttribute.array[ offset_custom + 1 ] = v1[ 1 ];
@@ -2327,10 +2328,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = values[ face.a ];
-          const auto& v2 = values[ face.b ];
-          const auto& v3 = values[ face.c ];
-          const auto& v4 = values[ face.d ];
+          const auto& v1 = values[ face->a ];
+          const auto& v2 = values[ face->b ];
+          const auto& v3 = values[ face->c ];
+          const auto& v4 = values[ face->d ];
 
           customAttribute.array[ offset_custom  ]     = v1[ 0 ];
           customAttribute.array[ offset_custom + 1  ] = v1[ 1 ];
@@ -2475,9 +2476,9 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = values[ face.a ];
-          const auto& v2 = values[ face.b ];
-          const auto& v3 = values[ face.c ];
+          const auto& v1 = values[ face->a ];
+          const auto& v2 = values[ face->b ];
+          const auto& v3 = values[ face->c ];
 
           customAttribute.array[ offset_custom  ]     = v1.x;
           customAttribute.array[ offset_custom + 1  ] = v1.y;
@@ -2502,10 +2503,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
           const auto& face = obj_faces[ fi ];
 
-          const auto& v1 = values[ face.a ];
-          const auto& v2 = values[ face.b ];
-          const auto& v3 = values[ face.c ];
-          const auto& v4 = values[ face.d ];
+          const auto& v1 = values[ face->a ];
+          const auto& v2 = values[ face->b ];
+          const auto& v3 = values[ face->c ];
+          const auto& v4 = values[ face->d ];
 
           customAttribute.array[ offset_custom  ]     = v1.x;
           customAttribute.array[ offset_custom + 1  ] = v1.y;
@@ -3694,7 +3695,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
     const auto& face = geometry.faces[ f ];
 
-    const auto materialIndex = face.materialIndex;
+    const auto materialIndex = face->materialIndex;
     const auto materialHash = materialIndex;
 
     if ( hash_map.count( materialHash ) == 0 ) {
@@ -3709,7 +3710,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
     auto geometryGroup = geometry.geometryGroups[ groupHash ];
 
-    const auto vertices = face.type() == enums::Face3 ? 3 : 4;
+    const auto vertices = face->type() == enums::Face3 ? 3 : 4;
 
     if ( geometryGroup->vertices + vertices > 65535 ) {
 
@@ -3723,7 +3724,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
     }
 
-    if ( face.type() == enums::Face3 ) {
+    if ( face->type() == enums::Face3 ) {
       geometryGroup->faces3.push_back( f );
     } else {
       geometryGroup->faces4.push_back( f );

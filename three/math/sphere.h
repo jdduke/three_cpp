@@ -12,6 +12,12 @@ class Sphere {
 
 public:
 
+  typedef std::shared_ptr<Sphere> Ptr;
+
+  static Ptr create() {
+    return three::make_shared<Sphere>();
+  }
+
   Sphere()
     : center( Vector3() ), radius( 0.f ) {}
 

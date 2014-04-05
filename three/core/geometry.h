@@ -5,14 +5,17 @@
 
 #include <three/core/geometry_buffer.h>
 #include <three/core/geometry_group.h>
+#include <three/core/face.h>
 
 #include <three/math/math.h>
 #include <three/math/color.h>
 #include <three/math/vector3.h>
+#include <three/math/box3.h>
 #include <three/math/sphere.h>
 #include <three/core/interfaces.h>
 
 #include <three/materials/material.h>
+
 
 #include <three/utils/memory.h>
 
@@ -26,36 +29,6 @@ struct MorphTarget {
   std::string name;
   std::vector<Vertex> vertices;
 };
-
-struct Box {
-  Vector3 min;
-  Vector3 max;
-
-  Box() { }
-  Box( const Vector3& min, const Vector3& max )
-    : min( min ), max( max ) { }
-
-  void bound( const Vector3& pos ) {
-    if ( pos.x < min.x ) {
-      min.x = pos.x;
-    } else if ( pos.x > max.x ) {
-      max.x = pos.x;
-    }
-
-    if ( pos.y < min.y ) {
-      min.y = pos.y;
-    } else if ( pos.y > max.y ) {
-      max.y = pos.y;
-    }
-
-    if ( pos.z < min.z ) {
-      min.z = pos.z;
-    } else if ( pos.z > max.z ) {
-      max.z = pos.z;
-    }
-  }
-};
-
 
 class Geometry : public IGeometry, public GeometryBuffer {
 
@@ -90,7 +63,7 @@ public:
 
   //std::vector<Material::Ptr> materials;
 
-  std::vector<Face> faces;
+  std::vector<Face::Ptr> faces;
 
   //std::vector<std::vector<Vector2>> faceUvs;
   std::vector<std::vector<std::array<Vector2, 4>>> faceVertexUvs;
@@ -105,8 +78,8 @@ public:
 
   std::vector<float> lineDistances;
 
-  Box    boundingBox;
-  Sphere boundingSphere;
+  Box3::Ptr boundingBox;
+  Sphere::Ptr boundingSphere;
 
   bool hasTangents;
 

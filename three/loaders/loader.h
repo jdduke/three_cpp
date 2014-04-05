@@ -4,6 +4,7 @@
 #include <three/common.h>
 
 #include <three/utils/noncopyable.h>
+#include <three/console.h>
 
 #include <iomanip>
 #include <functional>

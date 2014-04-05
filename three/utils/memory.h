@@ -71,6 +71,19 @@ struct Derived : public T {
   template < typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5 >
   Derived( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3 && arg3, Arg4 && arg4, Arg5 && arg5 )
     : T( std::move( arg0 ), std::move( arg1 ), std::move( arg2 ), std::move( arg3 ), std::move( arg4 ), std::move( arg5 ) ) { }
+
+  template < typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6 >
+  Derived( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3 && arg3, Arg4 && arg4, Arg5 && arg5, Arg6 && arg6 )
+    : T( std::move( arg0 ), std::move( arg1 ), std::move( arg2 ), std::move( arg3 ), std::move( arg4 ), std::move( arg5 ), std::move( arg6 ) ) { }
+
+  template < typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7 >
+  Derived( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3 && arg3, Arg4 && arg4, Arg5 && arg5, Arg6 && arg6, Arg7 && arg7 )
+    : T( std::move( arg0 ), std::move( arg1 ), std::move( arg2 ), std::move( arg3 ), std::move( arg4 ), std::move( arg5 ), std::move( arg6 ), std::move( arg7 ) ) { }
+
+  template < typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5, typename Arg6, typename Arg7, typename Arg8 >
+  Derived( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3 && arg3, Arg4 && arg4, Arg5 && arg5, Arg6 && arg6, Arg7 && arg7, Arg8 && arg8 )
+    : T( std::move( arg0 ), std::move( arg1 ), std::move( arg2 ), std::move( arg3 ), std::move( arg4 ), std::move( arg5 ), std::move( arg6 ), std::move( arg7 ), std::move( arg8 ) ) { }
+
 };
 
 template < typename T >
@@ -104,6 +117,16 @@ inline shared_ptr<T> make_shared( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3
 template < typename T, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5 >
 inline shared_ptr<T> make_shared( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3 && arg3, Arg4 && arg4, Arg5 && arg5 ) {
   return std::make_shared<Derived<T>>( std::move( arg0 ), std::move( arg1 ), std::move( arg2 ), std::move( arg3 ), std::move( arg4 ), std::move( arg5 ) );
+}
+
+template < typename T, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5 , typename Arg6, typename Arg7  >
+inline shared_ptr<T> make_shared( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3 && arg3, Arg4 && arg4, Arg5 && arg5, Arg6 && arg6, Arg7 && arg7 ) {
+  return std::make_shared<Derived<T>>( std::move( arg0 ), std::move( arg1 ), std::move( arg2 ), std::move( arg3 ), std::move( arg4 ), std::move( arg5 ), std::move( arg6 ), std::move( arg7 )   );
+}
+
+template < typename T, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5 , typename Arg6, typename Arg7, typename Arg8   >
+inline shared_ptr<T> make_shared( Arg0 && arg0, Arg1 && arg1, Arg2 && arg2, Arg3 && arg3, Arg4 && arg4, Arg5 && arg5, Arg6 && arg6, Arg7 && arg7, Arg8 && arg8 ) {
+  return std::make_shared<Derived<T>>( std::move( arg0 ), std::move( arg1 ), std::move( arg2 ), std::move( arg3 ), std::move( arg4 ), std::move( arg5 ), std::move( arg6 ), std::move( arg7 ), std::move( arg8 )   );
 }
 
 #endif // THREE_HAS_VARIADIC_TEMPLATES

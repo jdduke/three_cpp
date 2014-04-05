@@ -73,7 +73,7 @@ Font::Ptr Font::create( const std::string& ttf,
 
 void Font::generate( const std::string& text,
                      std::vector<Vertex>& vertices,
-                     std::vector<Face>& faces,
+                     std::vector<Face::Ptr>& faces,
                      std::vector<std::array<Vector2,4>>& faceUvs ) {
 
   Vector3 normal( 0, 0, 1 );
@@ -209,10 +209,10 @@ void Font::generate( const std::string& text,
 
       vertices.insert( vertices.end(), vert.data(), vert.data() + 4 );
 
-      Face face( offset, offset + 1, offset + 2, offset + 3 );
-      face.normal.copy( normal );
-      face.vertexNormals.fill( normal );
-      faces.push_back( std::move(face) );
+      auto face = Face::create(offset, offset + 1, offset + 2, offset + 3 );
+      face->normal.copy( normal );
+      face->vertexNormals.fill( normal );
+      faces.push_back( face );
 
       faceUvs.push_back( std::move( uv ) );
 

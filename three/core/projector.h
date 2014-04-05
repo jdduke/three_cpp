@@ -5,9 +5,7 @@
 
 #include <three/math/ray.h>
 #include <three/math/vector3.h>
-
 #include <three/renderers/renderables/renderable_object.h>
-
 #include <three/utils/noncopyable.h>
 
 #include <vector>
@@ -33,7 +31,7 @@ public:
   };
 
   RenderData& projectGraph( Object3D& root, bool sort );
-  RenderData& projectScene( Scene& scene, Camera& camera, bool sort );
+  RenderData& projectScene( Scene& scene, Camera& camera, bool sortObjects, bool sortElements );
 
   struct Impl;
 

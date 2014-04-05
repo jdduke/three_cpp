@@ -3,11 +3,20 @@
 
 #include <three/common.h>
 
+#include <three/math/vector4.h>
+#include <three/math/sphere.h>
+
 namespace three {
 
 class Box3 {
 
 public:
+
+  typedef std::shared_ptr<Box3> Ptr;
+
+  static Ptr create() {
+    return three::make_shared<Box3>();
+  }
 
   Box3()
     : min( Vector3( Math::INF(), Math::INF(), Math::INF() ) ), max( -Math::INF(), -Math::INF(), -Math::INF() ) {}
@@ -60,7 +69,66 @@ public:
 
   }
 
+  inline Box3& addPoint ( const Vector4& point ) {
+
+    if ( point.x < min.x ) {
+
+      min.x = point.x;
+
+    } else if ( point.x > max.x ) {
+
+      max.x = point.x;
+
+    }
+
+    if ( point.y < min.y ) {
+
+      min.y = point.y;
+
+    } else if ( point.y > max.y ) {
+
+      max.y = point.y;
+
+    }
+
+    if ( point.z < min.z ) {
+
+      min.z = point.z;
+
+    } else if ( point.z > max.z ) {
+
+      max.z = point.z;
+
+    }
+
+    return *this;
+
+  }
+
   inline Box3& setFromPoints(const std::vector<Vector3>& points ) {
+
+    if ( points.size() == 0 ) {
+
+      makeEmpty();
+
+      return *this;
+
+    }
+
+    min.copy( *points.begin() );
+    max.copy( *points.begin() );
+
+    for ( auto it = ++points.begin(); it != points.end(); it++ ) {
+
+      addPoint(*it);
+
+    }
+
+    return *this;
+
+  }
+
+  inline Box3& setFromPoints(const std::vector<Vector4>& points ) {
 
     if ( points.size() == 0 ) {
 

@@ -4,7 +4,11 @@
 namespace three {
 
 class Object3D;
+class Projector;
+class Raycaster;
+
 class Bone;
+class LOD;
 class Camera;
 class Light;
 class Scene;
@@ -33,7 +37,6 @@ class Vector4;
 class Vector3;
 
 
-
 class Visitor;
 class ConstVisitor;
 
@@ -42,7 +45,7 @@ class Font;
 class RenderableFace;
 class RenderableObject;
 class RenderableLine;
-class RenderableParticle;
+class RenderableSprite;
 class RenderableVertex;
 
 class Spline;

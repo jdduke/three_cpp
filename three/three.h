@@ -14,6 +14,7 @@
 #include <three/core/clock.h>
 #include <three/core/object3d.h>
 #include <three/core/projector.h>
+#include <three/core/raycaster.h>
 
 #include <three/math/box2.h>
 #include <three/math/box3.h>
@@ -70,7 +71,7 @@
 #include <three/renderers/renderables/renderable_face.h>
 #include <three/renderers/renderables/renderable_line.h>
 #include <three/renderers/renderables/renderable_object.h>
-#include <three/renderers/renderables/renderable_particle.h>
+#include <three/renderers/renderables/renderable_sprite.h>
 #include <three/renderers/renderables/renderable_vertex.h>
 
 #include <three/scenes/fog.h>

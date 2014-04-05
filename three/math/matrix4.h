@@ -4,6 +4,8 @@
 #include <three/common.h>
 #include <three/math/math.h>
 
+#include <three/utils/memory.h>
+
 #include <array>
 #include <vector>
 
@@ -16,6 +18,12 @@ public:
     float elements[16];
     float te[16];
   };
+
+  typedef std::shared_ptr<Matrix4> Ptr;
+
+  static Ptr create() {
+    return three::make_shared<Matrix4>();
+  }
 
   Matrix4();
 

@@ -116,7 +116,7 @@ public:
 
     Camera::Ptr camera = Camera::clone();
 
-    Ptr perspectiveCamera = static_pointer_cast<PerspectiveCamera>(camera);
+    Ptr perspectiveCamera = std::static_pointer_cast<PerspectiveCamera>(camera);
 
     perspectiveCamera->fov = fov;
     perspectiveCamera->aspect = aspect;

@@ -8,6 +8,7 @@ namespace three {
 class RenderableVertex {
 public:
 
+  Vector3 position;
   Vector3 positionWorld;
   Vector4 positionScreen;
 

@@ -71,6 +71,16 @@ Vector3& Vector3::applyQuaternion( const Quaternion& q ) {
 
 }
 
+    Vector3& Vector3::copy( const Vector4& v ) {
+
+    x = v.x;
+    y = v.y;
+    z = v.z;
+
+    return *this;
+
+  }
+
 Vector3& Vector3::transformDirection( const Matrix4& m ) {
 
   const auto& e = m.elements;

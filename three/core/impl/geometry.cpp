@@ -35,13 +35,13 @@ void Geometry::applyMatrix( Matrix4& matrix ) {
 
   for ( auto& face : faces ) {
 
-    matrixRotation.multiplyVector3( face.normal );
+    matrixRotation.multiplyVector3( face->normal );
 
-    for ( auto i = 0; i < face.size(); ++i ) {
-      matrixRotation.multiplyVector3( face.vertexNormals[i] );
+    for ( auto i = 0; i < face->size(); ++i ) {
+      matrixRotation.multiplyVector3( face->vertexNormals[i] );
     }
 
-    matrix.multiplyVector3( face.centroid );
+    matrix.multiplyVector3( face->centroid );
 
   }
 
@@ -51,13 +51,13 @@ void Geometry::computeCentroids() {
 
   for ( auto& face : faces ) {
 
-    face.centroid.set( 0, 0, 0 );
+    face->centroid.set( 0, 0, 0 );
 
-    for ( auto i = 0; i < face.size(); ++i ) {
-      face.centroid.add( vertices[ face.abcd[ i ] ] );
+    for ( auto i = 0; i < face->size(); ++i ) {
+      face->centroid.add( vertices[ face->abcd[ i ] ] );
     }
 
-    face.centroid.divideScalar( ( float )face.size() );
+    face->centroid.divideScalar( ( float )face->size() );
 
   }
 
@@ -67,9 +67,9 @@ void Geometry::computeFaceNormals() {
 
   for ( auto& face : faces ) {
 
-    auto& vA = vertices[ face.a ];
-    auto& vB = vertices[ face.b ];
-    auto& vC = vertices[ face.c ];
+    auto& vA = vertices[ face->a ];
+    auto& vB = vertices[ face->b ];
+    auto& vC = vertices[ face->c ];
 
     auto cb = sub( vC, vB );
     auto ab = sub( vA, vB );
@@ -81,7 +81,7 @@ void Geometry::computeFaceNormals() {
 
     }
 
-    face.normal.copy( cb );
+    face->normal.copy( cb );
 
   }
 
@@ -99,8 +99,8 @@ void Geometry::computeVertexNormals() {
   }
 
   for ( const auto& face : faces ) {
-    for ( auto i = 0; i < face.size(); ++i ) {
-      normals[ face.abcd[ i ] ].add( face.normal );
+    for ( auto i = 0; i < face->size(); ++i ) {
+      normals[ face->abcd[ i ] ].add( face->normal );
     }
   }
 
@@ -109,8 +109,8 @@ void Geometry::computeVertexNormals() {
   }
 
   for ( auto& face : faces ) {
-    for ( auto i = 0; i < face.size(); ++i ) {
-      face.vertexNormals[ i ].copy( normals[ face.abcd[ i ] ] );
+    for ( auto i = 0; i < face->size(); ++i ) {
+      face->vertexNormals[ i ].copy( normals[ face->abcd[ i ] ] );
     }
   }
 
@@ -169,14 +169,14 @@ void Geometry::computeTangents() {
     auto& face = faces[ f ];
     auto& uv = faceVertexUvs[ 0 ][ f ]; // use UV layer 0 for tangents
 
-    if ( face.type() == enums::Face3 ) {
+    if ( face->type() == enums::Face3 ) {
 
-      handleTriangle( uv, face.a, face.b, face.c, 0, 1, 2 );
+      handleTriangle( uv, face->a, face->b, face->c, 0, 1, 2 );
 
-    } else if ( face.type() == enums::Face4 ) {
+    } else if ( face->type() == enums::Face4 ) {
 
-      handleTriangle( uv, face.a, face.b, face.c, 0, 1, 2 );
-      handleTriangle( uv, face.a, face.b, face.d, 0, 1, 3 );
+      handleTriangle( uv, face->a, face->b, face->c, 0, 1, 2 );
+      handleTriangle( uv, face->a, face->b, face->d, 0, 1, 3 );
 
     }
 
@@ -186,11 +186,11 @@ void Geometry::computeTangents() {
 
   for ( auto& face : faces ) {
 
-    for ( auto i = 0; i < face.size(); i++ ) {
+    for ( auto i = 0; i < face->size(); i++ ) {
 
-      n.copy( face.vertexNormals[ i ] );
+      n.copy( face->vertexNormals[ i ] );
 
-      auto vertexIndex = face.abcd[ i ];
+      auto vertexIndex = face->abcd[ i ];
 
       const auto& t = tan1[ vertexIndex ];
 
@@ -201,11 +201,11 @@ void Geometry::computeTangents() {
 
       // Calculate handedness
 
-      tmp2.crossVectors( face.vertexNormals[ i ], t );
+      tmp2.crossVectors( face->vertexNormals[ i ], t );
       const auto test = tmp2.dot( tan2[ vertexIndex ] );
       const auto w = ( test < 0.0f ) ? -1.0f : 1.0f;
 
-      face.vertexTangents[ i ] = Vector4( tmp.x, tmp.y, tmp.z, w );
+      face->vertexTangents[ i ] = Vector4( tmp.x, tmp.y, tmp.z, w );
 
     }
 
@@ -217,16 +217,13 @@ void Geometry::computeTangents() {
 
 void Geometry::computeBoundingBox() {
 
-  if ( vertices.size() > 0 ) {
+  if ( boundingBox == nullptr ) {
 
-    Box bb( vertices[ 0 ], vertices[ 0 ] );
+    boundingBox = Box3::create();
 
-    for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
-      bb.bound( vertices [ v ] );
-    }
-
-    boundingBox = bb;
   }
+
+  boundingBox->setFromPoints( vertices );
 
 }
 
@@ -240,7 +237,7 @@ void Geometry::computeBoundingSphere() {
     radius = Math::max( radius, vertex.length() );
   }
 
-  boundingSphere.radius = radius;
+  boundingSphere->radius = radius;
 
 }
 
@@ -286,8 +283,8 @@ void Geometry::mergeVertices() {
   // Start to patch face indices
 
   for ( auto& face : faces ) {
-    for ( int i = 0; i < face.size(); ++i ) {
-      face.abcd[ i ] = changes[ face.abcd[ i ] ];
+    for ( int i = 0; i < face->size(); ++i ) {
+      face->abcd[ i ] = changes[ face->abcd[ i ] ];
     }
   }
 

@@ -26,6 +26,10 @@ public:
     float xyz[3];
   };
 
+  static Ptr create() {
+    return make_shared<Vector3>();
+  }
+
   static Ptr create( Vector3 v ) {
     return make_shared<Vector3>( v.x, v.y, v.z );
   }
@@ -99,6 +103,8 @@ public:
     return *this;
 
   }
+
+  Vector3& copy( const Vector4& v );
 
   inline Vector3& add( const Vector3& v ) {
 

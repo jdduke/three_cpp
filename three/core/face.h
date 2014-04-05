@@ -14,6 +14,16 @@ namespace three {
 class Face {
 public:
 
+  typedef std::shared_ptr<Face> Ptr;
+
+  static Ptr create( int a, int b, int c) {
+    return three::make_shared<Face>(a, b, c);
+  }
+
+  static Ptr create( int a, int b, int c, int d) {
+    return three::make_shared<Face>(a, b, c, d);
+  }
+
   Face( int a, int b, int c, const Vector3& normal = Vector3(), const Color& color = Color(), int materialIndex = -1 )
     : a( a ), b( b ), c( c ), normal( normal ), color( color ), materialIndex( materialIndex ), mType( enums::Face3 ), mSize( 3 ) { }
 
@@ -73,7 +83,7 @@ private:
   enums::FaceType mType;
   int mSize;
 
-  Face(){}
+  Face() {}
 
 };
 

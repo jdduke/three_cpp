@@ -6,6 +6,7 @@
 #include <three/visitor.h>
 #include <three/core/object3d.h>
 #include <three/materials/material.h>
+#include <three/materials/particle_system_material.h>
 
 namespace three {
 
@@ -18,22 +19,23 @@ public:
     return three::make_shared<ParticleSystem> ( geometry, material );
   }
 
+  bool sortParticles;
+
   THREE_IMPL_OBJECT(ParticleSystem)
 
 protected:
 
   ParticleSystem( const Geometry::Ptr& geometry, const Material::Ptr& material )
-    : Object3D( material, geometry ) {
-
-    if ( geometry ) {
-      if ( geometry->boundingSphere.radius <= 0.0001f ) {
-        geometry->computeBoundingSphere();
-      }
-      boundRadius = geometry->boundingSphere.radius;
-    }
+    : Object3D( material, geometry ), sortParticles( false ) {
 
     frustumCulled = false;
-
+    if(!material) {
+      Properties<std::string, any> params;
+        
+        params["color"] = Math::random() * 0xffffff;
+        
+        this->material = ParticleSystemMaterial::create( params );
+    }
   }
 
 };
