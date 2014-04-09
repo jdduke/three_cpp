@@ -10,6 +10,7 @@
 namespace three {
 
 class RenderableFace : public Renderable {
+
 public:
 
   RenderableFace( enums::FaceType type = enums::Face3 )
@@ -44,6 +45,7 @@ private:
 
   enums::FaceType mType;
   int mSize;
+  
 };
 
 } // namespace three

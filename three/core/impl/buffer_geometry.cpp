@@ -121,7 +121,7 @@ void BufferGeometry::computeBoundingSphere() {
 
 }
 
-void BufferGeometry::computeVertexNormals() {
+void BufferGeometry::computeVertexNormals( bool areaWeighted ) {
 
   auto positionsP = attributes.get( AttributeKey::position() );
   auto indicesP   = attributes.get( AttributeKey::index() );

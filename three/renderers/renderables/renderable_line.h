@@ -9,6 +9,7 @@
 namespace three {
 
 class RenderableLine : public Renderable {
+	
 public:
 
   RenderableLine() : Renderable( 0 ), material( nullptr ) { }

@@ -12,6 +12,8 @@ class Box3 {
 
 public:
 
+  THREE_TYPE(Box3)
+
   typedef std::shared_ptr<Box3> Ptr;
 
   static Ptr create() {
@@ -425,8 +427,6 @@ public:
   Vector3 min, max;
 
 }; // namespace three
-
-static_assert( sizeof( Box3 ) == sizeof( Vector3 ) * 2, "Invalid Box3 storage size" );
 
 }
 

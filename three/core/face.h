@@ -12,6 +12,7 @@
 namespace three {
 
 class Face {
+
 public:
 
   typedef std::shared_ptr<Face> Ptr;
@@ -45,20 +46,6 @@ public:
     vertexNormals[3] = n4;
   }
 
-  enums::FaceType type() const {
-    return mType;
-  }
-
-  int size() const {
-    return mSize;
-  }
-
-  Face clone() const {
-    return Face( *this );
-  }
-
-public:
-
   union {
     struct {
       int a, b, c, d;
@@ -77,6 +64,19 @@ public:
   int materialIndex;
 
   Vector3 centroid;
+
+  enums::FaceType type() const {
+    return mType;
+  }
+
+  int size() const {
+    return mSize;
+  }
+
+  THREE_REVIEW("EA: Deep copy?")
+  Face clone() const {
+    return Face( *this );
+  }
 
 private:
 

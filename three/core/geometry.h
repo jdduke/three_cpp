@@ -30,6 +30,20 @@ struct MorphTarget {
   std::vector<Vertex> vertices;
 };
 
+struct VertexNormal {
+    
+  Vector3 a,b,c,d;
+      
+  VertexNormal( Vector3 a, Vector3 b, Vector3 c)
+    : a( a ), b( b ), c( c ) {}
+    
+};
+
+struct MorphNormal {
+    std::vector<VertexNormal> vertexNormals;
+    std::vector<Vector3> faceNormals;
+};
+
 class Geometry : public IGeometry, public GeometryBuffer {
 
 public:
@@ -57,21 +71,17 @@ public:
 
   std::string name;
 
-  std::vector<Vertex> vertices;
+  std::vector<Vector3> vertices;
 
   std::vector<Color> colors; // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
 
-  //std::vector<Material::Ptr> materials;
-
   std::vector<Face::Ptr> faces;
 
-  //std::vector<std::vector<Vector2>> faceUvs;
   std::vector<std::vector<std::array<Vector2, 4>>> faceVertexUvs;
 
   std::vector<MorphTarget> morphTargets;
   std::vector<Color> morphColors;
-  //std::vector<Vector3> morphNormals;
-  std::vector<Face> morphNormals;
+  std::vector<MorphNormal> morphNormals;
 
   std::vector<Vector4> skinWeights;
   std::vector<SkinIndices> skinIndices;
@@ -109,7 +119,8 @@ public:
 
   virtual void computeCentroids();
   virtual void computeFaceNormals();
-  virtual void computeVertexNormals();
+  virtual void computeVertexNormals( bool areaWeighted = false );
+  virtual void computeMorphNormals();
   virtual void computeTangents();
   virtual void computeBoundingBox();
   virtual void computeBoundingSphere();
@@ -123,7 +134,11 @@ protected:
 
 private:
 
-  std::vector<Vector3> normals;
+  std::vector<Vector3> __originalFaceNormal;
+
+  THREE_REVIEW("EA: array size could be 3 since it was used for the deprecated face4. More places with array size 4. Revisit.")
+
+  std::vector< std::array<Vector3, 4> > __originalVertexNormals;
 
   static int& GeometryCount() {
     static int sGeometryCount = 0;

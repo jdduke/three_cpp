@@ -11,29 +11,15 @@
 
 namespace three {
 
-struct Intersect {
+  struct Intersect;
 
-public:
+  typedef std::vector<Intersect> Intersects;
 
-  Intersect( float distanceIn, Vector3& pointIn, Face* faceIn, size_t faceIndexIn, Object3D* objectIn )
-    : distance( distanceIn), point( pointIn ), face( faceIn ), faceIndex( faceIndexIn ), object( objectIn ) {}
+  struct DescSort;
 
-  float distance;
+  class Raycaster : public NonCopyable {
 
-  Vector3 point;
-
-  Face* face;
-  size_t faceIndex;
-
-  Object3D* object;
-
-};
-
-typedef std::vector<Intersect> Intersects;
-
-class Raycaster : public NonCopyable {
-
-public:
+  public:
 
   static float precision;
   static float linePrecision;
@@ -53,14 +39,18 @@ public:
 
   Intersects intersectObjects ( const std::vector<Object3D::Ptr>& objects, bool recursive = false );
 
-protected:
+  protected:
 
   std::unique_ptr<Impl> impl;
 
-private:
+  private:
+
   void _intersectDescendants( const Object3D::Ptr& object, Intersects& intersects );
+
   void _intersectObject( const Object3D::Ptr& object, Intersects& intersects );
+
 };
+
 
 } // end namespace
 

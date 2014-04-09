@@ -11,14 +11,32 @@
 
 namespace three {
 
-float Raycaster::precision = 0.0001f;
-float Raycaster::linePrecision = 1.f;
+struct Intersect {
+
+  public:
+
+    Intersect( float distanceIn, Vector3& pointIn, Face* faceIn = nullptr, size_t faceIndexIn = 0, Object3D* objectIn = nullptr )
+    : distance( distanceIn), point( pointIn ), face( faceIn ), faceIndex( faceIndexIn ), object( objectIn ) {}
+
+    float distance;
+
+    Vector3 point;
+
+    Face* face;
+    size_t faceIndex;
+
+    Object3D* object;
+
+};
 
 struct DescSort {
   bool operator()( const Intersect& a, const Intersect& b ) const {
     return a.distance - b.distance < 0.f;
   }
 };
+
+float Raycaster::precision = 0.0001f;
+float Raycaster::linePrecision = 1.f;
 
 struct Raycaster::Impl : public NonCopyable {
 

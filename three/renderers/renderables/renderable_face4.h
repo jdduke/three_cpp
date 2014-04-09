@@ -9,8 +9,11 @@
 namespace three {
 
 class RenderableFace4 : public RenderableFace {
+
 public:
+
   RenderableFace4() : RenderableFace( enums::Face4 ) { }
+  
 };
 
 } // namespace three

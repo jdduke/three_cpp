@@ -31,7 +31,7 @@ public:
 
   void computeBoundingBox();
   void computeBoundingSphere();
-  void computeVertexNormals();
+  void computeVertexNormals( bool areaWeighted = false );
   void computeTangents();
 
 protected:

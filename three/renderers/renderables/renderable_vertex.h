@@ -6,7 +6,10 @@
 namespace three {
 
 class RenderableVertex {
+
 public:
+
+  RenderableVertex() : visible( true ) { }
 
   Vector3 position;
   Vector3 positionWorld;
@@ -14,10 +17,13 @@ public:
 
   bool visible;
 
-  RenderableVertex() : visible( true ) { }
-
   RenderableVertex& copy( const RenderableVertex& vertex ) {
-    return ( *this ) = vertex;
+
+    positionWorld.copy( vertex.positionWorld );
+	positionScreen.copy( vertex.positionScreen );
+
+	return *this;
+
   }
 };
 

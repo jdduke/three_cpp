@@ -1,10 +1,13 @@
 #ifndef THREE_GEOMETRY_CPP
 #define THREE_GEOMETRY_CPP
 
+#include <three/common.h>
+
 #include <three/core/geometry.h>
 #include <three/core/face.h>
 #include <three/math/vector3.h>
 #include <three/math/vector4.h>
+#include <three/math/matrix3.h>
 
 namespace three {
 
@@ -26,22 +29,39 @@ struct PointHash {
 
 void Geometry::applyMatrix( Matrix4& matrix ) {
 
-  Matrix4 matrixRotation;
-  matrixRotation.extractRotation( matrix );
+  auto normalMatrix = Matrix3().getNormalMatrix( matrix );
 
-  for ( auto& vertex : vertices ) {
-    matrix.multiplyVector3( vertex );
+  for ( size_t i = 0, il = vertices.size(); i < il; i ++ ) {
+
+    auto& vertex = vertices[ i ];
+    vertex.applyMatrix4( matrix );
+
   }
 
-  for ( auto& face : faces ) {
+  for ( size_t i = 0, il = faces.size(); i < il; i ++ ) {
 
-    matrixRotation.multiplyVector3( face->normal );
+    auto& face = faces[ i ];
+    face->normal.applyMatrix3( normalMatrix ).normalize();
 
-    for ( auto i = 0; i < face->size(); ++i ) {
-      matrixRotation.multiplyVector3( face->vertexNormals[i] );
+    for ( size_t j = 0, jl = face->vertexNormals.size(); j < jl; j ++ ) {
+
+      face->vertexNormals[ j ].applyMatrix3( normalMatrix ).normalize();
+
     }
 
-    matrix.multiplyVector3( face->centroid );
+    face->centroid.applyMatrix4( matrix );
+
+  }
+
+  if ( boundingBox->type() == enums::Box3 ) {
+
+    computeBoundingBox();
+
+  }
+
+  if ( boundingSphere->type() == enums::Sphere ) {
+
+    computeBoundingSphere();
 
   }
 
@@ -49,17 +69,17 @@ void Geometry::applyMatrix( Matrix4& matrix ) {
 
 void Geometry::computeCentroids() {
 
-  for ( auto& face : faces ) {
+    for ( size_t f = 0, fl = faces.size(); f < fl; f ++ ) {
 
-    face->centroid.set( 0, 0, 0 );
+      auto& face = faces[ f ];
+      face->centroid.set( 0, 0, 0 );
 
-    for ( auto i = 0; i < face->size(); ++i ) {
-      face->centroid.add( vertices[ face->abcd[ i ] ] );
+      face->centroid.add( vertices[ face->a ] );
+      face->centroid.add( vertices[ face->b ] );
+      face->centroid.add( vertices[ face->c ] );
+      face->centroid.divideScalar( 3 );
+
     }
-
-    face->centroid.divideScalar( ( float )face->size() );
-
-  }
 
 }
 
@@ -87,33 +107,141 @@ void Geometry::computeFaceNormals() {
 
 }
 
-void Geometry::computeVertexNormals() {
+void Geometry::computeVertexNormals( bool areaWeighted ) {
 
   // create internal buffers for reuse when calling this method repeatedly
   // (otherwise memory allocation / deallocation every frame is big resource hog)
 
-  if ( normals.size() == 0 ) {
-    normals.resize( vertices.size() );
-  } else {
-    std::fill( normals.begin(), normals.end(), Vector3() );
-  }
+  THREE_REVIEW("EA: Efficiency/memory/performance")
+  vertices.resize( vertices.size() );
+  std::fill( vertices.begin(), vertices.end(), Vector3() );
 
-  for ( const auto& face : faces ) {
-    for ( auto i = 0; i < face->size(); ++i ) {
-      normals[ face->abcd[ i ] ].add( face->normal );
+
+  if( areaWeighted ) {
+
+    // vertex normals weighted by triangle areas
+    // http://www.iquilezles.org/www/articles/normals/normals.htm
+
+    auto cb = Vector3(), ab = Vector3(),
+      db = Vector3(), dc = Vector3(), bc = Vector3();
+
+    for ( const auto& face : faces ) {
+
+      auto& vA = vertices[ face->a ];
+      auto& vB = vertices[ face->b ];
+      auto& vC = vertices[ face->c ];
+
+      cb.subVectors( vC, vB );
+      ab.subVectors( vA, vB );
+      cb.cross( ab );
+
+      vertices[ face->a ].add( cb );
+      vertices[ face->b ].add( cb );
+      vertices[ face->c ].add( cb );
+
     }
+
+  } else {
+
+    for ( const auto& face : faces ) {
+
+      for ( auto i = 0; i < face->size(); ++i ) {
+
+        vertices[ face->abcd[ i ] ].add( face->normal );
+
+      }
+
+    }
+
   }
 
-  for ( auto& normal : normals ) {
-    normal.normalize();
+
+  for ( auto& vertice : vertices ) {
+
+    vertice.normalize();
+
   }
 
   for ( auto& face : faces ) {
-    for ( auto i = 0; i < face->size(); ++i ) {
-      face->vertexNormals[ i ].copy( normals[ face->abcd[ i ] ] );
-    }
+
+    THREE_REVIEW("EA: Make Face3/abc")
+    face->vertexNormals[ 0 ].copy( vertices[ face->abcd[ 0 ] ] );
+    face->vertexNormals[ 1 ].copy( vertices[ face->abcd[ 1 ] ] );
+    face->vertexNormals[ 2 ].copy( vertices[ face->abcd[ 2 ] ] );
+
   }
 
+}
+    
+THREE_REVIEW("EA: Correctness of computeMorphNormals")
+void Geometry::computeMorphNormals() {
+
+  __originalFaceNormal.resize( faces.size() );
+  __originalVertexNormals.resize( faces.size() );
+    
+  // save original normals
+  // - create temp variables on first access
+  //   otherwise just copy (for faster repeated calls)
+
+  for ( size_t f = 0, fl = faces.size(); f < fl; f ++ ) {
+
+    auto& face = faces[ f ];
+
+    __originalFaceNormal[ f ].copy(face->normal);
+      
+    std::fill(__originalVertexNormals.begin(), __originalVertexNormals.end(), face->vertexNormals );
+
+  }
+
+  // use temp geometry to compute face and vertex normals for each morph
+
+  auto tmpGeo = Geometry::create();
+  tmpGeo->faces = faces;
+    
+  morphNormals.resize( morphTargets.size() );
+    
+  for ( size_t i = 0, il = morphTargets.size(); i < il; i ++ ) {
+
+    auto& morphNormalsIndex = morphNormals[ i ];
+
+    // set vertices to morph target
+
+    tmpGeo->vertices = morphTargets[ i ].vertices;
+
+    // compute morph normals
+
+    tmpGeo->computeFaceNormals();
+    tmpGeo->computeVertexNormals();
+
+    // store morph normals
+
+    for ( size_t f = 0, fl = faces.size(); f < fl; f ++ ) {
+
+      auto& face = faces[ f ];
+
+      auto& faceNormal = morphNormalsIndex.faceNormals[f];
+      auto& vertexNormals = morphNormalsIndex.vertexNormals[f];
+
+      faceNormal.copy( face->normal );
+
+      vertexNormals.a.copy( face->vertexNormals[ 0 ] );
+      vertexNormals.b.copy( face->vertexNormals[ 1 ] );
+      vertexNormals.c.copy( face->vertexNormals[ 2 ] );
+
+    }
+
+  }
+
+  // restore original normals
+
+  for ( size_t f = 0, fl = faces.size(); f < fl; f ++ ) {
+
+    auto& face = faces[ f ];
+
+    face->normal = __originalFaceNormal[ f ];
+    face->vertexNormals = __originalVertexNormals[ f ];
+
+  }
 }
 
 void Geometry::computeTangents() {
@@ -124,7 +252,7 @@ void Geometry::computeTangents() {
   std::vector<Vector3> tan1( vertices.size() );
   std::vector<Vector3> tan2( vertices.size() );
 
-  auto handleTriangle = [&, this]( const std::array<Vector2, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
+  static auto handleTriangle = [&, this]( const std::array<Vector2, 4>& uv, int a, int b, int c, int ua, int ub, int uc ) {
 
     const auto& vA = vertices[ a ];
     const auto& vB = vertices[ b ];

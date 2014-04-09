@@ -1358,17 +1358,17 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
           if ( needsSmoothNormals ) {
 
             // TODO: FIgure out where the vertexNormals array comes from
-            const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals;//[ chf ];
+            const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals[ chf ];
 
-            n1 = faceVertexNormals[0];
-            n2 = faceVertexNormals[1];
-            n3 = faceVertexNormals[2];
+            n1 = faceVertexNormals.a;
+            n2 = faceVertexNormals.b;
+            n3 = faceVertexNormals.c;
 
           } else {
 
             // TODO: FIgure out where the faceNormals array comes from
             //n1 = morphNormals[ vk ].faceNormals[ chf ];
-            n1 = morphNormals[ vk ].normal;//faceNormals[ chf ];
+            n1 = morphNormals[ vk ].faceNormals[ chf ];
             n2 = n1;
             n3 = n1;
 
@@ -1435,18 +1435,18 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
             // TODO: Figure out if vector needed
             //const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals[ chf ];
-            const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals;//[ chf ];
+            const auto& faceVertexNormals = morphNormals[ vk ].vertexNormals[ chf ];
 
-            n1 = faceVertexNormals[0];
-            n2 = faceVertexNormals[1];
-            n3 = faceVertexNormals[2];
-            n4 = faceVertexNormals[3];
+            n1 = faceVertexNormals.a;
+            n2 = faceVertexNormals.b;
+            n3 = faceVertexNormals.c;
+            n4 = faceVertexNormals.d;
 
           } else {
 
             // TODO: Figure out if vector needed
             //n1 = morphNormals[ vk ].faceNormals[ chf ];
-            n1 = morphNormals[ vk ].normal;//faceNormals[ chf ];
+            n1 = morphNormals[ vk ].faceNormals[ chf ];
             n2 = n1;
             n3 = n1;
             n4 = n1;

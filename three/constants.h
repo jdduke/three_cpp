@@ -171,7 +171,9 @@ enum Type {
   SkinnedMesh,
   Ribbon,
   Line,
-  Vector3
+  Vector3,
+  Box3,
+  Sphere
 };
 
 enum GeometryType {

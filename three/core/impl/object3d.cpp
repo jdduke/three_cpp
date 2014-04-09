@@ -375,7 +375,13 @@ Object3D::Object3D( const Material::Ptr& material ,
     boneTextureHeight( 0 ),
     morphTargetBase( -1 ),
     material( material ),
-    geometry( geometry ) { }
+    geometry( geometry ) { 
+      
+      THREE_REVIEW("EA: Does this work/initialize properly?")
+
+      _rotation._quaternion->copy(quaternion());
+      _quaternion._euler->copy(rotation());
+    }
 
 Object3D::~Object3D() { }
 

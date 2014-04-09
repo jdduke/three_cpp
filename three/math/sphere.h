@@ -12,6 +12,8 @@ class Sphere {
 
 public:
 
+  THREE_TYPE(Sphere)
+
   typedef std::shared_ptr<Sphere> Ptr;
 
   static Ptr create() {

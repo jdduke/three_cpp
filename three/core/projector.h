@@ -13,27 +13,33 @@
 namespace three {
 
 class Projector : public NonCopyable {
+
 public:
 
-  Projector();
-
-  Vector3& projectVector( Vector3& vector, const Camera& camera );
-  Vector3& unprojectVector( Vector3& vector, const Camera& camera );
-
-  Ray pickingRay( Vector3 vector, const Camera& camera );
-
   struct RenderData {
-    // TODO: Fill these with pointers AFTER creating with the pool
+        
+    THREE_TODO("JD: Fill these with pointers AFTER creating with the pool")
+        
     std::vector<RenderableObject> objects;
     std::vector<RenderableObject> sprites;
     std::vector<Object3D*>        lights;
     std::vector<Renderable*>      elements;
+        
   };
+    
+  struct Impl;
+    
+  Projector();
+
+  Vector3& projectVector( Vector3& vector, const Camera& camera );
+
+  Vector3& unprojectVector( Vector3& vector, const Camera& camera );
+
+  Ray pickingRay( Vector3 vector, const Camera& camera );
 
   RenderData& projectGraph( Object3D& root, bool sort );
-  RenderData& projectScene( Scene& scene, Camera& camera, bool sortObjects, bool sortElements );
 
-  struct Impl;
+  RenderData& projectScene( Scene& scene, Camera& camera, bool sortObjects, bool sortElements );
 
 protected:
 

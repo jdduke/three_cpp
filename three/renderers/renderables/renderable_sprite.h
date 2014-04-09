@@ -10,12 +10,11 @@
 namespace three {
 
 class RenderableSprite : public Renderable {
+
 public:
 
   RenderableSprite()
-    : Renderable( 0 ),
-      object( nullptr ),
-      x( 0 ), y( 0 ), rotation( 0 ), material( nullptr ) { }
+    : Renderable( 0 ), object( nullptr ), x( 0 ), y( 0 ), rotation( 0 ), material( nullptr ) { }
 
   Object3D* object;
 
@@ -25,6 +24,7 @@ public:
   Vector2 scale;
 
   Material* material;
+  
 };
 
 } // namespace three
