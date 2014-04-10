@@ -119,14 +119,16 @@ public:
 
   }
 
-  THREE_TODO("dispatcher")
+  // TODO "dispatcher"
+
   inline void update() const {
 
     //this.dispatchEvent( { type: 'update' } );
 
   }
 
-  THREE_TODO("dispatcher")
+  // TODO "dispatcher"
+
   inline void dispose() const {
 
     //this.dispatchEvent( { type: 'dispose' } );

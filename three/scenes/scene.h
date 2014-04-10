@@ -63,7 +63,8 @@ public:
 
   std::vector<Object3D*> __objects;
 
-  THREE_TODO("Scene::clone")
+  // TODO "Scene::clone"
+
 
 protected:
 

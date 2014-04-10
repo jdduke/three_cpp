@@ -37,7 +37,8 @@ public:
 
   bool containsPoint( const Vector3& point ) const;
 
-  THREE_TODO("Frustum::clone")
+  // TODO "Frustum::clone"
+
 
 private:
   Sphere _sphere;

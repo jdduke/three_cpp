@@ -36,7 +36,8 @@ public:
 
 	void update( const Camera::Ptr& camera ) const;
 
-	THREE_TODO("LOD::Clone")
+	// TODO "LOD::Clone"
+
 
 protected:
 

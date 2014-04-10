@@ -8,7 +8,8 @@
 
 namespace three {
 
-THREE_TODO("Impl")
+// TODO "Impl"
+
 
 class Sprite : public Object3D {
 public:

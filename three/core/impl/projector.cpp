@@ -334,7 +334,8 @@ struct SceneVisitor : public Visitor {
 
       _face->z = p._centroid.z;
 
-      THREE_TODO("JD: FIX!!! EA: Uhhh")
+      // TODO "JD: FIX!!! EA: Uhhh"
+
       p._renderData.elements.push_back( _face );
 
     }

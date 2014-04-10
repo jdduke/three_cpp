@@ -32,17 +32,6 @@
 #define THREE_REVIEW(msg)
 #endif
 
-#if !defined(THREE_CUSTOM_CODE_START)
-#define THREE_CUSTOM_CODE_START(msg)
-#endif
-
-#if !defined(THREE_CUSTOM_CODE_END)
-#define THREE_CUSTOM_CODE_END(msg)
-#endif
-
-#if !defined(THREE_TODO)
-#define THREE_TODO(msg)
-#endif
 
 #ifndef THREE_DATA_DIR
 #define THREE_DATA_DIR "."

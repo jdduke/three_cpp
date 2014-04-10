@@ -801,7 +801,8 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
     //auto meshFaceMaterial = static_cast<MeshFaceMaterial*>(std::move(material));
     return material;
   } else if ( geometry && geometryGroup && geometryGroup->materialIndex.valid() ) {
-    THREE_TODO("MEAT EA: huh?")
+    // TODO "MEAT EA: huh?"
+
     //return geometry->materials[ geometryGroup->materialIndex.value ].get();
   }
 
@@ -3641,7 +3642,8 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
     const auto materialIndex = buffer.materialIndex;
 
     if ( materialIndex.valid() ) {
-      THREE_TODO("MEAT")
+      // TODO "MEAT"
+
       //auto& material = *object.geometry->materials[ materialIndex.value ];
 
       //if ( material.transparent ) {

@@ -93,7 +93,8 @@ public:
   bool morphTargets;
   bool morphNormals;
 
-  THREE_TODO("Implement default values")
+  // TODO "Implement default values"
+
   //// When rendered geometry doesn't include these attributes but the material does,
   //// use these default values in WebGL. This avoids errors when buffer data is missing.
   //this.defaultAttributeValues = {
@@ -142,10 +143,12 @@ public:
   void setParameters( const Parameters& parameters,
                       const ParameterKeys& keys = ParameterKeys() );
 
-  THREE_TODO("Clone without passing a parameter")
+  // TODO "Clone without passing a parameter"
+
   Material& clone( Material& material ) const;
 
-  THREE_TODO("Implement")
+  // TODO "Implement"
+
   void dispose() {
     //this.dispatchEvent( { type: 'dispose' } );
   };

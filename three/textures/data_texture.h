@@ -27,7 +27,8 @@ public:
 		
 	}
 
-  THREE_TODO("clone")
+  // TODO "clone"
+
 	
 protected:
 

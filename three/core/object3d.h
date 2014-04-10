@@ -157,12 +157,13 @@ public:
   Object3D& updateMatrix();
   Object3D& updateMatrixWorld( bool force = false );
 
-  THREE_CUSTOM_CODE_START("Either properties from child/subclasses, so no casting is needed during rendering, or render code")
+  
   
   bool sortParticles;
 
   bool useVertexTexture;
-  THREE_TODO("Bone shouldnt be a pointer") std::vector<Bone*> bones;
+  // TODO "Bone shouldnt be a pointer"
+ std::vector<Bone*> bones;
   std::vector<Matrix4> boneMatrices;
   Texture::Ptr boneTexture;
   int boneTextureWidth, boneTextureHeight;
@@ -216,7 +217,7 @@ public:
 
   void render( const std::function<void( Object3D& )> renderCallback );
 
-  THREE_CUSTOM_CODE_END("-----------------")
+  
 
 protected:
 

@@ -18,7 +18,8 @@ public:
 
   struct RenderData {
         
-    THREE_TODO("JD: Fill these with pointers AFTER creating with the pool")
+    // TODO "JD: Fill these with pointers AFTER creating with the pool"
+
         
     std::vector<RenderableObject> objects;
     std::vector<RenderableObject> sprites;

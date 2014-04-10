@@ -24,7 +24,8 @@ public:
 
   std::vector<Material::Ptr> materials;
 
-  THREE_TODO("MeshFaceMaterial::clone")
+  // TODO "MeshFaceMaterial::clone"
+
 
 protected:
 
