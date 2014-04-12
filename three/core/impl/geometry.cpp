@@ -434,7 +434,10 @@ Geometry::Geometry()
     uvsNeedUpdate( false ),
     normalsNeedUpdate( false ),
     tangentsNeedUpdate( false ),
-    colorsNeedUpdate( false ) { }
+    colorsNeedUpdate( false ) {
+        boundingBox = make_shared<Box3>();
+        boundingSphere = make_shared<Sphere>();
+    }
 
 Geometry::~Geometry() { }
 
