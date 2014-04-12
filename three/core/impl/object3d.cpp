@@ -323,7 +323,7 @@ Object3D& Object3D::updateMatrixWorld( bool force ) {
 
   if ( matrixWorldNeedsUpdate == true || force == true ) {
 
-    if ( parent ) {
+    if ( ! parent ) {
 
       matrixWorld.copy( matrix );
 
