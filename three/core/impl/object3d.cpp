@@ -377,11 +377,20 @@ Object3D::Object3D( const Material::Ptr& material ,
     boneTextureHeight( 0 ),
     morphTargetBase( -1 ),
     material( material ),
-    geometry( geometry ) { 
+    geometry( geometry ),
+    _rotation( Euler() ),
+    _quaternion( Quaternion() ) { 
       
       THREE_REVIEW("EA: Does this work/initialize properly?")
 
+      if(_rotation._quaternion == nullptr) {
+        _rotation._quaternion = make_shared<Quaternion>();
+      }
       _rotation._quaternion->copy(quaternion());
+
+      if(_quaternion._euler == nullptr) {
+        _quaternion._euler = make_shared<Euler>();
+      }
       _quaternion._euler->copy(rotation());
     }
 
