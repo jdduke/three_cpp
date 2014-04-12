@@ -25,6 +25,10 @@ public:
     return three::make_shared<Face>(a, b, c, d);
   }
 
+  static Ptr create( int a, int b, int c, const Vector3& n1, const Vector3& n2, const Vector3& n3, const Color& color = Color(), int materialIndex = -1 ) {
+    return three::make_shared<Face>(a, b, c, n1, n2, n3, color, materialIndex);
+  }
+
   Face( int a, int b, int c, const Vector3& normal = Vector3(), const Color& color = Color(), int materialIndex = -1 )
     : a( a ), b( b ), c( c ), normal( normal ), color( color ), materialIndex( materialIndex ), mType( enums::Face3 ), mSize( 3 ) { }
 
