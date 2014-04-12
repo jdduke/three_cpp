@@ -261,8 +261,6 @@ if (NOT THREE_HEADER_ONLY)
 
 endif()
 
-#############
-
 if(THREE_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
