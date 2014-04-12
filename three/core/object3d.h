@@ -74,6 +74,7 @@ public:
 
   bool frustumCulled;
 
+  // TODO 
   //this.userdata = {};
 
   inline Euler& rotation() {
@@ -163,7 +164,7 @@ public:
 
   bool useVertexTexture;
   // TODO "Bone shouldnt be a pointer"
- std::vector<Bone*> bones;
+  std::vector<Bone*> bones;
   std::vector<Matrix4> boneMatrices;
   Texture::Ptr boneTexture;
   int boneTextureWidth, boneTextureHeight;

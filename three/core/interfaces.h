@@ -21,11 +21,11 @@ class IVector3 {
 
 class IGeometry {
 public:
-  virtual void applyMatrix( Matrix4& )       = 0;
-  virtual void computeBoundingBox()          = 0;
-  virtual void computeBoundingSphere()       = 0;
-  virtual void computeVertexNormals( bool areaWeighted = false )        = 0;
-  virtual void computeTangents()             = 0;
+  virtual void applyMatrix( Matrix4& ) = 0;
+  virtual void computeBoundingBox() = 0;
+  virtual void computeBoundingSphere() = 0;
+  virtual void computeVertexNormals( bool areaWeighted = false ) = 0;
+  virtual void computeTangents() = 0;
   virtual ~IGeometry() { }
 };
 

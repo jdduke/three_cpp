@@ -17,9 +17,9 @@ namespace three {
 
   struct DescSort;
 
-  class Raycaster : public NonCopyable {
+class Raycaster : public NonCopyable {
 
-  public:
+public:
 
   static float precision;
   static float linePrecision;
@@ -39,11 +39,11 @@ namespace three {
 
   Intersects intersectObjects ( const std::vector<Object3D::Ptr>& objects, bool recursive = false );
 
-  protected:
+protected:
 
   std::unique_ptr<Impl> impl;
 
-  private:
+private:
 
   void _intersectDescendants( const Object3D::Ptr& object, Intersects& intersects );
 

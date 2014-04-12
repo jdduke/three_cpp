@@ -20,7 +20,6 @@ public:
         
     // TODO "JD: Fill these with pointers AFTER creating with the pool"
 
-        
     std::vector<RenderableObject> objects;
     std::vector<RenderableObject> sprites;
     std::vector<Object3D*>        lights;

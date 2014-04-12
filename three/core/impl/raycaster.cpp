@@ -400,9 +400,11 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
     if ( geometry->type() == enums::Geometry ) {
 
       const auto& vertices = geometry->vertices;
+
       size_t nbVertices = vertices.size();
       auto interSegment = Vector3::create();
       auto interRay = Vector3::create();
+      
       int step = object->lineType == enums::LineStrip ? 1 : 2;
 
       for ( size_t i = 0; i < nbVertices - 1; i = i + step ) {
