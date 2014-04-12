@@ -170,6 +170,12 @@ private:
   friend class Object3D;
 
   inline void _updateQuaternion() {
+    
+    if(_quaternion == nullptr) {
+
+      _quaternion = make_shared<Quaternion>();
+      
+    }
 
     _quaternion->setFromEuler( *this, false );
 
