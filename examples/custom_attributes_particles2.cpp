@@ -85,14 +85,14 @@ void shader( GLRenderer::Ptr renderer ) {
 
     if ( v < vc1 ) {
       valuesSize[ v ] = 10;
-      valuesColor[ v ].setHSV( 0.01f  + 0.1f * ( (float)v / vc1 ),
+      valuesColor[ v ].setHSL( 0.01f  + 0.1f * ( (float)v / vc1 ),
                                0.99f,
-                               ( vertices[ v ].y + radius ) / ( 2.f * radius ) );
+                               ( vertices[ v ].y + radius ) / ( 4.f * radius ) );
     } else {
       valuesSize[ v ] = 40;
-      valuesColor[ v ].setHSV( 0.6f,
+      valuesColor[ v ].setHSL( 0.6f,
                                0.75f,
-                               ( 0.5f + vertices[ v ].y ) / ( 0.8f * radius ) );
+                               ( 0.25f + vertices[ v ].y ) / ( 2.f * radius ) );
     }
 
   }
@@ -136,8 +136,7 @@ void shader( GLRenderer::Ptr renderer ) {
   anim::gameLoop( [&]( float dt ) -> bool {
 
     time += dt;
-    sphere->rotation.y = time * .03f;
-    sphere->rotation.z = time * .03f;
+    sphere->rotation().set( 0, time * .03f, time * .03f );
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

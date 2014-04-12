@@ -17,22 +17,12 @@ class Vector3 {
 
 public:
 
-  typedef std::shared_ptr<Vector3> Ptr;
-
   union {
     struct {
       float x, y, z;
     };
     float xyz[3];
   };
-
-  static Ptr create() {
-    return make_shared<Vector3>();
-  }
-
-  static Ptr create( Vector3 v ) {
-    return make_shared<Vector3>( v.x, v.y, v.z );
-  }
 
   Vector3()
     : x( 0 ), y( 0 ), z( 0 ) {}

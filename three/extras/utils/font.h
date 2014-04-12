@@ -25,8 +25,8 @@ public:
 
   void generate( const std::string& text,
                  std::vector<Vertex>& vertices,
-                 std::vector<Face::Ptr>& faces,
-                 std::vector<std::array<Vector2,4>>& faceUvs );
+                 std::vector<Face>& faces,
+                 std::vector<std::array<Vector2, 3>>& faceUvs );
 
   const Texture::Ptr& texture() const;
 

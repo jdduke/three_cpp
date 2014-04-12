@@ -19,12 +19,6 @@ public:
     float te[16];
   };
 
-  typedef std::shared_ptr<Matrix4> Ptr;
-
-  static Ptr create() {
-    return three::make_shared<Matrix4>();
-  }
-
   Matrix4();
 
   Matrix4( float n11, float n12, float n13, float n14,

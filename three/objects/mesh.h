@@ -25,7 +25,7 @@ public:
   int morphTargetBase;
 
   std::vector<int> morphTargetForcedOrder;
-  std::vector<int> morphTargetInfluences;
+  std::vector<float> morphTargetInfluences;
   std::unordered_map<std::string, int> morphTargetDictionary;
 
   int getMorphTargetIndexByName( const std::string& name );

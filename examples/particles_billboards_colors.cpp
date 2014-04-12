@@ -2,7 +2,7 @@
 
 #include <three/cameras/perspective_camera.h>
 #include <three/core/geometry.h>
-#include <three/materials/particle_basic_material.h>
+#include <three/materials/particle_system_material.h>
 #include <three/objects/particle_system.h>
 #include <three/renderers/renderer_parameters.h>
 #include <three/renderers/gl_renderer.h>
@@ -36,7 +36,7 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
     geometry->vertices.push_back( vertex );
 
     Color color( 0xffffff );
-    color.setHSV( (vertex.x + 1000.f) / 2000.f, 1.f, 1.f );
+    color.setHSL( (vertex.x + 1000.f) / 2000.f, 1.f, 0.5f );
     geometry->colors.push_back( color );
 
   }
@@ -45,12 +45,12 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
     threeDataPath("textures/sprites/ball.png")
   );
 
-  auto material = ParticleBasicMaterial::create(
+  auto material = ParticleSystemMaterial::create(
     Material::Parameters().add( "size", 85.f )
                           .add( "map", sprite )
                           .add( "vertexColors", enums::VertexColors )
   );
-  material->color.setHSV( 1.f, 0.2f, 0.8f );
+  material->color.setHSL( 1.f, 0.2f, 0.7f );
   //material->depthTest = false;
   //material->alphaTest = .01f;
 
@@ -103,7 +103,7 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
     camera->lookAt( scene->position );
 
     const auto h = Math::fmod( 360.f * ( 1.f + time ), 360.f ) / 360.f;
-    material->color.setHSV( h, 0.8f, 1.f );
+    material->color.setHSL( h, 1.f, 0.6f );
 
     renderer->render( *scene, *camera );
 

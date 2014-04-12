@@ -83,13 +83,13 @@ void lines_colors( GLRenderer::Ptr renderer ) {
     geometry->vertices.push_back( point );
 
     colors.push_back( Color( 0xffffff ) );
-    colors.back().setHSV( 0.6f, ( 200.f + point.x ) / 400, 1.f );
+    colors.back().setHSL( 0.6f, 1.f, std::max( 0.f, ( 200.f - point.x ) / 400 ) * 0.5f + 0.5f );
 
     colors2.push_back( Color( 0xffffff ) );
-    colors2.back().setHSV( 0.3f, 1.0f, ( 200.f + point.x ) / 400 );
+    colors2.back().setHSL( 0.3f, 1.0f, std::max( 0.f, ( 200.f + point.x ) / 400 ) * 0.5f );
 
     colors3.push_back( Color( 0xffffff ) );
-    colors3.back().setHSV( (float)i++ / points.size(), 1.0f, 1.0f );
+    colors3.back().setHSL( (float)i++ / points.size(), 1.0f, 0.5f );
 
   }
 
@@ -163,7 +163,7 @@ void lines_colors( GLRenderer::Ptr renderer ) {
 
       for ( size_t i = 0; i < scene->children.size(); i++ ) {
         if (scene->children[i]->type() == enums::Line )
-          scene->children[i]->rotation.y = time * ( i % 2 ? 1 : -1);
+          scene->children[i]->rotation().y( time * ( i % 2 ? 1 : -1) );
       }
 
       renderer->render( *scene, *camera );

@@ -36,8 +36,8 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
     mesh->position.y = Math::random() * 2000 - 1000;
     mesh->position.z = Math::random() * 2000 - 1000;
 
-    mesh->rotation.x = Math::random() * 2 * Math::PI();
-    mesh->rotation.y = Math::random() * 2 * Math::PI();
+    mesh->rotation().x( Math::random() * 2 * Math::PI() );
+    mesh->rotation().y( Math::random() * 2 * Math::PI() );
 
     mesh->matrixAutoUpdate = false;
     mesh->updateMatrix();
@@ -100,9 +100,7 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
     ry = Math::sin( time * 0.3f ) * 0.5f,
     rz = Math::sin( time * 0.2f ) * 0.5f;
 
-    group->rotation.x = rx;
-    group->rotation.y = ry;
-    group->rotation.z = rz;
+    group->rotation().set( rx, ry, rz );
 
     renderer->render( *scene, *camera );
 

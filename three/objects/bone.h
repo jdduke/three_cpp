@@ -29,7 +29,7 @@ class Bone : Object3D {
 
   THREE_IMPL_OBJECT(Bone)
 
-  void update( const Matrix4::Ptr& parentSkinMatrix, bool forceUpdate = false);
+  void update( const Matrix4* parentSkinMatrix, bool forceUpdate = false);
 
 protected:
 

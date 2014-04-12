@@ -2,7 +2,7 @@
 
 #include <three/cameras/perspective_camera.h>
 #include <three/core/geometry.h>
-#include <three/materials/particle_basic_material.h>
+#include <three/materials/particle_system_material.h>
 #include <three/objects/particle_system.h>
 #include <three/renderers/renderer_parameters.h>
 #include <three/renderers/gl_renderer.h>
@@ -37,12 +37,12 @@ void particles_billboards( const GLRenderer::Ptr& renderer ) {
     threeDataPath("textures/sprites/disc.png")
   );
 
-  auto material = ParticleBasicMaterial::create(
+  auto material = ParticleSystemMaterial::create(
     Material::Parameters().add( "size", 35.f )
                           .add( "map", sprite )
                           .add( "sizeAttenuation", false )
   );
-  material->color.setHSV( 1.f, 0.2f, 0.8f );
+  material->color.setHSL( 1.f, 0.3f, 0.7f );
 
   auto particles = ParticleSystem::create( geometry, material );
   particles->sortParticles = true;
@@ -93,7 +93,7 @@ void particles_billboards( const GLRenderer::Ptr& renderer ) {
     camera->lookAt( scene->position );
 
     const auto h = Math::fmod( 360.f * ( 1.f + time ), 360.f ) / 360.f;
-    material->color.setHSV( h, 0.75f, 0.8f );
+    material->color.setHSL( h, 0.5f, 0.5f );
 
     renderer->render( *scene, *camera );
 

@@ -89,7 +89,7 @@ public:
     if ( fullWidth != 0.f ) {
 
       auto aspect = fullWidth / fullHeight;
-      auto top = Math::tan( Math::degToRad( fov * 0.5 ) ) * near;
+      auto top = Math::tan( Math::degToRad( fov * 0.5f ) ) * near;
       auto bottom = -top;
       auto left = aspect * bottom;
       auto right = aspect * top;

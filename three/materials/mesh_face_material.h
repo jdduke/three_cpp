@@ -14,6 +14,10 @@ public:
 
   typedef std::shared_ptr<MeshFaceMaterial> Ptr;
 
+  static Ptr create() {
+    return three::make_shared<MeshFaceMaterial>();
+  }
+
   static Ptr create( const std::vector<Material::Ptr>& materials ) {
     return three::make_shared<MeshFaceMaterial>( materials );
   }
@@ -28,6 +32,8 @@ public:
 
 
 protected:
+
+  MeshFaceMaterial() {}
 
   MeshFaceMaterial( const std::vector<Material::Ptr>& materialsIn )
     : materials( materialsIn ) {}

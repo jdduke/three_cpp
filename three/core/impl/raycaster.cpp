@@ -8,6 +8,7 @@
 #include <three/objects/sprite.h>
 #include <three/objects/LOD.h>
 #include <three/objects/line.h>
+#include <three/utils/optional.h>
 
 namespace three {
 
@@ -15,14 +16,14 @@ struct Intersect {
 
   public:
 
-    Intersect( float distanceIn, Vector3& pointIn, Face* faceIn = nullptr, size_t faceIndexIn = 0, Object3D* objectIn = nullptr )
-    : distance( distanceIn), point( pointIn ), face( faceIn ), faceIndex( faceIndexIn ), object( objectIn ) {}
+    Intersect( float distanceIn, Vector3& pointIn, optional<Face> faceIn, size_t faceIndexIn = 0, Object3D* objectIn = nullptr )
+    : distance( distanceIn), point( pointIn ), face( std::move( faceIn ) ), faceIndex( faceIndexIn ), object( objectIn ) {}
 
     float distance;
 
     Vector3 point;
 
-    Face* face;
+    optional<Face> face;
     size_t faceIndex;
 
     Object3D* object;
@@ -106,9 +107,9 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
     // Checking boundingSphere distance to ray
 
-    if ( geometry->boundingSphere == nullptr ) geometry->computeBoundingSphere();
+    if ( !geometry->boundingSphere ) geometry->computeBoundingSphere();
 
-    impl.sphere.copy( *geometry->boundingSphere.get() );
+    impl.sphere.copy( *geometry->boundingSphere );
     impl.sphere.applyMatrix4( object->matrixWorld );
 
     if ( raycaster.ray.isIntersectionSphere( impl.sphere ) == false ) {
@@ -122,9 +123,9 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
     impl.inverseMatrix.getInverse( object->matrixWorld );
     impl.localRay.copy( raycaster.ray ).applyMatrix4( impl.inverseMatrix );
 
-    if ( geometry->boundingBox != nullptr ) {
+    if ( geometry->boundingBox ) {
 
-      if ( impl.localRay.isIntersectionBox( *geometry->boundingBox.get() ) == false )  {
+      if ( impl.localRay.isIntersectionBox( *geometry->boundingBox ) == false )  {
 
         return;
 
@@ -189,7 +190,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
             positions[ c * 3 + 2 ]
           );
 
-          Vector3::Ptr intersectionPoint;
+          optional<Vector3> intersectionPoint;
           if ( material->side == enums::BackSide ) {
 
             intersectionPoint = impl.localRay.intersectTriangle( impl.vC, impl.vB, impl.vA, true );
@@ -200,17 +201,17 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
           }
 
-          if ( intersectionPoint == nullptr ) continue;
+          if ( !intersectionPoint ) continue;
 
           intersectionPoint->applyMatrix4( object->matrixWorld );
 
-          float distance = raycaster.ray.origin.distanceTo( *intersectionPoint.get() );
+          float distance = raycaster.ray.origin.distanceTo( *intersectionPoint );
 
           if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
 
           intersects.push_back(Intersect(
                                  distance,
-                                 *intersectionPoint.get(),
+                                 *intersectionPoint,
                                  nullptr,
                                  0,
                                  (Object3D*)object
@@ -248,7 +249,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
         );
 
 
-        Vector3::Ptr intersectionPoint;
+        optional<Vector3> intersectionPoint;
         if ( material->side == enums::BackSide ) {
 
           intersectionPoint = impl.localRay.intersectTriangle( impl.vC, impl.vB, impl.vA, true );
@@ -259,17 +260,17 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
         }
 
-        if ( intersectionPoint == nullptr ) continue;
+        if ( !intersectionPoint ) continue;
 
         intersectionPoint->applyMatrix4( object->matrixWorld );
 
-        float distance = raycaster.ray.origin.distanceTo( *intersectionPoint.get() );
+        float distance = raycaster.ray.origin.distanceTo( *intersectionPoint );
 
         if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
 
         intersects.push_back(Intersect(
                                distance,
-                               *intersectionPoint.get(),
+                               *intersectionPoint,
                                nullptr,
                                0,
                                (Object3D*)object
@@ -295,13 +296,13 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
       auto& face = geometry->faces[ f ];
 
-      auto& material = isFaceMaterial ? objectMaterials[ face->materialIndex ] : object->material;
+      auto& material = isFaceMaterial ? objectMaterials[ face.materialIndex ] : object->material;
 
       if ( material == nullptr ) continue;
 
-      a = vertices[ face->a ];
-      b = vertices[ face->b ];
-      c = vertices[ face->c ];
+      a = vertices[ face.a ];
+      b = vertices[ face.b ];
+      c = vertices[ face.c ];
 
       if ( material->morphTargets == true ) {
 
@@ -314,23 +315,23 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
         for ( size_t t = 0, tl = morphTargets.size(); t < tl; t ++ ) {
 
-          int influence = morphInfluences[ t ];
+          float influence = morphInfluences[ t ];
 
           if ( influence == 0 ) continue;
 
           auto& targets = morphTargets[ t ].vertices;
 
-          impl.vA.x += ( targets[ face->a ].x - a.x ) * influence;
-          impl.vA.y += ( targets[ face->a ].y - a.y ) * influence;
-          impl.vA.z += ( targets[ face->a ].z - a.z ) * influence;
+          impl.vA.x += ( targets[ face.a ].x - a.x ) * influence;
+          impl.vA.y += ( targets[ face.a ].y - a.y ) * influence;
+          impl.vA.z += ( targets[ face.a ].z - a.z ) * influence;
 
-          impl.vB.x += ( targets[ face->b ].x - b.x ) * influence;
-          impl.vB.y += ( targets[ face->b ].y - b.y ) * influence;
-          impl.vB.z += ( targets[ face->b ].z - b.z ) * influence;
+          impl.vB.x += ( targets[ face.b ].x - b.x ) * influence;
+          impl.vB.y += ( targets[ face.b ].y - b.y ) * influence;
+          impl.vB.z += ( targets[ face.b ].z - b.z ) * influence;
 
-          impl.vC.x += ( targets[ face->c ].x - c.x ) * influence;
-          impl.vC.y += ( targets[ face->c ].y - c.y ) * influence;
-          impl.vC.z += ( targets[ face->c ].z - c.z ) * influence;
+          impl.vC.x += ( targets[ face.c ].x - c.x ) * influence;
+          impl.vC.y += ( targets[ face.c ].y - c.y ) * influence;
+          impl.vC.z += ( targets[ face.c ].z - c.z ) * influence;
 
         }
 
@@ -343,7 +344,8 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
         c = impl.vC;
 
       }
-      Vector3::Ptr intersectionPoint;
+
+      optional<Vector3> intersectionPoint;
       if ( material->side == enums::BackSide ) {
 
         intersectionPoint = impl.localRay.intersectTriangle( c, b, a, true );
@@ -354,18 +356,18 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
       }
 
-      if ( intersectionPoint == nullptr ) continue;
+      if ( !intersectionPoint ) continue;
 
       intersectionPoint->applyMatrix4( object->matrixWorld );
 
-      float distance = raycaster.ray.origin.distanceTo( *intersectionPoint.get() );
+      float distance = raycaster.ray.origin.distanceTo( *intersectionPoint );
 
       if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
 
-      intersects.push_back(Intersect(
+      intersects.push_back( Intersect(
                              distance,
-                             *intersectionPoint.get(),
-                             face.get(),
+                             *intersectionPoint,
+                             make_optional(face),
                              f,
                              (Object3D*)object
                            ));
@@ -381,11 +383,11 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
     auto& geometry = object->geometry;
 
-    if ( geometry->boundingSphere == nullptr ) geometry->computeBoundingSphere();
+    if ( !geometry->boundingSphere ) geometry->computeBoundingSphere();
 
     // Checking boundingSphere distance to ray
 
-    impl.sphere.copy( *geometry->boundingSphere.get() );
+    impl.sphere.copy( *geometry->boundingSphere );
     impl.sphere.applyMatrix4( object->matrixWorld );
 
     if ( raycaster.ray.isIntersectionSphere( impl.sphere ) == false ) {
@@ -402,18 +404,18 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
       const auto& vertices = geometry->vertices;
 
       size_t nbVertices = vertices.size();
-      auto interSegment = Vector3::create();
-      auto interRay = Vector3::create();
-      
+      Vector3 interSegment;
+      Vector3 interRay;
+
       int step = object->lineType == enums::LineStrip ? 1 : 2;
 
       for ( size_t i = 0; i < nbVertices - 1; i = i + step ) {
 
-        float distSq = impl.localRay.distanceSqToSegment( vertices[ i ], vertices[ i + 1 ], interRay, interSegment );
+        float distSq = impl.localRay.distanceSqToSegment( vertices[ i ], vertices[ i + 1 ], &interRay, &interSegment );
 
         if ( distSq > precisionSq ) continue;
 
-        float distance = impl.localRay.origin.distanceTo( *interRay.get() );
+        float distance = impl.localRay.origin.distanceTo( interRay );
 
         if ( distance < raycaster.near || distance > raycaster.far ) continue;
 
@@ -421,7 +423,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
                                distance,
                                // What do we want? intersection point on the ray or on the segment??
                                // point: raycaster.ray.at( distance ),
-                               interSegment->clone().applyMatrix4( object->matrixWorld ),
+                               interSegment.clone().applyMatrix4( object->matrixWorld ),
                                nullptr,
                                0,
                                (Object3D*)object

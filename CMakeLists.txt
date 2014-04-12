@@ -10,7 +10,7 @@ set(THREE_VERSION 0.0.1 CACHE STRING "three.cpp version")
 dissect_version()
 
 set(THREE_TREAT_WARNINGS_AS_ERRORS FALSE CACHE BOOL "Treat warnings as errors")
-#set(THREE_BUILD_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
+set(THREE_BUILD_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
 #set(THREE_BUILD_TESTS        FALSE CACHE BOOL "Build three.cpp unit tests")
 set(THREE_HEADER_ONLY        FALSE CACHE BOOL "Whether to use three.cpp as a header-only library")
 set(THREE_LIBRARY_STATIC     TRUE CACHE BOOL "If building three.cpp as a library, build statically")

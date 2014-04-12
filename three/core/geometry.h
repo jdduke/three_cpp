@@ -16,7 +16,7 @@
 
 #include <three/materials/material.h>
 
-
+#include <three/utils/optional.h>
 #include <three/utils/memory.h>
 
 #include <array>
@@ -31,12 +31,12 @@ struct MorphTarget {
 };
 
 struct VertexNormal {
-    
+
   Vector3 a,b,c,d;
-      
+
   VertexNormal( Vector3 a, Vector3 b, Vector3 c)
     : a( a ), b( b ), c( c ) {}
-    
+
 };
 
 struct MorphNormal {
@@ -75,9 +75,9 @@ public:
 
   std::vector<Color> colors; // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
 
-  std::vector<Face::Ptr> faces;
+  std::vector<Face> faces;
 
-  std::vector<std::vector<std::array<Vector2, 4>>> faceVertexUvs;
+  std::vector<std::vector<std::array<Vector2, 3>>> faceVertexUvs;
 
   std::vector<MorphTarget> morphTargets;
   std::vector<Color> morphColors;
@@ -88,8 +88,8 @@ public:
 
   std::vector<float> lineDistances;
 
-  Box3::Ptr boundingBox;
-  Sphere::Ptr boundingSphere;
+  optional<Box3> boundingBox;
+  optional<Sphere> boundingSphere;
 
   bool hasTangents;
 
@@ -136,9 +136,7 @@ private:
 
   std::vector<Vector3> __originalFaceNormal;
 
-  THREE_REVIEW("EA: array size could be 3 since it was used for the deprecated face4. More places with array size 4. Revisit.")
-
-  std::vector< std::array<Vector3, 4> > __originalVertexNormals;
+  std::vector< std::array<Vector3, 3> > __originalVertexNormals;
 
   static int& GeometryCount() {
     static int sGeometryCount = 0;

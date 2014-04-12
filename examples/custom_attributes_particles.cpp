@@ -93,9 +93,9 @@ void shader( GLRenderer::Ptr renderer ) {
     values_color[ v ].setHex( 0xffaa00 );
 
     if ( vertices[ v ].x < 0 )
-      values_color[ v ].setHSV( 0.5f + 0.1f * ( (float)v / pointCount ), 0.7f, 0.9f );
+      values_color[ v ].setHSL( 0.5f + 0.1f * ( (float)v / pointCount ), 0.7f, 0.5f );
     else
-      values_color[ v ].setHSV( 0.0f + 0.1f * ( (float)v / pointCount), 0.9f, 0.9f );
+      values_color[ v ].setHSL( 0.0f + 0.1f * ( (float)v / pointCount), 0.9f, 0.5f );
 
   }
 
@@ -138,7 +138,7 @@ void shader( GLRenderer::Ptr renderer ) {
   anim::gameLoop( [&]( float dt ) -> bool {
 
     time += dt;
-    sphere->rotation.z = time * .03f;
+    sphere->rotation().z( time * .03f );
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

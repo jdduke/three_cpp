@@ -2,7 +2,7 @@
 
 #include <three/cameras/perspective_camera.h>
 #include <three/core/geometry.h>
-#include <three/materials/particle_basic_material.h>
+#include <three/materials/particle_system_material.h>
 #include <three/objects/particle_system.h>
 #include <three/renderers/renderer_parameters.h>
 #include <three/renderers/gl_renderer.h>
@@ -39,7 +39,7 @@ void trails( GLRenderer::Ptr renderer ) {
   }
 
   // Materials
-  auto material = ParticleBasicMaterial::create(
+  auto material = ParticleSystemMaterial::create(
     Material::Parameters().add("color", Color(0xcccccc))
                           .add("size", 1.0f)
                           .add("vertexColors", enums::VertexColors)

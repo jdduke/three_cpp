@@ -167,7 +167,7 @@ struct SceneVisitor : public Visitor {
     const auto& faceVertexUvs     = geometry.faceVertexUvs;
 
 
-    auto rotationMatrix = p._normalMatrix.getNormalMatrix( modelMatrix );
+//    auto rotationMatrix = p._normalMatrix.getNormalMatrix( modelMatrix );
 
     auto isFaceMaterial = object.material->type() == enums::MeshFaceMaterial;
     auto objectMaterials = isFaceMaterial ? object.material : nullptr;
@@ -193,9 +193,9 @@ struct SceneVisitor : public Visitor {
 
       auto side = material->side;
 
-      auto& v1 = p._vertices.pool[ face->a ];
-      auto& v2 = p._vertices.pool[ face->b ];
-      auto& v3 = p._vertices.pool[ face->c ];
+      auto& v1 = p._vertices.pool[ face.a ];
+      auto& v2 = p._vertices.pool[ face.b ];
+      auto& v3 = p._vertices.pool[ face.c ];
 
       if ( material->morphTargets == true ) {
 
@@ -218,17 +218,17 @@ struct SceneVisitor : public Visitor {
 
           auto& targets = morphTargets[ t ].vertices;
 
-          p._vA.x += ( targets[ face->a ].x - v1p.x ) * influence;
-          p._vA.y += ( targets[ face->a ].y - v1p.y ) * influence;
-          p._vA.z += ( targets[ face->a ].z - v1p.z ) * influence;
+          p._vA.x += ( targets[ face.a ].x - v1p.x ) * influence;
+          p._vA.y += ( targets[ face.a ].y - v1p.y ) * influence;
+          p._vA.z += ( targets[ face.a ].z - v1p.z ) * influence;
 
-          p._vB.x += ( targets[ face->b ].x - v2p.x ) * influence;
-          p._vB.y += ( targets[ face->b ].y - v2p.y ) * influence;
-          p._vB.z += ( targets[ face->b ].z - v2p.z ) * influence;
+          p._vB.x += ( targets[ face.b ].x - v2p.x ) * influence;
+          p._vB.y += ( targets[ face.b ].y - v2p.y ) * influence;
+          p._vB.z += ( targets[ face.b ].z - v2p.z ) * influence;
 
-          p._vC.x += ( targets[ face->c ].x - v3p.x ) * influence;
-          p._vC.y += ( targets[ face->c ].y - v3p.y ) * influence;
-          p._vC.z += ( targets[ face->c ].z - v3p.z ) * influence;
+          p._vC.x += ( targets[ face.c ].x - v3p.x ) * influence;
+          p._vC.y += ( targets[ face.c ].y - v3p.y ) * influence;
+          p._vC.z += ( targets[ face.c ].z - v3p.z ) * influence;
 
         }
 
@@ -246,12 +246,9 @@ struct SceneVisitor : public Visitor {
       p._points3[ 1 ] = v2.positionScreen;
       p._points3[ 2 ] = v3.positionScreen;
 
-      RenderableFace* _face;
-      THREE_REVIEW("Ref? copy? + Performance")
-      const std::vector<Vector4> points(std::begin(p._points3), std::end(p._points3));
-      THREE_REVIEW("Improve. Performance?")
+      RenderableFace* _face = nullptr;
       if ( v1.visible == true || v2.visible == true || v3.visible == true ||
-           p._clipBox.isIntersectionBox( p._boundingBox.setFromPoints( points ) ) ) {
+           p._clipBox.isIntersectionBox( p._boundingBox.setFromPoints( p._points3 ) ) ) {
 
         visible = ( ( v3.positionScreen.x - v1.positionScreen.x ) *
                     ( v2.positionScreen.y - v1.positionScreen.y ) -
@@ -279,7 +276,7 @@ struct SceneVisitor : public Visitor {
 
       }
 
-      _face->normalModel.copy( face->normal );
+      _face->normalModel.copy( face.normal );
 
       if ( visible == false && ( side == enums::BackSide || side == enums::DoubleSide ) ) {
 
@@ -291,9 +288,9 @@ struct SceneVisitor : public Visitor {
 
       _face->normalModelView.copy( _face->normalModel ).applyMatrix3( p._normalViewMatrix );
 
-      _face->centroidWorld.copy( face->centroid ).applyMatrix4( p._modelMatrix );
+      _face->centroidWorld.copy( face.centroid ).applyMatrix4( p._modelMatrix );
 
-      auto& faceVertexNormals = face->vertexNormals;
+      auto& faceVertexNormals = face.vertexNormals;
 
       for ( size_t n = 0, nl = Math::min( (int)faceVertexNormals.size(), 3 ); n < nl; ++n ) {
 
@@ -315,7 +312,7 @@ struct SceneVisitor : public Visitor {
 
       _face->vertexNormalsLength = faceVertexNormals.size();
 
-      for ( int c = 0, cl = face->size(); c < cl; c ++ ) {
+      for ( int c = 0, cl = face.size(); c < cl; c ++ ) {
 
         const auto& uvs = faceVertexUvs[ c ][ f ];
 
@@ -327,7 +324,7 @@ struct SceneVisitor : public Visitor {
 
       }
 
-      _face->color = &face->color;
+      _face->color = face.color;
       _face->material = material.get();
 
       p._centroid.copy( _face->centroidWorld ).applyProjection( p._viewProjectionMatrix );

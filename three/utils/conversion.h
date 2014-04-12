@@ -22,8 +22,8 @@ inline std::string threeDataPath( const std::string& relativePath ) {
 }
 
 template < typename T >
-inline std::array<T, 4> toArray( const T& t0, const T& t1, const T& t2, const T& t3 = T() ) {
-  std::array<T, 4> a = { t0, t1, t2, t3 };
+inline std::array<T, 3> toArray( const T& t0, const T& t1, const T& t2 ) {
+  std::array<T, 3> a = { t0, t1, t2 };
   return a;
 }
 

@@ -171,11 +171,6 @@ public:
 
   Quaternion& multiplyQuaternions( const Quaternion& a, const Quaternion& b );
 
-  inline Vector3& multiplyVector3( Vector3& vector ) const {
-    //console.warn( 'DEPRECATED: Quaternion\'s .multiplyVector3() has been removed. Use is now vector.applyQuaternion( quaternion ) instead.' );
-    return vector.applyQuaternion( *this );
-  }
-
   Quaternion& slerp( const Quaternion& qb, float t );
 
   inline bool equals( const Quaternion& quaternion ) const {

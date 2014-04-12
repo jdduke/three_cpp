@@ -20,18 +20,16 @@ Ray& Ray::copy( const Ray& ray ) {
 }
 
 Vector3 Ray::at( float t ) const {
-  return Vector3().copy( this->direction ).multiplyScalar( t ).add( this->origin );
+  Vector3 result;
+  return at( t, result );
 }
 
 Vector3& Ray::at( float t, Vector3& target ) const {
   return target.copy( this->direction ).multiplyScalar( t ).add( this->origin );
 }
 
-Vector3::Ptr Ray::at( float t, Vector3::Ptr target ) const {
-  target->copy( this->direction );
-  target->multiplyScalar( t );
-  target->add( this->origin );
-  return target;
+Vector3 Ray::at( float t, optional<Vector3>& target ) const {
+  return target ? at( t, *target ) : at( t );
 }
 
 Ray& Ray::recast( float t ) {
@@ -41,11 +39,8 @@ Ray& Ray::recast( float t ) {
 }
 
 Vector3 Ray::closestPointToPoint( const Vector3& point ) {
-
-  auto result = Vector3();
-
-  return closestPointToPoint(point, result);
-
+  Vector3 target;
+  return closestPointToPoint( point, target );
 }
 
 Vector3& Ray::closestPointToPoint( const Vector3& point, Vector3& target ) {
@@ -72,7 +67,7 @@ float Ray::distanceToPoint( const Vector3& point ) const {
   return v1.distanceTo( point );
 }
 
-float Ray::distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3::Ptr optionalPointOnRay, Vector3::Ptr optionalPointOnSegment ) {
+float Ray::distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3* optionalPointOnRay, Vector3* optionalPointOnSegment ) {
 
   // from http://www.geometrictools.com/LibMathematics/Distance/Wm5DistRay3Segment3.cpp
   // It returns the min distance between the ray and the segment
@@ -235,7 +230,7 @@ Vector3 Ray::intersectPlane( const Plane& plane ) {
 
 }
 
-Vector3::Ptr Ray::intersectPlane( const Plane& plane, Vector3& target ) {
+optional<Vector3> Ray::intersectPlane( const Plane& plane, Vector3& target ) {
 
   auto t = this->distanceToPlane( plane );
 
@@ -243,22 +238,21 @@ Vector3::Ptr Ray::intersectPlane( const Plane& plane, Vector3& target ) {
     return nullptr;
   }
 
-  auto result = this->at( t, target );
-  return Vector3::create(result);
+  return at( t, target );
 }
 
 bool Ray::isIntersectionBox( const Box3& box )  {
 
-  return intersectBox( box ) != nullptr;
+  return !!intersectBox( box );
 }
 
-Vector3::Ptr Ray::intersectBox( const Box3& box ) {
+optional<Vector3> Ray::intersectBox( const Box3& box ) {
   //@todo mem check efficiency
   auto v = Vector3();
   return intersectBox(box, v );
 }
 
-Vector3::Ptr Ray::intersectBox( const Box3& box, Vector3& target ) {
+optional<Vector3> Ray::intersectBox( const Box3& box, Vector3& target ) {
 
   // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
 
@@ -322,12 +316,10 @@ Vector3::Ptr Ray::intersectBox( const Box3& box, Vector3& target ) {
 
   if ( tmax < 0 ) return nullptr;
 
-  auto result = this->at( tmin >= 0 ? tmin : tmax, target );
-
-  return Vector3::create( result );
+   return at( tmin >= 0 ? tmin : tmax, target );
 }
 
-Vector3::Ptr Ray::intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3::Ptr optionalTarget ) {
+optional<Vector3> Ray::intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, optional<Vector3> optionalTarget ) {
 
   // @todo priv member check
   // Compute the offset origin, edges, and normal.

@@ -2,7 +2,7 @@
 
 #include <three/cameras/perspective_camera.h>
 #include <three/core/geometry.h>
-#include <three/materials/particle_basic_material.h>
+#include <three/materials/particle_system_material.h>
 #include <three/objects/particle_system.h>
 #include <three/renderers/renderer_parameters.h>
 #include <three/renderers/gl_renderer.h>
@@ -42,7 +42,7 @@ void particles_sprites( const GLRenderer::Ptr& renderer ) {
   std::vector<Material::Ptr> materials;
   auto addParticleSystem = [&]( const Vector3& color, const Texture::Ptr& sprite, float size ) {
 
-    auto material = ParticleBasicMaterial::create(
+    auto material = ParticleSystemMaterial::create(
       Material::Parameters().add( "size", size )
                             .add( "map", sprite )
                             .add( "blending", enums::AdditiveBlending )
@@ -51,24 +51,24 @@ void particles_sprites( const GLRenderer::Ptr& renderer ) {
     );
 
     materials.push_back( material );
-    material->color.setHSV( color[0], color[1], color[2] );
+    material->color.setHSL( color[0], color[1], color[2] );
 
     auto particles = ParticleSystem::create( geometry, material );
 
-    particles->rotation.x = Math::random() * 6;
-    particles->rotation.y = Math::random() * 6;
-    particles->rotation.z = Math::random() * 6;
+    particles->rotation().x( Math::random() * 6 );
+    particles->rotation().y( Math::random() * 6 );
+    particles->rotation().z( Math::random() * 6 );
 
     scene->add( particles );
   };
 
   typedef std::tuple<Vector3, Texture::Ptr, float> ColorSpriteSize;
   std::array<ColorSpriteSize, 5> params = {
-    ColorSpriteSize( Vector3(  1.f, 0.2f,  1.f), sprite2, 20.f ),
-    ColorSpriteSize( Vector3(0.95f, 0.1f,  1.f), sprite3, 15.f ),
-    ColorSpriteSize( Vector3(0.90f, 0.05f, 1.f), sprite1, 10.f ),
-    ColorSpriteSize( Vector3(0.85f, 0.f,   .8f), sprite5, 8.f ),
-    ColorSpriteSize( Vector3(0.80f, 0.0f,  .7f), sprite4, 5.f )
+    ColorSpriteSize( Vector3(  1.f, 0.2f,  0.5f), sprite2, 20.f ),
+    ColorSpriteSize( Vector3(0.95f, 0.1f,  0.5f), sprite3, 13.f ),
+    ColorSpriteSize( Vector3(0.90f, 0.05f, 0.5f), sprite1, 10.f ),
+    ColorSpriteSize( Vector3(0.85f, 0.f,   0.5f), sprite5, 8.f ),
+    ColorSpriteSize( Vector3(0.80f, 0.f,   0.5f), sprite4, 5.f )
   };
   for ( const auto& param : params ) {
     addParticleSystem( std::get<0>(param), std::get<1>(param), std::get<2>(param) );
@@ -120,14 +120,14 @@ void particles_sprites( const GLRenderer::Ptr& renderer ) {
     for ( size_t i = 0; i < scene->children.size(); ++i ) {
       auto& object = *scene->children[ i ];
       if ( object.type() == enums::ParticleSystem ) {
-        object.rotation.y = time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) );
+        object.rotation().y( time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) ) );
       }
     }
 
     for ( size_t i = 0; i < materials.size(); ++i ) {
       auto& color = std::get<0>(params[ i ]);
       const auto h = Math::fmod( 360.f * ( color[0] + time ), 360.f ) / 360.f;
-      materials[ i ]->color.setHSV( h, color[ 1 ], color[ 2 ] );
+      materials[ i ]->color.setHSL( h, color[ 1 ], color[ 2 ] );
     }
 
     renderer->render( *scene, *camera );

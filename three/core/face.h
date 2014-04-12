@@ -15,66 +15,41 @@ class Face {
 
 public:
 
-  typedef std::shared_ptr<Face> Ptr;
-
-  static Ptr create( int a, int b, int c) {
-    return three::make_shared<Face>(a, b, c);
-  }
-
-  static Ptr create( int a, int b, int c, int d) {
-    return three::make_shared<Face>(a, b, c, d);
-  }
-
-  static Ptr create( int a, int b, int c, const Vector3& n1, const Vector3& n2, const Vector3& n3, const Color& color = Color(), int materialIndex = -1 ) {
-    return three::make_shared<Face>(a, b, c, n1, n2, n3, color, materialIndex);
-  }
-
   Face( int a, int b, int c, const Vector3& normal = Vector3(), const Color& color = Color(), int materialIndex = -1 )
-    : a( a ), b( b ), c( c ), normal( normal ), color( color ), materialIndex( materialIndex ), mType( enums::Face3 ), mSize( 3 ) { }
+    : a( a ), b( b ), c( c ), normal( normal ), color( color ), materialIndex( materialIndex ) { }
 
   Face( int a, int b, int c, const Vector3& n1, const Vector3& n2, const Vector3& n3, const Color& color = Color(), int materialIndex = -1 )
-    : a( a ), b( b ), c( c ), color( color ), materialIndex( materialIndex ), mType( enums::Face3 ), mSize( 3 ) {
+    : a( a ), b( b ), c( c ), color( color ), materialIndex( materialIndex ) {
     vertexNormals[0] = n1;
     vertexNormals[1] = n2;
     vertexNormals[2] = n3;
-  }
-  
-  THREE_OBSOLETE Face( int a, int b, int c, int d, const Vector3& normal = Vector3(), const Color& color = Color(), int materialIndex = -1 )
-    : a( a ), b( b ), c( c ), d( d ), normal( normal ), color( color ), materialIndex( materialIndex ), mType( enums::Face4 ), mSize( 4 ) { }
-
-  THREE_OBSOLETE Face( int a, int b, int c, int d, const Vector3& n1, const Vector3& n2, const Vector3& n3, const Vector3& n4, const Color& color = Color(), int materialIndex = -1 )
-    : a( a ), b( b ), c( c ), d( d ), color( color ), materialIndex( materialIndex ), mType( enums::Face4 ), mSize( 3 ) {
-    vertexNormals[0] = n1;
-    vertexNormals[1] = n2;
-    vertexNormals[2] = n3;
-    vertexNormals[3] = n4;
   }
 
   union {
     struct {
-      int a, b, c, d;
+      int a, b, c;
     };
-    int abcd[4];
+    int abcd[3];
   };
 
   Vector3 normal;
-  std::array<Vector3, 4> vertexNormals;
+  std::array<Vector3, 3> vertexNormals;
 
   Color color;
-  std::array<Color, 4> vertexColors;
+  std::array<Color, 3> vertexColors;
 
-  std::array<Vector4, 4> vertexTangents;
+  std::array<Vector4, 3> vertexTangents;
 
   int materialIndex;
 
   Vector3 centroid;
 
   enums::FaceType type() const {
-    return mType;
+    return enums::Face3;
   }
 
   int size() const {
-    return mSize;
+    return 3;
   }
 
   THREE_REVIEW("EA: Does this do a deep copy?")
@@ -83,9 +58,6 @@ public:
   }
 
 private:
-
-  enums::FaceType mType;
-  int mSize;
 
   Face() {}
 

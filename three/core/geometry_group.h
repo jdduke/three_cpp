@@ -28,7 +28,6 @@ public:
   std::vector<std::vector<float>>   __morphTargetsArrays;
 
   std::vector<int>  faces3;
-  std::vector<int>  faces4;
 
   std::vector<int>  offsets;
 

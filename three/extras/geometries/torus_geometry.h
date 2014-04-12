@@ -3,7 +3,6 @@
 
 #include <three/core/geometry.h>
 #include <three/core/face3.h>
-#include <three/core/face4.h>
 
 #include <three/math/math.h>
 
@@ -79,21 +78,20 @@ protected:
         const auto c = ( segmentsT + 1 ) * ( j - 1 ) + i;
         const auto d = ( segmentsT + 1 ) * j + i;
 
-        Face4 face( a, b, c, d, tmpNormals[ a ], tmpNormals[ b ], tmpNormals[ c ], tmpNormals[ d ] );
-        face.normal.add( tmpNormals[ a ] );
-        face.normal.add( tmpNormals[ b ] );
-        face.normal.add( tmpNormals[ c ] );
-        face.normal.add( tmpNormals[ d ] );
-        face.normal.normalize();
-
+        Face face( a, b, d, tmpNormals[ a ], tmpNormals[ b ], tmpNormals[ d ] );
         faces.push_back( face );
+        faceVertexUvs[ 0 ].push_back( toArray( tmpUvs[ a ], tmpUvs[ b ], tmpUvs[ d ] ) );
 
-        faceVertexUvs[ 0 ].push_back( toArray( tmpUvs[ a ], tmpUvs[ b ], tmpUvs[ c ], tmpUvs[ d ] ) );
+        face = Face( b, c, d, tmpNormals[ b ], tmpNormals[ c ], tmpNormals[ d ] );
+        faces.push_back( face );
+        faceVertexUvs[ 0 ].push_back( toArray( tmpUvs[ b ], tmpUvs[ c ], tmpUvs[ d ] ) );
+
       }
 
     }
 
     computeCentroids();
+    computeFaceNormals();
 
   }
 

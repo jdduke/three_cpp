@@ -54,7 +54,7 @@ public:
   Vector3 up;
 
   Vector3 position;
-  
+
   Vector3 scale;
 
   float renderDepth;
@@ -74,7 +74,7 @@ public:
 
   bool frustumCulled;
 
-  // TODO 
+  // TODO
   //this.userdata = {};
 
   inline Euler& rotation() {
@@ -130,7 +130,7 @@ public:
   Object3D& rotateZ( float angle );
 
   Object3D& translateOnAxis( const Vector3& axis, float distance );
-  
+
   Object3D& translateX( float distance );
 
   Object3D& translateY( float distance );

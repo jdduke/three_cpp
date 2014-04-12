@@ -192,7 +192,6 @@ enum LineEndType {
 
 enum FaceType {
   Face3 = 0,
-  Face4
 };
 
 enum LightType {

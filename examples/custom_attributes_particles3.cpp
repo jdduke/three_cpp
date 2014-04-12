@@ -100,7 +100,7 @@ void custom_attributes_particles3( GLRenderer::Ptr renderer ) {
   auto addGeo = [&]( const Geometry::Ptr& geo, float x, float y, float z, float ry ) {
     auto m = Mesh::create( geo, dummyMaterial );
     m->position.set( x, y, z );
-    m->rotation.y = ry;
+    m->rotation().y( ry );
 
     GeometryUtils::merge( *geometry, *m );
   };
@@ -145,14 +145,14 @@ void custom_attributes_particles3( GLRenderer::Ptr renderer ) {
 
     if ( v < vc1 ) {
       valuesSize[ v ] = 10;
-      valuesColor[ v ].setHSV( 0.5f  + 0.2f * ( (float)v / vc1 ),
-                               0.99f,
-                               1.f );
+      valuesColor[ v ].setHSL( 0.5f  + 0.2f * ( (float)v / vc1 ),
+                               1.f,
+                               0.5f );
     } else {
       valuesSize[ v ] = 55;
-      valuesColor[ v ].setHSV( 0.1f,
-                               0.99f,
-                               1.f );
+      valuesColor[ v ].setHSL( 0.1f,
+                               1.f,
+                               0.5f );
     }
 
   }
@@ -197,7 +197,7 @@ void custom_attributes_particles3( GLRenderer::Ptr renderer ) {
   anim::gameLoop( [&]( float dt ) -> bool {
 
     time += dt;
-    object->rotation.y = object->rotation.z = time * .3f;
+    object->rotation().set( 0, 0.02f * time, 0.02f * time );
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

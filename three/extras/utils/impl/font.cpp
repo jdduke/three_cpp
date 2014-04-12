@@ -9,6 +9,7 @@
 #include <three/math/vector4.h>
 #include <three/math/matrix4.h>
 #include <three/core/face.h>
+#include <three/utils/conversion.h>
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include <three/extras/utils/impl/stb_truetype.h>
@@ -73,8 +74,8 @@ Font::Ptr Font::create( const std::string& ttf,
 
 void Font::generate( const std::string& text,
                      std::vector<Vertex>& vertices,
-                     std::vector<Face::Ptr>& faces,
-                     std::vector<std::array<Vector2,4>>& faceUvs ) {
+                     std::vector<Face>& faces,
+                     std::vector<std::array<Vector2, 3>>& faceUvs ) {
 
   Vector3 normal( 0, 0, 1 );
 
@@ -92,7 +93,7 @@ void Font::generate( const std::string& text,
         c <= ( impl->firstCharacter + impl->countCharacter ) ) {
 
       std::array<Vector3, 4> vert;
-      std::array<Vector2,4> uv;
+      std::array<Vector2, 4> uv;
 
 #if 1
 
@@ -207,14 +208,21 @@ void Font::generate( const std::string& text,
 
       const auto offset = (int)vertices.size();
 
-      vertices.insert( vertices.end(), vert.data(), vert.data() + 4 );
+      vertices.insert( vertices.end(), vert.data(), vert.data() + vert.size() );
 
-      auto face = Face::create(offset, offset + 1, offset + 2, offset + 3 );
-      face->normal.copy( normal );
-      face->vertexNormals.fill( normal );
+      auto face = Face( offset, offset + 1, offset + 3 );
+      face.normal.copy( normal );
+      face.vertexNormals.fill( normal );
       faces.push_back( face );
 
-      faceUvs.push_back( std::move( uv ) );
+      faceUvs.push_back( toArray( uv[0], uv[1], uv[3] ) );
+
+      face = Face( offset + 1, offset + 2, offset + 3 );
+      face.normal.copy( normal );
+      face.vertexNormals.fill( normal );
+      faces.push_back( face );
+
+      faceUvs.push_back( toArray( uv[1], uv[2], uv[3] ) );
 
     }
   }

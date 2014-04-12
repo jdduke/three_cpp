@@ -70,12 +70,13 @@ bool Frustum::intersectsObject( const Object3D& object ) {
 
   const auto& geometry = object.geometry;
 
-  // @todo check behavior, currently never null
-  //if ( ! geometry->boundingSphere) {
-  //  geometry->computeBoundingSphere();
-  //}
+  if ( !geometry->boundingSphere ) {
 
-  _sphere.copy( *geometry->boundingSphere.get() );
+    geometry->computeBoundingSphere();
+
+  }
+
+  _sphere.copy( *geometry->boundingSphere );
   _sphere.applyMatrix4( object.matrixWorld );
 
   return intersectsSphere( _sphere );

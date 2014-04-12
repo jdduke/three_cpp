@@ -14,12 +14,6 @@ public:
 
   THREE_TYPE(Box3)
 
-  typedef std::shared_ptr<Box3> Ptr;
-
-  static Ptr create() {
-    return three::make_shared<Box3>();
-  }
-
   Box3()
     : min( Vector3( Math::INF(), Math::INF(), Math::INF() ) ), max( -Math::INF(), -Math::INF(), -Math::INF() ) {}
 
@@ -107,32 +101,12 @@ public:
 
   }
 
-  inline Box3& setFromPoints(const std::vector<Vector3>& points ) {
+  template <typename C>
+  Box3& setFromPoints(const C& points ) {
 
-    if ( points.size() == 0 ) {
+    auto it = points.begin();
 
-      makeEmpty();
-
-      return *this;
-
-    }
-
-    min.copy( *points.begin() );
-    max.copy( *points.begin() );
-
-    for ( auto it = ++points.begin(); it != points.end(); it++ ) {
-
-      addPoint(*it);
-
-    }
-
-    return *this;
-
-  }
-
-  inline Box3& setFromPoints(const std::vector<Vector4>& points ) {
-
-    if ( points.size() == 0 ) {
+    if ( it == points.end() ) {
 
       makeEmpty();
 
@@ -140,10 +114,10 @@ public:
 
     }
 
-    min.copy( *points.begin() );
-    max.copy( *points.begin() );
+    min.copy( *it );
+    max.copy( *it );
 
-    for ( auto it = ++points.begin(); it != points.end(); it++ ) {
+    for ( ++it; it != points.end(); ++it ) {
 
       addPoint(*it);
 

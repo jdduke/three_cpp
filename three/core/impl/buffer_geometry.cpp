@@ -29,77 +29,82 @@ void BufferGeometry::applyMatrix( Matrix4& matrix ) {
 
 void BufferGeometry::computeBoundingBox() {
 
-  if ( boundingBox == nullptr ) {
+  if ( !boundingBox ) {
 
-      boundingBox = Box3::create();
+      boundingBox = Box3();
 
   }
 
-    const auto& p = attributes.get( AttributeKey::position() );
-    
-    if ( p ) {
-      const auto& positions = p->array;
-      auto& bb = *boundingBox.get();
-        
-      if( positions.size() >= 3 ) {
-        bb.min.x = bb.max.x = positions[ 0 ];
-        bb.min.y = bb.max.y = positions[ 1 ];
-        bb.min.z = bb.max.z = positions[ 2 ];
+  const auto& p = attributes.get( AttributeKey::position() );
+
+  if ( p ) {
+    const auto& positions = p->array;
+    auto& bb = *boundingBox;
+
+    if( positions.size() >= 3 ) {
+      bb.min.x = bb.max.x = positions[ 0 ];
+      bb.min.y = bb.max.y = positions[ 1 ];
+      bb.min.z = bb.max.z = positions[ 2 ];
+    }
+
+    for ( size_t i = 3, il = positions.size(); i < il; i += 3 ) {
+
+      float x = positions[ i ];
+      float y = positions[ i + 1 ];
+      float z = positions[ i + 2 ];
+
+      // bounding box
+
+      if ( x < bb.min.x ) {
+
+        bb.min.x = x;
+
+      } else if ( x > bb.max.x ) {
+
+        bb.max.x = x;
+
       }
 
-      for ( size_t i = 3, il = positions.size(); i < il; i += 3 ) {
+      if ( y < bb.min.y ) {
 
-        float x = positions[ i ];
-        float y = positions[ i + 1 ];
-        float z = positions[ i + 2 ];
+        bb.min.y = y;
 
-        // bounding box
+      } else if ( y > bb.max.y ) {
 
-        if ( x < bb.min.x ) {
+        bb.max.y = y;
 
-          bb.min.x = x;
+      }
 
-        } else if ( x > bb.max.x ) {
+      if ( z < bb.min.z ) {
 
-          bb.max.x = x;
+        bb.min.z = z;
 
-        }
+      } else if ( z > bb.max.z ) {
 
-        if ( y < bb.min.y ) {
-
-          bb.min.y = y;
-
-        } else if ( y > bb.max.y ) {
-
-          bb.max.y = y;
-
-        }
-
-        if ( z < bb.min.z ) {
-
-          bb.min.z = z;
-
-        } else if ( z > bb.max.z ) {
-
-          bb.max.z = z;
-
-        }
+        bb.max.z = z;
 
       }
 
     }
 
-    if ( p == nullptr || p->array.size() == 0 ) {
+  }
 
-      boundingBox->min.set( 0, 0, 0 );
-      boundingBox->max.set( 0, 0, 0 );
+  if ( p == nullptr || p->array.size() == 0 ) {
 
-    }
+    boundingBox->min.set( 0, 0, 0 );
+    boundingBox->max.set( 0, 0, 0 );
 
+  }
 
 }
 
 void BufferGeometry::computeBoundingSphere() {
+
+  if ( !boundingSphere ) {
+
+      boundingSphere = Sphere();
+
+  }
 
   if ( auto positionsP = attributes.get( AttributeKey::position() ) ) {
 
@@ -404,7 +409,6 @@ BufferGeometry::BufferGeometry()
   : Geometry() {
   dynamic = false;
   hasTangents = false;
-  boundingBox = Box3::create();
 }
 
 } // namespace three

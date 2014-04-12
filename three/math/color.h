@@ -25,7 +25,7 @@ public:
 };
 
 class Color {
-  
+
 public:
 
   union {

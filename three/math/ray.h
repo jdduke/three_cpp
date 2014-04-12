@@ -4,6 +4,7 @@
 #include <three/common.h>
 #include <three/math/math.h>
 #include <three/objects/mesh.h>
+#include <three/utils/optional.h>
 
 namespace three {
 
@@ -32,7 +33,7 @@ public:
 
   Vector3& at( float t, Vector3& target ) const;
 
-  Vector3::Ptr at( float t, Vector3::Ptr target ) const;
+  Vector3 at( float t, optional<Vector3>& target ) const;
 
   Ray& recast( float t );
 
@@ -42,7 +43,7 @@ public:
 
   float distanceToPoint( const Vector3& point ) const;
 
-  float distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3::Ptr optionalPointOnRay = nullptr, Vector3::Ptr optionalPointOnSegment = nullptr );
+  float distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3* optionalPointOnRay = nullptr, Vector3* optionalPointOnSegment = nullptr );
 
   bool isIntersectionSphere( const Sphere& sphere ) const;
 
@@ -52,15 +53,15 @@ public:
 
   Vector3 intersectPlane( const Plane& plane );
 
-  Vector3::Ptr intersectPlane( const Plane& plane, Vector3& target );
+  optional<Vector3> intersectPlane( const Plane& plane, Vector3& target );
 
   bool isIntersectionBox( const Box3& box );
 
-  Vector3::Ptr intersectBox( const Box3& box );
+  optional<Vector3> intersectBox( const Box3& box );
 
-  Vector3::Ptr intersectBox( const Box3& box, Vector3& target );
+  optional<Vector3> intersectBox( const Box3& box, Vector3& target );
 
-  Vector3::Ptr intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, Vector3::Ptr optionalTarget = nullptr );
+  optional<Vector3> intersectTriangle( const Vector3& a, const Vector3& b, const Vector3& c, bool backfaceCulling, optional<Vector3> optionalTarget = nullptr );
 
   Ray& applyMatrix4( const Matrix4& matrix4 );
 

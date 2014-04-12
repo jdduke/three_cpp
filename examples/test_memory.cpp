@@ -66,7 +66,7 @@ void test_memory( GLRenderer::Ptr renderer ) {
                                               Math::random() * 32 );
 
       auto texture = Texture::create( TextureDesc( createImage(), enums::RGBFormat ) );
-      texture->needsUpdate = true;
+      texture->needsUpdate( true );
 
       auto material = //MeshPhongMaterial::create(
                       //MeshLambertMaterial::create(

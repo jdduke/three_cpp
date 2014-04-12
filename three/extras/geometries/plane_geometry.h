@@ -2,7 +2,7 @@
 #define THREE_PLANE_GEOMETRY_H
 
 #include <three/core/geometry.h>
-#include <three/core/face4.h>
+#include <three/core/face3.h>
 
 namespace three {
 
@@ -67,25 +67,28 @@ protected:
         const auto c = ( ix + 1 ) + gridX1 * ( iz + 1 );
         const auto d = ( ix + 1 ) + gridX1 * iz;
 
-        Face4 face( a, b, c, d );
+        const Vector2 uva( (float)ix / gridX, 1.f - iz / gridZ );
+        const Vector2 uvb( (float)ix / gridX, 1.f - ( iz + 1 ) / gridZ );
+        const Vector2 uvc( ( (float)ix + 1 ) / gridX, 1.f - ( iz + 1 ) / gridZ );
+        const Vector2 uvd( ( (float)ix + 1 ) / gridX, 1.f - iz / gridZ );
+
+        Face3 face( a, b, d );
         face.normal.copy( normal );
         face.vertexNormals.fill( normal );
 
         faces.push_back( face );
+        faceVertexUvs[ 0 ].push_back( toArray( uva, uvb, uvd ) );
 
-        std::array<UV, 4> uvs = {
-         UV( (float)ix / gridX, 1.f - iz / gridZ ),
-         UV( (float)ix / gridX, 1.f - ( iz + 1 ) / gridZ ),
-         UV( ( (float)ix + 1 ) / gridX, 1.f - ( iz + 1 ) / gridZ ),
-         UV( ( (float)ix + 1 ) / gridX, 1.f - iz / gridZ )
-        };
-        faceVertexUvs[ 0 ].push_back( std::move( uvs ) );
+        face = Face3( b, c, d );
+        face.normal.copy( normal );
+        face.vertexNormals.fill( normal );
+
+        faces.push_back( face );
+        faceVertexUvs[ 0 ].push_back( toArray( uvb, uvc, uvd ) );
 
       }
 
     }
-
-    computeCentroids();
 
   }
 

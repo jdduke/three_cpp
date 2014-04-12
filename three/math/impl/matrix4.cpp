@@ -10,6 +10,8 @@
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
 
+#include <algorithm>
+
 namespace three {
 
 Matrix4::Matrix4() {
@@ -73,8 +75,7 @@ Matrix4& Matrix4::identity() {
 }
 
 Matrix4& Matrix4::copy ( const Matrix4& m ) {
-  std::copy(std::begin(m.elements), std::end(m.elements), std::begin(this->elements));
-//    elements.set( m.elements );
+  std::copy_n(m.elements, 16, this->elements);
   return *this;
 }
 
@@ -768,8 +769,7 @@ Matrix4& Matrix4::decompose( Vector3& position, Quaternion& quaternion, Vector3&
 
   // @todo priv members
   auto vector = Vector3();
-  auto matrix = Matrix4();
-
+  
   const auto& te = elements;
 
   auto sx = vector.set( te[0], te[1], te[2] ).length();
@@ -788,7 +788,7 @@ Matrix4& Matrix4::decompose( Vector3& position, Quaternion& quaternion, Vector3&
 
   // scale the rotation part
 
-  std::copy(std::begin(elements), std::end(elements), std::begin(matrix.elements));
+  Matrix4 matrix( *this );
 
   auto invSX = 1 / sx;
   auto invSY = 1 / sy;

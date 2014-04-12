@@ -26,7 +26,7 @@ Mesh::Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material )
 
   if ( geometry ) {
 
-    if ( geometry->boundingSphere->radius == 0 ) {
+    if ( !geometry->boundingSphere ) {
       geometry->computeBoundingSphere();
     }
 

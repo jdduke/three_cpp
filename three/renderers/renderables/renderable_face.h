@@ -13,9 +13,8 @@ class RenderableFace : public Renderable {
 
 public:
 
-  RenderableFace( enums::FaceType type = enums::Face3 )
-    : Renderable( 0 ), vertexNormalsLength( 0 ), color( nullptr ), material( nullptr ),
-      mType( type ), mSize( type == enums::Face3 ? 3 : 4 ) { }
+  RenderableFace( )
+    : Renderable( 0 ), vertexNormalsLength( 0 ), material( nullptr ) { }
 
   RenderableVertex v1, v2, v3;
 
@@ -24,28 +23,15 @@ public:
   Vector3 normalModel;
   Vector3 normalModelView;
 
-  float vertexNormalsLength;
+  int vertexNormalsLength;
   Vector3 vertexNormalsModel[3];
   Vector3 vertexNormalsModelView[3];
 
-  Color* color;
+  optional<Color> color;
   Material* material;
 
-  std::array<std::vector<Vector2>, 4> uvs;
+  std::array<std::vector<Vector2>, 3> uvs;
 
-  enums::FaceType type() const {
-    return mType;
-  }
-
-  int size() {
-    return mSize;
-  }
-
-private:
-
-  enums::FaceType mType;
-  int mSize;
-  
 };
 
 } // namespace three

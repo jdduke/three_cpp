@@ -2,7 +2,7 @@
 
 #include <three/cameras/perspective_camera.h>
 #include <three/core/geometry.h>
-#include <three/materials/particle_basic_material.h>
+#include <three/materials/particle_system_material.h>
 #include <three/objects/particle_system.h>
 #include <three/renderers/renderer_parameters.h>
 #include <three/renderers/gl_renderer.h>
@@ -33,29 +33,29 @@ void particles_random( const GLRenderer::Ptr& renderer ) {
   auto addParticleSystem = [&]( const Vector3& color, float size ) {
 
     //materials[i] = new THREE.ParticleBasicMaterial( { color: color, size: size } );
-    auto material = ParticleBasicMaterial::create(
+    auto material = ParticleSystemMaterial::create(
       Material::Parameters().add( "size", size * .5f )
     );
 
     materials.push_back( material );
-    material->color.setHSV( color[0], color[1], color[2] );
+    material->color.setHSL( color[0], color[1], color[2] );
 
     auto particles = ParticleSystem::create( geometry, material );
 
-    particles->rotation.x = Math::random() * 6;
-    particles->rotation.y = Math::random() * 6;
-    particles->rotation.z = Math::random() * 6;
+    particles->rotation().set( Math::random() * 6,
+                               Math::random() * 6,
+                               Math::random() * 6);
 
     scene->add( particles );
   };
 
   typedef std::pair<Vector3, float> ColorSize;
   std::array<ColorSize, 5> params = {
-    ColorSize( Vector3(  1.f, 1.f, 1.f), 5.f ),
-    ColorSize( Vector3(0.95f, 1.f, 1.f), 4.f ),
-    ColorSize( Vector3(0.90f, 1.f, 1.f), 3.f ),
-    ColorSize( Vector3(0.85f, 1.f, 1.f), 2.f ),
-    ColorSize( Vector3(0.80f, 1.f, 1.f), 1.f )
+    ColorSize( Vector3(  1.f, 1.f, 0.5f), 5.f ),
+    ColorSize( Vector3(0.95f, 1.f, 0.5f), 4.f ),
+    ColorSize( Vector3(0.90f, 1.f, 0.5f), 3.f ),
+    ColorSize( Vector3(0.85f, 1.f, 0.5f), 2.f ),
+    ColorSize( Vector3(0.80f, 1.f, 0.5f), 1.f )
   };
 
   for ( const auto& param : params ) {
@@ -109,14 +109,14 @@ void particles_random( const GLRenderer::Ptr& renderer ) {
     for ( size_t i = 0; i < scene->children.size(); ++i ) {
       auto& object = *scene->children[ i ];
       if ( object.type() == enums::ParticleSystem ) {
-        object.rotation.y = time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) );
+        object.rotation().y( time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) ) );
       }
     }
 
     for ( size_t i = 0; i < materials.size(); ++i ) {
       auto& color = params[ i ].first;
       const auto h = Math::fmod( 360.f * ( color[0] + time ), 360.f ) / 360.f;
-      materials[ i ]->color.setHSV( h, color[ 1 ], color[ 2 ] );
+      materials[ i ]->color.setHSL( h, color[ 1 ], color[ 2 ] );
     }
 
     renderer->render( *scene, *camera );

@@ -100,20 +100,20 @@ protected:
 
         if ( Math::abs( vertices[ v1 ].y ) == radius ) {
 
-          faces.push_back( Face::create( v1, v3, v4, n1, n3, n4 ) );
+          faces.push_back( Face( v1, v3, v4, n1, n3, n4 ) );
           faceVertexUvs[ 0 ].push_back( toArray( uv1, uv3, uv4 ) );
 
         } else if ( Math::abs( vertices[ v3 ].y ) ==  radius ) {
 
-          faces.push_back( Face::create( v1, v2, v3, n1, n2, n3 ) );
+          faces.push_back( Face( v1, v2, v3, n1, n2, n3 ) );
           faceVertexUvs[ 0 ].push_back( toArray( uv1, uv2, uv3 ) );
 
         } else {
 
-          faces.push_back( Face::create( v1, v2, v4,  n1, n2, n4  ) );
+          faces.push_back( Face( v1, v2, v4,  n1, n2, n4  ) );
           faceVertexUvs[ 0 ].push_back( toArray( uv1, uv2, uv4 ) );
 
-          faces.push_back( Face::create( v2, v3, v4, n2.clone(), n3, n4.clone() ) );
+          faces.push_back( Face( v2, v3, v4, n2.clone(), n3, n4.clone() ) );
           faceVertexUvs[ 0 ].push_back( toArray( uv2.clone(), uv3, uv4.clone() ) );
 
         }
@@ -125,7 +125,7 @@ protected:
     computeCentroids();
     computeFaceNormals();
 
-    boundingSphere->radius = radius;
+    boundingSphere = Sphere( Vector3(), radius);
 
   }
 

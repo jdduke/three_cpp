@@ -10,7 +10,7 @@ namespace three {
   Bone::Bone( const SkinnedMesh::Ptr& belongsToSkin, float scale, int parentIn )
     : skin ( belongsToSkin ), skinMatrix( Matrix4() ), scl( scale ), parent( parentIn ) {}
 
-  void Bone::update( const Matrix4::Ptr& parentSkinMatrix, bool forceUpdate) {
+  void Bone::update( const Matrix4* parentSkinMatrix, bool forceUpdate) {
   	
   	// // update local
 
