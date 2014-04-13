@@ -789,24 +789,28 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geometryGroup ) {
 
   auto material = object.material.get();
-  auto geometry = object.geometry.get();
 
-  if(!material) {
-    return nullptr;
+  if( material ) {
+
+    if ( geometryGroup && material->type() == enums::MeshFaceMaterial) {
+
+      auto geometry = object.geometry.get();
+
+      if( geometry && geometryGroup->materialIndex.valid() ) {
+
+        auto meshFaceMaterial = static_cast<MeshFaceMaterial*>(material);
+
+        if( meshFaceMaterial ) {
+          return meshFaceMaterial->materials[ geometryGroup->materialIndex.value ].get();
+        }
+        
+      }
+
+    } 
+
   }
 
-  if ( material->type() == enums::MeshFaceMaterial ) {
-    THREE_REVIEW("EA: Kinda rushed this one. A more succinct solution pls")
-    //auto meshFaceMaterial = static_cast<MeshFaceMaterial*>(std::move(material));
-    return material;
-  } else if ( geometry && geometryGroup && geometryGroup->materialIndex.valid() ) {
-    // TODO "MEAT EA: huh?"
-
-    //return geometry->materials[ geometryGroup->materialIndex.value ].get();
-  }
-
-  return nullptr;
-
+  return material;
 }
 
 bool GLRenderer::materialNeedsSmoothNormals( const Material* material ) {
