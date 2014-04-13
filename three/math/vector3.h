@@ -498,6 +498,8 @@ inline Vector3 cross( const Vector3& a, const Vector3& b ) {
   return Vector3().crossVectors( a, b );
 }
 
+static_assert( sizeof( Vector3 ) == sizeof( float ) * 3, "Invalid Vector3 storage size" );
+
 } // namespace three
 
 #endif // THREE_VECTOR3_H
