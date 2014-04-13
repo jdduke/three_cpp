@@ -7,6 +7,7 @@
 
 #include <three/objects/particle.h>
 #include <three/objects/line.h>
+#include <three/objects/mesh.h>
 #include <three/lights/light.h>
 #include <three/lights/directional_light.h>
 #include <three/utils/template.h>
@@ -26,7 +27,7 @@ void Scene::visit( Visitor& v )            {
   v( *this );
 }
 
-void Scene::visit(ConstRawPointerVisitor& v) const {
+void Scene::visit( ConstRawPointerVisitor& v ) const {
   v( &*this );
 }
 
