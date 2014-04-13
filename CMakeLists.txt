@@ -12,7 +12,6 @@ dissect_version()
 set(THREE_TREAT_WARNINGS_AS_ERRORS FALSE CACHE BOOL "Treat warnings as errors")
 set(THREE_BUILD_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
 #set(THREE_BUILD_TESTS        FALSE CACHE BOOL "Build three.cpp unit tests")
-set(THREE_HEADER_ONLY        FALSE CACHE BOOL "Whether to use three.cpp as a header-only library")
 set(THREE_LIBRARY_STATIC     TRUE CACHE BOOL "If building three.cpp as a library, build statically")
 
 IF(NOT CMAKE_BUILD_TYPE)
@@ -158,7 +157,40 @@ set(EXTERNALS_DIR ${CMAKE_HOME_DIRECTORY}/externals)
 
 include_directories(.)
 
-if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES)
+set(THREE_GLEW ON CACHE BOOL "Use glew library")
+if (THREE_GLEW)
+  if (NOT WIN32)
+    find_package(GLEW REQUIRED)
+  else()
+    # Locating GLEW on Windows isn't worth it... just build it
+    add_subdirectory(externals/glew-1.9.0)
+    if (THREE_STATIC_GLEW)
+      set(GLEW_LIBRARY glews CACHE INTERNAL "" FORCE)
+    else()
+      set(GLEW_LIBRARY glew CACHE INTERNAL "" FORCE)
+    endif()
+  endif()
+  if (GLEW_LIBRARY)
+    set(THREE_STATIC_GLEW OFF CACHE BOOL "Use static glew library")
+    include_directories(${GLEW_INCLUDE_DIR})
+
+    # TODO: Remove explicit glew dependencies
+    SET(THREE_EXAMPLE_DEFS "${THREE_EXAMPLE_DEFS} THREE_GLEW")
+    if (THREE_STATIC_GLEW)
+      SET(THREE_EXAMPLE_DEFS "${THREE_EXAMPLE_DEFS} GLEW_STATIC")
+    endif()
+  else()
+    message (STATUS "Failed to find GLEW library.\n")
+    set(THREE_GLEW FALSE)
+  endif()
+endif()
+
+if(NOT THREE_GLEW)
+  set(GLEW_LIBRARY "")
+  add_definitions(-DTHREE_NO_GLEW)
+endif()
+
+if (THREE_BUILD_EXAMPLES)
 
   # Locate necessary headers/libraries
 
@@ -178,29 +210,12 @@ if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES)
   find_package(OpenGL REQUIRED)
   find_package(RapidJSON REQUIRED)
 
-  if (NOT WIN32)
-    find_package(GLEW REQUIRED)
-  else()
-    # Locating GLEW on Windows isn't worth it... just build it
-    add_subdirectory(externals/glew-1.9.0)
-    if (THREE_STATIC_GLEW)
-      set(GLEW_LIBRARY glews CACHE INTERNAL "" FORCE)
-    else()
-      set(GLEW_LIBRARY glew CACHE INTERNAL "" FORCE)
-    endif()
-  endif()
+  set(THREE_DEP_LIBS ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
 
-  set(THREE_STATIC_GLEW OFF CACHE BOOL "Use static glew library")
-  set(THREE_DEP_LIBS ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
-  include_directories(${GLEW_INCLUDE_DIR})
   include_directories(${SDL_INCLUDE_DIR})
   include_directories(${RAPID_JSON_INCLUDE_DIR})
 
-  # TODO: Remove explicit sdl/glew dependencies
-  add_definitions(-DTHREE_SDL -DTHREE_GLEW)
-  if (THREE_STATIC_GLEW)
-    add_definitions(-DGLEW_STATIC)
-  endif()
+  add_definitions(-DTHREE_SDL)
 
   ## TODO: Remove hard-wired data directory path
   set(THREE_RELEASE_BUILD FALSE CACHE BOOL
@@ -218,7 +233,7 @@ endif()
 
 # Copy SDL runtime on Windows
 if (MSVC OR MINGW)
-  if ((NOT THREE_HEADER_ONLY) OR THREE_BUILD_EXAMPLES OR THREE_BUILD_TESTS)
+  if (THREE_BUILD_EXAMPLES OR THREE_BUILD_TESTS)
     get_filename_component(SDL_PATH ${SDLMAIN_LIBRARY} PATH)
     set(SDL_RUNTIME_LIBRARY "${SDL_PATH}/SDL.dll" CACHE INTERNAL "" FORCE)
     message (STATUS "Copying ${SDL_RUNTIME_LIBRARY} to ${THREE_BINARY_PATH} \n")
@@ -240,26 +255,18 @@ if (MSVC OR MINGW)
   endif()
 endif()
 
-if (NOT THREE_HEADER_ONLY)
-  add_definitions(-DTHREE_SEPARATE_COMPILATION)
-  if (NOT THREE_LIBRARY_STATIC)
-    add_definitions(-DTHREE_DYN_LINK)
-  endif()
-
-  # TODO Refactor, add groupings, etc
-  file(GLOB_RECURSE THREE_SOURCES three/*.cpp)
-  file(GLOB_RECURSE THREE_HEADERS three/*.h)
-
-  set(THREE_LIB_SOURCE_FILES ${THREE_SOURCES} ${THREE_HEADERS})
-
-  if(${CMAKE_GENERATOR} STREQUAL Xcode)
-    set(THREE_LIB_SOURCE_FILES ${THREE_LIB_SOURCE_FILES} externals/sdl-1.2.15/xcode/SDLMain.m)
-  endif()
-
-  set(THREE_LIB three)
-  three_add_library(${THREE_LIB} ${THREE_LIB_SOURCE_FILES})
-
+if (NOT THREE_LIBRARY_STATIC)
+  add_definitions(-DTHREE_DYN_LINK)
 endif()
+
+# TODO Refactor, add groupings, etc
+file(GLOB_RECURSE THREE_SOURCES three/*.cpp)
+file(GLOB_RECURSE THREE_HEADERS three/*.h)
+
+set(THREE_LIB_SOURCE_FILES ${THREE_SOURCES} ${THREE_HEADERS})
+
+set(THREE_LIB three)
+three_add_library(${THREE_LIB} ${THREE_LIB_SOURCE_FILES})
 
 if(THREE_BUILD_EXAMPLES)
   add_subdirectory(examples)

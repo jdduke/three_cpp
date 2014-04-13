@@ -137,21 +137,10 @@ void lines_sphere( GLRenderer::Ptr renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
   RendererParameters parameters;
   parameters.antialias = true;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  lines_sphere( renderer );
+  RunExample( lines_sphere, parameters );
 
   return 0;
 }

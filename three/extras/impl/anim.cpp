@@ -1,6 +1,3 @@
-#ifndef THREE_ANIM_CPP
-#define THREE_ANIM_CPP
-
 #include <three/extras/anim.h>
 
 #include <three/core/clock.h>
@@ -88,5 +85,3 @@ void gameLoop( Update update, Render render, float frameRate /*= 60*/ ) {
 
 } // namespace anim
 } // namespace three
-
-#endif // THREE_ANIM_CPP

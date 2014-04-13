@@ -183,20 +183,17 @@ void GLRenderer::initialize() {
 
 void GLRenderer::initGL() {
 
-  // TODO: Remove this
-#if defined(THREE_DYN_LINK) && defined(THREE_GLEW)
-  glewInit();
-#endif
-
-  // TODO: Force client to initialize opengl
-  if ( !_vsync )
-    glEnableVSync( false );
-
+  THREE_REVIEW("Force client to initialize opengl.")
   /*
   if ( glload::LoadFunctions() == glload::LS_LOAD_FAILED ) {
       console().error( "Error loading OpenGL functions" );
   }*/
 
+  if ( !_vsync )
+    glEnableVSync( false );
+
+  THREE_REVIEW("Have client indicate whether these are supported.")
+  /*
   _glExtensionTextureFloat = glewIsExtensionSupported( "ARB_texture_float" ) != 0 ? true : false;
   _glExtensionStandardDerivatives = glewIsExtensionSupported( "OES_standard_derivatives" ) != 0 ? true : false;
   _glExtensionTextureFilterAnisotropic = glewIsExtensionSupported( "EXT_texture_filter_anisotropic" ) != 0 ? true : false;
@@ -213,6 +210,10 @@ void GLRenderer::initGL() {
     console().log( "enums::GLRenderer: Anisotropic texture filtering not supported." );
   }
 
+  */
+  _glExtensionTextureFloat = false;
+  _glExtensionStandardDerivatives = false;
+  _glExtensionTextureFilterAnisotropic = false;
 }
 
 void GLRenderer::setDefaultGLState() {

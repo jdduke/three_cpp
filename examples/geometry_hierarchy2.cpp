@@ -123,21 +123,10 @@ void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
   RendererParameters parameters;
   parameters.vsync = false;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  geometry_hierarchy_2( renderer );
+  RunExample( geometry_hierarchy_2, parameters );
 
   return 0;
 }

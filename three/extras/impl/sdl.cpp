@@ -1,6 +1,3 @@
-#ifndef THREE_SDL_CPP
-#define THREE_SDL_CPP
-
 #include <three/extras/sdl.h>
 
 #include <three/console.h>
@@ -144,4 +141,3 @@ ScopedEventListener::~ScopedEventListener() {
 } // namespace sdl
 } // namespace three
 
-#endif // THREE_SDL_H

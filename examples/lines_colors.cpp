@@ -180,19 +180,7 @@ void lines_colors( GLRenderer::Ptr renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
-  RendererParameters parameters;
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  lines_colors( renderer );
+  RunExample( lines_colors );
 
   return 0;
 }

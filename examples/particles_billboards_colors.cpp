@@ -117,22 +117,11 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
   RendererParameters parameters;
   parameters.clearAlpha = 1;
   parameters.vsync = false;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  particles_billboards_colors( renderer );
+  RunExample( particles_billboards_colors, parameters );
 
   return 0;
 }

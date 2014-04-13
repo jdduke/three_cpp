@@ -218,23 +218,12 @@ void custom_attributes_particles3( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
   RendererParameters parameters;
   parameters.clearColor = Color( 0x000000 );
   parameters.clearAlpha = 1.f;
   parameters.vsync = false;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  custom_attributes_particles3( renderer );
+  RunExample( custom_attributes_particles3, parameters );
 
   return 0;
 }

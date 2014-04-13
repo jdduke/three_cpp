@@ -120,3 +120,10 @@ macro(THREE_ADD_LINKFLAGS _name _flags)
   endif(NOT _current_flags)
 endmacro(THREE_ADD_LINKFLAGS)
 
+macro(remove_cxx_flag flag)
+  string(REPLACE "${flag}" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endmacro()
+
+macro(add_cxx_flag flag)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+endmacro()

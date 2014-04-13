@@ -178,19 +178,7 @@ void lines_cubes( GLRenderer::Ptr renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
-  RendererParameters parameters;
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  lines_cubes( renderer );
+  RunExample( lines_cubes );
 
   return 0;
 }

@@ -93,20 +93,7 @@ void test_memory( GLRenderer::Ptr renderer ) {
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
-  RendererParameters parameters;
-
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  test_memory( renderer );
+  RunExample( test_memory );
 
   return 0;
 }

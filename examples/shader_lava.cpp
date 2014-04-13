@@ -67,7 +67,7 @@ void main( void ) {\
 
 using namespace three;
 
-void shader_fireball( GLRenderer::Ptr renderer ) {
+void shader_lava( GLRenderer::Ptr renderer ) {
 
   auto camera = PerspectiveCamera::create(
     40, (float)renderer->width() / renderer->height(), 1, 3000
@@ -139,19 +139,7 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
-  RendererParameters parameters;
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  shader_fireball( renderer );
+  RunExample( shader_lava );
 
   return 0;
 }

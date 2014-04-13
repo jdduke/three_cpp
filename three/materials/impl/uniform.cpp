@@ -3,6 +3,8 @@
 
 #include <three/constants.h>
 
+#include <three/console.h>
+
 #include <three/materials/uniform.h>
 
 #include <three/math/color.h>

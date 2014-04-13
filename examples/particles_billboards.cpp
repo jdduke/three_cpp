@@ -107,21 +107,10 @@ void particles_billboards( const GLRenderer::Ptr& renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
   RendererParameters parameters;
   parameters.clearAlpha = 1;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  particles_billboards( renderer );
+  RunExample( particles_billboards, parameters );
 
   return 0;
 }

@@ -1,8 +1,6 @@
-#ifndef THREE_STATS_CPP
-#define THREE_STATS_CPP
-
 #include <three/extras/stats.h>
 
+#include <three/console.h>
 #include <three/cameras/orthographic_camera.h>
 #include <three/materials/text_2d_material.h>
 #include <three/objects/mesh.h>
@@ -110,5 +108,3 @@ void Stats::update( float deltaTime, bool render ) {
 
 } // namespace stats
 } // namespace three
-
-#endif // THREE_STATS_H

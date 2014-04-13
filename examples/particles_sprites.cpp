@@ -142,21 +142,10 @@ void particles_sprites( const GLRenderer::Ptr& renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
   RendererParameters parameters;
   parameters.clearAlpha = 1;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  particles_sprites( renderer );
+  RunExample( particles_sprites, parameters );
 
   return 0;
 }
