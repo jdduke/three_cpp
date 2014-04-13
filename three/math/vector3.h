@@ -30,8 +30,6 @@ public:
   Vector3( float xIn, float yIn, float zIn )
     : x( xIn ), y( yIn ), z( zIn ) {}
 
-  virtual ~Vector3() {}
-
   explicit Vector3( float value )
     : x( value ), y( value ), z( value ) {}
 
@@ -44,10 +42,6 @@ public:
 
   const float operator[]( const int i ) const {
     return xyz[i];
-  }
-
-  virtual enums::Type type() const {
-    return enums::Vector3;
   }
 
   inline Vector3& set( float xIn, float yIn, float zIn ) {
@@ -481,6 +475,8 @@ public:
   }
 
 };
+    
+static_assert( sizeof( Vector3 ) == sizeof( float ) * 3, "Invalid Vector3 storage size" );
 
 inline Vector3 add( const Vector3& a, const Vector3& b ) {
   return Vector3().addVectors( a, b );
@@ -498,7 +494,7 @@ inline Vector3 cross( const Vector3& a, const Vector3& b ) {
   return Vector3().crossVectors( a, b );
 }
 
-static_assert( sizeof( Vector3 ) == sizeof( float ) * 3, "Invalid Vector3 storage size" );
+
 
 } // namespace three
 
