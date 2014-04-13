@@ -1,9 +1,9 @@
-#include <three/extras/anim.h>
+#include "examples/extras/anim.h"
 
 #include <three/core/clock.h>
 #include <three/utils/noncopyable.h>
 
-#include <three/extras/sdl.h>
+#include "examples/extras/sdl.h"
 
 #include <thread>
 

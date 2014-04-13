@@ -75,7 +75,7 @@ void glEnableVSync( bool enable );
 
 template < typename C >
 inline void glBindAndBuffer( GLenum target, unsigned buffer, const C& container, GLenum usage ) {
-  //glBindBuffer( target, buffer );
+  glBindBuffer( target, buffer );
   glBufferData( target, container.size() * sizeof( container[0] ), container.data(), usage );
 }
 

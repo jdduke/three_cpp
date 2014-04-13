@@ -5,8 +5,9 @@
 #include <three/lights/point_light.h>
 #include <three/objects/mesh.h>
 #include <three/extras/geometries/sphere_geometry.h>
-#include <three/extras/stats.h>
 #include <three/materials/mesh_lambert_material.h>
+
+#include "examples/extras/stats.h"
 
 using namespace three;
 

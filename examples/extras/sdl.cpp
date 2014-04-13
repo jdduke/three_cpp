@@ -1,4 +1,4 @@
-#include <three/extras/sdl.h>
+#include "examples/extras/sdl.h"
 
 #include <three/console.h>
 #include <three/renderers/renderer_parameters.h>

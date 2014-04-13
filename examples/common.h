@@ -4,10 +4,6 @@
 #include <three/config.h>
 #include <three/gl.h>
 
-#include <three/extras/anim.h>
-#include <three/extras/sdl.h>
-#include <three/extras/stats.h>
-
 #include <three/renderers/gl_renderer.h>
 #include <three/renderers/renderer_parameters.h>
 
@@ -17,6 +13,10 @@
 #if defined(THREE_GLEW)
 #include <three/extras/glew.h>
 #endif
+
+#include "examples/extras/anim.h"
+#include "examples/extras/sdl.h"
+#include "examples/extras/stats.h"
 
 namespace three {
 namespace {
