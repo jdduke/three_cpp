@@ -30,6 +30,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_COMPILER_IS_CLANGXX 1)
 endif ()
 
+set(THREE_CXX_FLAGS "")
+
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
   if (MINGW)
     set(THREE_BUILD_64_BIT FALSE CACHE BOOL "Enable 64-bit build")
@@ -62,14 +64,14 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
 
   if (CMAKE_COMPILER_IS_CLANGXX)
     message(status "std flags -stdlib=libc++ -std=c++11")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++11")
+    set(THREE_CXX_FLAGS "-stdlib=libc++ -std=c++11")
   elseif (MINGW)
     message(status "std flags -std=c++11")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(THREE_CXX_FLAGS "-std=c++11")
     add_definitions("-D_GLIBCXX_USE_NANOSLEEP")
   else()
     message(status "std flags -std=c++0x")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    set(THREE_CXX_FLAGS "-std=c++0x")
     add_definitions("-D_GLIBCXX_USE_NANOSLEEP")
   endif()
 
@@ -79,6 +81,8 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLAN
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${THREE_COMMON_FLAGS}")
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${THREE_COMMON_FLAGS}")
 endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREE_CXX_FLAGS}")
 
 #############
 # MSVC Config
@@ -188,6 +192,10 @@ endif()
 if(NOT THREE_GLEW)
   set(GLEW_LIBRARY "")
   add_definitions(-DTHREE_NO_GLEW)
+  set(CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH};${EXTERNALS_DIR}")
+  find_package(GLext REQUIRED)
+  include_directories(${GLEXT_INCLUDE_DIR})
+  add_definitions(-DGL_GLEXT_PROTOTYPES)
 endif()
 
 if (THREE_BUILD_EXAMPLES)
@@ -213,6 +221,7 @@ if (THREE_BUILD_EXAMPLES)
   set(THREE_DEP_LIBS ${OPENGL_LIBRARIES} ${SDL_LIBRARY})
 
   include_directories(${SDL_INCLUDE_DIR})
+  include_directories(${OPENGL_INCLUDE_DIR})
   include_directories(${RAPID_JSON_INCLUDE_DIR})
 
   add_definitions(-DTHREE_SDL)

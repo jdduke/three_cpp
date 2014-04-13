@@ -116,7 +116,7 @@ GLint glGetShaderParameter( GLuint program, GLenum pname ) {
 }
 
 void glEnableVSync( bool enable ) {
-#if defined (_WIN32)
+#if defined (_WIN32) && defined(THREE_GLEW)
   if (wglewIsSupported("WGL_EXT_swap_control")) {
     wglSwapIntervalEXT( enable ? 1 : 0 );
   }

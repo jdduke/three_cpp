@@ -31,13 +31,24 @@
 #else
 #  if defined(__APPLE__)
 #    include <OpenGL/gl.h>
+#    include <OpenGL/glext.h>
+#  elif defined(_MSC_VER) || defined(__MINGW32__)
+#    if !defined(NOMINMAX)
+#      define NOMINMAX
+#    endif
+#    include <windows.h>
+#    include <GL/gl.h>
+#    include <GL/glext.h>
+#    undef near
+#    undef far
 #  else
 #    include <GL/gl.h>
+#    include <GL/glext.h>
 #  endif
 #endif
 
 #ifndef NDEBUG
-#define GL_CALL(a) do { (a); glError(__FILE__, __LINE__) } while (0)
+#define GL_CALL(a) (a); glError(__FILE__, __LINE__)
 #else
 #define GL_CALL(a) (a)
 #endif
@@ -64,7 +75,7 @@ void glEnableVSync( bool enable );
 
 template < typename C >
 inline void glBindAndBuffer( GLenum target, unsigned buffer, const C& container, GLenum usage ) {
-  glBindBuffer( target, buffer );
+  //glBindBuffer( target, buffer );
   glBufferData( target, container.size() * sizeof( container[0] ), container.data(), usage );
 }
 
