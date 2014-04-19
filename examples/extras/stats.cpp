@@ -1,18 +1,19 @@
 #include "examples/extras/stats.h"
 
-#include <three/console.h>
-#include <three/cameras/orthographic_camera.h>
-#include <three/materials/text_2d_material.h>
-#include <three/objects/mesh.h>
-#include <three/renderers/gl_renderer.h>
-#include <three/utils/conversion.h>
-
-#include <three/extras/geometries/text_2d_geometry.h>
+#include "three/console.h"
+#include "three/cameras/orthographic_camera.h"
+#include "three/extras/geometries/text_2d_geometry.h"
+#include "three/materials/text_2d_material.h"
+#include "three/objects/mesh.h"
+#include "three/renderers/gl_renderer.h"
+#include "three/utils/conversion.h"
 
 #include <sstream>
 
-namespace three {
-namespace stats {
+using namespace three;
+using namespace three_examples;
+
+namespace three_examples {
 
 struct Stats::Impl : public NonCopyable {
 
@@ -96,7 +97,7 @@ void Stats::update( float deltaTime, bool render ) {
       renderer.render( *impl->scene, *impl->camera );
       renderer.autoClear = oldAutoClear;
 
-    } else if (s.framesSinceReport == 0) {
+    } else if ( s.framesSinceReport == 0 ) {
 
       console().log(ss.str().c_str());
 
@@ -106,5 +107,4 @@ void Stats::update( float deltaTime, bool render ) {
 
 }
 
-} // namespace stats
-} // namespace three
+} // namespace three_examples

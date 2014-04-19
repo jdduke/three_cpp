@@ -12,13 +12,14 @@
 #include <three/extras/geometries/cube_geometry.h>
 
 using namespace three;
+using namespace three_examples;
 
-void geometry_hierarchy( GLRenderer::Ptr renderer ) {
+void geometry_hierarchy( GLWindow& window, GLRenderer& renderer ) {
 
-  renderer->sortObjects = false;
+  renderer.sortObjects = false;
 
   auto camera = PerspectiveCamera::create(
-    60, ( float )renderer->width() / renderer->height(), 1, 10000
+    60, ( float )renderer.width() / renderer.height(), 1, 10000
   );
   camera->position.z = 1000;
 
@@ -53,42 +54,25 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true, renderStats = true;
-  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
-    switch (e.key.keysym.sym) {
-    case SDLK_q:
-    case SDLK_ESCAPE:
-      running = false; break;
-    default:
-      renderStats = !renderStats; break;
-    };
-  } );
-
-  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  } );
-
   auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener( SDL_MOUSEMOTION, [&]( const sdl::Event & event ) {
-    mouseX = 2.f * ( ( float )event.motion.x / renderer->width()  - 0.5f );
-    mouseY = 2.f * ( ( float )event.motion.y / renderer->height() - 0.5f );
+  window.addEventListener( SDL_MOUSEMOTION, [&]( const SDL_Event & event ) {
+    mouseX = 2.f * ( ( float )event.motion.x / renderer.width()  - 0.5f );
+    mouseY = 2.f * ( ( float )event.motion.y / renderer.height() - 0.5f );
   } );
 
-  sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
-    camera->aspect = ( float )event.resize.w / event.resize.h;
+  window.addEventListener( SDL_WINDOWEVENT, [&]( const SDL_Event& event ) {
+    if (event.window.event != SDL_WINDOWEVENT_RESIZED) return;
+    camera->aspect = ( float )event.window.data1 / event.window.data2;
     camera->updateProjectionMatrix();
-    renderer->setSize( event.resize.w, event.resize.h );
+    renderer.setSize( event.window.data1, event.window.data2 );
   } );
 
   /////////////////////////////////////////////////////////////////////////
 
-  stats::Stats stats( *renderer );
   auto time = 0.f;
   int benchmarkFrames = 100000;
 
-  anim::gameLoop(
-
-  [&]( float dt ) -> bool {
+  window.animate( [&]( float dt ) -> bool {
 
     time += dt;
 
@@ -102,13 +86,11 @@ void geometry_hierarchy( GLRenderer::Ptr renderer ) {
 
     group->rotation().set( rx, ry, rz );
 
-    renderer->render( *scene, *camera );
+    renderer.render( *scene, *camera );
 
-    stats.update( dt, renderStats );
+    return --benchmarkFrames > 0;
 
-    return running && (--benchmarkFrames > 0);
-
-  }, 2000 );
+  } );
 
 }
 
@@ -117,7 +99,6 @@ int main( int argc, char* argv[] ) {
   RendererParameters parameters;
   parameters.vsync = false;
 
-  RunExample( geometry_hierarchy, parameters );
+  return RunExample( geometry_hierarchy, parameters );
 
-  return 0;
 }

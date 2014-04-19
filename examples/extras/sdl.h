@@ -1,42 +1,50 @@
-#ifndef THREE_SDL_H
-#define THREE_SDL_H
+#ifndef THREE_EXAMPLES_SDL_H
+#define THREE_EXAMPLES_SDL_H
 
-#include <three/gl.h>
-#include <three/math/color.h>
-#include <three/utils/noncopyable.h>
-#include <three/renderers/renderer_parameters.h>
+#include "three/gl.h"
+#include "three/math/color.h"
+#include "three/utils/noncopyable.h"
+#include "three/renderers/renderer_parameters.h"
 
-#include <SDL_main.h>
-#include <SDL_events.h>
+#include "SDL.h"
+#include "SDL_events.h"
 
 #include <functional>
+#include <map>
+#include <vector>
 
-namespace three {
-namespace sdl {
+namespace three_examples {
 
-typedef SDL_Event                         Event;
-typedef SDL_EventType                     EventType;
-typedef std::pair<SDL_EventType, int>     EventKey;
-typedef std::function<void(const Event&)> EventListener;
-
-bool init( RendererParameters& parameters );
-bool swapBuffers();
-void quit();
-
-EventKey addEventListener( EventType, EventListener );
-void removeEventListener( EventKey );
-void clearEventListeners();
-void processEvents();
-
-class ScopedEventListener : public NonCopyable {
+class GLWindow : public three::NonCopyable {
 public:
-  ScopedEventListener( EventType, EventListener );
-  ~ScopedEventListener();
+  typedef SDL_Event                         Event;
+  typedef SDL_EventType                     EventType;
+  typedef std::function<void(const Event&)> EventListener;
+
+  GLWindow( const three::RendererParameters& );
+  ~GLWindow();
+
+  three::GLInterface createGLInterface();
+
+  void addEventListener( EventType, EventListener );
+
+  typedef std::function<bool(float)> Update;
+  void animate( Update update );
+
+  //void animate( Update update, Render render, float frameRate = 60 );
+
+  bool valid() const;
+
 private:
-  EventKey eventKey;
+  void swapBuffers();
+  bool processEvents();
+
+  SDL_Window* window;
+  SDL_GLContext context;
+  std::map<EventType, std::vector<EventListener>> listeners;
+  bool renderStats;
 };
 
-} // namespace sdl
-} // namespace three
+} // namespace three_examples
 
-#endif // THREE_SDL_H
+#endif // THREE_EXAMPLES_SDL_H

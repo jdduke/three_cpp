@@ -85,6 +85,5 @@ int main ( int argc, char* argv[] ) {
   renderer->sortObjects = false;
   performance_static( renderer );
 
-  return 0;
 }
 #endif // 0

@@ -1,64 +1,39 @@
 #ifndef THREE_EXAMPLES_COMMON_H
 #define THREE_EXAMPLES_COMMON_H
 
-#include <three/config.h>
-#include <three/gl.h>
+#include "three/config.h"
+#include "three/gl.h"
 
-#include <three/renderers/gl_renderer.h>
-#include <three/renderers/renderer_parameters.h>
+#include "three/renderers/gl_renderer.h"
+#include "three/renderers/renderer_parameters.h"
 
-#include <three/utils/conversion.h>
-#include <three/utils/template.h>
+#include "three/utils/conversion.h"
+#include "three/utils/template.h"
 
-#if defined(THREE_GLEW)
-#include <three/extras/glew.h>
-#endif
-
-#include "examples/extras/anim.h"
 #include "examples/extras/sdl.h"
 #include "examples/extras/stats.h"
 
-namespace three {
-namespace {
+namespace three_examples {
 
-struct ExampleSession {
+template <typename Example>
+int RunExample( Example example,
+                three::RendererParameters parameters = three::RendererParameters() ) {
+  GLWindow window( parameters );
+  if ( !window.valid() )
+    return EXIT_FAILURE;
 
-  ExampleSession(  three::RendererParameters parameters = three::RendererParameters() ) {
-    if ( !three::sdl::init( parameters ) )
-      return;
-#if defined(THREE_GLEW)
-    if ( !three::glew::init( parameters ) )
-      return;
-#endif
-    renderer = three::GLRenderer::create( parameters );
-  }
+  three::GLInterface interface = window.createGLInterface();
+  if ( !interface.validate() )
+    return EXIT_FAILURE;
 
-  ~ExampleSession() {
-    three::sdl::quit();
-  }
+  auto renderer = three::GLRenderer::create( parameters, interface );
+  if ( !renderer )
+    return EXIT_FAILURE;
 
-  template < typename Example >
-  void run( Example example ) {
-    if ( renderer )
-      example( renderer );
-  }
-
-private:
-  ExampleSession(ExampleSession&);
-  ExampleSession& operator=(ExampleSession&);
-
-  three::GLRenderer::Ptr renderer;
-};
-
-} // namespace
-
-template <typename Example >
-void RunExample( Example example,
-                 three::RendererParameters parameters = three::RendererParameters() ) {
-  ExampleSession session( parameters );
-  session.run( example );
+  example( window, *renderer );
+  return EXIT_SUCCESS;
 }
 
-} // namespace three
+} // namespace three_examples
 
 #endif // THREE_EXAMPLES_COMMON_H

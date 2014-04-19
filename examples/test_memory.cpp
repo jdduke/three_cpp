@@ -14,6 +14,7 @@
 #include <three/extras/geometries/sphere_geometry.h>
 
 using namespace three;
+using namespace three_examples;
 
 Image createImage( int width = 256, int height = 256 ) {
   const auto canvasSize = width * height * 3;
@@ -27,26 +28,18 @@ Image createImage( int width = 256, int height = 256 ) {
   return Image( std::move(canvas), width, height );
 }
 
-void test_memory( GLRenderer::Ptr renderer ) {
-
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+void test_memory( GLWindow& window, GLRenderer& renderer ) {
 
   auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+  window.addEventListener(SDL_MOUSEMOTION, [&]( const SDL_Event& event ) {
+    mouseX = 2.f * ((float)event.motion.x / renderer.width()  - 0.5f);
+    mouseY = 2.f * ((float)event.motion.y / renderer.height() - 0.5f);
   });
 
   //////////////////////////////////////////////////////////////////////////
 
   auto camera = PerspectiveCamera::create(
-    60, (float)renderer->width() / renderer->height(), 1, 10000
+    60, (float)renderer.width() / renderer.height(), 1, 10000
   );
   camera->position.z = 200;
 
@@ -57,43 +50,40 @@ void test_memory( GLRenderer::Ptr renderer ) {
   pointLight->position = Vector3( 10, 50, 130 );
   scene->add( pointLight );
 
-  anim::gameLoop (
+  window.animate ( [&]( float ) -> bool {
 
-    [&]( float ) -> bool {
+    auto geometry = SphereGeometry::create( 50,
+                                            Math::random() * 64,
+                                            Math::random() * 32 );
 
-      auto geometry = SphereGeometry::create( 50,
-                                              Math::random() * 64,
-                                              Math::random() * 32 );
+    auto texture = Texture::create( TextureDesc( createImage(), enums::RGBFormat ) );
+    texture->needsUpdate( true );
 
-      auto texture = Texture::create( TextureDesc( createImage(), enums::RGBFormat ) );
-      texture->needsUpdate( true );
+    auto material = //MeshPhongMaterial::create(
+                    //MeshLambertMaterial::create(
+                    MeshBasicMaterial::create(
+      Material::Parameters().add( "map", texture )
+                            .add( "wireframe", true )
+    );
 
-      auto material = //MeshPhongMaterial::create(
-                      //MeshLambertMaterial::create(
-                      MeshBasicMaterial::create(
-        Material::Parameters().add( "map", texture )
-                              .add( "wireframe", true )
-      );
+    auto mesh = Mesh::create( geometry, material );
 
-      auto mesh = Mesh::create( geometry, material );
+    scene->add( mesh );
+    renderer.render( *scene, *camera );
+    scene->remove( mesh );
 
-      scene->add( mesh );
-      renderer->render( *scene, *camera );
-      scene->remove( mesh );
+    renderer.deallocateObject( *mesh );
+    renderer.deallocateTexture( *texture );
+    renderer.deallocateMaterial( *material );
 
-      renderer->deallocateObject( *mesh );
-      renderer->deallocateTexture( *texture );
-      renderer->deallocateMaterial( *material );
+    return true;
 
-      return running;
-
-  }, 2000 );
+  } );
 
 }
 
 int main ( int argc, char* argv[] ) {
 
-  RunExample( test_memory );
+  return RunExample( test_memory );
 
-  return 0;
 }

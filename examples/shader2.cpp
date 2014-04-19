@@ -100,11 +100,12 @@ void main( void ) {\
 ";
 
 using namespace three;
+using namespace three_examples;
 
-void shader2( GLRenderer::Ptr renderer ) {
+void shader2( GLWindow& window, GLRenderer& renderer ) {
 
   auto camera = PerspectiveCamera::create(
-    40, (float)renderer->width() / renderer->height(), 1, 3000
+    40, (float)renderer.width() / renderer.height(), 1, 3000
   );
   camera->position.z = 6;
 
@@ -158,23 +159,15 @@ void shader2( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
-
   auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+  window.addEventListener(SDL_MOUSEMOTION, [&]( const SDL_Event& event ) {
+    mouseX = 2.f * ((float)event.motion.x / renderer.width()  - 0.5f);
+    mouseY = 2.f * ((float)event.motion.y / renderer.height() - 0.5f);
   });
 
   /////////////////////////////////////////////////////////////////////////
 
-  anim::gameLoop( [&]( float dt ) -> bool {
+  window.animate( [&]( float dt ) -> bool {
 
     camera->position.x += (-2.f * mouseX - camera->position.x ) * 3 * dt;
     camera->position.y += ( 2.f * mouseY - camera->position.y ) * 3 * dt;
@@ -185,9 +178,9 @@ void shader2( GLRenderer::Ptr renderer ) {
     for ( auto& material : mlib )
       material->uniforms[ "time" ].value = time;
 
-    renderer->render( *scene, *camera );
+    renderer.render( *scene, *camera );
 
-    return running;
+    return true;
 
   } );
 
@@ -195,7 +188,6 @@ void shader2( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  RunExample( shader2 );
+  return RunExample( shader2 );
 
-  return 0;
 }

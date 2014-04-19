@@ -45,6 +45,12 @@
 #include <three/utils/conversion.h>
 #include <three/utils/template.h>
 
+#ifndef NDEBUG
+#define GL_CALL(a) (a); _gl.Error(__FILE__, __LINE__)
+#else
+#define GL_CALL(a) (a)
+#endif
+
 namespace three {
 
 struct ProgramParameters {
@@ -78,15 +84,15 @@ struct ProgramParameters {
   bool doubleSided;
 };
 
-GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters /*= Parameters()*/ ) {
-  auto renderer = make_shared<GLRenderer>( parameters );
+GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters,
+                                    const GLInterface& gl ) {
+  auto renderer = make_shared<GLRenderer>( parameters, gl );
   renderer->initialize();
   return renderer;
 }
 
-GLRenderer::GLRenderer( const RendererParameters& parameters )
-  : context( nullptr ),
-    autoClear( true ),
+GLRenderer::GLRenderer( const RendererParameters& parameters, const GLInterface& gl )
+  : autoClear( true ),
     autoClearColor( true ),
     autoClearDepth( true ),
     autoClearStencil( true ),
@@ -107,7 +113,6 @@ GLRenderer::GLRenderer( const RendererParameters& parameters )
     autoScaleCubemaps( true ),
     _width( parameters.width ),
     _height( parameters.height ),
-    _vsync ( parameters.vsync ),
     _precision( parameters.precision ),
     _alpha( parameters.alpha ),
     _premultipliedAlpha( parameters.premultipliedAlpha ),
@@ -143,8 +148,9 @@ GLRenderer::GLRenderer( const RendererParameters& parameters )
     _viewportHeight( 0 ),
     _currentWidth( 0 ),
     _currentHeight( 0 ),
-    _lightsNeedUpdate( true ) {
-  console().log() << "enums::GLRenderer created";
+    _lightsNeedUpdate( true ),
+    _gl( gl ) {
+  console().log() << "GLRenderer created";
 }
 
 /*
@@ -159,21 +165,19 @@ addPostPlugin( new enums::LensFlarePlugin() );
 
 void GLRenderer::initialize() {
 
-  console().log() << "enums::GLRenderer initializing";
+  console().log() << "GLRenderer initializing";
 
   initGL();
 
   setDefaultGLState();
 
-  //context = _gl;
-
   // GPU capabilities
 
-  _maxTextures       = glGetParameteri( GL_MAX_TEXTURE_IMAGE_UNITS );
-  _maxVertexTextures = glGetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
-  _maxTextureSize    = glGetParameteri( GL_MAX_TEXTURE_SIZE ),
-  _maxCubemapSize    = glGetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
-  _maxAnisotropy = _glExtensionTextureFilterAnisotropic ? glGetTexParameterf( TEXTURE_MAX_ANISOTROPY_EXT ) : 0.f;
+  _maxTextures       = _gl.GetParameteri( GL_MAX_TEXTURE_IMAGE_UNITS );
+  _maxVertexTextures = _gl.GetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
+  _maxTextureSize    = _gl.GetParameteri( GL_MAX_TEXTURE_SIZE ),
+  _maxCubemapSize    = _gl.GetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
+  _maxAnisotropy = _glExtensionTextureFilterAnisotropic ? _gl.GetTexParameterf( TEXTURE_MAX_ANISOTROPY_EXT ) : 0.f;
   _supportsVertexTextures = ( _maxVertexTextures > 0 );
   _supportsBoneTextures = _supportsVertexTextures && _glExtensionTextureFloat;
 
@@ -183,14 +187,7 @@ void GLRenderer::initialize() {
 
 void GLRenderer::initGL() {
 
-  THREE_REVIEW("Force client to initialize opengl.")
-  /*
-  if ( glload::LoadFunctions() == glload::LS_LOAD_FAILED ) {
-      console().error( "Error loading OpenGL functions" );
-  }*/
-
-  if ( !_vsync )
-    glEnableVSync( false );
+  THREE_ASSERT( _gl.validate() );
 
   THREE_REVIEW("Have client indicate whether these are supported.")
   /*
@@ -218,22 +215,22 @@ void GLRenderer::initGL() {
 
 void GLRenderer::setDefaultGLState() {
 
-  glClearColor( 0, 0, 0, 1 );
-  glClearDepth( 1 );
-  glClearStencil( 0 );
+  _gl.ClearColor( 0, 0, 0, 1 );
+  _gl.ClearDepth( 1 );
+  _gl.ClearStencil( 0 );
 
-  glEnable( GL_DEPTH_TEST );
-  glDepthFunc( GL_LEQUAL );
+  _gl.Enable( GL_DEPTH_TEST );
+  _gl.DepthFunc( GL_LEQUAL );
 
-  glFrontFace( GL_CCW );
-  glCullFace( GL_BACK );
-  glEnable( GL_CULL_FACE );
+  _gl.FrontFace( GL_CCW );
+  _gl.CullFace( GL_BACK );
+  _gl.Enable( GL_CULL_FACE );
 
-  glEnable( GL_BLEND );
-  glBlendEquation( GL_FUNC_ADD );
-  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  _gl.Enable( GL_BLEND );
+  _gl.BlendEquation( GL_FUNC_ADD );
+  _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-  glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+  _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 
 }
 
@@ -251,15 +248,15 @@ void GLRenderer::setViewport( int x /*= 0*/, int y /*= 0*/, int width /*= -1*/, 
   _viewportWidth  = width  != -1 ? width  : _width;
   _viewportHeight = height != -1 ? height : _height;
 
-  glViewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
+  _gl.Viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
 }
 
 void GLRenderer::setScissor( int x, int y, int width, int height ) {
-  glScissor( x, y, width, height );
+  _gl.Scissor( x, y, width, height );
 }
 
 void GLRenderer::enableScissorTest( bool enable ) {
-  enable ? glEnable( GL_SCISSOR_TEST ) : glDisable( GL_SCISSOR_TEST );
+  enable ? _gl.Enable( GL_SCISSOR_TEST ) : _gl.Disable( GL_SCISSOR_TEST );
 }
 
 // Clearing
@@ -268,14 +265,14 @@ void GLRenderer::setClearColorHex( int hex, float alpha ) {
   _clearColor.setHex( hex );
   _clearAlpha = alpha;
 
-  glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+  _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 }
 
 void GLRenderer::setClearColor( Color color, float alpha ) {
   _clearColor.copy( color );
   _clearAlpha = alpha;
 
-  glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+  _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 }
 
 void GLRenderer::clear( bool color /*= true*/, bool depth /*= true*/, bool stencil /*= true*/ ) {
@@ -285,7 +282,7 @@ void GLRenderer::clear( bool color /*= true*/, bool depth /*= true*/, bool stenc
   if ( depth )   bits |= GL_DEPTH_BUFFER_BIT;
   if ( stencil ) bits |= GL_STENCIL_BUFFER_BIT;
 
-  glClear( bits );
+  _gl.Clear( bits );
 }
 
 void GLRenderer::clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color /*= true*/, bool depth /*= true*/, bool stencil /*= true*/ ) {
@@ -345,7 +342,7 @@ void GLRenderer::deallocateTexture( Texture& texture ) {
   if ( ! texture.__glInit ) return;
 
   texture.__glInit = false;
-  glDeleteTexture( texture.__glTexture );
+  _gl.DeleteTexture( texture.__glTexture );
 
   _info.memory.textures --;
 
@@ -356,16 +353,16 @@ void GLRenderer::deallocateRenderTarget( GLRenderTarget& renderTarget ) {
 
   if ( ! renderTarget.__glTexture ) return;
 
-  glDeleteTexture( renderTarget.__glTexture );
+  _gl.DeleteTexture( renderTarget.__glTexture );
 
   for ( auto& frameBuffer : renderTarget.__glFramebuffer ) {
-    glDeleteFramebuffer( frameBuffer );
+    _gl.DeleteFramebuffer( frameBuffer );
   }
 
   renderTarget.__glFramebuffer.clear();
 
   for ( auto& renderBuffer : renderTarget.__glRenderbuffer ) {
-    glDeleteRenderbuffer( renderBuffer );
+    _gl.DeleteRenderbuffer( renderBuffer );
   }
 
   renderTarget.__glRenderbuffer.clear();
@@ -394,7 +391,7 @@ void GLRenderer::deallocateMaterial( Material& material ) {
 
   if ( --programIt->usedTimes == 0 ) {
 
-    glDeleteProgram( program->program );
+    _gl.DeleteProgram( program->program );
     _info.memory.programs --;
     _programs.erase( std::remove_if(_programs.begin(), _programs.end(), programCmp) );
 
@@ -427,8 +424,8 @@ void GLRenderer::updateShadowMap( const Scene& scene, const Camera& camera ) {
 
 void GLRenderer::createParticleBuffers( Geometry& geometry ) {
 
-  geometry.__glVertexBuffer = glCreateBuffer();
-  geometry.__glColorBuffer = glCreateBuffer();
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer = _gl.CreateBuffer();
 
   _info.memory.geometries ++;
 
@@ -436,8 +433,8 @@ void GLRenderer::createParticleBuffers( Geometry& geometry ) {
 
 void GLRenderer::createLineBuffers( Geometry& geometry ) {
 
-  geometry.__glVertexBuffer = glCreateBuffer();
-  geometry.__glColorBuffer  = glCreateBuffer();
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer  = _gl.CreateBuffer();
 
   _info.memory.geometries ++;
 
@@ -445,8 +442,8 @@ void GLRenderer::createLineBuffers( Geometry& geometry ) {
 
 void GLRenderer::createRibbonBuffers( Geometry& geometry ) {
 
-  geometry.__glVertexBuffer = glCreateBuffer();
-  geometry.__glColorBuffer  = glCreateBuffer();
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer  = _gl.CreateBuffer();
 
   _info.memory.geometries ++;
 
@@ -454,27 +451,27 @@ void GLRenderer::createRibbonBuffers( Geometry& geometry ) {
 
 void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
 
-  geometryGroup.__glVertexBuffer  = glCreateBuffer();
-  geometryGroup.__glNormalBuffer  = glCreateBuffer();
-  geometryGroup.__glTangentBuffer = glCreateBuffer();
-  geometryGroup.__glColorBuffer   = glCreateBuffer();
-  geometryGroup.__glUVBuffer      = glCreateBuffer();
-  geometryGroup.__glUV2Buffer     = glCreateBuffer();
+  geometryGroup.__glVertexBuffer  = _gl.CreateBuffer();
+  geometryGroup.__glNormalBuffer  = _gl.CreateBuffer();
+  geometryGroup.__glTangentBuffer = _gl.CreateBuffer();
+  geometryGroup.__glColorBuffer   = _gl.CreateBuffer();
+  geometryGroup.__glUVBuffer      = _gl.CreateBuffer();
+  geometryGroup.__glUV2Buffer     = _gl.CreateBuffer();
 
-  geometryGroup.__glSkinVertexABuffer = glCreateBuffer();
-  geometryGroup.__glSkinVertexBBuffer = glCreateBuffer();
-  geometryGroup.__glSkinIndicesBuffer = glCreateBuffer();
-  geometryGroup.__glSkinWeightsBuffer = glCreateBuffer();
+  geometryGroup.__glSkinVertexABuffer = _gl.CreateBuffer();
+  geometryGroup.__glSkinVertexBBuffer = _gl.CreateBuffer();
+  geometryGroup.__glSkinIndicesBuffer = _gl.CreateBuffer();
+  geometryGroup.__glSkinWeightsBuffer = _gl.CreateBuffer();
 
-  geometryGroup.__glFaceBuffer = glCreateBuffer();
-  geometryGroup.__glLineBuffer = glCreateBuffer();
+  geometryGroup.__glFaceBuffer = _gl.CreateBuffer();
+  geometryGroup.__glLineBuffer = _gl.CreateBuffer();
 
   if ( geometryGroup.numMorphTargets > 0 ) {
 
     geometryGroup.__glMorphTargetsBuffers.clear();
 
     for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-      geometryGroup.__glMorphTargetsBuffers.push_back( glCreateBuffer() );
+      geometryGroup.__glMorphTargetsBuffers.push_back( _gl.CreateBuffer() );
     }
 
   }
@@ -484,7 +481,7 @@ void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
     geometryGroup.__glMorphNormalsBuffers.clear();
 
     for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
-      geometryGroup.__glMorphNormalsBuffers.push_back( glCreateBuffer() );
+      geometryGroup.__glMorphNormalsBuffers.push_back( _gl.CreateBuffer() );
     }
 
   }
@@ -497,8 +494,8 @@ void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
 
 void GLRenderer::deleteParticleBuffers( Geometry& geometry ) {
 
-  glDeleteBuffer( geometry.__glVertexBuffer );
-  glDeleteBuffer( geometry.__glColorBuffer );
+  _gl.DeleteBuffer( geometry.__glVertexBuffer );
+  _gl.DeleteBuffer( geometry.__glColorBuffer );
 
   _info.memory.geometries --;
 
@@ -506,8 +503,8 @@ void GLRenderer::deleteParticleBuffers( Geometry& geometry ) {
 
 void GLRenderer::deleteLineBuffers( Geometry& geometry ) {
 
-  glDeleteBuffer( geometry.__glVertexBuffer );
-  glDeleteBuffer( geometry.__glColorBuffer );
+  _gl.DeleteBuffer( geometry.__glVertexBuffer );
+  _gl.DeleteBuffer( geometry.__glColorBuffer );
 
   _info.memory.geometries --;
 
@@ -515,8 +512,8 @@ void GLRenderer::deleteLineBuffers( Geometry& geometry ) {
 
 void GLRenderer::deleteRibbonBuffers( Geometry& geometry ) {
 
-  glDeleteBuffer( geometry.__glVertexBuffer );
-  glDeleteBuffer( geometry.__glColorBuffer );
+  _gl.DeleteBuffer( geometry.__glVertexBuffer );
+  _gl.DeleteBuffer( geometry.__glColorBuffer );
 
   _info.memory.geometries --;
 
@@ -524,35 +521,35 @@ void GLRenderer::deleteRibbonBuffers( Geometry& geometry ) {
 
 void GLRenderer::deleteMeshBuffers( GeometryGroup& geometryGroup ) {
 
-  glDeleteBuffer( geometryGroup.__glVertexBuffer );
-  glDeleteBuffer( geometryGroup.__glNormalBuffer );
-  glDeleteBuffer( geometryGroup.__glTangentBuffer );
-  glDeleteBuffer( geometryGroup.__glColorBuffer );
-  glDeleteBuffer( geometryGroup.__glUVBuffer );
-  glDeleteBuffer( geometryGroup.__glUV2Buffer );
+  _gl.DeleteBuffer( geometryGroup.__glVertexBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glNormalBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glTangentBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glColorBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glUVBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glUV2Buffer );
 
-  glDeleteBuffer( geometryGroup.__glSkinVertexABuffer );
-  glDeleteBuffer( geometryGroup.__glSkinVertexBBuffer );
-  glDeleteBuffer( geometryGroup.__glSkinIndicesBuffer );
-  glDeleteBuffer( geometryGroup.__glSkinWeightsBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glSkinVertexABuffer );
+  _gl.DeleteBuffer( geometryGroup.__glSkinVertexBBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glSkinIndicesBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glSkinWeightsBuffer );
 
-  glDeleteBuffer( geometryGroup.__glFaceBuffer );
-  glDeleteBuffer( geometryGroup.__glLineBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glFaceBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glLineBuffer );
 
   if ( geometryGroup.numMorphTargets > 0 ) {
     for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-      glDeleteBuffer( geometryGroup.__glMorphTargetsBuffers[ m ] );
+      _gl.DeleteBuffer( geometryGroup.__glMorphTargetsBuffers[ m ] );
     }
   }
 
   if ( geometryGroup.numMorphNormals > 0 ) {
     for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
-      glDeleteBuffer( geometryGroup.__glMorphNormalsBuffers[ m ] );
+      _gl.DeleteBuffer( geometryGroup.__glMorphNormalsBuffers[ m ] );
     }
   }
 
   for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
-    glDeleteBuffer( attribute->buffer );
+    _gl.DeleteBuffer( attribute->buffer );
   }
 
   _info.memory.geometries --;
@@ -598,7 +595,7 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
         attribute.array.resize( nvertices * size );
 
-        attribute.buffer = glCreateBuffer();
+        attribute.buffer = _gl.CreateBuffer();
         attribute.belongsToAttribute = a;
 
         attribute.needsUpdate = true;
@@ -769,7 +766,7 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
         attribute->array.resize( nvertices * size );
 
-        attribute->buffer = glCreateBuffer();
+        attribute->buffer = _gl.CreateBuffer();
         attribute->belongsToAttribute = a.first;
 
         originalAttribute.needsUpdate = true;
@@ -861,9 +858,9 @@ void GLRenderer::initDirectBuffers( Geometry& geometry ) {
                 : GL_ARRAY_BUFFER;
 
     auto& attribute = a.second;
-    attribute.buffer = glCreateBuffer();
+    attribute.buffer = _gl.CreateBuffer();
 
-    glBindAndBuffer( type, attribute.buffer, attribute.array, GL_STATIC_DRAW );
+    _gl.BindAndBuffer( type, attribute.buffer, attribute.array, GL_STATIC_DRAW );
 
   }
 
@@ -1030,11 +1027,11 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
   }
 
   if ( vl > 0 && ( dirtyVertices || object.sortParticles ) ) {
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
   }
 
   if ( cl > 0 && ( dirtyColors || object.sortParticles ) ) {
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
   }
 
   for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
@@ -1042,7 +1039,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
     auto& customAttribute = *customAttributes[ i ];
 
     if ( customAttribute.needsUpdate || object.sortParticles ) {
-      glBindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
     }
 
   }
@@ -1081,7 +1078,7 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
 
   }
 
@@ -1099,7 +1096,7 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
 
   }
 
@@ -1125,7 +1122,7 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
         fillFromAny<Vector4>( customAttribute.value, customAttribute.array );
       }
 
-      glBindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
 
     }
 
@@ -1163,7 +1160,7 @@ void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
 
   }
 
@@ -1181,7 +1178,7 @@ void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
 
   }
 
@@ -1290,7 +1287,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer, vertexArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer, vertexArray, hint );
 
   }
 
@@ -1371,13 +1368,13 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
       }
 
-      glBindAndBuffer( GL_ARRAY_BUFFER,
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER,
                        geometryGroup.__glMorphTargetsBuffers[ vk ],
                        morphTargetsArrays[ vk ], hint );
 
       if ( material && material->morphNormals ) {
 
-        glBindAndBuffer( GL_ARRAY_BUFFER,
+        _gl.BindAndBuffer( GL_ARRAY_BUFFER,
                          geometryGroup.__glMorphNormalsBuffers[ vk ],
                          morphNormalsArrays[ vk ], hint );
 
@@ -1483,10 +1480,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     if ( offset_skin > 0 ) {
 
-      glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer, skinVertexAArray, hint );
-      glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer, skinVertexBArray, hint );
-      glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer, skinIndexArray, hint );
-      glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer, skinWeightArray, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer, skinVertexAArray, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer, skinVertexBArray, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer, skinIndexArray, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer, skinWeightArray, hint );
 
     }
 
@@ -1533,7 +1530,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     if ( offset_color > 0 ) {
 
-      glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer, colorArray, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer, colorArray, hint );
 
     }
 
@@ -1570,7 +1567,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer, tangentArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer, tangentArray, hint );
 
   }
 
@@ -1615,7 +1612,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer, normalArray, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer, normalArray, hint );
 
   }
 
@@ -1643,7 +1640,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     if ( offset_uv > 0 ) {
 
-      glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer, uvArray, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer, uvArray, hint );
 
     }
 
@@ -1673,7 +1670,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     if ( offset_uv2 > 0 ) {
 
-      glBindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer, uv2Array, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer, uv2Array, hint );
 
     }
 
@@ -1706,8 +1703,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     }
 
-    glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glFaceBuffer, faceArray, hint );
-    glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glLineBuffer, lineArray, hint );
+    _gl.BindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glFaceBuffer, faceArray, hint );
+    _gl.BindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glLineBuffer, lineArray, hint );
 
   }
 
@@ -1992,7 +1989,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, customAttribute.buffer, customAttribute.array, hint );
 
   }
 
@@ -2012,42 +2009,42 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
   if ( geometry.elementsNeedUpdate && attributes.contains( AttributeKey::index() ) ) {
 
     auto& index = attributes[ AttributeKey::index() ];
-    glBindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer, index.array, hint );
+    _gl.BindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer, index.array, hint );
 
   }
 
   if ( geometry.verticesNeedUpdate && attributes.contains( AttributeKey::position() ) ) {
 
     auto& position = attributes[ AttributeKey::position() ];
-    glBindAndBuffer( GL_ARRAY_BUFFER, position.buffer, position.array, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, position.buffer, position.array, hint );
 
   }
 
   if ( geometry.normalsNeedUpdate && attributes.contains( AttributeKey::normal() ) ) {
 
     auto& normal   = attributes[ AttributeKey::normal() ];
-    glBindAndBuffer( GL_ARRAY_BUFFER, normal.buffer, normal.array, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, normal.buffer, normal.array, hint );
 
   }
 
   if ( geometry.uvsNeedUpdate && attributes.contains( AttributeKey::uv() ) ) {
 
     auto& uv       = attributes[ AttributeKey::uv() ];
-    glBindAndBuffer( GL_ARRAY_BUFFER, uv.buffer, uv.array, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, uv.buffer, uv.array, hint );
 
   }
 
   if ( geometry.colorsNeedUpdate && attributes.contains( AttributeKey::color() ) ) {
 
     auto& color    = attributes[ AttributeKey::color() ];
-    glBindAndBuffer( GL_ARRAY_BUFFER, color.buffer, color.array, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, color.buffer, color.array, hint );
 
   }
 
   if ( geometry.tangentsNeedUpdate && attributes.contains( AttributeKey::tangent() ) ) {
 
     auto& tangent  = attributes[ AttributeKey::tangent() ];
-    glBindAndBuffer( GL_ARRAY_BUFFER, tangent.buffer, tangent.array, hint );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, tangent.buffer, tangent.array, hint );
 
   }
 
@@ -2068,16 +2065,16 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
 
 void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Material& material ) {
 
-  if ( object.glImmediateData.hasPositions && ! object.glImmediateData.__glVertexBuffer ) object.glImmediateData.__glVertexBuffer = glCreateBuffer();
-  if ( object.glImmediateData.hasNormals   && ! object.glImmediateData.__glNormalBuffer ) object.glImmediateData.__glNormalBuffer = glCreateBuffer();
-  if ( object.glImmediateData.hasUvs       && ! object.glImmediateData.__glUvBuffer )     object.glImmediateData.__glUvBuffer     = glCreateBuffer();
-  if ( object.glImmediateData.hasColors    && ! object.glImmediateData.__glColorBuffer )  object.glImmediateData.__glColorBuffer  = glCreateBuffer();
+  if ( object.glImmediateData.hasPositions && ! object.glImmediateData.__glVertexBuffer ) object.glImmediateData.__glVertexBuffer = _gl.CreateBuffer();
+  if ( object.glImmediateData.hasNormals   && ! object.glImmediateData.__glNormalBuffer ) object.glImmediateData.__glNormalBuffer = _gl.CreateBuffer();
+  if ( object.glImmediateData.hasUvs       && ! object.glImmediateData.__glUvBuffer )     object.glImmediateData.__glUvBuffer     = _gl.CreateBuffer();
+  if ( object.glImmediateData.hasColors    && ! object.glImmediateData.__glColorBuffer )  object.glImmediateData.__glColorBuffer  = _gl.CreateBuffer();
 
   if ( object.glImmediateData.hasPositions ) {
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glVertexBuffer, object.glImmediateData.positionArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes[AttributeKey::position()] );
-    glVertexAttribPointer( program.attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glVertexBuffer, object.glImmediateData.positionArray, GL_DYNAMIC_DRAW );
+    _gl.EnableVertexAttribArray( program.attributes[AttributeKey::position()] );
+    _gl.VertexAttribPointer( program.attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
@@ -2121,29 +2118,29 @@ void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Mate
 
     }
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glNormalBuffer, object.glImmediateData.normalArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes[AttributeKey::normal()] );
-    glVertexAttribPointer( program.attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glNormalBuffer, object.glImmediateData.normalArray, GL_DYNAMIC_DRAW );
+    _gl.EnableVertexAttribArray( program.attributes[AttributeKey::normal()] );
+    _gl.VertexAttribPointer( program.attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
   if ( object.glImmediateData.hasUvs && material.map ) {
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glUvBuffer, object.glImmediateData.uvArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes[AttributeKey::uv()] );
-    glVertexAttribPointer( program.attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glUvBuffer, object.glImmediateData.uvArray, GL_DYNAMIC_DRAW );
+    _gl.EnableVertexAttribArray( program.attributes[AttributeKey::uv()] );
+    _gl.VertexAttribPointer( program.attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
 
   }
 
   if ( object.glImmediateData.hasColors && material.vertexColors != enums::NoColors ) {
 
-    glBindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glColorBuffer, object.glImmediateData.colorArray, GL_DYNAMIC_DRAW );
-    glEnableVertexAttribArray( program.attributes[AttributeKey::color()] );
-    glVertexAttribPointer( program.attributes[AttributeKey::color()], 3, GL_FLOAT, false, 0, 0 );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glColorBuffer, object.glImmediateData.colorArray, GL_DYNAMIC_DRAW );
+    _gl.EnableVertexAttribArray( program.attributes[AttributeKey::color()] );
+    _gl.VertexAttribPointer( program.attributes[AttributeKey::color()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
-  glDrawArrays( GL_TRIANGLES, 0, object.glImmediateData.count );
+  _gl.DrawArrays( GL_TRIANGLES, 0, object.glImmediateData.count );
 
   object.glImmediateData.count = 0;
 
@@ -2191,8 +2188,8 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
         auto& position = geometry.attributes[ AttributeKey::position() ];
         const auto positionSize = position.itemSize;
 
-        glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
-        glVertexAttribPointer( attributes[AttributeKey::position()], positionSize, GL_FLOAT, false, 0, toOffset( startIndex * positionSize * 4 ) ); // 4 bytes per Float32
+        _gl.BindBuffer( GL_ARRAY_BUFFER, position.buffer );
+        _gl.VertexAttribPointer( attributes[AttributeKey::position()], positionSize, GL_FLOAT, false, 0, toOffset( startIndex * positionSize * 4 ) ); // 4 bytes per Float32
 
         // normals
 
@@ -2201,8 +2198,8 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
           auto& normal = geometry.attributes[ AttributeKey::normal() ];
           auto normalSize = normal.itemSize;
 
-          glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
-          glVertexAttribPointer( attributes[AttributeKey::normal()], normalSize, GL_FLOAT, false, 0, toOffset( startIndex * normalSize * 4 ) );
+          _gl.BindBuffer( GL_ARRAY_BUFFER, normal.buffer );
+          _gl.VertexAttribPointer( attributes[AttributeKey::normal()], normalSize, GL_FLOAT, false, 0, toOffset( startIndex * normalSize * 4 ) );
 
         }
 
@@ -2216,14 +2213,14 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
             const auto uvSize = uv.itemSize;
 
-            glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
-            glVertexAttribPointer( attributes[AttributeKey::uv()], uvSize, GL_FLOAT, false, 0, toOffset( startIndex * uvSize * 4 ) );
+            _gl.BindBuffer( GL_ARRAY_BUFFER, uv.buffer );
+            _gl.VertexAttribPointer( attributes[AttributeKey::uv()], uvSize, GL_FLOAT, false, 0, toOffset( startIndex * uvSize * 4 ) );
 
-            glEnableVertexAttribArray( attributes[AttributeKey::uv()] );
+            _gl.EnableVertexAttribArray( attributes[AttributeKey::uv()] );
 
           } else {
 
-            glDisableVertexAttribArray( attributes[AttributeKey::uv()] );
+            _gl.DisableVertexAttribArray( attributes[AttributeKey::uv()] );
 
           }
 
@@ -2236,8 +2233,8 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
           const auto& color = geometry.attributes[ AttributeKey::color() ];
           const auto colorSize = color.itemSize;
 
-          glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
-          glVertexAttribPointer( attributes[AttributeKey::color()], colorSize, GL_FLOAT, false, 0, toOffset( startIndex * colorSize * 4 ) );
+          _gl.BindBuffer( GL_ARRAY_BUFFER, color.buffer );
+          _gl.VertexAttribPointer( attributes[AttributeKey::color()], colorSize, GL_FLOAT, false, 0, toOffset( startIndex * colorSize * 4 ) );
 
         }
 
@@ -2248,8 +2245,8 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
           const auto& tangent = geometry.attributes[ AttributeKey::tangent() ];
           const auto tangentSize = tangent.itemSize;
 
-          glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
-          glVertexAttribPointer( attributes[AttributeKey::tangent()], tangentSize, GL_FLOAT, false, 0, toOffset( startIndex * tangentSize * 4 ) );
+          _gl.BindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
+          _gl.VertexAttribPointer( attributes[AttributeKey::tangent()], tangentSize, GL_FLOAT, false, 0, toOffset( startIndex * tangentSize * 4 ) );
 
         }
 
@@ -2257,13 +2254,13 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
         const auto& index = geometry.attributes[ AttributeKey::index() ];
 
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
+        _gl.BindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
 
       }
 
       // render indexed triangles
 
-      glDrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
+      _gl.DrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
 
       _info.render.calls ++;
       _info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
@@ -2300,8 +2297,8 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     if ( updateBuffers ) {
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -2327,8 +2324,8 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
       auto attributeIt = attributes.find( attribute->belongsToAttribute );
       if ( attributeIt != attributes.end() ) {
 
-        glBindBuffer( GL_ARRAY_BUFFER, attribute->buffer );
-        glVertexAttribPointer( attributeIt->second, attribute->size, GL_FLOAT, false, 0, 0 );
+        _gl.BindBuffer( GL_ARRAY_BUFFER, attribute->buffer );
+        _gl.VertexAttribPointer( attributeIt->second, attribute->size, GL_FLOAT, false, 0, 0 );
 
       }
 
@@ -2340,8 +2337,8 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     if ( (index = attributes[AttributeKey::color()]) >= 0 ) {
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
-      glVertexAttribPointer( index, 3, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
+      _gl.VertexAttribPointer( index, 3, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -2349,8 +2346,8 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     if ( attributes[AttributeKey::normal()].valid() ) {
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -2358,8 +2355,8 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     if ( attributes[AttributeKey::tangent()].valid() ) {
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::tangent()], 4, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::tangent()], 4, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -2369,14 +2366,14 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
       if ( geometryGroup.__glUVBuffer ) {
 
-        glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer );
-        glVertexAttribPointer( attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
+        _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer );
+        _gl.VertexAttribPointer( attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
 
-        glEnableVertexAttribArray( attributes[AttributeKey::uv()] );
+        _gl.EnableVertexAttribArray( attributes[AttributeKey::uv()] );
 
       } else {
 
-        glDisableVertexAttribArray( attributes[AttributeKey::uv()] );
+        _gl.DisableVertexAttribArray( attributes[AttributeKey::uv()] );
 
       }
 
@@ -2386,14 +2383,14 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
       if ( geometryGroup.__glUV2Buffer ) {
 
-        glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer );
-        glVertexAttribPointer( attributes[AttributeKey::uv2()], 2, GL_FLOAT, false, 0, 0 );
+        _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer );
+        _gl.VertexAttribPointer( attributes[AttributeKey::uv2()], 2, GL_FLOAT, false, 0, 0 );
 
-        glEnableVertexAttribArray( attributes[AttributeKey::uv2()] );
+        _gl.EnableVertexAttribArray( attributes[AttributeKey::uv2()] );
 
       } else {
 
-        glDisableVertexAttribArray( attributes[AttributeKey::uv2()] );
+        _gl.DisableVertexAttribArray( attributes[AttributeKey::uv2()] );
 
       }
 
@@ -2403,17 +2400,17 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
          attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
          attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
-      glVertexAttribPointer( attributes[AttributeKey::skinVertexA()], 4, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::skinVertexA()], 4, GL_FLOAT, false, 0, 0 );
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::skinVertexB()], 4, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::skinVertexB()], 4, GL_FLOAT, false, 0, 0 );
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::skinIndex()], 4, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::skinIndex()], 4, GL_FLOAT, false, 0, 0 );
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::skinWeight()], 4, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::skinWeight()], 4, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -2429,15 +2426,15 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
       setLineWidth( material.wireframeLinewidth );
 
-      if ( updateBuffers ) glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glLineBuffer );
-      glDrawElements( GL_LINES, geometryGroup.__glLineCount, GL_UNSIGNED_SHORT, 0 );
+      if ( updateBuffers ) _gl.BindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glLineBuffer );
+      _gl.DrawElements( GL_LINES, geometryGroup.__glLineCount, GL_UNSIGNED_SHORT, 0 );
 
       // triangles
 
     } else {
 
-      if ( updateBuffers ) glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glFaceBuffer );
-      glDrawElements( GL_TRIANGLES, geometryGroup.__glFaceCount, GL_UNSIGNED_SHORT, 0 );
+      if ( updateBuffers ) _gl.BindBuffer( GL_ELEMENT_ARRAY_BUFFER, geometryGroup.__glFaceBuffer );
+      _gl.DrawElements( GL_TRIANGLES, geometryGroup.__glFaceCount, GL_UNSIGNED_SHORT, 0 );
 
     }
 
@@ -2453,7 +2450,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     setLineWidth( material.linewidth );
 
-    glDrawArrays( primitives, 0, geometryGroup.__glLineCount );
+    _gl.DrawArrays( primitives, 0, geometryGroup.__glLineCount );
 
     _info.render.calls ++;
 
@@ -2463,12 +2460,14 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
   } else if ( object.type() == enums::ParticleSystem ) {
 
 #ifndef THREE_GLES
-    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-    glEnable(GL_POINT_SPRITE);
-    glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+    // TODO(jdd): Check usage with core profile.
+    _gl.Enable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    /*_gl.Enable(GL_POINT_SPRITE);
+    _gl.TexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+    */
 #endif
 
-    glDrawArrays( GL_POINTS, 0, geometryGroup.__glParticleCount );
+    _gl.DrawArrays( GL_POINTS, 0, geometryGroup.__glParticleCount );
 
     _info.render.calls ++;
     _info.render.points += geometryGroup.__glParticleCount;
@@ -2477,7 +2476,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   } else if ( object.type() == enums::Ribbon ) {
 
-    glDrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.__glVertexCount );
+    _gl.DrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.__glVertexCount );
 
     _info.render.calls ++;
 
@@ -2508,13 +2507,13 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
   if ( object.morphTargetBase != -1 ) {
 
-    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ object.morphTargetBase ] );
-    glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
+    _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ object.morphTargetBase ] );
+    _gl.VertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
   } else if ( attributes[AttributeKey::position()].valid() ) {
 
-    glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
-    glVertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
+    _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
+    _gl.VertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
@@ -2528,13 +2527,13 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
     while ( m < material.numSupportedMorphTargets && m < order.size() ) {
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ order[ m ] ] );
-      glVertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ order[ m ] ] );
+      _gl.VertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
 
       if ( material.morphNormals ) {
 
-        glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphNormalsBuffers[ order[ m ] ] );
-        glVertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
+        _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphNormalsBuffers[ order[ m ] ] );
+        _gl.VertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
 
       }
 
@@ -2590,14 +2589,14 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
         influenceIndex = activeInfluenceIndices[ m ][ 0 ];
 
-        glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ influenceIndex ] );
+        _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphTargetsBuffers[ influenceIndex ] );
 
-        glVertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
+        _gl.VertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
 
         if ( material.morphNormals ) {
 
-          glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphNormalsBuffers[ influenceIndex ] );
-          glVertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
+          _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glMorphNormalsBuffers[ influenceIndex ] );
+          _gl.VertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
 
         }
 
@@ -2605,11 +2604,11 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
       } else {
 
-        glVertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
+        _gl.VertexAttribPointer( attributes[ "morphTarget" + m ], 3, GL_FLOAT, false, 0, 0 );
 
         if ( material.morphNormals ) {
 
-          glVertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
+          _gl.VertexAttribPointer( attributes[ "morphNormal" + m ], 3, GL_FLOAT, false, 0, 0 );
 
         }
 
@@ -2627,7 +2626,7 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
   if ( material.program.uniforms.morphTargetInfluences.size() > 0 ) {
 
-    glUniform1fv( material.program.uniforms.morphTargetInfluences, object.__glMorphTargetInfluences );
+    _gl.Uniform1fv( material.program.uniforms.morphTargetInfluences, object.__glMorphTargetInfluences );
 
   }
 
@@ -2794,7 +2793,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
   setDepthTest( true );
   setDepthWrite( true );
 
-  // glFinish();
+  // _gl.Finish();
 
 }
 
@@ -2919,7 +2918,7 @@ void GLRenderer::renderImmediateObject( Camera& camera, Lights& lights, IFog* fo
   setMaterialFaces( material );
 
   if ( object.immediateRenderCallback ) {
-    object.immediateRenderCallback( &program, _gl, &_frustum );
+    object.immediateRenderCallback( &program, &_gl, &_frustum );
   } else {
     object.render( [this, &program, &material]( Object3D & object ) {
       renderBufferImmediate( object, program, material );
@@ -3535,32 +3534,32 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   auto& attributes = material.program->attributes;
 
   if ( attributes[AttributeKey::position()].valid() )
-    glEnableVertexAttribArray( attributes[AttributeKey::position()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::position()] );
 
   if ( attributes[AttributeKey::color()].valid() )
-    glEnableVertexAttribArray( attributes[AttributeKey::color()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::color()] );
 
   if ( attributes[AttributeKey::normal()].valid() )
-    glEnableVertexAttribArray( attributes[AttributeKey::normal()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::normal()] );
 
   if ( attributes[AttributeKey::tangent()].valid() )
-    glEnableVertexAttribArray( attributes[AttributeKey::tangent()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::tangent()] );
 
   if ( material.skinning &&
        attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
        attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
-    glEnableVertexAttribArray( attributes[AttributeKey::skinVertexA()] );
-    glEnableVertexAttribArray( attributes[AttributeKey::skinVertexB()] );
-    glEnableVertexAttribArray( attributes[AttributeKey::skinIndex()] );
-    glEnableVertexAttribArray( attributes[AttributeKey::skinWeight()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinVertexA()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinVertexB()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinIndex()] );
+    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinWeight()] );
 
   }
 
   for ( const auto& a : material.attributes ) {
     auto attributeIt = attributes.find( a.first );
     if ( attributeIt != attributes.end() && attributeIt->second.valid() ) {
-      glEnableVertexAttribArray( attributeIt->second );
+      _gl.EnableVertexAttribArray( attributeIt->second );
     }
   }
 
@@ -3573,7 +3572,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     for ( int i = 0; i < maxMorphTargets; i ++ ) {
       id = toString( base, i );
       if ( attributes[ id ].valid() ) {
-        glEnableVertexAttribArray( attributes[ id ] );
+        _gl.EnableVertexAttribArray( attributes[ id ] );
         material.numSupportedMorphTargets ++;
       }
     }
@@ -3589,7 +3588,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     for ( int i = 0; i < maxMorphNormals; i ++ ) {
       auto id = toString( base, i );
       if ( attributes[ id ].valid() ) {
-        glEnableVertexAttribArray( attributes[ id ] );
+        _gl.EnableVertexAttribArray( attributes[ id ] );
         material.numSupportedMorphNormals ++;
       }
     }
@@ -3633,7 +3632,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
   auto& m_uniforms = material.uniforms;
 
   if ( &program != _currentProgram ) {
-    glUseProgram( program.program );
+    _gl.UseProgram( program.program );
     _currentProgram = &program;
     refreshMaterial = true;
   }
@@ -3644,7 +3643,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
   }
 
   if ( refreshMaterial || &camera != _currentCamera ) {
-    glUniformMatrix4fv( p_uniforms[UniformKey::projectionMatrix()], 1, false, camera._projectionMatrixArray.data() );
+    _gl.UniformMatrix4fv( p_uniforms[UniformKey::projectionMatrix()], 1, false, camera._projectionMatrixArray.data() );
     if ( &camera != _currentCamera ) _currentCamera = &camera;
   }
 
@@ -3709,7 +3708,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
       const auto cameraPositionLocation = uniformLocation( p_uniforms, "cameraPosition" );
       if ( validUniformLocation( cameraPositionLocation ) ) {
         auto position = camera.matrixWorld.getPosition();
-        glUniform3f( cameraPositionLocation, position.x, position.y, position.z );
+        _gl.Uniform3f( cameraPositionLocation, position.x, position.y, position.z );
       }
 
     }
@@ -3721,7 +3720,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
       const auto viewMatrixLocation = uniformLocation( p_uniforms, "viewMatrix" );
       if ( validUniformLocation( viewMatrixLocation ) ) {
-        glUniformMatrix4fv( viewMatrixLocation, 1, false, camera._viewMatrixArray.data() );
+        _gl.UniformMatrix4fv( viewMatrixLocation, 1, false, camera._viewMatrixArray.data() );
       }
 
     }
@@ -3732,13 +3731,13 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
       const auto boneTextureLocation = uniformLocation( p_uniforms, "boneTexture" );
       if ( validUniformLocation( boneTextureLocation ) ) {
         auto textureUnit = getTextureUnit();
-        glUniform1i( boneTextureLocation, textureUnit );
+        _gl.Uniform1i( boneTextureLocation, textureUnit );
         setTexture( *object.boneTexture, textureUnit );
       }
     } else {
       const auto boneMatricesLocation = uniformLocation( p_uniforms, "boneGlobalMatrices" );
       if ( validUniformLocation( boneMatricesLocation ) ) {
-        glUniformMatrix4fv( boneMatricesLocation,
+        _gl.UniformMatrix4fv( boneMatricesLocation,
                             ( int )object.boneMatrices.size(),
                             false,
                             reinterpret_cast<const float*>( &object.boneMatrices[0] ) );
@@ -3751,7 +3750,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
   const auto modelMatrixLocation = uniformLocation( p_uniforms, "modelMatrix" );
   if ( validUniformLocation( modelMatrixLocation ) ) {
-    glUniformMatrix4fv( modelMatrixLocation, 1, false, object.matrixWorld.elements );
+    _gl.UniformMatrix4fv( modelMatrixLocation, 1, false, object.matrixWorld.elements );
   }
 
   return program;
@@ -3957,10 +3956,10 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 
 void GLRenderer::loadUniformsMatrices( UniformLocations& uniforms, Object3D& object ) {
 
-  glUniformMatrix4fv( uniforms[UniformKey::modelViewMatrix()], 1, false, object.glData._modelViewMatrix.elements );
+  _gl.UniformMatrix4fv( uniforms[UniformKey::modelViewMatrix()], 1, false, object.glData._modelViewMatrix.elements );
   const auto normalMatrixLocation = uniformLocation( uniforms, "normalMatrix" );
   if ( validUniformLocation( normalMatrixLocation ) ) {
-    glUniformMatrix3fv( normalMatrixLocation, 1, false, object.glData._normalMatrix.elements );
+    _gl.UniformMatrix3fv( normalMatrixLocation, 1, false, object.glData._normalMatrix.elements );
   }
 
 }
@@ -3993,14 +3992,14 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     auto& uniform = *uniformAndKey.first;
 
-    uniform.load( location );
+    uniform.load( _gl, location );
 
     if ( uniform.type == enums::t ) { // single enums::Texture (2d or cube)
 
       const auto& texture = uniform.value.cast<Texture*>();
       const auto  textureUnit = getTextureUnit();
 
-      glUniform1i( location, textureUnit );
+      _gl.Uniform1i( location, textureUnit );
 
       if ( !texture ) continue;
 
@@ -4021,7 +4020,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
         textureUnits.push_back( getTextureUnit() );
       }
 
-      glUniform1iv( location, (int)textureUnits.size(), textureUnits.data() );
+      _gl.Uniform1iv( location, (int)textureUnits.size(), textureUnits.data() );
 
       for ( size_t i = 0; i < textures.size(); ++i ) {
 
@@ -4292,23 +4291,23 @@ void GLRenderer::setFaceCulling( enums::Side cullFace /*= enums::NoSide*/, enums
   if ( cullFace != enums::NoSide ) {
 
     if ( frontFace == enums::CCW ) {
-      glFrontFace( GL_CCW );
+      _gl.FrontFace( GL_CCW );
     } else {
-      glFrontFace( GL_CW );
+      _gl.FrontFace( GL_CW );
     }
 
     if ( cullFace == enums::BackSide ) {
-      glCullFace( GL_BACK );
+      _gl.CullFace( GL_BACK );
     } else if ( cullFace == enums::FrontSide ) {
-      glCullFace( GL_FRONT );
+      _gl.CullFace( GL_FRONT );
     } else {
-      glCullFace( GL_FRONT_AND_BACK );
+      _gl.CullFace( GL_FRONT_AND_BACK );
     }
 
-    glEnable( GL_CULL_FACE );
+    _gl.Enable( GL_CULL_FACE );
 
   } else {
-    glDisable( GL_CULL_FACE );
+    _gl.Disable( GL_CULL_FACE );
   }
 
 }
@@ -4321,9 +4320,9 @@ void GLRenderer::setMaterialFaces( Material& material ) {
   if ( _oldDoubleSided != doubleSided ) {
 
     if ( doubleSided ) {
-      glDisable( GL_CULL_FACE );
+      _gl.Disable( GL_CULL_FACE );
     } else {
-      glEnable( GL_CULL_FACE );
+      _gl.Enable( GL_CULL_FACE );
     }
 
     _oldDoubleSided = doubleSided;
@@ -4333,9 +4332,9 @@ void GLRenderer::setMaterialFaces( Material& material ) {
   if ( _oldFlipSided != flipSided ) {
 
     if ( flipSided ) {
-      glFrontFace( GL_CW );
+      _gl.FrontFace( GL_CW );
     } else {
-      glFrontFace( GL_CCW );
+      _gl.FrontFace( GL_CCW );
     }
 
     _oldFlipSided = flipSided;
@@ -4349,9 +4348,9 @@ void GLRenderer::setDepthTest( bool depthTest ) {
   if ( _oldDepthTest != toInt( depthTest ) ) {
 
     if ( depthTest ) {
-      glEnable( GL_DEPTH_TEST );
+      _gl.Enable( GL_DEPTH_TEST );
     } else {
-      glDisable( GL_DEPTH_TEST );
+      _gl.Disable( GL_DEPTH_TEST );
     }
 
     _oldDepthTest = toInt( depthTest );
@@ -4363,7 +4362,7 @@ void GLRenderer::setDepthTest( bool depthTest ) {
 void GLRenderer::setDepthWrite( bool depthWrite ) {
 
   if ( _oldDepthWrite != toInt( depthWrite ) ) {
-    glDepthMask( depthWrite );
+    _gl.DepthMask( depthWrite );
     _oldDepthWrite = toInt( depthWrite );
   }
 
@@ -4372,7 +4371,7 @@ void GLRenderer::setDepthWrite( bool depthWrite ) {
 void GLRenderer::setLineWidth( float width ) {
 
   if ( width != _oldLineWidth ) {
-    glLineWidth( width );
+    _gl.LineWidth( width );
     _oldLineWidth = width;
   }
 
@@ -4383,9 +4382,9 @@ void GLRenderer::setPolygonOffset( bool polygonoffset, float factor, float units
   if ( _oldPolygonOffset != toInt( polygonoffset ) ) {
 
     if ( polygonoffset ) {
-      glEnable( GL_POLYGON_OFFSET_FILL );
+      _gl.Enable( GL_POLYGON_OFFSET_FILL );
     } else {
-      glDisable( GL_POLYGON_OFFSET_FILL );
+      _gl.Disable( GL_POLYGON_OFFSET_FILL );
     }
 
     _oldPolygonOffset = toInt( polygonoffset );
@@ -4393,7 +4392,7 @@ void GLRenderer::setPolygonOffset( bool polygonoffset, float factor, float units
   }
 
   if ( polygonoffset && ( _oldPolygonOffsetFactor != factor || _oldPolygonOffsetUnits != units ) ) {
-    glPolygonOffset( factor, units );
+    _gl.PolygonOffset( factor, units );
     _oldPolygonOffsetFactor = factor;
     _oldPolygonOffsetUnits = units;
   }
@@ -4409,37 +4408,37 @@ void GLRenderer::setBlending( enums::Blending blending,
 
     if ( blending == enums::NoBlending ) {
 
-      glDisable( GL_BLEND );
+      _gl.Disable( GL_BLEND );
 
     } else if ( blending == enums::AdditiveBlending ) {
 
-      glEnable( GL_BLEND );
-      glBlendEquation( GL_FUNC_ADD );
-      glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+      _gl.Enable( GL_BLEND );
+      _gl.BlendEquation( GL_FUNC_ADD );
+      _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE );
 
     } else if ( blending == enums::SubtractiveBlending ) {
 
       // TODO: Find blendFuncSeparate() combination
-      glEnable( GL_BLEND );
-      glBlendEquation( GL_FUNC_ADD );
-      glBlendFunc( GL_ZERO, GL_ONE_MINUS_SRC_COLOR );
+      _gl.Enable( GL_BLEND );
+      _gl.BlendEquation( GL_FUNC_ADD );
+      _gl.BlendFunc( GL_ZERO, GL_ONE_MINUS_SRC_COLOR );
 
     } else if ( blending == enums::MultiplyBlending ) {
 
       // TODO: Find blendFuncSeparate() combination
-      glEnable( GL_BLEND );
-      glBlendEquation( GL_FUNC_ADD );
-      glBlendFunc( GL_ZERO, GL_SRC_COLOR );
+      _gl.Enable( GL_BLEND );
+      _gl.BlendEquation( GL_FUNC_ADD );
+      _gl.BlendFunc( GL_ZERO, GL_SRC_COLOR );
 
     } else if ( blending == enums::CustomBlending ) {
 
-      glEnable( GL_BLEND );
+      _gl.Enable( GL_BLEND );
 
     } else {
 
-      glEnable( GL_BLEND );
-      glBlendEquationSeparate( GL_FUNC_ADD, GL_FUNC_ADD );
-      glBlendFuncSeparate( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
+      _gl.Enable( GL_BLEND );
+      _gl.BlendEquationSeparate( GL_FUNC_ADD, GL_FUNC_ADD );
+      _gl.BlendFuncSeparate( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
 
     }
 
@@ -4450,12 +4449,12 @@ void GLRenderer::setBlending( enums::Blending blending,
   if ( blending == enums::CustomBlending ) {
 
     if ( blendEquation != _oldBlendEquation ) {
-      glBlendEquation( paramThreeToGL( blendEquation ) );
+      _gl.BlendEquation( paramThreeToGL( blendEquation ) );
       _oldBlendEquation = blendEquation;
     }
 
     if ( blendSrc != _oldBlendSrc || blendDst != _oldBlendDst ) {
-      glBlendFunc( paramThreeToGL( blendSrc ), paramThreeToGL( blendDst ) );
+      _gl.BlendFunc( paramThreeToGL( blendSrc ), paramThreeToGL( blendDst ) );
       _oldBlendSrc = blendSrc;
       _oldBlendDst = blendDst;
     }
@@ -4523,7 +4522,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   //
 
-  auto glProgram = GL_CALL( glCreateProgram() );
+  auto glProgram = GL_CALL( _gl.CreateProgram() );
 
   auto prefix_vertex = [this, &parameters]() -> std::string {
     std::stringstream ss;
@@ -4681,26 +4680,26 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
   auto glFragmentShader = getShader( enums::ShaderFragment, prefix_fragment + fragmentShader );
   auto glVertexShader   = getShader( enums::ShaderVertex,   prefix_vertex   + vertexShader );
 
-  GL_CALL( glAttachShader( glProgram, glVertexShader ) );
-  GL_CALL( glAttachShader( glProgram, glFragmentShader ) );
+  GL_CALL( _gl.AttachShader( glProgram, glVertexShader ) );
+  GL_CALL( _gl.AttachShader( glProgram, glFragmentShader ) );
 
-  GL_CALL( glLinkProgram( glProgram ) );
+  GL_CALL( _gl.LinkProgram( glProgram ) );
 
-  if ( !glTrue( glGetProgramParameter( glProgram, GL_LINK_STATUS ) ) ) {
+  if ( GL_TRUE != _gl.GetProgramParameter( glProgram, GL_LINK_STATUS ) ) {
     int loglen;
     char logbuffer[1000];
-    glGetProgramInfoLog( glProgram, sizeof( logbuffer ), &loglen, logbuffer );
+    _gl.GetProgramInfoLog( glProgram, sizeof( logbuffer ), &loglen, logbuffer );
     console().error( logbuffer );
     //console().error() << addLineNumbers( source );
-    glDeleteProgram( glProgram );
+    _gl.DeleteProgram( glProgram );
     glProgram = 0;
   }
 
   // clean up
 
-  glDeleteShader( glFragmentShader );
+  _gl.DeleteShader( glFragmentShader );
   glFragmentShader = 0;
-  glDeleteShader( glVertexShader );
+  _gl.DeleteShader( glVertexShader );
   glVertexShader = 0;
 
   if ( !glProgram ) {
@@ -4797,13 +4796,13 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
 void GLRenderer::cacheUniformLocations( Program& program, const Identifiers& identifiers ) {
   for ( const auto& id : identifiers ) {
-    program.uniforms[ id ] = GL_CALL( glGetUniformLocation( program.program, id.c_str() ) );
+    program.uniforms[ id ] = GL_CALL( _gl.GetUniformLocation( program.program, id.c_str() ) );
   }
 }
 
 void GLRenderer::cacheAttributeLocations( Program& program, const Identifiers& identifiers ) {
   for ( const auto& id : identifiers ) {
-    program.attributes[ id ] = GL_CALL( glGetAttribLocation( program.program, id.c_str() ) );
+    program.attributes[ id ] = GL_CALL( _gl.GetAttribLocation( program.program, id.c_str() ) );
   }
 }
 
@@ -4827,19 +4826,19 @@ Buffer GLRenderer::getShader( enums::ShaderType type, const std::string& source 
   Buffer shader = 0;
 
   if ( type == enums::ShaderFragment ) {
-    shader = GL_CALL( glCreateShader( GL_FRAGMENT_SHADER ) );
+    shader = GL_CALL( _gl.CreateShader( GL_FRAGMENT_SHADER ) );
   } else if ( type == enums::ShaderVertex ) {
-    shader = GL_CALL( glCreateShader( GL_VERTEX_SHADER ) );
+    shader = GL_CALL( _gl.CreateShader( GL_VERTEX_SHADER ) );
   }
 
   const char* source_str = source.c_str();
-  GL_CALL( glShaderSource( shader, 1, &source_str, nullptr ) );
-  GL_CALL( glCompileShader( shader ) );
+  GL_CALL( _gl.ShaderSource( shader, 1, &source_str, nullptr ) );
+  GL_CALL( _gl.CompileShader( shader ) );
 
-  if ( !glTrue( glGetShaderParameter( shader, GL_COMPILE_STATUS ) ) ) {
+  if ( GL_TRUE != _gl.GetShaderParameter( shader, GL_COMPILE_STATUS ) ) {
     int loglen;
     char logbuffer[1000];
-    glGetShaderInfoLog( shader, sizeof( logbuffer ), &loglen, logbuffer );
+    _gl.GetShaderInfoLog( shader, sizeof( logbuffer ), &loglen, logbuffer );
     console().error( logbuffer );
     console().error() << addLineNumbers( source );
     return 0;
@@ -4859,18 +4858,18 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
     if ( ! texture.__glInit ) {
 
       texture.__glInit = true;
-      texture.__glTexture = glCreateTexture();
+      texture.__glTexture = _gl.CreateTexture();
 
       _info.memory.textures ++;
 
     }
 
-    glActiveTexture( GL_TEXTURE0 + slot );
-    glBindTexture( GL_TEXTURE_2D, texture.__glTexture );
+    _gl.ActiveTexture( GL_TEXTURE0 + slot );
+    _gl.BindTexture( GL_TEXTURE_2D, texture.__glTexture );
 
 #ifdef TODO_glUnPACK
-    glPixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
-    glPixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
+    _gl.PixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
+    _gl.PixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
 #endif
 
     const auto& image = texture.image[0];
@@ -4882,16 +4881,16 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
 
     //if ( texture.type() == enums::DataTexture ) {
 
-    glTexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data.data() );
+    _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data.data() );
 
     //} else {
 
-    //    glTexImage2D( GL_TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image );
+    //    _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image );
 
     //}
 
     if ( texture.generateMipmaps && isImagePowerOfTwo )
-      glGenerateMipmap( GL_TEXTURE_2D );
+      _gl.GenerateMipmap( GL_TEXTURE_2D );
 
     texture.needsUpdate(false);
 
@@ -4899,8 +4898,8 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
 
   } else {
 
-    glActiveTexture( GL_TEXTURE0 + slot );
-    glBindTexture( GL_TEXTURE_2D, texture.__glTexture );
+    _gl.ActiveTexture( GL_TEXTURE0 + slot );
+    _gl.BindTexture( GL_TEXTURE_2D, texture.__glTexture );
 
   }
 
@@ -4947,15 +4946,15 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
 
       if ( ! texture.__glTextureCube ) {
 
-        texture.__glTextureCube = glCreateTexture();
+        texture.__glTextureCube = _gl.CreateTexture();
 
       }
 
-      glActiveTexture( GL_TEXTURE0 + slot );
-      glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTextureCube );
+      _gl.ActiveTexture( GL_TEXTURE0 + slot );
+      _gl.BindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTextureCube );
 
 #ifdef TODO_IMAGE_SCALING
-      glPixelStorei( GL_UNPACK_FLIP_Y, texture.flipY );
+      _gl.PixelStorei( GL_UNPACK_FLIP_Y, texture.flipY );
 
       std::array<Image*, 6> cubeImage = [];
       for ( auto i = 0; i < 6; i ++ ) {
@@ -4984,11 +4983,11 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
 
       for ( auto i = 0; i < 6; i ++ ) {
         //glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
-        glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, cubeImage[ 0 ].width, cubeImage[ 0 ].height, 0, glFormat, glType, cubeImage[ i ].data.data() );
+        _gl.TexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, cubeImage[ 0 ].width, cubeImage[ 0 ].height, 0, glFormat, glType, cubeImage[ i ].data.data() );
       }
 
       if ( texture.generateMipmaps && isImagePowerOfTwo ) {
-        glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
+        _gl.GenerateMipmap( GL_TEXTURE_CUBE_MAP );
       }
 
       texture.needsUpdate(false);
@@ -4996,8 +4995,8 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
       if ( texture.onUpdate ) texture.onUpdate();
 
     } else {
-      glActiveTexture( GL_TEXTURE0 + slot );
-      glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTextureCube );
+      _gl.ActiveTexture( GL_TEXTURE0 + slot );
+      _gl.BindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTextureCube );
     }
 
   }
@@ -5006,8 +5005,8 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
 
 void GLRenderer::setCubeTextureDynamic( Texture& texture, int slot ) {
 
-  glActiveTexture( GL_TEXTURE0 + slot );
-  glBindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTexture );
+  _gl.ActiveTexture( GL_TEXTURE0 + slot );
+  _gl.BindTexture( GL_TEXTURE_CUBE_MAP, texture.__glTexture );
 
 }
 
@@ -5016,34 +5015,34 @@ void GLRenderer::setCubeTextureDynamic( Texture& texture, int slot ) {
 
 void GLRenderer::setupFrameBuffer( Buffer framebuffer, GLRenderTarget& renderTarget, GLenum textureTarget ) {
 
-  glBindFramebuffer( GL_FRAMEBUFFER, framebuffer );
-  glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureTarget, renderTarget.__glTexture, 0 );
+  _gl.BindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+  _gl.FramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureTarget, renderTarget.__glTexture, 0 );
 
 }
 
 void GLRenderer::setupRenderBuffer( Buffer renderbuffer, GLRenderTarget& renderTarget ) {
 
-  glBindRenderbuffer( GL_RENDERBUFFER, renderbuffer );
+  _gl.BindRenderbuffer( GL_RENDERBUFFER, renderbuffer );
 
   if ( renderTarget.depthBuffer && ! renderTarget.stencilBuffer ) {
 
-    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, renderTarget.width, renderTarget.height );
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer );
+    _gl.RenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, renderTarget.width, renderTarget.height );
+    _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer );
 
     /* For some reason this is not working. Defaulting to RGBA4.
     } else if( ! renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
-        glRenderbufferStorage( GLrenderBuffer, GL_STENCIL_INDEX8, renderTarget.width, renderTarget.height );
-        glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GLrenderBuffer, renderbuffer );
+        _gl.RenderbufferStorage( GLrenderBuffer, GL_STENCIL_INDEX8, renderTarget.width, renderTarget.height );
+        _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GLrenderBuffer, renderbuffer );
     */
   } else if ( renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
-    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_STENCIL, renderTarget.width, renderTarget.height );
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer );
+    _gl.RenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_STENCIL, renderTarget.width, renderTarget.height );
+    _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer );
 
   } else {
 
-    glRenderbufferStorage( GL_RENDERBUFFER, GL_RGBA4, renderTarget.width, renderTarget.height );
+    _gl.RenderbufferStorage( GL_RENDERBUFFER, GL_RGBA4, renderTarget.width, renderTarget.height );
 
   }
 
@@ -5055,7 +5054,7 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
 
   if ( renderTarget && renderTarget->__glFramebuffer.size() == 0 ) {
 
-    renderTarget->__glTexture = glCreateTexture();
+    renderTarget->__glTexture = _gl.CreateTexture();
 
     // Setup texture, create render and frame buffers
 
@@ -5068,53 +5067,53 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
       renderTarget->__glFramebuffer.resize( 6 );
       renderTarget->__glRenderbuffer.resize( 6 );
 
-      glBindTexture( GL_TEXTURE_CUBE_MAP, renderTarget->__glTexture );
+      _gl.BindTexture( GL_TEXTURE_CUBE_MAP, renderTarget->__glTexture );
       setTextureParameters( GL_TEXTURE_CUBE_MAP, *renderTarget, isTargetPowerOfTwo );
 
       for ( auto i = 0; i < 6; i ++ ) {
 
-        renderTarget->__glFramebuffer[ i ] = glCreateFramebuffer();
-        renderTarget->__glRenderbuffer[ i ] = glCreateRenderbuffer();
+        renderTarget->__glFramebuffer[ i ] = _gl.CreateFramebuffer();
+        renderTarget->__glRenderbuffer[ i ] = _gl.CreateRenderbuffer();
 
-        glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
+        _gl.TexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
 
         setupFrameBuffer( renderTarget->__glFramebuffer[ i ], *renderTarget, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i );
         setupRenderBuffer( renderTarget->__glRenderbuffer[ i ], *renderTarget );
 
       }
 
-      if ( isTargetPowerOfTwo ) glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
+      if ( isTargetPowerOfTwo ) _gl.GenerateMipmap( GL_TEXTURE_CUBE_MAP );
 
     } else {
 
       renderTarget->__glFramebuffer.resize( 1 );
       renderTarget->__glRenderbuffer.resize( 1 );
 
-      renderTarget->__glFramebuffer[ 0 ] = glCreateFramebuffer();
-      renderTarget->__glRenderbuffer[ 0 ] = glCreateRenderbuffer();
+      renderTarget->__glFramebuffer[ 0 ] = _gl.CreateFramebuffer();
+      renderTarget->__glRenderbuffer[ 0 ] = _gl.CreateRenderbuffer();
 
-      glBindTexture( GL_TEXTURE_2D, renderTarget->__glTexture );
+      _gl.BindTexture( GL_TEXTURE_2D, renderTarget->__glTexture );
       setTextureParameters( GL_TEXTURE_2D, *renderTarget, isTargetPowerOfTwo );
 
-      glTexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
+      _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
 
       setupFrameBuffer( renderTarget->__glFramebuffer[ 0 ], *renderTarget, GL_TEXTURE_2D );
       setupRenderBuffer( renderTarget->__glRenderbuffer[ 0 ], *renderTarget );
 
-      if ( isTargetPowerOfTwo ) glGenerateMipmap( GL_TEXTURE_2D );
+      if ( isTargetPowerOfTwo ) _gl.GenerateMipmap( GL_TEXTURE_2D );
 
     }
 
     // Release everything
 
     if ( isCube ) {
-      glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+      _gl.BindTexture( GL_TEXTURE_CUBE_MAP, 0 );
     } else {
-      glBindTexture( GL_TEXTURE_2D, 0 );
+      _gl.BindTexture( GL_TEXTURE_2D, 0 );
     }
 
-    glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    _gl.BindRenderbuffer( GL_RENDERBUFFER, 0 );
+    _gl.BindFramebuffer( GL_FRAMEBUFFER, 0 );
 
   }
 
@@ -5149,8 +5148,8 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
 
   if ( framebuffer != _currentFramebuffer ) {
 
-    glBindFramebuffer( GL_FRAMEBUFFER, framebuffer );
-    glViewport( vx, vy, width, height );
+    _gl.BindFramebuffer( GL_FRAMEBUFFER, framebuffer );
+    _gl.Viewport( vx, vy, width, height );
 
     _currentFramebuffer = framebuffer;
 
@@ -5165,15 +5164,15 @@ void GLRenderer::updateRenderTargetMipmap( GLRenderTarget& renderTarget ) {
 
   if ( renderTarget.type() == enums::GLRenderTargetCube ) {
 
-    glBindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__glTexture );
-    glGenerateMipmap( GL_TEXTURE_CUBE_MAP );
-    glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+    _gl.BindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__glTexture );
+    _gl.GenerateMipmap( GL_TEXTURE_CUBE_MAP );
+    _gl.BindTexture( GL_TEXTURE_CUBE_MAP, 0 );
 
   } else {
 
-    glBindTexture( GL_TEXTURE_2D, renderTarget.__glTexture );
-    glGenerateMipmap( GL_TEXTURE_2D );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    _gl.BindTexture( GL_TEXTURE_2D, renderTarget.__glTexture );
+    _gl.GenerateMipmap( GL_TEXTURE_2D );
+    _gl.BindTexture( GL_TEXTURE_2D, 0 );
 
   }
 
@@ -5247,10 +5246,6 @@ int GLRenderer::paramThreeToGL( int p ) {
     return GL_BGR;
   case enums::BGRAFormat:
     return GL_BGRA;
-  case enums::LuminanceFormat:
-    return GL_LUMINANCE;
-  case enums::LuminanceAlphaFormat:
-    return GL_LUMINANCE_ALPHA;
 
   case enums::AddEquation:
     return GL_FUNC_ADD;

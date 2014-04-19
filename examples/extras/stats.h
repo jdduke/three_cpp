@@ -7,12 +7,13 @@
 
 namespace three {
 class GLRenderer;
+}
 
-namespace stats {
+namespace three_examples {
 
-class Stats : public NonCopyable {
+class Stats : public three::NonCopyable {
 public:
-  Stats( GLRenderer& renderer );
+  Stats( three::GLRenderer& renderer );
   ~Stats();
 
   void update( float deltaTime, bool render = true );
@@ -23,7 +24,6 @@ private:
   std::unique_ptr<Impl> impl;
 };
 
-} // namespace stats
-} // namespace three
+} // namespace three_examples
 
-#endif // THREE_ANIM_H
+#endif // THREE_STATS_H

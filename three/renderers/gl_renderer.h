@@ -35,11 +35,9 @@ public:
 
   typedef std::shared_ptr<GLRenderer> Ptr;
 
-  static Ptr create( const RendererParameters& parameters );
+  static Ptr create( const RendererParameters& parameters, const GLInterface& gl );
 
 public:
-
-  void* context;
 
   // clearing
 
@@ -84,7 +82,6 @@ public:
 
 public:
 
-  void* getContext() { return _gl; }
   bool supportsVertexTextures() const { return _supportsVertexTextures; }
   float getMaxAnisotropy() const { return _maxAnisotropy; }
   int width() const { return _width; }
@@ -239,15 +236,15 @@ private:
 
   // Shaders
   Program::Ptr buildProgram( const std::string& shaderID,
-                                        const std::string& fragmentShader,
-                                        const std::string& vertexShader,
-                                        const Uniforms& uniforms,
-                                        const Attributes& attributes,
-                                        ProgramParameters& parameters );
+                             const std::string& fragmentShader,
+                             const std::string& vertexShader,
+                             const Uniforms& uniforms,
+                             const Attributes& attributes,
+                             ProgramParameters& parameters );
 
   // Shader parameters cache
-  static void cacheUniformLocations( Program& program, const Identifiers& identifiers );
-  static void cacheAttributeLocations( Program& program, const Identifiers& identifiers );
+  void cacheUniformLocations( Program& program, const Identifiers& identifiers );
+  void cacheAttributeLocations( Program& program, const Identifiers& identifiers );
   static std::string addLineNumbers( const std::string& string );
   Buffer getShader( enums::ShaderType type, const std::string& source );
 
@@ -258,25 +255,25 @@ private:
 
     if ( isImagePowerOfTwo ) {
 
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
 
-      glTexParameteri( textureType, GL_TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
-      glTexParameteri( textureType, GL_TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
 
     } else {
 
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-      glTexParameteri( textureType, GL_TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
-      glTexParameteri( textureType, GL_TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
 
     }
 
     if ( _glExtensionTextureFilterAnisotropic && texture.dataType != enums::FloatType ) {
       if ( texture.anisotropy > 1 || texture.__oldAnisotropy ) {
-        glTexParameterf( textureType, TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
+        _gl.TexParameterf( textureType, TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
         texture.__oldAnisotropy = texture.anisotropy;
       }
     }
@@ -309,7 +306,7 @@ private:
 
 protected:
 
-  GLRenderer( const RendererParameters& parameters );
+  GLRenderer( const RendererParameters& parameters, const GLInterface& gl );
 
   void initialize();
   void initGL();
@@ -318,7 +315,6 @@ protected:
 private:
 
   int _width, _height;
-  bool _vsync;
   enums::PrecisionType _precision;
   bool _alpha;
   bool _premultipliedAlpha;
@@ -448,7 +444,7 @@ private:
 
   } _lights;
 
-  void* _gl;
+  GLInterfaceWrapper _gl;
 
   bool _glExtensionTextureFloat;
   bool _glExtensionStandardDerivatives;

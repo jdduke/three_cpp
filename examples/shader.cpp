@@ -52,8 +52,9 @@ void main() { \
 }
 
 using namespace three;
+using namespace three_examples;
 
-void shader( GLRenderer::Ptr renderer ) {
+void shader( GLWindow& window, GLRenderer& renderer ) {
 
   auto camera = Camera::create();
   camera->position.z = 1;
@@ -64,8 +65,8 @@ void shader( GLRenderer::Ptr renderer ) {
 
   Uniforms uniforms;
   uniforms[ "time" ]       = Uniform( enums::f, time);
-  uniforms[ "resolution" ] = Uniform( enums::v2, Vector2( (float)renderer->width(),
-                                                          (float)renderer->height()) );
+  uniforms[ "resolution" ] = Uniform( enums::v2, Vector2( (float)renderer.width(),
+                                                          (float)renderer.height()) );
 
   auto material = ShaderMaterial::create(
     vertexShader(),
@@ -79,24 +80,14 @@ void shader( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
-
-  /////////////////////////////////////////////////////////////////////////
-
-  anim::gameLoop( [&]( float dt ) -> bool {
+  window.animate( [&]( float dt ) -> bool {
 
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    renderer->render( *scene, *camera );
+    renderer.render( *scene, *camera );
 
-    return running;
+    return true;
 
   } );
 
@@ -104,7 +95,6 @@ void shader( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  RunExample( shader );
+  return RunExample( shader );
 
-  return 0;
 }

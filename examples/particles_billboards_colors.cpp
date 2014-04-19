@@ -11,11 +11,12 @@
 #include <three/extras/image_utils.h>
 
 using namespace three;
+using namespace three_examples;
 
-void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
+void particles_billboards_colors( GLWindow& window, GLRenderer& renderer ) {
 
   auto camera = PerspectiveCamera::create(
-    50, ( float )renderer->width() / renderer->height(), 1.f, 3000
+    50, ( float )renderer.width() / renderer.height(), 1.f, 3000
   );
   camera->position.z = 1400;
 
@@ -60,41 +61,24 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true, renderStats = true;
-  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
-    switch (e.key.keysym.sym) {
-    case SDLK_q:
-    case SDLK_ESCAPE:
-      running = false; break;
-    default:
-      renderStats = !renderStats; break;
-    };
-  } );
-
-  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  } );
-
   auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener( SDL_MOUSEMOTION, [&]( const sdl::Event & event ) {
-    mouseX = 2.f * ( ( float )event.motion.x / renderer->width()  - 0.5f );
-    mouseY = 2.f * ( ( float )event.motion.y / renderer->height() - 0.5f );
+  window.addEventListener( SDL_MOUSEMOTION, [&]( const SDL_Event& event ) {
+    mouseX = 2.f * ( ( float )event.motion.x / renderer.width()  - 0.5f );
+    mouseY = 2.f * ( ( float )event.motion.y / renderer.height() - 0.5f );
   } );
 
-  sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
-    camera->aspect = ( float )event.resize.w / event.resize.h;
+  window.addEventListener( SDL_WINDOWEVENT, [&]( const SDL_Event& event ) {
+    if (event.window.event != SDL_WINDOWEVENT_RESIZED) return;
+    camera->aspect = ( float )event.window.data1 / event.window.data2;
     camera->updateProjectionMatrix();
-    renderer->setSize( event.resize.w, event.resize.h );
+    renderer.setSize( event.window.data1, event.window.data2 );
   } );
 
   /////////////////////////////////////////////////////////////////////////
 
-  stats::Stats stats( *renderer );
   auto time = 0.f;
 
-  anim::gameLoop(
-
-  [&]( float dt ) -> bool {
+  window.animate( [&]( float dt ) -> bool {
 
     time += dt * .15f;
 
@@ -105,13 +89,11 @@ void particles_billboards_colors( const GLRenderer::Ptr& renderer ) {
     const auto h = Math::fmod( 360.f * ( 1.f + time ), 360.f ) / 360.f;
     material->color.setHSL( h, 1.f, 0.6f );
 
-    renderer->render( *scene, *camera );
+    renderer.render( *scene, *camera );
 
-    stats.update( dt, renderStats );
+    return true;
 
-    return running;
-
-  }, 2000 );
+  } );
 
 }
 
@@ -121,7 +103,6 @@ int main( int argc, char* argv[] ) {
   parameters.clearAlpha = 1;
   parameters.vsync = false;
 
-  RunExample( particles_billboards_colors, parameters );
+  return RunExample( particles_billboards_colors, parameters );
 
-  return 0;
 }

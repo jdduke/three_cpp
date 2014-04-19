@@ -121,11 +121,12 @@ void main( void ) {\
 ";
 
 using namespace three;
+using namespace three_examples;
 
-void shader_fireball( GLRenderer::Ptr renderer ) {
+void shader_fireball( GLWindow& window, GLRenderer& renderer ) {
 
   auto camera = PerspectiveCamera::create(
-    40, (float)renderer->width() / renderer->height(), 1, 3000
+    40, (float)renderer.width() / renderer.height(), 1, 3000
   );
   camera->position.z = 4;
 
@@ -144,21 +145,11 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
   auto mesh = Mesh::create( SphereGeometry::create( 0.75f, 64, 32 ), material );
   scene->add( mesh );
 
-  renderer->setClearColorHex( 0x050505, 0 );
+  renderer.setClearColorHex( 0x050505, 0 );
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
-
-  /////////////////////////////////////////////////////////////////////////
-
-  anim::gameLoop( [&]( float dt ) -> bool {
+  window.animate( [&]( float dt ) -> bool {
 
     time += dt;
     material->uniforms[ "time" ].value = time;
@@ -166,9 +157,9 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
     mesh->rotation().y( mesh->rotation().y() + 0.5f * dt );
     mesh->rotation().x( mesh->rotation().x() + 0.1f * dt );
 
-    renderer->render( *scene, *camera );
+    renderer.render( *scene, *camera );
 
-    return running;
+    return true;
 
   } );
 
@@ -176,7 +167,6 @@ void shader_fireball( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  RunExample( shader_fireball );
+  return RunExample( shader_fireball );
 
-  return 0;
 }

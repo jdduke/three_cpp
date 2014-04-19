@@ -32,11 +32,12 @@ const std::string fragmentShader =
 "}\n";
 
 using namespace three;
+using namespace three_examples;
 
-void shader( GLRenderer::Ptr renderer ) {
+void shader( GLWindow& window, GLRenderer& renderer ) {
 
  auto camera = PerspectiveCamera::create(
-    60, ( float )renderer->width() / renderer->height(), 1, 10000
+    60, ( float )renderer.width() / renderer.height(), 1, 10000
   );
   camera->position.z = 300;
 
@@ -109,33 +110,18 @@ void shader( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true, renderStats = true;
-  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
-    switch (e.key.keysym.sym) {
-    case SDLK_q:
-    case SDLK_ESCAPE:
-      running = false; break;
-    default:
-      renderStats = !renderStats; break;
-    };
-  } );
-
-  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  } );
-
-  sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
-    camera->aspect = ( float )event.resize.w / event.resize.h;
+  window.addEventListener( SDL_WINDOWEVENT, [&]( const SDL_Event& event ) {
+    if (event.window.event != SDL_WINDOWEVENT_RESIZED) return;
+    camera->aspect = ( float )event.window.data1 / event.window.data2;
     camera->updateProjectionMatrix();
-    renderer->setSize( event.resize.w, event.resize.h );
+    renderer.setSize( event.window.data1, event.window.data2 );
   } );
 
   /////////////////////////////////////////////////////////////////////////
 
-  stats::Stats stats( *renderer );
   auto time = 0.f;
 
-  anim::gameLoop( [&]( float dt ) -> bool {
+  window.animate( [&]( float dt ) -> bool {
 
     time += dt;
     sphere->rotation().z( time * .03f );
@@ -146,13 +132,11 @@ void shader( GLRenderer::Ptr renderer ) {
     }
     size.needsUpdate = true;
 
-    renderer->render( *scene, *camera );
+    renderer.render( *scene, *camera );
 
-    stats.update( dt, renderStats );
+    return true;
 
-    return running;
-
-  }, 2000 );
+  } );
 
 }
 
@@ -163,7 +147,6 @@ int main( int argc, char* argv[] ) {
   parameters.clearAlpha = 1.f;
   parameters.vsync = false;
 
-  RunExample( shader, parameters );
+  return RunExample( shader, parameters );
 
-  return 0;
 }

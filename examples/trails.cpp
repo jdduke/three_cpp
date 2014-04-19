@@ -8,16 +8,17 @@
 #include <three/renderers/gl_renderer.h>
 
 using namespace three;
+using namespace three_examples;
 
-void trails( GLRenderer::Ptr renderer ) {
+void trails( GLWindow& window, GLRenderer& renderer ) {
 
-  renderer->sortObjects = false;
-  renderer->autoClearColor = false;
+  renderer.sortObjects = false;
+  renderer.autoClearColor = false;
 
   // Camera
   auto camera = PerspectiveCamera::create(
     60,
-    (float)renderer->width() / renderer->height(),
+    (float)renderer.width() / renderer.height(),
     1, 10000
   );
   camera->position.set( 100000, 0, 3200 );
@@ -51,33 +52,22 @@ void trails( GLRenderer::Ptr renderer ) {
   auto mesh = ParticleSystem::create( geometry, material );
   scene->add( mesh );
 
-
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
-
   auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+  window.addEventListener(SDL_MOUSEMOTION, [&]( const SDL_Event& event ) {
+    mouseX = 2.f * ((float)event.motion.x / renderer.width()  - 0.5f);
+    mouseY = 2.f * ((float)event.motion.y / renderer.height() - 0.5f);
   });
 
   // Rendering
-  anim::gameLoop (
+  window.animate ( [&]( float dt ) -> bool {
 
-    [&]( float dt ) -> bool {
+    camera->position.x += ( 1000.f * mouseX - camera->position.x ) * 5 * dt;
+    camera->position.y += ( 1000.f * mouseY - camera->position.y ) * 5 * dt;
+    camera->lookAt( scene->position );
 
-      camera->position.x += ( 1000.f * mouseX - camera->position.x ) * 5 * dt;
-      camera->position.y += ( 1000.f * mouseY - camera->position.y ) * 5 * dt;
-      camera->lookAt( scene->position );
+    renderer.render( *scene, *camera );
 
-      renderer->render( *scene, *camera );
-
-      return running;
+    return true;
 
   } );
 
@@ -88,7 +78,6 @@ int main ( int argc, char* argv[] ) {
   RendererParameters parameters;
   parameters.preserveDrawingBuffer = true;
 
-  RunExample( trails, parameters );
+  return RunExample( trails, parameters );
 
-  return 0;
 }

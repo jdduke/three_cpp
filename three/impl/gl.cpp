@@ -5,7 +5,7 @@
 namespace three {
 
 namespace {
-const char* glErrorStringImpl( GLenum err ) {
+const char* errorStringImpl( GLenum err ) {
   switch(err) {
     case GL_INVALID_ENUM:      return "Invalid enum";
     case GL_INVALID_OPERATION: return "Invalid operation";
@@ -13,114 +13,213 @@ const char* glErrorStringImpl( GLenum err ) {
     case GL_OUT_OF_MEMORY:     return "Out of memory";
     case GL_STACK_OVERFLOW:    return "Stack overflow";
     case GL_STACK_UNDERFLOW:   return "Stack underflow";
-    case GL_TABLE_TOO_LARGE:   return "Table too large";
     default:                   return "Unknown error";
   }
 }
+
 } // namespace
 
-int glError( const char* file, int line ) {
+bool GLInterface::validate() const {
+#define CHECK_PTR(PTR)                                                  \
+  if (!(PTR)) {                                                         \
+    console().warn() << "THREE: gl function does not exist - " << #PTR; \
+    return false;                                                       \
+  }
+  CHECK_PTR( ActiveTexture );
+  CHECK_PTR( AttachShader );
+  CHECK_PTR( BindAttribLocation );
+  CHECK_PTR( BindBuffer );
+  CHECK_PTR( BindFramebuffer );
+  CHECK_PTR( BlendEquation );
+  CHECK_PTR( BindRenderbuffer );
+  CHECK_PTR( BindTexture );
+  CHECK_PTR( BlendEquationSeparate );
+  CHECK_PTR( BlendFunc );
+  CHECK_PTR( BlendFuncSeparate );
+  CHECK_PTR( BufferData );
+  CHECK_PTR( BufferSubData );
+  CHECK_PTR( Clear );
+  CHECK_PTR( ClearColor );
+  CHECK_PTR( ClearDepth );
+  CHECK_PTR( ClearStencil );
+  CHECK_PTR( ColorMask );
+  CHECK_PTR( CompileShader );
+  CHECK_PTR( CreateProgram );
+  CHECK_PTR( CreateShader );
+  CHECK_PTR( CullFace );
+  CHECK_PTR( DeleteBuffers );
+  CHECK_PTR( DeleteFramebuffers );
+  CHECK_PTR( DeleteProgram );
+  CHECK_PTR( DeleteRenderbuffers );
+  CHECK_PTR( DeleteShader );
+  CHECK_PTR( DeleteTextures );
+  CHECK_PTR( DepthFunc );
+  CHECK_PTR( DepthMask );
+  CHECK_PTR( Disable );
+  CHECK_PTR( DisableVertexAttribArray );
+  CHECK_PTR( DrawArrays );
+  CHECK_PTR( DrawElements );
+  CHECK_PTR( Enable );
+  CHECK_PTR( EnableVertexAttribArray );
+  CHECK_PTR( Finish );
+  CHECK_PTR( Flush );
+  CHECK_PTR( FramebufferRenderbuffer );
+  CHECK_PTR( FramebufferTexture2D );
+  CHECK_PTR( FrontFace );
+  CHECK_PTR( GenBuffers );
+  CHECK_PTR( GenerateMipmap );
+  CHECK_PTR( GenFramebuffers );
+  CHECK_PTR( GenRenderbuffers );
+  CHECK_PTR( GenTextures );
+  CHECK_PTR( GetAttribLocation );
+  CHECK_PTR( GetBufferParameteriv );
+  CHECK_PTR( GetError );
+  CHECK_PTR( GetFloatv );
+  CHECK_PTR( GetIntegerv );
+  CHECK_PTR( GetProgramInfoLog );
+  CHECK_PTR( GetProgramiv );
+  CHECK_PTR( GetShaderInfoLog );
+  CHECK_PTR( GetShaderiv );
+  CHECK_PTR( GetString );
+  CHECK_PTR( GetTexParameterfv );
+  CHECK_PTR( GetTexParameteriv );
+  CHECK_PTR( GetUniformLocation );
+  CHECK_PTR( LineWidth );
+  CHECK_PTR( LinkProgram );
+  CHECK_PTR( PolygonOffset );
+  CHECK_PTR( RenderbufferStorage );
+  CHECK_PTR( Scissor );
+  CHECK_PTR( StencilFunc );
+  CHECK_PTR( StencilMask );
+  CHECK_PTR( StencilOp );
+  CHECK_PTR( ShaderSource );
+  CHECK_PTR( ShaderSource );
+  CHECK_PTR( ShaderSource );
+  CHECK_PTR( TexImage2D );
+  CHECK_PTR( TexParameterf );
+  CHECK_PTR( TexParameterfv );
+  CHECK_PTR( TexParameteri );
+  CHECK_PTR( TexParameteriv );
+  CHECK_PTR( TexSubImage2D );
+  CHECK_PTR( Uniform1f );
+  CHECK_PTR( Uniform1i );
+  CHECK_PTR( Uniform1fv );
+  CHECK_PTR( Uniform1iv );
+  CHECK_PTR( Uniform2f );
+  CHECK_PTR( Uniform2i );
+  CHECK_PTR( Uniform2fv );
+  CHECK_PTR( Uniform2iv );
+  CHECK_PTR( Uniform3f );
+  CHECK_PTR( Uniform3i );
+  CHECK_PTR( Uniform3fv );
+  CHECK_PTR( Uniform3iv );
+  CHECK_PTR( Uniform4f );
+  CHECK_PTR( Uniform4i );
+  CHECK_PTR( Uniform4fv );
+  CHECK_PTR( Uniform4iv );
+  CHECK_PTR( UniformMatrix2fv );
+  CHECK_PTR( UniformMatrix3fv );
+  CHECK_PTR( UniformMatrix4fv );
+  CHECK_PTR( UseProgram );
+  CHECK_PTR( VertexAttribPointer );
+  CHECK_PTR( Viewport );
+#undef CHECK_PTR
+  return true;
+}
+
+GLInterfaceWrapper::GLInterfaceWrapper( const GLInterface& gl )
+    : GLInterface( gl ) {}
+
+int GLInterfaceWrapper::Error( const char* file, int line ) {
   int retCode = 0;
-  auto err = glGetError();
+  auto err = GetError();
   if ( err != GL_NO_ERROR ) {
-    console().warn() << "THREE: glError in file " << file
-                     << " @ line "                << line
-                     << ": "                      << glErrorStringImpl( err );
+    console().warn() << "THREE: gl error in file " << file
+                     << " @ line "                 << line
+                     << ": "                       << errorStringImpl( err );
     retCode = 1;
   }
   return retCode;
 }
 
-bool glTrue( GLboolean b ) {
-  return b == GL_TRUE;
-}
-
-GLuint glCreateBuffer() {
+GLuint GLInterfaceWrapper::CreateBuffer() {
   GLuint buffer = 0;
-  glGenBuffers( 1, &buffer );
+  GenBuffers( 1, &buffer );
   return buffer;
 }
 
-void glDeleteBuffer( GLuint& buffer ) {
-  glDeleteBuffers( 1, &buffer );
+void GLInterfaceWrapper::DeleteBuffer( GLuint& buffer ) {
+  DeleteBuffers( 1, &buffer );
   buffer = 0;
 }
 
-GLuint glCreateTexture() {
+GLuint GLInterfaceWrapper::CreateTexture() {
   GLuint texture = 0;
-  glGenTextures( 1, &texture );
+  GenTextures( 1, &texture );
   return texture;
 }
 
-void glDeleteTexture( GLuint& texture ) {
-  glDeleteTextures( 1, &texture );
+void GLInterfaceWrapper::DeleteTexture( GLuint& texture ) {
+  DeleteTextures( 1, &texture );
   texture = 0;
 }
 
-GLuint glCreateFramebuffer() {
+GLuint GLInterfaceWrapper::CreateFramebuffer() {
   GLuint buffer = 0;
-  glGenFramebuffers( 1, &buffer );
+  GenFramebuffers( 1, &buffer );
   return buffer;
 }
 
-void glDeleteFramebuffer( GLuint& buffer ) {
-  glDeleteFramebuffers( 1, &buffer );
+void GLInterfaceWrapper::DeleteFramebuffer( GLuint& buffer ) {
+  DeleteFramebuffers( 1, &buffer );
   buffer = 0;
 }
 
-GLuint glCreateRenderbuffer() {
+GLuint GLInterfaceWrapper::CreateRenderbuffer() {
   GLuint buffer = 0;
-  glGenRenderbuffers( 1, &buffer );
+  GenRenderbuffers( 1, &buffer );
   return buffer;
 }
 
-void glDeleteRenderbuffer( GLuint& buffer ) {
-  glDeleteRenderbuffers( 1, &buffer );
+void GLInterfaceWrapper::DeleteRenderbuffer( GLuint& buffer ) {
+  DeleteRenderbuffers( 1, &buffer );
   buffer = 0;
 }
 
-GLint glGetParameteri( GLenum pname ) {
+GLint GLInterfaceWrapper::GetParameteri( GLenum pname ) {
   GLint parameter = 0;
-  glGetIntegerv( pname, &parameter );
+  GetIntegerv( pname, &parameter );
   return parameter;
 }
 
-GLfloat glGetParameterf( GLenum pname ) {
+GLfloat GLInterfaceWrapper::GetParameterf( GLenum pname ) {
   GLfloat parameter = 0;
-  glGetFloatv( pname, &parameter );
+  GetFloatv( pname, &parameter );
   return parameter;
 }
 
-GLint glGetTexParameteri( GLenum pname ) {
+GLint GLInterfaceWrapper::GetTexParameteri( GLenum pname ) {
   GLint parameter = 0;
-  glGetTexParameteriv( GL_TEXTURE_2D, pname, &parameter );
+  GetTexParameteriv( GL_TEXTURE_2D, pname, &parameter );
   return parameter;
 }
 
-GLfloat glGetTexParameterf( GLenum pname ) {
+GLfloat GLInterfaceWrapper::GetTexParameterf( GLenum pname ) {
   GLfloat parameter = 0;
-  glGetTexParameterfv( GL_TEXTURE_2D, pname, &parameter );
+  GetTexParameterfv( GL_TEXTURE_2D, pname, &parameter );
   return parameter;
 }
 
-GLint glGetProgramParameter( GLuint program, GLenum pname ) {
+GLint GLInterfaceWrapper::GetProgramParameter( GLuint program, GLenum pname ) {
   GLint parameter = 0;
-  glGetProgramiv( program, pname, &parameter );
+  GetProgramiv( program, pname, &parameter );
   return parameter;
 }
 
-GLint glGetShaderParameter( GLuint program, GLenum pname ) {
+GLint GLInterfaceWrapper::GetShaderParameter( GLuint program, GLenum pname ) {
   GLint parameter = 0;
-  glGetShaderiv( program, pname, &parameter );
+  GetShaderiv( program, pname, &parameter );
   return parameter;
-}
-
-void glEnableVSync( bool enable ) {
-#if defined (_WIN32) && defined(THREE_GLEW)
-  if (wglewIsSupported("WGL_EXT_swap_control")) {
-    wglSwapIntervalEXT( enable ? 1 : 0 );
-  }
-#endif
 }
 
 } // namespace three
