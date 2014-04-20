@@ -3,6 +3,7 @@
 #include "three/console.h"
 #include "three/core/clock.h"
 #include "three/renderers/renderer_parameters.h"
+#include "three/renderers/gl_renderer.h"
 
 #include "examples/extras/stats.h"
 
@@ -188,10 +189,12 @@ void GLWindow::addEventListener( EventType eventType, EventListener eventListene
 void GLWindow::animate( Update update ) {
   SDL_assert( valid() );
 
-  // TODO(jdduke): Fix stats.
-  // Stats stats( *renderer );
-  // bool renderStats = true;
-
+/*
+  RendererParameters statsRendererParams;
+  statsRendererParams.preserveDrawingBuffer = true;
+  auto statsRenderer = GLRenderer::create( statsRendererParams, createGLInterface() );
+  Stats stats( *statsRenderer );
+*/
   Clock clock;
 
   auto lastUpdateTime = clock.getElapsedTime();

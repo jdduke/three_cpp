@@ -1,16 +1,16 @@
 #include "common.h"
 
-#include <three/cameras/perspective_camera.h>
-#include <three/core/geometry.h>
-#include <three/lights/directional_light.h>
-#include <three/materials/mesh_normal_material.h>
-#include <three/objects/mesh.h>
-#include <three/renderers/renderer_parameters.h>
-#include <three/renderers/gl_renderer.h>
-#include <three/scenes/fog.h>
+#include "three/cameras/perspective_camera.h"
+#include "three/core/geometry.h"
+#include "three/lights/directional_light.h"
+#include "three/materials/mesh_normal_material.h"
+#include "three/objects/mesh.h"
+#include "three/renderers/renderer_parameters.h"
+#include "three/renderers/gl_renderer.h"
+#include "three/scenes/fog.h"
 
-#include <three/extras/geometries/cube_geometry.h>
-#include <three/extras/scene_utils.h>
+#include "three/extras/geometries/cube_geometry.h"
+#include "three/extras/scene_utils.h"
 
 using namespace three;
 using namespace three_examples;

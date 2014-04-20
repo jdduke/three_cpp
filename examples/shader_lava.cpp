@@ -1,14 +1,14 @@
 #include "common.h"
 
-#include <three/core/geometry.h>
-#include <three/cameras/perspective_camera.h>
-#include <three/objects/mesh.h>
-#include <three/materials/shader_material.h>
-#include <three/renderers/renderer_parameters.h>
-#include <three/renderers/gl_renderer.h>
+#include "three/core/geometry.h"
+#include "three/cameras/perspective_camera.h"
+#include "three/objects/mesh.h"
+#include "three/materials/shader_material.h"
+#include "three/renderers/renderer_parameters.h"
+#include "three/renderers/gl_renderer.h"
 
-#include <three/extras/geometries/torus_geometry.h>
-#include <three/extras/image_utils.h>
+#include "three/extras/geometries/torus_geometry.h"
+#include "three/extras/image_utils.h"
 
 const std::string vertexShader =
 "\

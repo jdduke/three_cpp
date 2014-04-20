@@ -801,10 +801,10 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
         if( meshFaceMaterial ) {
           return meshFaceMaterial->materials[ geometryGroup->materialIndex.value ].get();
         }
-        
+
       }
 
-    } 
+    }
 
   }
 

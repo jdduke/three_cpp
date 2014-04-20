@@ -1,7 +1,7 @@
 #ifndef THREE_STATS_H
 #define THREE_STATS_H
 
-#include <three/utils/noncopyable.h>
+#include "three/utils/noncopyable.h"
 
 #include <memory>
 
