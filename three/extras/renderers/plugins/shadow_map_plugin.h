@@ -69,7 +69,7 @@ class ShadowMapPlugin : public IPlugin {
     glEnable( GL_CULL_FACE );
     glFrontFace( GL_CCW );
 
-    if ( _renderer->shadowMapCullFrontFaces ) {
+    if ( _renderer->shadowMapCullFace ) {
       glCullFace( GL_FRONT );
     } else {
       glCullFace( GL_BACK );
@@ -302,7 +302,7 @@ class ShadowMapPlugin : public IPlugin {
     glClearColor( clearColor.r, clearColor.g, clearColor.b, clearAlpha );
     glEnable( GL_BLEND );
 
-    if ( _renderer->shadowMapCullFrontFaces ) {
+    if ( _renderer->shadowMapCullFace ) {
       glCullFace( GL_BACK );
     }
 

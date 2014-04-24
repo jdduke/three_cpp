@@ -1,0 +1,451 @@
+THREE.WebGLRenderer = function ( parameters ) {
+
+	// API
+
+	this.getContext = function () {
+	};
+
+	this.supportsVertexTextures = function () {
+	};
+
+	this.supportsFloatTextures = function () {
+	};
+
+	this.supportsStandardDerivatives = function () {
+	};
+
+	this.supportsCompressedTextureS3TC = function () {
+	};
+
+	this.getMaxAnisotropy  = function () {
+	};
+
+	this.getPrecision = function () {
+	};
+
+	this.setSize = function ( width, height, updateStyle ) {
+	};
+
+	this.setViewport = function ( x, y, width, height ) {
+	};
+
+	this.setScissor = function ( x, y, width, height ) {
+	};
+
+	this.enableScissorTest = function ( enable ) {
+	};
+
+	// Clearing
+
+	this.setClearColor = function ( color, alpha ) {
+	};
+
+	this.setClearColorHex = function ( hex, alpha ) {
+	};
+
+	this.getClearColor = function () {
+	};
+
+	this.getClearAlpha = function () {
+	};
+
+	this.clear = function ( color, depth, stencil ) {
+	};
+
+	this.clearColor = function () {
+	};
+
+	this.clearDepth = function () {
+	};
+
+	this.clearStencil = function () {
+	};
+
+	this.clearTarget = function ( renderTarget, color, depth, stencil ) {
+	};
+
+	// Plugins
+
+	this.addPostPlugin = function ( plugin ) {
+	};
+
+	this.addPrePlugin = function ( plugin ) {
+	};
+
+	// Rendering
+
+	this.updateShadowMap = function ( scene, camera ) {
+	};
+
+	// Internal functions
+
+	// Buffer allocation
+
+	function createParticleBuffers ( geometry ) {
+	};
+
+	function createLineBuffers ( geometry ) {
+	};
+
+	function createMeshBuffers ( geometryGroup ) {
+	};
+
+	// Events
+
+	var onGeometryDispose = function ( event ) {
+	};
+
+	var onTextureDispose = function ( event ) {
+	};
+
+	var onRenderTargetDispose = function ( event ) {
+	};
+
+	var onMaterialDispose = function ( event ) {
+	};
+
+	// Buffer deallocation
+
+	var deleteBuffers = function ( geometry ) {
+	};
+
+	var deallocateGeometry = function ( geometry ) {
+	};
+
+	var deallocateTexture = function ( texture ) {
+	};
+
+	var deallocateRenderTarget = function ( renderTarget ) {
+	};
+
+	var deallocateMaterial = function ( material ) {
+	};
+
+	// Buffer initialization
+
+	function initCustomAttributes ( geometry, object ) {
+	};
+
+	function initParticleBuffers ( geometry, object ) {
+	};
+
+	function initLineBuffers ( geometry, object ) {
+	};
+
+	function initMeshBuffers ( geometryGroup, object ) {
+	};
+
+	function getBufferMaterial( object, geometryGroup ) {
+	};
+
+	function materialNeedsSmoothNormals ( material ) {
+	};
+
+	function bufferGuessNormalType ( material ) {
+	};
+
+	function bufferGuessVertexColorType( material ) {
+	};
+
+	function bufferGuessUVType( material ) {
+	};
+
+	function initDirectBuffers( geometry ) {
+	};
+
+	// Buffer setting
+
+	function setParticleBuffers ( geometry, hint, object ) {
+	};
+
+	function setLineBuffers ( geometry, hint ) {
+	};
+
+	function setMeshBuffers( geometryGroup, object, hint, dispose, material ) {
+	};
+
+	function setDirectBuffers ( geometry, hint, dispose ) {
+	};
+
+	// Buffer rendering
+
+	this.renderBufferImmediate = function ( object, program, material ) {
+	};
+
+	this.renderBufferDirect = function ( camera, lights, fog, material, geometry, object ) {
+	};
+
+	this.renderBuffer = function ( camera, lights, fog, material, geometryGroup, object ) {
+	};
+
+	function enableAttribute( attribute ) {
+	};
+
+	function disableAttributes() {
+	};
+
+	function setupMorphTargets ( material, geometryGroup, object ) {
+	};
+
+	// Sorting
+
+	function painterSortStable ( a, b ) {
+
+	};
+
+	function numericalSort ( a, b ) {
+	};
+
+
+	// Rendering
+
+	this.render = function ( scene, camera, renderTarget, forceClear ) {
+	};
+
+	function renderPlugins( plugins, scene, camera ) {
+	};
+
+	function renderObjects ( renderList, reverse, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
+	};
+
+	function renderObjectsImmediate ( renderList, materialType, camera, lights, fog, useBlending, overrideMaterial ) {
+	};
+
+	this.renderImmediateObject = function ( camera, lights, fog, material, object ) {
+	};
+
+	function unrollImmediateBufferMaterial ( globject ) {
+	};
+
+	function unrollBufferMaterial ( globject ) {
+	};
+
+	// Geometry splitting
+
+	function sortFacesByMaterial ( geometry, material ) {
+	};
+
+	// Objects refresh
+
+	this.initWebGLObjects = function ( scene ) {
+	};
+
+	// Objects adding
+
+	function addObject( object, scene ) {
+	};
+
+	function addBuffer( objlist, buffer, object ) {
+	};
+
+	function addBufferImmediate( objlist, object ) {
+	};
+
+	// Objects updates
+
+	function updateObject( object ) {
+	};
+
+	// Objects updates - custom attributes check
+
+	function areCustomAttributesDirty( material ) {
+	};
+
+	function clearCustomAttributes( material ) {
+	};
+
+	// Objects removal
+
+	function removeObject( object, scene ) {
+	};
+
+	function removeInstances( objlist, object ) {
+	};
+
+	function removeInstancesDirect( objlist, object ) {
+	};
+
+	// Materials
+
+	this.initMaterial = function ( material, lights, fog, object ) {
+	};
+
+	function setMaterialShaders( material, shaders ) {
+	};
+
+	function setProgram( camera, lights, fog, material, object ) {
+	};
+
+	// Uniforms (refresh uniforms objects)
+
+	function refreshUniformsCommon ( uniforms, material ) {
+	};
+
+	function refreshUniformsLine ( uniforms, material ) {
+	};
+
+	function refreshUniformsDash ( uniforms, material ) {
+	};
+
+	function refreshUniformsParticle ( uniforms, material ) {
+	};
+
+	function refreshUniformsFog ( uniforms, fog ) {
+	};
+
+	function refreshUniformsPhong ( uniforms, material ) {
+	};
+
+	function refreshUniformsLambert ( uniforms, material ) {
+	};
+
+	function refreshUniformsLights ( uniforms, lights ) {
+	};
+
+	function refreshUniformsShadow ( uniforms, lights ) {
+	};
+
+	// Uniforms (load to GPU)
+
+	function loadUniformsMatrices ( uniforms, object ) {
+	};
+
+	function getTextureUnit() {
+	};
+
+	function loadUniformsGeneric ( program, uniforms ) {
+	};
+
+	function setupMatrices ( object, camera ) {
+	};
+
+	//
+
+	function setColorGamma( array, offset, color, intensitySq ) {
+	};
+
+	function setColorLinear( array, offset, color, intensity ) {
+	};
+
+	function setupLights ( program, lights ) {
+	};
+
+	// GL state setting
+
+	this.setFaceCulling = function ( cullFace, frontFaceDirection ) {
+	};
+
+	this.setMaterialFaces = function ( material ) {
+	};
+
+	this.setDepthTest = function ( depthTest ) {
+	};
+
+	this.setDepthWrite = function ( depthWrite ) {
+	};
+
+	function setLineWidth ( width ) {
+	};
+
+	function setPolygonOffset ( polygonoffset, factor, units ) {
+	};
+
+	this.setBlending = function ( blending, blendEquation, blendSrc, blendDst ) {
+	};
+
+	// Defines
+
+	function generateDefines ( defines ) {
+	};
+
+	// Shaders
+
+	function buildProgram ( shaderID, fragmentShader, vertexShader, uniforms, attributes, defines, parameters, index0AttributeName )
+
+	// Shader parameters cache
+
+	function cacheUniformLocations ( program, identifiers ) {
+	};
+
+	function cacheAttributeLocations ( program, identifiers ) {
+	};
+
+	function addLineNumbers ( string ) {
+	};
+
+	function getShader ( type, string ) {
+	};
+
+	// Textures
+
+
+	function isPowerOfTwo ( value ) {
+	};
+
+	function setTextureParameters ( textureType, texture, isImagePowerOfTwo ) {
+	};
+
+	this.setTexture = function ( texture, slot ) {
+	};
+
+	function clampToMaxSize ( image, maxSize ) {
+	}
+
+	function setCubeTexture ( texture, slot ) {
+	};
+
+	function setCubeTextureDynamic ( texture, slot ) {
+	};
+
+	// Render targets
+
+	function setupFrameBuffer ( framebuffer, renderTarget, textureTarget ) {
+	};
+
+	function setupRenderBuffer ( renderbuffer, renderTarget  ) {
+	};
+
+	this.setRenderTarget = function ( renderTarget ) {
+	};
+
+	function updateRenderTargetMipmap ( renderTarget ) {
+	};
+
+	// Fallback filters for non-power-of-2 textures
+
+	function filterFallback ( f ) {
+	};
+
+	// Map three.js constants to WebGL constants
+
+	function paramThreeToGL ( p ) {
+	};
+
+	// Allocations
+
+	function allocateBones ( object ) {
+	};
+
+	function allocateLights( lights ) {
+	};
+
+	function allocateShadows( lights ) {
+	};
+
+	// Initialization
+
+	function initGL() {
+	};
+
+	function setDefaultGLState () {
+	};
+
+	// default plugins (order is important)
+
+	this.shadowMapPlugin = new THREE.ShadowMapPlugin();
+	this.addPrePlugin( this.shadowMapPlugin );
+
+	this.addPostPlugin( new THREE.SpritePlugin() );
+	this.addPostPlugin( new THREE.LensFlarePlugin() );
+
+};

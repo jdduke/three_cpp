@@ -73,7 +73,7 @@ void Stats::update( float deltaTime, bool render ) {
       // Remove any existing text geometry
       if ( s.framesSinceReport == 0 && impl->mesh ) {
         impl->scene->remove( impl->mesh );
-        renderer.deallocateObject( *impl->mesh );
+        renderer.deallocateGeometry( *impl->mesh->geometry );
         impl->mesh.reset();
       }
 

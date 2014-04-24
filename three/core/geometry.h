@@ -25,25 +25,6 @@
 
 namespace three {
 
-struct MorphTarget {
-  std::string name;
-  std::vector<Vertex> vertices;
-};
-
-struct VertexNormal {
-
-  Vector3 a,b,c,d;
-
-  VertexNormal( Vector3 a, Vector3 b, Vector3 c)
-    : a( a ), b( b ), c( c ) {}
-
-};
-
-struct MorphNormal {
-    std::vector<VertexNormal> vertexNormals;
-    std::vector<Vector3> faceNormals;
-};
-
 class Geometry : public IGeometry, public GeometryBuffer {
 
 public:
@@ -78,10 +59,6 @@ public:
   std::vector<Face> faces;
 
   std::vector<std::vector<std::array<Vector2, 3>>> faceVertexUvs;
-
-  std::vector<MorphTarget> morphTargets;
-  std::vector<Color> morphColors;
-  std::vector<MorphNormal> morphNormals;
 
   std::vector<Vector4> skinWeights;
   std::vector<SkinIndices> skinIndices;

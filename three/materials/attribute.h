@@ -23,6 +23,7 @@ public:
       createUniqueBuffers( false ),
       needsUpdate( false ),
       size( 0 ),
+      numItems( 0 ),
       itemSize( 1 ),
       __glInitialized( false ),
       __original( nullptr ) {
@@ -47,6 +48,7 @@ public:
   bool createUniqueBuffers;
   bool needsUpdate;
   int size;
+  int numItems;
   int itemSize;
 
   bool __glInitialized;
@@ -143,6 +145,7 @@ DECLARE_ATTRIBUTE_KEY(skinVertexB)
 DECLARE_ATTRIBUTE_KEY(skinWeight)
 DECLARE_ATTRIBUTE_KEY(skinIndex)
 DECLARE_ATTRIBUTE_KEY(morphTarget)
+DECLARE_ATTRIBUTE_KEY(numItems)
 
 #undef DECLARE_ATTRIBUTE_KEY
 

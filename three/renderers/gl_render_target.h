@@ -68,7 +68,10 @@ public:
   Vector2 repeat;
 
   bool depthBuffer, stencilBuffer;
+
   bool generateMipmaps;
+
+  Ptr shareDepthFrom;
 
   std::function<void( void )> onUpdate;
 
@@ -99,6 +102,8 @@ public:
 
     target->generateMipmaps = generateMipmaps;
 
+    target->shareDepthFrom = shareDepthFrom;
+
     return target;
 
   }
@@ -122,7 +127,8 @@ protected:
       repeat( 1, 1 ),
       depthBuffer( desc.depthBuffer ),
       stencilBuffer( desc.stencilBuffer ),
-      generateMipmaps( true ) { }
+      generateMipmaps( true ),
+      shareDepthFrom( nullptr ) { }
 
 };
 

@@ -41,6 +41,8 @@ public:
 
   void* context;
 
+  float devicePixelRatio;
+
   // clearing
 
   bool autoClear;
@@ -63,12 +65,12 @@ public:
 
   // shadow map
 
-  bool shadowMapEnabled;
-  bool shadowMapAutoUpdate;
-  bool shadowMapSoft;
-  bool shadowMapCullFrontFaces;
-  bool shadowMapDebug;
-  bool shadowMapCascade;
+  bool shadowMapEnabled;// = false;
+  bool shadowMapAutoUpdate;// = true;
+  enums::ShadowTypes shadowMapType;// = THREE.PCFShadowMap;
+  enums::CullFace shadowMapCullFace;// = THREE.CullFaceFront;
+  bool shadowMapDebug;// = false;
+  bool shadowMapCascade;// = false;de;
 
   // morphs
 
@@ -85,8 +87,15 @@ public:
 public:
 
   void* getContext() { return _gl; }
+
   bool supportsVertexTextures() const { return _supportsVertexTextures; }
+  bool supportsFloatTextures() { return _glExtensionTextureFloat; }
+  bool supportsStandardDerivatives() { return _glExtensionStandardDerivatives; }
+  bool supportsCompressedTextureS3TC() { return _glExtensionCompressedTextureS3TC; }
+
   float getMaxAnisotropy() const { return _maxAnisotropy; }
+  enums::PrecisionType getPrecision() { return _precision; }
+
   int width() const { return _width; }
   int height() const { return _height; }
 
@@ -96,13 +105,13 @@ public:
   void enableScissorTest( bool enable );
 
   // Clearing
-  void setClearColorHex( int hex, float alpha );
-  void setClearColor( Color color, float alpha );
-
+  void setClearColor( Color color, float alpha = 1 );
   Color getClearColor() const { return _clearColor; }
   float getClearAlpha() const { return _clearAlpha; }
-
   void clear( bool color = true, bool depth = true, bool stencil = true );
+  void clearColor() { glClear( GL_COLOR_BUFFER_BIT ); }
+  void clearDepth() { glClear( GL_DEPTH_BUFFER_BIT ); }
+  void clearStencil() { glClear( GL_STENCIL_BUFFER_BIT ); }
   void clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color = true, bool depth = true, bool stencil = true );
 
   // Plugins
@@ -110,7 +119,8 @@ public:
   void addPrePlugin( const IPlugin::Ptr& plugin );
 
   // Deallocation
-  void deallocateObject( Object3D& object );
+  void deallocateGeometry( Geometry& geometry );
+  //void deallocateObject( Object3D& object );
   void deallocateTexture( Texture& texture );
   void deallocateRenderTarget( GLRenderTarget& renderTarget );
   void deallocateMaterial( Material& material );
@@ -134,10 +144,11 @@ private:
   void createMeshBuffers( GeometryGroup& geometryGroup );
 
   // Buffer deallocation
+  void deleteBuffers( GeometryBuffer& geometry );
   void deleteParticleBuffers( Geometry& geometry );
   void deleteLineBuffers( Geometry& geometry );
   void deleteRibbonBuffers( Geometry& geometry );
-  void deleteMeshBuffers( GeometryGroup& geometryGroup );
+  //void deleteMeshBuffers( GeometryGroup& geometryGroup );
 
   // Buffer initialization
   void initCustomAttributes( Geometry& geometry, Object3D& object );
@@ -402,6 +413,8 @@ private:
   int _currentWidth;
   int _currentHeight;
 
+  Attributes _enabledAttributes;
+
   Frustum _frustum;
 
   // camera matrices cache
@@ -451,8 +464,10 @@ private:
   void* _gl;
 
   bool _glExtensionTextureFloat;
+  bool _glExtensionTextureFloatLinear;
   bool _glExtensionStandardDerivatives;
   bool _glExtensionTextureFilterAnisotropic;
+  bool _glExtensionCompressedTextureS3TC;
 
   // GPU capabilities
 

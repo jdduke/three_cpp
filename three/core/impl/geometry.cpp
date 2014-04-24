@@ -114,8 +114,9 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
     // vertex normals weighted by triangle areas
     // http://www.iquilezles.org/www/articles/normals/normals.htm
 
-    auto cb = Vector3(), ab = Vector3(),
-      db = Vector3(), dc = Vector3(), bc = Vector3();
+      auto cb = Vector3(), ab = Vector3();
+      // TODO: unused vars?
+      //,db = Vector3(), dc = Vector3(), bc = Vector3();
 
     for ( const auto& face : faces ) {
 

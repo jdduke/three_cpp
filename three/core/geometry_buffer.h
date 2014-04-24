@@ -3,6 +3,7 @@
 
 #include <three/constants.h>
 #include <three/materials/attribute.h>
+#include <three/math/vector3.h>
 #include <three/utils/noncopyable.h>
 
 #include <memory>
@@ -11,6 +12,25 @@ namespace three {
 
 class GeometryBuffer : NonCopyable {
 public:
+
+struct MorphTarget {
+  std::string name;
+  std::vector<Vertex> vertices;
+};
+
+struct VertexNormal {
+
+  Vector3 a,b,c,d;
+
+  VertexNormal( Vector3 a, Vector3 b, Vector3 c)
+    : a( a ), b( b ), c( c ) {}
+
+};
+
+struct MorphNormal {
+    std::vector<VertexNormal> vertexNormals;
+    std::vector<Vector3> faceNormals;
+};
 
   virtual enums::GeometryType type() const { return enums::Geometry; }
 
@@ -43,13 +63,14 @@ public:
   GLBuffer __glLineBuffer;
   GLBuffer __glNormalBuffer;
   GLBuffer __glSkinIndicesBuffer;
-  GLBuffer __glSkinVertexABuffer;
-  GLBuffer __glSkinVertexBBuffer;
+  //GLBuffer __glSkinVertexABuffer;
+  //GLBuffer __glSkinVertexBBuffer;
   GLBuffer __glSkinWeightsBuffer;
   GLBuffer __glTangentBuffer;
   GLBuffer __glUV2Buffer;
   GLBuffer __glUVBuffer;
   GLBuffer __glVertexBuffer;
+  GLBuffer __glLineDistanceBuffer;
 
   std::vector<GLBuffer> __glMorphNormalsBuffers;
   std::vector<GLBuffer> __glMorphTargetsBuffers;
@@ -62,10 +83,15 @@ public:
   int numMorphTargets;
   int numMorphNormals;
 
+  std::vector<MorphTarget> morphTargets;
+  std::vector<Color> morphColors;
+  std::vector<MorphNormal> morphNormals;
+
   std::vector<float> __vertexArray;
   std::vector<float> __normalArray;
   std::vector<float> __tangentArray;
   std::vector<float> __colorArray;
+  std::vector<float> __lineDistanceArray;
   std::vector<std::pair<float, int>> __sortArray;
 
   std::vector<float> __uvArray;
@@ -85,6 +111,7 @@ public:
     __inittedArrays = false;
     __colorArray.clear();
     __normalArray.clear();
+    __lineDistanceArray.clear();
     __tangentArray.clear();
     __uvArray.clear();
     __uv2Array.clear();
@@ -110,8 +137,8 @@ public:
       __glLineBuffer( 0 ),
       __glNormalBuffer( 0 ),
       __glSkinIndicesBuffer( 0 ),
-      __glSkinVertexABuffer( 0 ),
-      __glSkinVertexBBuffer( 0 ),
+      //__glSkinVertexABuffer( 0 ),
+      //__glSkinVertexBBuffer( 0 ),
       __glSkinWeightsBuffer( 0 ),
       __glTangentBuffer( 0 ),
       __glUV2Buffer( 0 ),
