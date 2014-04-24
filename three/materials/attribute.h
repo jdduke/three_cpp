@@ -22,6 +22,7 @@ public:
       buffer( 0 ),
       createUniqueBuffers( false ),
       needsUpdate( false ),
+      dynamic( false ),
       size( 0 ),
       numItems( 0 ),
       itemSize( 1 ),
@@ -47,6 +48,7 @@ public:
   Buffer buffer;
   bool createUniqueBuffers;
   bool needsUpdate;
+  bool dynamic;
   int size;
   int numItems;
   int itemSize;

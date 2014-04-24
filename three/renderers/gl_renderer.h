@@ -86,6 +86,9 @@ public:
 
 public:
 
+  int width() const { return _width; }
+  int height() const { return _height; }
+
   void* getContext() { return _gl; }
 
   bool supportsVertexTextures() const { return _supportsVertexTextures; }
@@ -96,15 +99,13 @@ public:
   float getMaxAnisotropy() const { return _maxAnisotropy; }
   enums::PrecisionType getPrecision() { return _precision; }
 
-  int width() const { return _width; }
-  int height() const { return _height; }
-
   void setSize( int width, int height );
   void setViewport( int x = 0, int y = 0, int width = -1, int height = -1 );
   void setScissor( int x, int y, int width, int height );
   void enableScissorTest( bool enable );
 
   // Clearing
+
   void setClearColor( Color color, float alpha = 1 );
   Color getClearColor() const { return _clearColor; }
   float getClearAlpha() const { return _clearAlpha; }
@@ -115,71 +116,75 @@ public:
   void clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color = true, bool depth = true, bool stencil = true );
 
   // Plugins
-  void addPostPlugin(const IPlugin::Ptr& plugin );
+  // TODO
+  void addPostPlugin( const IPlugin::Ptr& plugin );
   void addPrePlugin( const IPlugin::Ptr& plugin );
 
-  // Deallocation
-  void deallocateGeometry( Geometry& geometry );
-  //void deallocateObject( Object3D& object );
-  void deallocateTexture( Texture& texture );
-  void deallocateRenderTarget( GLRenderTarget& renderTarget );
-  void deallocateMaterial( Material& material );
+  // Rendering
+
+  void updateShadowMap( const Scene& scene, const Camera& camera );
 
   // Rendering
   void render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr& renderTarget = GLRenderTarget::Ptr(), bool forceClear = false );
-  void updateShadowMap( const Scene& scene, const Camera& camera );
   void resetStates();
 
 private:
 
-  // Internal functions
-
   struct InternalLights;
   struct LightCount { int directional, point, spot, hemi; };
 
+  // Internal functions
+
   // Buffer allocation
+
   void createParticleBuffers( Geometry& geometry );
   void createLineBuffers( Geometry& geometry );
-  void createRibbonBuffers( Geometry& geometry );
   void createMeshBuffers( GeometryGroup& geometryGroup );
 
+  // Events
+
+  // TODO
+  //var onGeometryDispose = function ( event ) {
+  //var onTextureDispose = function ( event ) {
+  //var onRenderTargetDispose = function ( event ) {
+  //var onMaterialDispose = function ( event )
+
   // Buffer deallocation
+
   void deleteBuffers( GeometryBuffer& geometry );
-  void deleteParticleBuffers( Geometry& geometry );
-  void deleteLineBuffers( Geometry& geometry );
-  void deleteRibbonBuffers( Geometry& geometry );
-  //void deleteMeshBuffers( GeometryGroup& geometryGroup );
+  void deallocateGeometry( Geometry& geometry );
+  void deallocateTexture( Texture& texture );
+  void deallocateRenderTarget( GLRenderTarget& renderTarget );
+  void deallocateMaterial( Material& material );
 
   // Buffer initialization
+
   void initCustomAttributes( Geometry& geometry, Object3D& object );
   void initParticleBuffers( Geometry& geometry, Object3D& object );
   void initLineBuffers( Geometry& geometry, Object3D& object );
   void initRibbonBuffers( Geometry& geometry );
   void initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object );
-
   Material* getBufferMaterial( Object3D& object, GeometryGroup* geometryGroup );
   bool materialNeedsSmoothNormals( const Material* material );
   enums::Shading bufferGuessNormalType( const Material* material );
   enums::Colors bufferGuessVertexColorType( const Material* material );
   bool bufferGuessUVType( const Material* material );
-
-  //
-
   void initDirectBuffers( Geometry& geometry );
 
   // Buffer setting
+
   void setParticleBuffers( Geometry& geometry, int hint, Object3D& object );
   void setLineBuffers( Geometry& geometry, int hint );
-  void setRibbonBuffers( Geometry& geometry, int hint );
   void setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object, int hint, bool dispose, Material* material );
   void setDirectBuffers( Geometry& geometry, int hint, bool dispose );
 
   // Buffer rendering
-  void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
+
   void renderBufferImmediate( Object3D& object, Program& program, Material& material );
   void renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, BufferGeometry& geometry, Object3D& object );
-
-  // Sorting
+  void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
+  void enableAttribute( Attribute& attribute );
+  void disableAttributes();
   void setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object );
 
   // Rendering
@@ -413,7 +418,7 @@ private:
   int _currentWidth;
   int _currentHeight;
 
-  Attributes _enabledAttributes;
+  std::unordered_map<std::string, bool> _enabledAttributes;
 
   Frustum _frustum;
 

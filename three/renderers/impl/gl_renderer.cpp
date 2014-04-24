@@ -156,156 +156,6 @@ GLRenderer::GLRenderer( const RendererParameters& parameters )
   console().log() << "THREE::GLRenderer created";
 }
 
-/*
-// default plugins (order is important)
-
-shadowMapPlugin = new enums::ShadowMapPlugin();
-addPrePlugin( shadowMapPlugin );
-
-addPostPlugin( new enums::SpritePlugin() );
-addPostPlugin( new enums::LensFlarePlugin() );
-*/
-
-void GLRenderer::initialize() {
-
-  console().log() << "THREE::GLRenderer initializing";
-
-  initGL();
-
-  setDefaultGLState();
-
-  //context = _gl;
-
-  // GPU capabilities
-
-  _maxTextures       = glGetParameteri( GL_MAX_TEXTURE_IMAGE_UNITS );
-  _maxVertexTextures = glGetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
-  _maxTextureSize    = glGetParameteri( GL_MAX_TEXTURE_SIZE ),
-  _maxCubemapSize    = glGetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
-
-  _maxAnisotropy = _glExtensionTextureFilterAnisotropic ? glGetTexParameterf( TEXTURE_MAX_ANISOTROPY_EXT ) : 0.f;
-
-  _supportsVertexTextures = ( _maxVertexTextures > 0 );
-  _supportsBoneTextures = _supportsVertexTextures && _glExtensionTextureFloat;
-
-  //auto _compressedTextureFormats = glGetParameteri( GL_COMPRESSED_TEXTURE_FORMATS );
-
-  auto _vertexShaderPrecisionHighpFloat = glGetShaderParameter( GL_VERTEX_SHADER, GL_HIGH_FLOAT );
-  auto _vertexShaderPrecisionMediumpFloat = glGetShaderParameter( GL_VERTEX_SHADER, GL_MEDIUM_FLOAT );
-  //auto _vertexShaderPrecisionLowpFloat = glGetShaderParameter( GL_VERTEX_SHADER, GL_LOW_FLOAT );
-
-  auto _fragmentShaderPrecisionHighpFloat = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_HIGH_FLOAT );
-  auto _fragmentShaderPrecisionMediumpFloat = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_MEDIUM_FLOAT );
-  //auto _fragmentShaderPrecisionLowpFloat = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_LOW_FLOAT );
-
-  //auto _vertexShaderPrecisionHighpInt = glGetShaderParameter( GL_VERTEX_SHADER, GL_HIGH_INT );
-  //auto _vertexShaderPrecisionMediumpInt = glGetShaderParameter( GL_VERTEX_SHADER, GL_MEDIUM_INT );
-  //auto _vertexShaderPrecisionLowpInt = glGetShaderParameter( GL_VERTEX_SHADER, GL_LOW_INT );
-
-  //auto _fragmentShaderPrecisionHighpInt = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_HIGH_INT );
-  //auto _fragmentShaderPrecisionMediumpInt = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_MEDIUM_INT );
-  //auto _fragmentShaderPrecisionLowpInt = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_LOW_INT );
-
-  // clamp precision to maximum available
-
-  THREE_REVIEW("EA: Three.js uses _vertexShaderPrecisionHighpFloat.precision. Is the code bewow valid?")
-  bool highpAvailable = _vertexShaderPrecisionHighpFloat > 0.f && _fragmentShaderPrecisionHighpFloat > 0;
-  bool mediumpAvailable = _vertexShaderPrecisionMediumpFloat > 0 && _fragmentShaderPrecisionMediumpFloat > 0;
-
-  if ( _precision == enums::PrecisionHigh && ! highpAvailable ) {
-
-    if ( mediumpAvailable ) {
-
-      _precision = enums::PrecisionMedium;
-      console().warn( "WebGLRenderer: highp not supported, using mediump" );
-
-    } else {
-
-      _precision = enums::PrecisionLow;
-      console().warn( "WebGLRenderer: highp and mediump not supported, using lowp" );
-
-    }
-
-  }
-
-  if ( _precision == enums::PrecisionMedium && ! mediumpAvailable ) {
-
-    _precision = enums::PrecisionLow;
-    console().warn( "WebGLRenderer: mediump not supported, using lowp" );
-
-  }
-
-  console().log() << "THREE::GLRenderer initialized";
-
-}
-
-void GLRenderer::initGL() {
-
-  // TODO: Remove this
-#if defined(THREE_DYN_LINK) && defined(THREE_GLEW)
-  glewInit();
-#endif
-
-  // TODO: Force client to initialize opengl
-  if ( !_vsync )
-    glEnableVSync( false );
-
-  /*
-  if ( glload::LoadFunctions() == glload::LS_LOAD_FAILED ) {
-      console().error( "Error loading OpenGL functions" );
-  }*/
-
-  _glExtensionTextureFloat = glewIsExtensionSupported( "ARB_texture_float" ) != 0 ? true : false;
-  _glExtensionTextureFloatLinear = glewIsExtensionSupported( "OES_texture_float_linear" ) != 0 ? true : false;
-  _glExtensionStandardDerivatives = glewIsExtensionSupported( "OES_standard_derivatives" ) != 0 ? true : false;
-  _glExtensionTextureFilterAnisotropic = glewIsExtensionSupported( "EXT_texture_filter_anisotropic" ) != 0 ? true : false;
-  _glExtensionCompressedTextureS3TC = glewIsExtensionSupported( "EXT_texture_compression_s3tc" ) != 0 ? true : false;
-
-  if ( ! _glExtensionTextureFloat ) {
-    console().log( "THREE::GLRenderer: Float textures not supported." );
-  }
-
-  if ( ! _glExtensionTextureFloatLinear ) {
-    console().log( "THREE::GLRenderer: Float linear textures not supported." );
-  }
-
-  if ( ! _glExtensionStandardDerivatives ) {
-    console().log( "THREE::GLRenderer: Standard derivatives not supported." );
-  }
-
-  if ( ! _glExtensionTextureFilterAnisotropic ) {
-    console().log( "THREE::GLRenderer: Anisotropic texture filtering not supported." );
-  }
-
-  if ( ! _glExtensionCompressedTextureS3TC ) {
-    console().log( "THREE::GLRenderer: Compressed texture S3TC not supported." );
-  }
-
-}
-
-void GLRenderer::setDefaultGLState() {
-
-  glClearColor( 0, 0, 0, 1 );
-  glClearDepth( 1 );
-  glClearStencil( 0 );
-
-  glEnable( GL_DEPTH_TEST );
-  glDepthFunc( GL_LEQUAL );
-
-  glFrontFace( GL_CCW );
-  glCullFace( GL_BACK );
-  glEnable( GL_CULL_FACE );
-
-  glEnable( GL_BLEND );
-  glBlendEquation( GL_FUNC_ADD );
-  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-  //_gl.viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
-
-  glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
-
-}
-
 void GLRenderer::setSize( int width, int height ) {
 
   _width = (int)((float)width * devicePixelRatio);
@@ -336,6 +186,7 @@ void GLRenderer::enableScissorTest( bool enable ) {
 }
 
 // Clearing
+
 void GLRenderer::setClearColor( Color color, float alpha ) {
   _clearColor.copy( color );
   _clearAlpha = alpha;
@@ -362,174 +213,15 @@ void GLRenderer::clearTarget( const GLRenderTarget::Ptr& renderTarget, bool colo
 
 // Plugins
 
-void GLRenderer::addPostPlugin( const IPlugin::Ptr& plugin ) {
-
-  plugin->init( *this );
-  renderPluginsPost.push_back( plugin );
-
-}
-
-void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
-
-  plugin->init( *this );
-  renderPluginsPre.push_back( plugin );
-
-}
-
-// Deallocation
-void GLRenderer::deallocateGeometry( Geometry& geometry ) {
-
-  //geometry.__glI = false;
-
-  if ( geometry.type() == enums::BufferGeometry ) {
-
-    auto& attributes = geometry.attributes;
-
-     for ( auto& namedAttribute : attributes ) {
-
-      auto& a = namedAttribute.first;
-      auto& attribute = namedAttribute.second;
-
-      glDeleteBuffer( attribute.buffer );
-
-    }
-
-    _info.memory.geometries --;
-
-  } else {
-
-    if ( geometry.geometryGroups.size() ) {
-
-      for ( auto& g : geometry.geometryGroups ) {
-
-        auto& geometryGroup = g.second;
-
-        if ( geometryGroup->morphTargets.size() ) {
-
-          for ( size_t m = 0, ml = geometryGroup->morphTargets.size(); m < ml; m ++ ) {
-
-            glDeleteBuffer( geometryGroup->__glMorphTargetsBuffers[ m ] );
-
-          }
-
-        }
-
-        if ( geometryGroup->morphNormals.size() ) {
-
-          for ( size_t m = 0, ml = geometryGroup->morphNormals.size(); m < ml; m ++ ) {
-
-            glDeleteBuffer( geometryGroup->__glMorphNormalsBuffers[ m ] );
-
-          }
-
-        }
-
-        deleteBuffers( *geometryGroup );
-
-      }
-
-    } else {
-
-      deleteBuffers( geometry );
-
-    }
-
-  }
-
-};
-
-
-// void GLRenderer::deallocateObject( Object3D& object ) {
-
-//   if ( ! object.glData.__glInit ) return;
-
-//   object.glData.clear();
-
-//   if ( !object.geometry ) {
-//     console().warn( "Object3D contains no geometry" );
-//     return;
-//   }
-
-//   auto& geometry = *object.geometry;
-
-//   if ( object.type() == enums::Mesh ) {
-//     for ( auto& geometryGroup : geometry.geometryGroups ) {
-//       deleteMeshBuffers( *geometryGroup.second );
-//     }
-//   } else if ( object.type() == enums::Ribbon ) {
-//     deleteRibbonBuffers( geometry );
-//   } else if ( object.type() == enums::Line ) {
-//     deleteLineBuffers( geometry );
-//   } else if ( object.type() == enums::ParticleSystem ) {
-//     deleteParticleBuffers( geometry );
-//   }
-
-// }
-
-void GLRenderer::deallocateTexture( Texture& texture ) {
-
-  // REVIEW Correctness
-  glDeleteTexture( texture.__glTextureCube );
-
-  if ( ! texture.__glInit ) return;
-
-  texture.__glInit = false;
-  glDeleteTexture( texture.__glTexture );
-
-  _info.memory.textures --;
-
-}
-
-
-void GLRenderer::deallocateRenderTarget( GLRenderTarget& renderTarget ) {
-
-  if ( ! renderTarget.__glTexture ) return;
-
-  glDeleteTexture( renderTarget.__glTexture );
-
-  for ( auto& frameBuffer : renderTarget.__glFramebuffer ) {
-    glDeleteFramebuffer( frameBuffer );
-  }
-
-  renderTarget.__glFramebuffer.clear();
-
-  for ( auto& renderBuffer : renderTarget.__glRenderbuffer ) {
-    glDeleteRenderbuffer( renderBuffer );
-  }
-
-  renderTarget.__glRenderbuffer.clear();
-
-}
-
-
-void GLRenderer::deallocateMaterial( Material& material ) {
-
-  auto program = material.program;
-
-  if ( ! program ) return;
-
-  // only deallocate GL program if this was the last use of shared program
-  // assumed there is only single copy of any program in the _programs list
-  // (that's how it's constructed)
-
-  auto programCmp = [&]( const ProgramInfo& programInfo ) {
-    return programInfo.program == program;
-  };
-
-  auto programIt = std::find_if( _programs.begin(), _programs.end(), programCmp );
-
-  if ( programIt == _programs.end() )
-    return;
-
-  if ( --programIt->usedTimes == 0 ) {
-
-    glDeleteProgram( program->program );
-    _info.memory.programs --;
-    _programs.erase( std::remove_if(_programs.begin(), _programs.end(), programCmp) );
-
-  }
-
-}
+/*
+// default plugins (order is important)
+
+shadowMapPlugin = new enums::ShadowMapPlugin();
+addPrePlugin( shadowMapPlugin );
+
+addPostPlugin( new enums::SpritePlugin() );
+addPostPlugin( new enums::LensFlarePlugin() );
+*/
 
 // Rendering
 
@@ -616,95 +308,156 @@ void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
 
 void GLRenderer::deleteBuffers ( GeometryBuffer& geometry ) {
 
-    glDeleteBuffer( geometry.__glVertexBuffer );
-    glDeleteBuffer( geometry.__glNormalBuffer );
-    glDeleteBuffer( geometry.__glTangentBuffer );
-    glDeleteBuffer( geometry.__glColorBuffer );
-    glDeleteBuffer( geometry.__glUVBuffer );
-    glDeleteBuffer( geometry.__glUV2Buffer );
-
-    glDeleteBuffer( geometry.__glSkinIndicesBuffer );
-    glDeleteBuffer( geometry.__glSkinWeightsBuffer );
-
-    glDeleteBuffer( geometry.__glFaceBuffer );
-    glDeleteBuffer( geometry.__glLineBuffer );
-
-    glDeleteBuffer( geometry.__glLineDistanceBuffer );
-
-    // custom attributes
-    for ( auto& attribute : geometry.__glCustomAttributesList ) {
-      glDeleteBuffer( attribute->buffer );
-    }
-
-    _info.memory.geometries--;
-
-  };
-
-
-void GLRenderer::deleteParticleBuffers( Geometry& geometry ) {
-
   glDeleteBuffer( geometry.__glVertexBuffer );
+  glDeleteBuffer( geometry.__glNormalBuffer );
+  glDeleteBuffer( geometry.__glTangentBuffer );
   glDeleteBuffer( geometry.__glColorBuffer );
+  glDeleteBuffer( geometry.__glUVBuffer );
+  glDeleteBuffer( geometry.__glUV2Buffer );
 
-  _info.memory.geometries --;
+  glDeleteBuffer( geometry.__glSkinIndicesBuffer );
+  glDeleteBuffer( geometry.__glSkinWeightsBuffer );
 
-}
+  glDeleteBuffer( geometry.__glFaceBuffer );
+  glDeleteBuffer( geometry.__glLineBuffer );
 
-void GLRenderer::deleteLineBuffers( Geometry& geometry ) {
+  glDeleteBuffer( geometry.__glLineDistanceBuffer );
 
-  glDeleteBuffer( geometry.__glVertexBuffer );
-  glDeleteBuffer( geometry.__glColorBuffer );
-
-  _info.memory.geometries --;
-
-}
-
-void GLRenderer::deleteRibbonBuffers( Geometry& geometry ) {
-
-  glDeleteBuffer( geometry.__glVertexBuffer );
-  glDeleteBuffer( geometry.__glColorBuffer );
-
-  _info.memory.geometries --;
-
-}
-/*
-void GLRenderer::deleteMeshBuffers( GeometryGroup& geometryGroup ) {
-
-  glDeleteBuffer( geometryGroup.__glVertexBuffer );
-  glDeleteBuffer( geometryGroup.__glNormalBuffer );
-  glDeleteBuffer( geometryGroup.__glTangentBuffer );
-  glDeleteBuffer( geometryGroup.__glColorBuffer );
-  glDeleteBuffer( geometryGroup.__glUVBuffer );
-  glDeleteBuffer( geometryGroup.__glUV2Buffer );
-
-  glDeleteBuffer( geometryGroup.__glSkinVertexABuffer );
-  glDeleteBuffer( geometryGroup.__glSkinVertexBBuffer );
-  glDeleteBuffer( geometryGroup.__glSkinIndicesBuffer );
-  glDeleteBuffer( geometryGroup.__glSkinWeightsBuffer );
-
-  glDeleteBuffer( geometryGroup.__glFaceBuffer );
-  glDeleteBuffer( geometryGroup.__glLineBuffer );
-
-  if ( geometryGroup.numMorphTargets > 0 ) {
-    for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-      glDeleteBuffer( geometryGroup.__glMorphTargetsBuffers[ m ] );
-    }
-  }
-
-  if ( geometryGroup.numMorphNormals > 0 ) {
-    for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
-      glDeleteBuffer( geometryGroup.__glMorphNormalsBuffers[ m ] );
-    }
-  }
-
-  for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
+  // custom attributes
+  for ( auto& attribute : geometry.__glCustomAttributesList ) {
     glDeleteBuffer( attribute->buffer );
   }
 
-  _info.memory.geometries --;
+  _info.memory.geometries--;
 
-}*/
+};
 
+
+void GLRenderer::deallocateGeometry( Geometry& geometry ) {
+
+  geometry.__glInit = false;
+
+  if ( geometry.type() == enums::BufferGeometry ) {
+
+    auto& attributes = geometry.attributes;
+
+     for ( auto& namedAttribute : attributes ) {
+
+      auto& a = namedAttribute.first;
+      auto& attribute = namedAttribute.second;
+
+      glDeleteBuffer( attribute.buffer );
+
+    }
+
+    _info.memory.geometries --;
+
+  } else {
+
+    if ( geometry.geometryGroups.size() ) {
+
+      for ( auto& g : geometry.geometryGroups ) {
+
+        auto& geometryGroup = g.second;
+
+        if ( geometryGroup->morphTargets.size() ) {
+
+          for ( size_t m = 0, ml = geometryGroup->morphTargets.size(); m < ml; m ++ ) {
+
+            glDeleteBuffer( geometryGroup->__glMorphTargetsBuffers[ m ] );
+
+          }
+
+        }
+
+        if ( geometryGroup->morphNormals.size() ) {
+
+          for ( size_t m = 0, ml = geometryGroup->morphNormals.size(); m < ml; m ++ ) {
+
+            glDeleteBuffer( geometryGroup->__glMorphNormalsBuffers[ m ] );
+
+          }
+
+        }
+
+        deleteBuffers( *geometryGroup );
+
+      }
+
+    } else {
+
+      deleteBuffers( geometry );
+
+    }
+
+  }
+
+};
+
+void GLRenderer::deallocateTexture( Texture& texture ) {
+
+  // REVIEW Correctness
+  glDeleteTexture( texture.__glTextureCube );
+
+  if ( ! texture.__glInit ) return;
+
+  texture.__glInit = false;
+  glDeleteTexture( texture.__glTexture );
+
+  _info.memory.textures --;
+
+}
+
+
+void GLRenderer::deallocateRenderTarget( GLRenderTarget& renderTarget ) {
+
+  if ( ! renderTarget.__glTexture ) return;
+
+  glDeleteTexture( renderTarget.__glTexture );
+
+  for ( auto& frameBuffer : renderTarget.__glFramebuffer ) {
+    glDeleteFramebuffer( frameBuffer );
+  }
+
+  renderTarget.__glFramebuffer.clear();
+
+  for ( auto& renderBuffer : renderTarget.__glRenderbuffer ) {
+    glDeleteRenderbuffer( renderBuffer );
+  }
+
+  renderTarget.__glRenderbuffer.clear();
+
+}
+
+
+void GLRenderer::deallocateMaterial( Material& material ) {
+
+  auto program = material.program;
+
+  if ( ! program ) return;
+
+  // only deallocate GL program if this was the last use of shared program
+  // assumed there is only single copy of any program in the _programs list
+  // (that's how it's constructed)
+
+  auto programCmp = [&]( const ProgramInfo& programInfo ) {
+    return programInfo.program == program;
+  };
+
+  auto programIt = std::find_if( _programs.begin(), _programs.end(), programCmp );
+
+  if ( programIt == _programs.end() )
+    return;
+
+  if ( --programIt->usedTimes == 0 ) {
+
+    glDeleteProgram( program->program );
+    _info.memory.programs --;
+    _programs.erase( std::remove_if(_programs.begin(), _programs.end(), programCmp) );
+
+  }
+
+}
 
 // Buffer initialization
 
@@ -881,13 +634,6 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
       GeometryBuffer::AttributePtr attribute( new Attribute(originalAttribute) );
 
-      // REVIEW Is this a TODO or can it be removed?
-      /*for ( auto& property : originalAttribute ) {
-
-          attribute[ property ] = originalAttribute[ property ];
-
-      }*/
-
       if ( !attribute->__glInitialized || attribute->createUniqueBuffers ) {
 
         attribute->__glInitialized = true;
@@ -992,8 +738,6 @@ bool GLRenderer::bufferGuessUVType( const Material* material ) {
   return false;
 }
 
-//
-
 void GLRenderer::initDirectBuffers( Geometry& geometry ) {
 
   for ( auto& a : geometry.attributes ) {
@@ -1055,15 +799,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     }
 
-    typedef std::pair<float, int> SortPair;
-
-    // EA: Are we doing QuickSort here on an almost sorted array 
-    //     and how often is this function called?
-    std::sort( sortArray.begin(),
-               sortArray.end(),
-    []( const SortPair & a, const SortPair & b ) {
-      return a.first > b.first;
-    } );
+    std::sort( sortArray.begin(), sortArray.end(), NumericalSort() );
 
     for ( int v = 0; v < vl; v ++ ) {
 
@@ -1195,7 +931,6 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
 }
 
-
 void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   const auto& vertices = geometry.vertices;
@@ -1296,60 +1031,6 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
 }
 
-
-// void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
-
-//   const auto& vertices = geometry.vertices;
-//   const auto& colors = geometry.colors;
-//   const auto vl = ( int )vertices.size();
-//   const auto cl = ( int )colors.size();
-
-//   auto& vertexArray = geometry.__vertexArray;
-//   auto& colorArray = geometry.__colorArray;
-
-//   const auto dirtyVertices = geometry.verticesNeedUpdate;
-//   const auto dirtyColors = geometry.colorsNeedUpdate;
-
-//   int offset = 0;
-
-//   if ( dirtyVertices ) {
-
-//     for ( int v = 0; v < vl; v ++ ) {
-
-//       const auto& vertex = vertices[ v ];
-
-//       offset = v * 3;
-
-//       vertexArray[ offset ]     = vertex.x;
-//       vertexArray[ offset + 1 ] = vertex.y;
-//       vertexArray[ offset + 2 ] = vertex.z;
-
-//     }
-
-//     glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
-
-//   }
-
-//   if ( dirtyColors ) {
-
-//     for ( int c = 0; c < cl; c++ ) {
-
-//       const auto& color = colors[ c ];
-
-//       offset = c * 3;
-
-//       colorArray[ offset ]     = color.r;
-//       colorArray[ offset + 1 ] = color.g;
-//       colorArray[ offset + 2 ] = color.b;
-
-//     }
-
-//     glBindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
-
-//   }
-
-// }
-
 void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object, int hint, bool dispose, Material* material ) {
 
   if ( ! geometryGroup.__inittedArrays ) {
@@ -1359,6 +1040,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   const auto normalType      = bufferGuessNormalType( material );
   const auto vertexColorType = bufferGuessVertexColorType( material );
   const auto uvType          = bufferGuessUVType( material );
+
   const auto needsSmoothNormals = ( normalType == enums::SmoothShading );
 
   Color c1, c2, c3, c4;
@@ -1498,7 +1180,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
           } else {
 
             // TODO: FIgure out where the faceNormals array comes from
-            //n1 = morphNormals[ vk ].faceNormals[ chf ];
             n1 = morphNormals[ vk ].faceNormals[ chf ];
             n2 = n1;
             n3 = n1;
@@ -2114,15 +1795,14 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
 }
 
-
 void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) {
 
   auto& attributes = geometry.attributes;
 
-  for ( const auto& a : attributes ) {
+  for ( auto& a : attributes ) {
 
     const auto& attributeName = a.first;    
-    const auto& attributeItem = a.second;
+    auto& attributeItem = a.second;
 
     if ( attributeItem.needsUpdate ) {
 
@@ -2137,11 +1817,231 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
 
     if ( dispose && !attributeItem.dynamic ) {
 
-      attribute.second.array.clear();
+      attributeItem.array.clear();
 
     }
 
   }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void GLRenderer::initialize() {
+
+  console().log() << "THREE::GLRenderer initializing";
+
+  initGL();
+
+  setDefaultGLState();
+
+  //context = _gl;
+
+  // GPU capabilities
+
+  _maxTextures       = glGetParameteri( GL_MAX_TEXTURE_IMAGE_UNITS );
+  _maxVertexTextures = glGetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
+  _maxTextureSize    = glGetParameteri( GL_MAX_TEXTURE_SIZE ),
+  _maxCubemapSize    = glGetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
+
+  _maxAnisotropy = _glExtensionTextureFilterAnisotropic ? glGetTexParameterf( TEXTURE_MAX_ANISOTROPY_EXT ) : 0.f;
+
+  _supportsVertexTextures = ( _maxVertexTextures > 0 );
+  _supportsBoneTextures = _supportsVertexTextures && _glExtensionTextureFloat;
+
+  //auto _compressedTextureFormats = glGetParameteri( GL_COMPRESSED_TEXTURE_FORMATS );
+
+  auto _vertexShaderPrecisionHighpFloat = glGetShaderParameter( GL_VERTEX_SHADER, GL_HIGH_FLOAT );
+  auto _vertexShaderPrecisionMediumpFloat = glGetShaderParameter( GL_VERTEX_SHADER, GL_MEDIUM_FLOAT );
+  //auto _vertexShaderPrecisionLowpFloat = glGetShaderParameter( GL_VERTEX_SHADER, GL_LOW_FLOAT );
+
+  auto _fragmentShaderPrecisionHighpFloat = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_HIGH_FLOAT );
+  auto _fragmentShaderPrecisionMediumpFloat = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_MEDIUM_FLOAT );
+  //auto _fragmentShaderPrecisionLowpFloat = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_LOW_FLOAT );
+
+  //auto _vertexShaderPrecisionHighpInt = glGetShaderParameter( GL_VERTEX_SHADER, GL_HIGH_INT );
+  //auto _vertexShaderPrecisionMediumpInt = glGetShaderParameter( GL_VERTEX_SHADER, GL_MEDIUM_INT );
+  //auto _vertexShaderPrecisionLowpInt = glGetShaderParameter( GL_VERTEX_SHADER, GL_LOW_INT );
+
+  //auto _fragmentShaderPrecisionHighpInt = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_HIGH_INT );
+  //auto _fragmentShaderPrecisionMediumpInt = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_MEDIUM_INT );
+  //auto _fragmentShaderPrecisionLowpInt = glGetShaderParameter( GL_FRAGMENT_SHADER, GL_LOW_INT );
+
+  // clamp precision to maximum available
+
+  THREE_REVIEW("EA: Three.js uses _vertexShaderPrecisionHighpFloat.precision. Is the code bewow valid?")
+  bool highpAvailable = _vertexShaderPrecisionHighpFloat > 0.f && _fragmentShaderPrecisionHighpFloat > 0;
+  bool mediumpAvailable = _vertexShaderPrecisionMediumpFloat > 0 && _fragmentShaderPrecisionMediumpFloat > 0;
+
+  if ( _precision == enums::PrecisionHigh && ! highpAvailable ) {
+
+    if ( mediumpAvailable ) {
+
+      _precision = enums::PrecisionMedium;
+      console().warn( "WebGLRenderer: highp not supported, using mediump" );
+
+    } else {
+
+      _precision = enums::PrecisionLow;
+      console().warn( "WebGLRenderer: highp and mediump not supported, using lowp" );
+
+    }
+
+  }
+
+  if ( _precision == enums::PrecisionMedium && ! mediumpAvailable ) {
+
+    _precision = enums::PrecisionLow;
+    console().warn( "WebGLRenderer: mediump not supported, using lowp" );
+
+  }
+
+  console().log() << "THREE::GLRenderer initialized";
+
+}
+
+void GLRenderer::initGL() {
+
+  // TODO: Remove this
+#if defined(THREE_DYN_LINK) && defined(THREE_GLEW)
+  glewInit();
+#endif
+
+  // TODO: Force client to initialize opengl
+  if ( !_vsync )
+    glEnableVSync( false );
+
+  /*
+  if ( glload::LoadFunctions() == glload::LS_LOAD_FAILED ) {
+      console().error( "Error loading OpenGL functions" );
+  }*/
+
+  _glExtensionTextureFloat = glewIsExtensionSupported( "ARB_texture_float" ) != 0 ? true : false;
+  _glExtensionTextureFloatLinear = glewIsExtensionSupported( "OES_texture_float_linear" ) != 0 ? true : false;
+  _glExtensionStandardDerivatives = glewIsExtensionSupported( "OES_standard_derivatives" ) != 0 ? true : false;
+  _glExtensionTextureFilterAnisotropic = glewIsExtensionSupported( "EXT_texture_filter_anisotropic" ) != 0 ? true : false;
+  _glExtensionCompressedTextureS3TC = glewIsExtensionSupported( "EXT_texture_compression_s3tc" ) != 0 ? true : false;
+
+  if ( ! _glExtensionTextureFloat ) {
+    console().log( "THREE::GLRenderer: Float textures not supported." );
+  }
+
+  if ( ! _glExtensionTextureFloatLinear ) {
+    console().log( "THREE::GLRenderer: Float linear textures not supported." );
+  }
+
+  if ( ! _glExtensionStandardDerivatives ) {
+    console().log( "THREE::GLRenderer: Standard derivatives not supported." );
+  }
+
+  if ( ! _glExtensionTextureFilterAnisotropic ) {
+    console().log( "THREE::GLRenderer: Anisotropic texture filtering not supported." );
+  }
+
+  if ( ! _glExtensionCompressedTextureS3TC ) {
+    console().log( "THREE::GLRenderer: Compressed texture S3TC not supported." );
+  }
+
+}
+
+void GLRenderer::setDefaultGLState() {
+
+  glClearColor( 0, 0, 0, 1 );
+  glClearDepth( 1 );
+  glClearStencil( 0 );
+
+  glEnable( GL_DEPTH_TEST );
+  glDepthFunc( GL_LEQUAL );
+
+  glFrontFace( GL_CCW );
+  glCullFace( GL_BACK );
+  glEnable( GL_CULL_FACE );
+
+  glEnable( GL_BLEND );
+  glBlendEquation( GL_FUNC_ADD );
+  glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+  //_gl.viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
+
+  glClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+
+}
+
+// Plugins
+
+void GLRenderer::addPostPlugin( const IPlugin::Ptr& plugin ) {
+
+  plugin->init( *this );
+  renderPluginsPost.push_back( plugin );
+
+}
+
+void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
+
+  plugin->init( *this );
+  renderPluginsPre.push_back( plugin );
 
 }
 
@@ -2261,108 +2161,233 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
   if ( object.type() == enums::Mesh ) {
 
-    auto& index = geometry.attributes[ AttributeKey::index() ];
+    if( geometry.attributes.contains( AttributeKey::index() ) ) {
 
-    const auto& offsets = geometry.offsets;
+      auto& index = geometry.attributes[ AttributeKey::index() ];
 
-    // if there is more than 1 chunk
-    // must set attribute pointers to use new offsets for each chunk
-    // even if geometry and materials didn't change
+      const auto& offsets = geometry.offsets;
 
-    if ( offsets.size() > 1 ) updateBuffers = true;
+      // if there is more than 1 chunk
+      // must set attribute pointers to use new offsets for each chunk
+      // even if geometry and materials didn't change
 
-    for ( size_t i = 0, il = offsets.size(); i < il; ++ i ) {
+      if ( offsets.size() > 1 ) updateBuffers = true;
 
-      const auto startIndex = offsets[ i ].index;
+      for ( size_t i = 0, il = offsets.size(); i < il; ++ i ) {
 
-      if ( updateBuffers ) {
+        const auto startIndex = offsets[ i ].index;
 
-        // vertices
+        if ( updateBuffers ) {
 
-        auto& position = geometry.attributes[ AttributeKey::position() ];
-        const auto positionSize = position.itemSize;
+          // EA: TODO REVIEW Correctness
+          for ( auto& namedAttribute : programAttributes ) {
 
-        glBindBuffer( GL_ARRAY_BUFFER, position.buffer );
-        glVertexAttribPointer( attributes[AttributeKey::position()], positionSize, GL_FLOAT, false, 0, toOffset( startIndex * positionSize * 4 ) ); // 4 bytes per Float32
+            auto& attrKey = namedAttribute.first;
+            auto& attributePointer = namedAttribute.second;
 
-        // normals
+            if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+              auto& attributeItem = geometryAttributes[ attrKey ];
 
-        if ( attributes[AttributeKey::normal()].valid() && geometry.attributes.contains( AttributeKey::normal() ) ) {
 
-          auto& normal = geometry.attributes[ AttributeKey::normal() ];
-          auto normalSize = normal.itemSize;
+                const auto attributeItemSize = attributeItem.itemSize;
 
-          glBindBuffer( GL_ARRAY_BUFFER, normal.buffer );
-          glVertexAttribPointer( attributes[AttributeKey::normal()], normalSize, GL_FLOAT, false, 0, toOffset( startIndex * normalSize * 4 ) );
+                glBindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+                enableAttribute( attributePointer );
+                glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
+
+              
+
+            }
+            else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+
+              if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+                glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+
+              } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+
+                glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+
+              }
+
+            }
+
+          }
+
+          // indices
+
+          const auto& index = geometry.attributes[ AttributeKey::index() ];
+
+          glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
 
         }
 
-        // uvs
+        // render indexed triangles
 
-        if ( attributes[AttributeKey::uv()].valid() && geometry.attributes.contains( AttributeKey::uv() ) ) {
+        glDrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
 
-          const auto& uv = geometry.attributes[ AttributeKey::uv() ];
+        _info.render.calls ++;
+        _info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
+        _info.render.faces += offsets[ i ].count / 3;
 
-          if ( uv.buffer ) {
+      }
+    
+    // non-indexed triangles
 
-            const auto uvSize = uv.itemSize;
+    } else {
 
-            glBindBuffer( GL_ARRAY_BUFFER, uv.buffer );
-            glVertexAttribPointer( attributes[AttributeKey::uv()], uvSize, GL_FLOAT, false, 0, toOffset( startIndex * uvSize * 4 ) );
+        if ( updateBuffers ) {
 
-            glEnableVertexAttribArray( attributes[AttributeKey::uv()] );
+          // EA: TODO REVIEW Correctness
+          for ( auto& namedAttribute : programAttributes ) {
 
-          } else {
+            if ( namedAttribute.first == "index") continue;
 
-            glDisableVertexAttribArray( attributes[AttributeKey::uv()] );
+            auto& attrKey = namedAttribute.first;
+            auto& attributePointer = namedAttribute.second;
+
+            if(attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+              auto& attributeItem = geometryAttributes[ attrKey ];
+
+              if ( attributeItem.valid() ) {
+                const auto attributeItemSize = attributeItem.itemSize;
+
+                glBindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+                enableAttribute( attributePointer );
+                glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
+
+              }
+
+            }
+            else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+
+              if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+                glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+
+              } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+
+                glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+
+              }
+
+            }
+
+          }
+        }
+
+        // render non-indexed triangles
+
+        const auto& position = geometry.attributes[ AttributeKey::position() ];
+
+        glDrawArrays(GL_TRIANGLES, 0, position.numItems / 3);
+
+        _info.render.calls ++;
+        _info.render.vertices += position.numItems / 3; 
+        _info.render.faces += position.numItems / 3 / 3;
+
+    }
+
+    // render particles
+
+  } else if ( object.type() == enums::ParticleSystem ) {
+
+    if ( updateBuffers ) {
+
+      // EA: TODO REVIEW Correctness
+      for ( auto& namedAttribute : programAttributes ) {
+
+        auto& attrKey = namedAttribute.first;
+        auto& attributePointer = namedAttribute.second;
+
+        if(attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+          auto& attributeItem = geometryAttributes[ attrKey ];
+
+          if ( attributeItem.valid() ) {
+            const auto attributeItemSize = attributeItem.itemSize;
+
+            glBindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+            enableAttribute( attributePointer );
+            glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
+
+          }
+
+        }
+        else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+
+          if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+            glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+
+          } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+
+            glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
 
           }
 
         }
 
-        // colors
-
-        if ( attributes[AttributeKey::color()].valid() && geometry.attributes.contains( AttributeKey::color() ) ) {
-
-          const auto& color = geometry.attributes[ AttributeKey::color() ];
-          const auto colorSize = color.itemSize;
-
-          glBindBuffer( GL_ARRAY_BUFFER, color.buffer );
-          glVertexAttribPointer( attributes[AttributeKey::color()], colorSize, GL_FLOAT, false, 0, toOffset( startIndex * colorSize * 4 ) );
-
-        }
-
-        // tangents
-
-        if ( attributes[AttributeKey::tangent()].valid() && geometry.attributes.contains( AttributeKey::tangent() ) ) {
-
-          const auto& tangent = geometry.attributes[ AttributeKey::tangent() ];
-          const auto tangentSize = tangent.itemSize;
-
-          glBindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
-          glVertexAttribPointer( attributes[AttributeKey::tangent()], tangentSize, GL_FLOAT, false, 0, toOffset( startIndex * tangentSize * 4 ) );
-
-        }
-
-        // indices
-
-        const auto& index = geometry.attributes[ AttributeKey::index() ];
-
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
-
       }
-
-      // render indexed triangles
-
-      glDrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
-
-      _info.render.calls ++;
-      _info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
-      _info.render.faces += offsets[ i ].count / 3;
-
     }
 
+    const auto& position = geometry.attributes[ AttributeKey::position() ];
+
+    glDrawArrays(GL_POINTS, 0, position.numItems / 3);
+
+    _info.render.calls ++;
+    _info.render.points += position.numItems / 3; 
+
+  } // ParticleSystem
+  else if ( object.type() == enums::Line ) {
+
+  if ( updateBuffers ) {
+
+    // EA: TODO REVIEW Correctness
+    for ( auto& namedAttribute : programAttributes ) {
+
+      auto& attrKey = namedAttribute.first;
+      auto& attributePointer = namedAttribute.second;
+
+      if(attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+        auto& attributeItem = geometryAttributes[ attrKey ];
+
+        if ( attributeItem.valid() ) {
+          const auto attributeItemSize = attributeItem.itemSize;
+
+          glBindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+          enableAttribute( attributePointer );
+          glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
+
+        }
+
+      }
+      else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+
+        if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+          glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+
+        } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+
+          glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+
+        }
+
+      }
+      
+    }
+
+    const auto& position = geometry.attributes[ AttributeKey::position() ];
+
+    const auto primitives = ( static_cast<Line&>(object).lineType == enums::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
+
+    glDrawArrays(primitives, 0, position.numItems / 3);
+
+    _info.render.calls ++;
+    _info.render.points += position.numItems; 
+
   }
+
 
 }
 
@@ -2575,6 +2600,36 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
   }
 
 }
+
+void enableAttribute( const Attribute& attribute ) {
+
+  if(attribute.second.valid()) {
+
+    glEnableVertexAttribArray( attribute.second );
+
+  }
+
+  _enabledAttributes[ attribute.first ] = true;
+
+}
+
+void disableAttributes() {
+
+  for ( auto& attribute : _enabledAttributes ) {
+
+    if(attribute.second.valid()) {
+
+      glDisableVertexAttribArray( attribute.second );
+
+    }
+
+    _enabledAttributes[ attribute.first ] = false;
+
+  }
+
+}
+
+
 
 // Sorting
 

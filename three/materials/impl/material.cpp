@@ -2,6 +2,9 @@
 #define THREE_MATERIAL_CPP
 
 #include <three/materials/material.h>
+#include <three/materials/attribute.h>
+
+#include <vector>
 
 namespace three {
 
@@ -147,7 +150,14 @@ Material::Material( )
     normalScale( 1, 1, 1 ),
     fog( false ),
     lights( false ),
-    shadowPass( false ) { }
+    shadowPass( false ) { 
+
+      // TODO not for every material...
+      defaultAttributeValues["color"] = {1,1,1};
+      defaultAttributeValues["uv"] = {0,0};
+      defaultAttributeValues["uv2"] = {0,0};
+
+    }
 
 template < typename T >
 inline bool load( const std::unordered_map<std::string, any>& parameters,

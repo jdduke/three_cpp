@@ -97,11 +97,7 @@ public:
 
   //// When rendered geometry doesn't include these attributes but the material does,
   //// use these default values in WebGL. This avoids errors when buffer data is missing.
-  //this.defaultAttributeValues = {
-  //	"color" : [ 1, 1, 1],
-  //	"uv" : [ 0, 0 ],
-  //	"uv2" : [ 0, 0 ]
-  //};
+  std::unordered_map<std::string, std::vector<float> > defaultAttributeValues;
 
   //// By default, bind position to attribute index 0. In WebGL, attribute 0
   //// should always be used to avoid potentially expensive emulation.

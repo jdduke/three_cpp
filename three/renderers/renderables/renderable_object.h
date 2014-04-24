@@ -30,6 +30,42 @@ struct PainterSort {
 
 };
 
+struct PainterSortStable {
+
+  bool operator()( const RenderableObject& a, const RenderableObject& b ) const {
+    if ( a.z != b.z ) {
+
+		return b.z - a.z;
+
+	} else {
+
+		return a.id - b.id;
+
+	}
+  }
+
+  bool operator()( const Renderable* a, const Renderable* b ) const {
+    if ( a->z != b->z ) {
+
+		return b->z - a->z;
+
+	} else {
+
+		return a->id - b->id;
+
+	}
+  }
+
+};
+
+struct NumericalSort {
+
+  bool operator()( const std::pair<float, int>& a, const std::pair<float, int>& b ) const {
+    return b.first - a.first;
+  }
+
+};
+
 } // namespace three
 
 #endif // THREE_RENDERABLE_OBJECT_H

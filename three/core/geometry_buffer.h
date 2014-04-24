@@ -58,6 +58,8 @@ struct MorphNormal {
   typedef std::unique_ptr<Attribute, AttributeDeleter> AttributePtr;
   std::vector<AttributePtr> __glCustomAttributesList;
 
+  bool __glInit;
+
   GLBuffer __glColorBuffer;
   GLBuffer __glFaceBuffer;
   GLBuffer __glLineBuffer;
@@ -132,6 +134,7 @@ struct MorphNormal {
       hasColors( false ),
       hasTangents( false ),
       dynamic( true ),
+      __glInit( false ),
       __glColorBuffer( 0 ),
       __glFaceBuffer( 0 ),
       __glLineBuffer( 0 ),
