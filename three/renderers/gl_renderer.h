@@ -65,12 +65,12 @@ public:
 
   // shadow map
 
-  bool shadowMapEnabled;// = false;
-  bool shadowMapAutoUpdate;// = true;
-  enums::ShadowTypes shadowMapType;// = THREE.PCFShadowMap;
-  enums::CullFace shadowMapCullFace;// = THREE.CullFaceFront;
-  bool shadowMapDebug;// = false;
-  bool shadowMapCascade;// = false;de;
+  bool shadowMapEnabled;
+  bool shadowMapAutoUpdate;
+  enums::ShadowTypes shadowMapType;
+  enums::CullFace shadowMapCullFace;
+  bool shadowMapDebug;
+  bool shadowMapCascade;
 
   // morphs
 
