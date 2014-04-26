@@ -4,7 +4,7 @@ set(CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH};${EXTERNALS_DIR}")
 set(CMAKE_PREFIX_PATH ${EXTERNALS_DIR}/rapidjson ${CMAKE_PREFIX_PATH})
 
 set(SDL2_ROOT "" CACHE PATH
-  "The location of the SDL install prefix (only used if the SDL is not yet found)")
+  "The location of the SDL2 install prefix (only used if SDL2 is not yet found)")
 if(SDL2_ROOT)
   set(CMAKE_PREFIX_PATH ${SDL2_ROOT} ${CMAKE_PREFIX_PATH})
 elseif(MSVC)

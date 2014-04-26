@@ -11,6 +11,9 @@
 #include "SDL_assert.h"
 #include "SDL_timer.h"
 
+#define M_CONC(A, B) M_CONC_(A, B)
+#define M_CONC_(A, B) A##B
+
 using namespace three;
 
 namespace three_examples {
@@ -18,114 +21,15 @@ namespace {
 
 struct SDLGLInterface : public GLInterface {
   SDLGLInterface() {
-    BindTexture = glBindTexture;
-    BlendFunc = glBlendFunc;
-    Clear = glClear;
-    ClearColor = glClearColor;
-    ClearDepth = glClearDepth;
-    ClearStencil = glClearStencil;
-    ColorMask = glColorMask;
-    CullFace = glCullFace;
-    DeleteTextures = glDeleteTextures;
-    DepthFunc = glDepthFunc;
-    DepthMask = glDepthMask;
-    Disable = glDisable;
-    DrawArrays = glDrawArrays;
-    DrawElements = glDrawElements;
-    Enable = glEnable;
-    FrontFace = glFrontFace;
-    Finish = glFinish;
-    Flush = glFlush;
-    GenTextures = glGenTextures;
-    GetError = glGetError;
-    GetFloatv = glGetFloatv;
-    GetIntegerv = glGetIntegerv;
-    GetTexParameteriv = glGetTexParameteriv;
-    GetTexParameterfv = glGetTexParameterfv;
-    GetString = glGetString;
-    LineWidth = glLineWidth;
-    PolygonOffset = glPolygonOffset;
-    Scissor = glScissor;
-    StencilFunc = glStencilFunc;
-    StencilMask = glStencilMask;
-    StencilOp = glStencilOp;
-    TexImage2D = glTexImage2D;
-    TexParameterf = glTexParameterf;
-    TexParameterfv = glTexParameterfv;
-    TexParameteri = glTexParameteri;
-    TexParameteriv = glTexParameteriv;
-    TexSubImage2D = glTexSubImage2D;
-    Viewport = glViewport;
-
-  #define M_CONC(A, B) M_CONC_(A, B)
-  #define M_CONC_(A, B) A##B
-  #if defined(__APPLE__) || defined(THREE_GLES)
-  #define SDL_GL_GET_PROC(F) F = gl ## F;
-  #else
-  #define SDL_GL_GET_PROC(F) F = (GL_ ## F ## _Func) SDL_GL_GetProcAddress("gl" #F);
-  #endif
-
-    SDL_GL_GET_PROC( ActiveTexture );
-    SDL_GL_GET_PROC( AttachShader );
-    SDL_GL_GET_PROC( BindAttribLocation );
-    SDL_GL_GET_PROC( BindBuffer );
-    SDL_GL_GET_PROC( BlendEquation );
-    SDL_GL_GET_PROC( BlendEquationSeparate );
-    SDL_GL_GET_PROC( BlendFuncSeparate );
-    SDL_GL_GET_PROC( BufferData );
-    SDL_GL_GET_PROC( BufferSubData );
-    SDL_GL_GET_PROC( CompileShader );
-    SDL_GL_GET_PROC( CreateProgram );
-    SDL_GL_GET_PROC( CreateShader );
-    SDL_GL_GET_PROC( DeleteBuffers );
-    SDL_GL_GET_PROC( DeleteFramebuffers );
-    SDL_GL_GET_PROC( DeleteProgram );
-    SDL_GL_GET_PROC( DeleteRenderbuffers );
-    SDL_GL_GET_PROC( DeleteShader );
-    SDL_GL_GET_PROC( DisableVertexAttribArray );
-    SDL_GL_GET_PROC( EnableVertexAttribArray );
-    SDL_GL_GET_PROC( GenBuffers );
-    SDL_GL_GET_PROC( GenFramebuffers );
-    SDL_GL_GET_PROC( GenRenderbuffers );
-    SDL_GL_GET_PROC( GetAttribLocation );
-    SDL_GL_GET_PROC( GetBufferParameteriv );
-    SDL_GL_GET_PROC( GenerateMipmap );
-    SDL_GL_GET_PROC( GetProgramInfoLog );
-    SDL_GL_GET_PROC( GetProgramiv );
-    SDL_GL_GET_PROC( GetShaderInfoLog );
-    SDL_GL_GET_PROC( GetShaderiv );
-    SDL_GL_GET_PROC( GetUniformLocation );
-    SDL_GL_GET_PROC( LinkProgram );
-    SDL_GL_GET_PROC( ShaderSource );
-    SDL_GL_GET_PROC( Uniform1f );
-    SDL_GL_GET_PROC( Uniform1i );
-    SDL_GL_GET_PROC( Uniform1fv );
-    SDL_GL_GET_PROC( Uniform1iv );
-    SDL_GL_GET_PROC( Uniform2f );
-    SDL_GL_GET_PROC( Uniform2i );
-    SDL_GL_GET_PROC( Uniform2fv );
-    SDL_GL_GET_PROC( Uniform2iv );
-    SDL_GL_GET_PROC( Uniform3f );
-    SDL_GL_GET_PROC( Uniform3i );
-    SDL_GL_GET_PROC( Uniform3fv );
-    SDL_GL_GET_PROC( Uniform3iv );
-    SDL_GL_GET_PROC( Uniform4f );
-    SDL_GL_GET_PROC( Uniform4i );
-    SDL_GL_GET_PROC( Uniform4fv );
-    SDL_GL_GET_PROC( Uniform4iv );
-    SDL_GL_GET_PROC( UniformMatrix2fv );
-    SDL_GL_GET_PROC( UniformMatrix3fv );
-    SDL_GL_GET_PROC( UniformMatrix4fv );
-    SDL_GL_GET_PROC( UseProgram );
-    SDL_GL_GET_PROC( VertexAttribPointer );
-    SDL_GL_GET_PROC( BindFramebuffer );
-    SDL_GL_GET_PROC( FramebufferTexture2D );
-    SDL_GL_GET_PROC( DeleteFramebuffers );
-    SDL_GL_GET_PROC( RenderbufferStorage );
-    SDL_GL_GET_PROC( GenRenderbuffers );
-    SDL_GL_GET_PROC( DeleteRenderbuffers );
-    SDL_GL_GET_PROC( FramebufferRenderbuffer );
-    SDL_GL_GET_PROC( BindRenderbuffer );
+#define GL_FUNC_DECL(PFUNC, FUNC) FUNC = gl ## FUNC;
+#if defined(__APPLE__) || defined(THREE_GLES)
+#define GL_FUNC_EXT_DECL(PFUNC, FUNC) GL_FUNC_DECL(PFUNC, FUNC)
+#else
+#define GL_FUNC_EXT_DECL(PFUNC, FUNC) FUNC = (PFUNC) SDL_GL_GetProcAddress("gl" #FUNC);
+#endif
+#include "three/gl_functions.h"
+#undef GL_FUNC_DECL
+#undef GL_FUNC_EXT_DECL
   }
 };
 

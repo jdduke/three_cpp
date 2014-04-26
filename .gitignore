@@ -1,5 +1,5 @@
 *.sublime-workspace
 *.sublime-project
 bin/
-build/
+*build*/
 lib/

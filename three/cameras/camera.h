@@ -7,6 +7,11 @@
 #include <three/core/object3d.h>
 #include <three/math/matrix4.h>
 
+#if defined(_WIN32)
+#undef near
+#undef far
+#endif
+
 namespace three {
 
 class Camera : public Object3D {
