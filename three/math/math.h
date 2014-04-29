@@ -101,9 +101,11 @@ template < typename T > inline T radToDeg( T a ) {
     return a * MATH_RAD_TO_DEG_FACTOR;
 }
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(ANDROID)
 template < typename T > inline T round( T n ) {
-  return ( n > ( T )0 ) ? std::floor( n + ( T )0.5 ) : std::ceil( n - ( T )0.5 );
+  return ( n > static_cast<T>(0) )
+      ? std::floor( n + static_cast<T>(0.5) )
+      : std::ceil(  n - static_cast<T>(0.5) );
 }
 #else
 template < typename T > inline T round( T t ) {

@@ -1,10 +1,17 @@
 #ifndef THREE_GL_H
 #define THREE_GL_H
 
+#if defined(THREE_GLES)
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#else
 #define GL_GLEXT_PROTOTYPES
+#if !defined(NOMINMAX)
 #define NOMINMAX
+#endif
 #include <three/deps/GL/glcorearb.h>
 #undef GL_GLEXT_PROTOTYPES
+#endif
 
 namespace three {
 
@@ -21,12 +28,21 @@ public:
 
   bool validate() const;
 
+#if defined(THREE_GLES)
+#define GL_FUNC_DECL_IMPL(GL_FUNC, FUNC) GLPtr<decltype((GL_FUNC))> FUNC;
+#define GL_FUNC_DECL(PFUNC, FUNC) GL_FUNC_DECL_IMPL(gl ## FUNC, FUNC)
+#define GL_FUNC_EXT_DECL(PFUNC, FUNC) GL_FUNC_DECL_IMPL(gl ## FUNC, FUNC)
+#else
 #define GL_FUNC_DECL(PFUNC, FUNC) GLPtr<PFUNC> FUNC;
 #define GL_FUNC_EXT_DECL(PFUNC, FUNC) GLPtr<PFUNC> FUNC;
+#endif
 #include "three/gl_functions.h"
 #undef GL_FUNC_DECL
 #undef GL_FUNC_EXT_DECL
 
+#if defined(THREE_GLES)
+  void ClearDepth(GLfloat d) { ClearDepthf(d); }
+#endif
 };
 
 struct GLInterfaceWrapper : public GLInterface {

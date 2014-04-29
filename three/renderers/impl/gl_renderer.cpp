@@ -5037,8 +5037,11 @@ void GLRenderer::setupRenderBuffer( Buffer renderbuffer, GLRenderTarget& renderT
     */
   } else if ( renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
+#if !defined(THREE_GLES)
+    // TODO: Enable with GLES
     _gl.RenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_STENCIL, renderTarget.width, renderTarget.height );
     _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer );
+#endif
 
   } else {
 
@@ -5242,10 +5245,12 @@ int GLRenderer::paramThreeToGL( int p ) {
     return GL_RGB;
   case enums::RGBAFormat:
     return GL_RGBA;
+#if !defined(THREE_GLES)
   case enums::BGRFormat:
     return GL_BGR;
   case enums::BGRAFormat:
     return GL_BGRA;
+#endif
 
   case enums::AddEquation:
     return GL_FUNC_ADD;
