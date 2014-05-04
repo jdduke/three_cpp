@@ -58,12 +58,12 @@ struct PainterSortStable {
 
 };
 
+
 struct NumericalSort {
-
-  bool operator()( const std::pair<float, int>& a, const std::pair<float, int>& b ) const {
-    return b.first - a.first;
+  template < typename T, typename U >
+  bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
+    return a.second - b.second;
   }
-
 };
 
 } // namespace three

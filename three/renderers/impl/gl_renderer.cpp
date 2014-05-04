@@ -2163,8 +2163,6 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
     if( geometry.attributes.contains( AttributeKey::index() ) ) {
 
-      auto& index = geometry.attributes[ AttributeKey::index() ];
-
       const auto& offsets = geometry.offsets;
 
       // if there is more than 1 chunk
@@ -2198,15 +2196,15 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
               
 
             }
-            else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+            else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
 
               if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
 
-                glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+                glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
-              } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+              } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
 
-                glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+                glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
               }
 
@@ -2246,28 +2244,25 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
             auto& attrKey = namedAttribute.first;
             auto& attributePointer = namedAttribute.second;
 
-            if(attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+            if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
               auto& attributeItem = geometryAttributes[ attrKey ];
 
-              if ( attributeItem.valid() ) {
                 const auto attributeItemSize = attributeItem.itemSize;
 
                 glBindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
                 enableAttribute( attributePointer );
-                glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
-
-              }
+                glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
 
             }
-            else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+            else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
 
               if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
 
-                glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+                glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
-              } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+              } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
 
-                glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+                glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
               }
 
@@ -2300,28 +2295,25 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
         auto& attrKey = namedAttribute.first;
         auto& attributePointer = namedAttribute.second;
 
-        if(attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+        if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
           auto& attributeItem = geometryAttributes[ attrKey ];
 
-          if ( attributeItem.valid() ) {
             const auto attributeItemSize = attributeItem.itemSize;
 
             glBindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
             enableAttribute( attributePointer );
-            glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
-
-          }
+            glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
 
         }
-        else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+        else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
 
           if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
 
-            glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+            glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
-          } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+          } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
 
-            glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+            glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
           }
 
@@ -2348,28 +2340,26 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
       auto& attrKey = namedAttribute.first;
       auto& attributePointer = namedAttribute.second;
 
-      if(attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+      if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
         auto& attributeItem = geometryAttributes[ attrKey ];
 
-        if ( attributeItem.valid() ) {
           const auto attributeItemSize = attributeItem.itemSize;
 
           glBindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
           enableAttribute( attributePointer );
-          glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
+          glVertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
 
-        }
 
       }
-      else if ( material.defaultAttributeValues.contains( attrKey ) ) {
+      else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
 
         if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
 
-          glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+          glVertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
-        } else if ( material.defaultAttributeValues[ attributeName ].size() == 3 ) {
+        } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
 
-          glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attributeName ][0] );
+          glVertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
         }
 
@@ -2387,7 +2377,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
     _info.render.points += position.numItems; 
 
   }
-
+  }
 
 }
 
@@ -2519,12 +2509,6 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
          attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
          attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
-      glVertexAttribPointer( attributes[AttributeKey::skinVertexA()], 4, GL_FLOAT, false, 0, 0 );
-
-      glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer );
-      glVertexAttribPointer( attributes[AttributeKey::skinVertexB()], 4, GL_FLOAT, false, 0, 0 );
-
       glBindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
       glVertexAttribPointer( attributes[AttributeKey::skinIndex()], 4, GL_FLOAT, false, 0, 0 );
 
@@ -2601,27 +2585,18 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
 }
 
-void enableAttribute( const Attribute& attribute ) {
+void GLRenderer::enableAttribute( int attributeId ) {
 
-  if(attribute.second.valid()) {
-
-    glEnableVertexAttribArray( attribute.second );
-
-  }
-
-  _enabledAttributes[ attribute.first ] = true;
+  glEnableVertexAttribArray( attributeId );
+  _enabledAttributes[ attributeId ] = true;
 
 }
 
-void disableAttributes() {
+void GLRenderer::disableAttributes() {
 
   for ( auto& attribute : _enabledAttributes ) {
 
-    if(attribute.second.valid()) {
-
-      glDisableVertexAttribArray( attribute.second );
-
-    }
+    glDisableVertexAttribArray( attribute.first );
 
     _enabledAttributes[ attribute.first ] = false;
 
@@ -2633,12 +2608,6 @@ void disableAttributes() {
 
 // Sorting
 
-struct NumericalSort {
-  template < typename T, typename U >
-  bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
-    return a.second > b.second;
-  }
-};
 
 void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
@@ -3315,7 +3284,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
       if ( ! geometry.__glVertexBuffer ) {
 
-        createRibbonBuffers( geometry );
+        //createRibbonBuffers( geometry );
         initRibbonBuffers( geometry );
 
         geometry.verticesNeedUpdate = true;
@@ -3472,7 +3441,7 @@ void GLRenderer::updateObject( Object3D& object ) {
   } else if ( object.type() == enums::Ribbon ) {
 
     if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate ) {
-      setRibbonBuffers( geometry, GL_DYNAMIC_DRAW );
+      //setRibbonBuffers( geometry, GL_DYNAMIC_DRAW );
     }
 
     geometry.verticesNeedUpdate = false;
@@ -3654,7 +3623,9 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
     maxShadows,
     shadowMapEnabled && object.receiveShadow,
+    shadowMapAutoUpdate,
     shadowMapType,
+    shadowMapCullFace,
     shadowMapDebug,
     shadowMapCascade,
 
@@ -3665,8 +3636,8 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     material.side == enums::DoubleSide
 
   };
-
-  material.program = buildProgram( shaderID,
+    
+    material.program = buildProgram( shaderID,
                                    material.fragmentShader,
                                    material.vertexShader,
                                    material.uniforms,

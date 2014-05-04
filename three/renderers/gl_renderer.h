@@ -183,7 +183,7 @@ private:
   void renderBufferImmediate( Object3D& object, Program& program, Material& material );
   void renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, BufferGeometry& geometry, Object3D& object );
   void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
-  void enableAttribute( Attribute& attribute );
+  void enableAttribute( int attributeId );
   void disableAttributes();
   void setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object );
 
@@ -418,7 +418,7 @@ private:
   int _currentWidth;
   int _currentHeight;
 
-  std::unordered_map<std::string, bool> _enabledAttributes;
+  std::unordered_map<int, bool> _enabledAttributes;
 
   Frustum _frustum;
 
