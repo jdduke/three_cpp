@@ -1973,16 +1973,7 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
 
 }
 
-
-
-
-
-
-
-
-
 // Buffer rendering
-
 
 void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Material& material ) {
 
@@ -2073,7 +2064,8 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
   auto& program = setProgram( camera, lights, fog, material, object );
 
-  auto& attributes = program.attributes;
+  auto& programAttributes = program.attributes;
+  auto& geometryAttributes = geometry.attributes;
 
   auto updateBuffers = false;
   auto wireframeBit = material.wireframe ? 1 : 0;
@@ -2086,109 +2078,224 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
   }
 
+  if ( updateBuffers ) {
+
+      disableAttributes();
+
+  }
+
   // render mesh
 
   if ( object.type() == enums::Mesh ) {
 
-    const auto& offsets = geometry.offsets;
+    if( geometry.attributes.contains( AttributeKey::index() ) ) {
 
-    // if there is more than 1 chunk
-    // must set attribute pointers to use new offsets for each chunk
-    // even if geometry and materials didn't change
+      const auto& offsets = geometry.offsets;
 
-    if ( offsets.size() > 1 ) updateBuffers = true;
+      // if there is more than 1 chunk
+      // must set attribute pointers to use new offsets for each chunk
+      // even if geometry and materials didn't change
 
-    for ( size_t i = 0, il = offsets.size(); i < il; ++ i ) {
+      if ( offsets.size() > 1 ) updateBuffers = true;
 
-      const auto startIndex = offsets[ i ].index;
+      for ( size_t i = 0, il = offsets.size(); i < il; ++ i ) {
 
-      if ( updateBuffers ) {
+        const auto startIndex = offsets[ i ].index;
 
-        // vertices
+        if ( updateBuffers ) {
 
-        auto& position = geometry.attributes[ AttributeKey::position() ];
-        const auto positionSize = position.itemSize;
+          for ( auto& namedAttribute : programAttributes ) {
 
-        _gl.BindBuffer( GL_ARRAY_BUFFER, position.buffer );
-        _gl.VertexAttribPointer( attributes[AttributeKey::position()], positionSize, GL_FLOAT, false, 0, toOffset( startIndex * positionSize * 4 ) ); // 4 bytes per Float32
+            auto& attrKey = namedAttribute.first;
+            auto& attributePointer = namedAttribute.second;
 
-        // normals
+            if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
 
-        if ( attributes[AttributeKey::normal()].valid() && geometry.attributes.contains( AttributeKey::normal() ) ) {
+                auto& attributeItem = geometryAttributes[ attrKey ];
 
-          auto& normal = geometry.attributes[ AttributeKey::normal() ];
-          auto normalSize = normal.itemSize;
+                const auto attributeItemSize = attributeItem.itemSize;
 
-          _gl.BindBuffer( GL_ARRAY_BUFFER, normal.buffer );
-          _gl.VertexAttribPointer( attributes[AttributeKey::normal()], normalSize, GL_FLOAT, false, 0, toOffset( startIndex * normalSize * 4 ) );
+                _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+                enableAttribute( attributePointer );
+                _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
+
+            } else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
+
+              if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+                _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+
+              } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
+
+                _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+
+              }
+
+            }
+
+          }
+
+          // indices
+
+          const auto& index = geometry.attributes[ AttributeKey::index() ];
+
+          _gl.BindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
 
         }
 
-        // uvs
+        // render indexed triangles
 
-        if ( attributes[AttributeKey::uv()].valid() && geometry.attributes.contains( AttributeKey::uv() ) ) {
+        _gl.DrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
 
-          const auto& uv = geometry.attributes[ AttributeKey::uv() ];
+        _info.render.calls ++;
+        _info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
+        _info.render.faces += offsets[ i ].count / 3;
 
-          if ( uv.buffer ) {
+      }
+    
+    // non-indexed triangles
 
-            const auto uvSize = uv.itemSize;
+    } else {
 
-            _gl.BindBuffer( GL_ARRAY_BUFFER, uv.buffer );
-            _gl.VertexAttribPointer( attributes[AttributeKey::uv()], uvSize, GL_FLOAT, false, 0, toOffset( startIndex * uvSize * 4 ) );
+        if ( updateBuffers ) {
 
-            _gl.EnableVertexAttribArray( attributes[AttributeKey::uv()] );
+          for ( auto& namedAttribute : programAttributes ) {
 
-          } else {
+            if ( namedAttribute.first == AttributeKey::index()) continue;
 
-            _gl.DisableVertexAttribArray( attributes[AttributeKey::uv()] );
+            auto& attrKey = namedAttribute.first;
+            auto& attributePointer = namedAttribute.second;
+
+            if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+              auto& attributeItem = geometryAttributes[ attrKey ];
+
+                const auto attributeItemSize = attributeItem.itemSize;
+
+                _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+                enableAttribute( attributePointer );
+                _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
+
+            }
+            else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
+
+              if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+                _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+
+              } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
+
+                _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+
+              }
+
+            }
+
+          }
+        }
+
+        // render non-indexed triangles
+
+        const auto& position = geometry.attributes[ AttributeKey::position() ];
+
+        _gl.DrawArrays(GL_TRIANGLES, 0, position.numItems / 3);
+
+        _info.render.calls ++;
+        _info.render.vertices += position.numItems / 3; 
+        _info.render.faces += position.numItems / 3 / 3;
+
+    }
+
+    // render particles
+
+  } else if ( object.type() == enums::ParticleSystem ) {
+
+    if ( updateBuffers ) {
+
+      for ( auto& namedAttribute : programAttributes ) {
+
+        auto& attrKey = namedAttribute.first;
+        auto& attributePointer = namedAttribute.second;
+
+        if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+          auto& attributeItem = geometryAttributes[ attrKey ];
+
+            const auto attributeItemSize = attributeItem.itemSize;
+
+            _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+            enableAttribute( attributePointer );
+            _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
+
+        }
+        else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
+
+          if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+            _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+
+          } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
+
+            _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
 
           }
 
         }
 
-        // colors
-
-        if ( attributes[AttributeKey::color()].valid() && geometry.attributes.contains( AttributeKey::color() ) ) {
-
-          const auto& color = geometry.attributes[ AttributeKey::color() ];
-          const auto colorSize = color.itemSize;
-
-          _gl.BindBuffer( GL_ARRAY_BUFFER, color.buffer );
-          _gl.VertexAttribPointer( attributes[AttributeKey::color()], colorSize, GL_FLOAT, false, 0, toOffset( startIndex * colorSize * 4 ) );
-
-        }
-
-        // tangents
-
-        if ( attributes[AttributeKey::tangent()].valid() && geometry.attributes.contains( AttributeKey::tangent() ) ) {
-
-          const auto& tangent = geometry.attributes[ AttributeKey::tangent() ];
-          const auto tangentSize = tangent.itemSize;
-
-          _gl.BindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
-          _gl.VertexAttribPointer( attributes[AttributeKey::tangent()], tangentSize, GL_FLOAT, false, 0, toOffset( startIndex * tangentSize * 4 ) );
-
-        }
-
-        // indices
-
-        const auto& index = geometry.attributes[ AttributeKey::index() ];
-
-        _gl.BindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
-
       }
-
-      // render indexed triangles
-
-      _gl.DrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
-
-      _info.render.calls ++;
-      _info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
-      _info.render.faces += offsets[ i ].count / 3;
-
     }
 
+    const auto& position = geometry.attributes[ AttributeKey::position() ];
+
+    _gl.DrawArrays(GL_POINTS, 0, position.numItems / 3);
+
+    _info.render.calls ++;
+    _info.render.points += position.numItems / 3; 
+
+  } // ParticleSystem
+  else if ( object.type() == enums::Line ) {
+
+    if ( updateBuffers ) {
+
+      for ( auto& namedAttribute : programAttributes ) {
+
+        auto& attrKey = namedAttribute.first;
+        auto& attributePointer = namedAttribute.second;
+
+        if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
+          auto& attributeItem = geometryAttributes[ attrKey ];
+
+            const auto attributeItemSize = attributeItem.itemSize;
+
+            _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
+            enableAttribute( attributePointer );
+            _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
+
+
+        } else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
+
+          if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
+
+            _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+
+          } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
+
+            _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+
+          }
+
+        }
+        
+      }
+
+      const auto& position = geometry.attributes[ AttributeKey::position() ];
+
+      const auto primitives = ( static_cast<Line&>(object).lineType == enums::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
+
+      _gl.DrawArrays(primitives, 0, position.numItems / 3);
+
+      _info.render.calls ++;
+      _info.render.points += position.numItems; 
+
+    }
   }
 
 }
@@ -2400,6 +2507,25 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 }
 
 // Sorting
+
+void GLRenderer::enableAttribute( int attributeId ) {
+
+  _gl.EnableVertexAttribArray( attributeId );
+  _enabledAttributes[ attributeId ] = true;
+
+}
+
+void GLRenderer::disableAttributes() {
+
+  for ( auto& attribute : _enabledAttributes ) {
+
+    _gl.DisableVertexAttribArray( attribute.first );
+
+    _enabledAttributes[ attribute.first ] = false;
+
+  }
+
+}
 
 void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
