@@ -1,47 +1,39 @@
 #ifndef THREE_EXAMPLES_COMMON_H
 #define THREE_EXAMPLES_COMMON_H
 
-#include <three/config.h>
+#include "three/config.h"
+#include "three/gl.h"
 
-#include <three/extras/anim.h>
-#include <three/extras/glew.h>
-#include <three/extras/sdl.h>
-#include <three/extras/stats.h>
+#include "three/renderers/gl_renderer.h"
+#include "three/renderers/renderer_parameters.h"
 
-#include <three/renderers/gl_renderer.h>
-#include <three/renderers/renderer_parameters.h>
+#include "three/utils/conversion.h"
+#include "three/utils/template.h"
 
-#include <three/utils/conversion.h>
-#include <three/utils/template.h>
+#include "examples/extras/sdl.h"
+#include "examples/extras/stats.h"
 
-namespace three {
+namespace three_examples {
 
-struct ExampleSession {
+template <typename Example>
+int RunExample( Example example,
+                three::RendererParameters parameters = three::RendererParameters() ) {
+  GLWindow window( parameters );
+  if ( !window.valid() )
+    return EXIT_FAILURE;
 
-  ExampleSession(  three::RendererParameters parameters = three::RendererParameters() ) {
-    if ( !three::sdl::init( parameters ) || !three::glew::init( parameters ) ) {
-      return;
-    }
-    renderer = three::GLRenderer::create( parameters );
-  }
+  three::GLInterface interface = window.createGLInterface();
+  if ( !interface.validate() )
+    return EXIT_FAILURE;
 
-  ~ExampleSession() {
-    three::sdl::quit();
-  }
+  auto renderer = three::GLRenderer::create( parameters, interface );
+  if ( !renderer )
+    return EXIT_FAILURE;
 
-  template < typename Example >
-  void run( Example example ) {
-    if ( renderer )
-      example( renderer );
-  }
+  example( window, *renderer );
+  return EXIT_SUCCESS;
+}
 
-private:
-  ExampleSession(ExampleSession&);
-  ExampleSession& operator=(ExampleSession&);
-
-  three::GLRenderer::Ptr renderer;
-};
-
-} // namespace three
+} // namespace three_examples
 
 #endif // THREE_EXAMPLES_COMMON_H

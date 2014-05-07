@@ -218,8 +218,6 @@ public:
 
   void render( const std::function<void( Object3D& )> renderCallback );
 
-  
-
 protected:
 
   Object3D( const Material::Ptr& material = Material::Ptr(),

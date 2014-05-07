@@ -120,8 +120,6 @@ enum PixelFormat {
   AlphaFormat          = 1019,
   RGBFormat            = 1020,
   RGBAFormat           = 1021,
-  LuminanceFormat      = 1022,
-  LuminanceAlphaFormat = 1023,
   // JD - Added
   BGRFormat            = 1024,
   BGRAFormat           = 1025,

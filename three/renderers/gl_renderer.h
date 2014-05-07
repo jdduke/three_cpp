@@ -35,13 +35,9 @@ public:
 
   typedef std::shared_ptr<GLRenderer> Ptr;
 
-  static Ptr create( const RendererParameters& parameters );
+  static Ptr create( const RendererParameters& parameters, const GLInterface& gl );
 
 public:
-
-  void* context;
-
-  float devicePixelRatio;
 
   // clearing
 
@@ -67,8 +63,8 @@ public:
 
   bool shadowMapEnabled;
   bool shadowMapAutoUpdate;
-  enums::ShadowTypes shadowMapType;
-  enums::CullFace shadowMapCullFace;
+  bool shadowMapSoft;
+  bool shadowMapCullFrontFaces;
   bool shadowMapDebug;
   bool shadowMapCascade;
 
@@ -86,18 +82,10 @@ public:
 
 public:
 
+  bool supportsVertexTextures() const { return _supportsVertexTextures; }
+  float getMaxAnisotropy() const { return _maxAnisotropy; }
   int width() const { return _width; }
   int height() const { return _height; }
-
-  void* getContext() { return _gl; }
-
-  bool supportsVertexTextures() const { return _supportsVertexTextures; }
-  bool supportsFloatTextures() { return _glExtensionTextureFloat; }
-  bool supportsStandardDerivatives() { return _glExtensionStandardDerivatives; }
-  bool supportsCompressedTextureS3TC() { return _glExtensionCompressedTextureS3TC; }
-
-  float getMaxAnisotropy() const { return _maxAnisotropy; }
-  enums::PrecisionType getPrecision() { return _precision; }
 
   void setSize( int width, int height );
   void setViewport( int x = 0, int y = 0, int width = -1, int height = -1 );
@@ -105,86 +93,79 @@ public:
   void enableScissorTest( bool enable );
 
   // Clearing
+  void setClearColorHex( int hex, float alpha );
+  void setClearColor( Color color, float alpha );
 
-  void setClearColor( Color color, float alpha = 1 );
   Color getClearColor() const { return _clearColor; }
   float getClearAlpha() const { return _clearAlpha; }
+
   void clear( bool color = true, bool depth = true, bool stencil = true );
-  void clearColor() { glClear( GL_COLOR_BUFFER_BIT ); }
-  void clearDepth() { glClear( GL_DEPTH_BUFFER_BIT ); }
-  void clearStencil() { glClear( GL_STENCIL_BUFFER_BIT ); }
   void clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color = true, bool depth = true, bool stencil = true );
 
   // Plugins
-  // TODO
-  void addPostPlugin( const IPlugin::Ptr& plugin );
+  void addPostPlugin(const IPlugin::Ptr& plugin );
   void addPrePlugin( const IPlugin::Ptr& plugin );
 
-  // Rendering
-
-  void updateShadowMap( const Scene& scene, const Camera& camera );
-
-  // Rendering
-  void render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr& renderTarget = GLRenderTarget::Ptr(), bool forceClear = false );
-  void resetStates();
-
-private:
-
-  struct InternalLights;
-  struct LightCount { int directional, point, spot, hemi; };
-
-  // Internal functions
-
-  // Buffer allocation
-
-  void createParticleBuffers( Geometry& geometry );
-  void createLineBuffers( Geometry& geometry );
-  void createMeshBuffers( GeometryGroup& geometryGroup );
-
-  // Events
-
-  // TODO
-  //var onGeometryDispose = function ( event ) {
-  //var onTextureDispose = function ( event ) {
-  //var onRenderTargetDispose = function ( event ) {
-  //var onMaterialDispose = function ( event )
-
-  // Buffer deallocation
-
-  void deleteBuffers( GeometryBuffer& geometry );
-  void deallocateGeometry( Geometry& geometry );
+  // Deallocation
+  void deallocateObject( Object3D& object );
   void deallocateTexture( Texture& texture );
   void deallocateRenderTarget( GLRenderTarget& renderTarget );
   void deallocateMaterial( Material& material );
 
-  // Buffer initialization
+  // Rendering
+  void render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr& renderTarget = GLRenderTarget::Ptr(), bool forceClear = false );
+  void updateShadowMap( const Scene& scene, const Camera& camera );
+  void resetStates();
 
+private:
+
+  // Internal functions
+
+  struct InternalLights;
+  struct LightCount { int directional, point, spot, hemi; };
+
+  // Buffer allocation
+  void createParticleBuffers( Geometry& geometry );
+  void createLineBuffers( Geometry& geometry );
+  void createRibbonBuffers( Geometry& geometry );
+  void createMeshBuffers( GeometryGroup& geometryGroup );
+
+  // Buffer deallocation
+  void deleteParticleBuffers( Geometry& geometry );
+  void deleteLineBuffers( Geometry& geometry );
+  void deleteRibbonBuffers( Geometry& geometry );
+  void deleteMeshBuffers( GeometryGroup& geometryGroup );
+
+  // Buffer initialization
   void initCustomAttributes( Geometry& geometry, Object3D& object );
   void initParticleBuffers( Geometry& geometry, Object3D& object );
   void initLineBuffers( Geometry& geometry, Object3D& object );
   void initRibbonBuffers( Geometry& geometry );
   void initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object );
+
   Material* getBufferMaterial( Object3D& object, GeometryGroup* geometryGroup );
   bool materialNeedsSmoothNormals( const Material* material );
   enums::Shading bufferGuessNormalType( const Material* material );
   enums::Colors bufferGuessVertexColorType( const Material* material );
   bool bufferGuessUVType( const Material* material );
+
+  //
+
   void initDirectBuffers( Geometry& geometry );
 
   // Buffer setting
-
   void setParticleBuffers( Geometry& geometry, int hint, Object3D& object );
   void setLineBuffers( Geometry& geometry, int hint );
+  void setRibbonBuffers( Geometry& geometry, int hint );
   void setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object, int hint, bool dispose, Material* material );
   void setDirectBuffers( Geometry& geometry, int hint, bool dispose );
 
   // Buffer rendering
-
+  void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
   void renderBufferImmediate( Object3D& object, Program& program, Material& material );
   void renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, BufferGeometry& geometry, Object3D& object );
-  void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
-  void enableAttribute( int attributeId );
-  void disableAttributes();
+
+  // Sorting
   void setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object );
 
   // Rendering
@@ -255,15 +236,15 @@ private:
 
   // Shaders
   Program::Ptr buildProgram( const std::string& shaderID,
-                                        const std::string& fragmentShader,
-                                        const std::string& vertexShader,
-                                        const Uniforms& uniforms,
-                                        const Attributes& attributes,
-                                        ProgramParameters& parameters );
+                             const std::string& fragmentShader,
+                             const std::string& vertexShader,
+                             const Uniforms& uniforms,
+                             const Attributes& attributes,
+                             ProgramParameters& parameters );
 
   // Shader parameters cache
-  static void cacheUniformLocations( Program& program, const Identifiers& identifiers );
-  static void cacheAttributeLocations( Program& program, const Identifiers& identifiers );
+  void cacheUniformLocations( Program& program, const Identifiers& identifiers );
+  void cacheAttributeLocations( Program& program, const Identifiers& identifiers );
   static std::string addLineNumbers( const std::string& string );
   Buffer getShader( enums::ShaderType type, const std::string& source );
 
@@ -274,25 +255,25 @@ private:
 
     if ( isImagePowerOfTwo ) {
 
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
 
-      glTexParameteri( textureType, GL_TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
-      glTexParameteri( textureType, GL_TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
 
     } else {
 
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-      glTexParameteri( textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      _gl.TexParameteri( textureType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-      glTexParameteri( textureType, GL_TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
-      glTexParameteri( textureType, GL_TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MAG_FILTER, filterFallback( texture.magFilter ) );
+      _gl.TexParameteri( textureType, GL_TEXTURE_MIN_FILTER, filterFallback( texture.minFilter ) );
 
     }
 
     if ( _glExtensionTextureFilterAnisotropic && texture.dataType != enums::FloatType ) {
       if ( texture.anisotropy > 1 || texture.__oldAnisotropy ) {
-        glTexParameterf( textureType, TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
+        _gl.TexParameterf( textureType, TEXTURE_MAX_ANISOTROPY_EXT, Math::min( texture.anisotropy, _maxAnisotropy ) );
         texture.__oldAnisotropy = texture.anisotropy;
       }
     }
@@ -325,7 +306,7 @@ private:
 
 protected:
 
-  GLRenderer( const RendererParameters& parameters );
+  GLRenderer( const RendererParameters& parameters, const GLInterface& gl );
 
   void initialize();
   void initGL();
@@ -334,7 +315,6 @@ protected:
 private:
 
   int _width, _height;
-  bool _vsync;
   enums::PrecisionType _precision;
   bool _alpha;
   bool _premultipliedAlpha;
@@ -418,8 +398,6 @@ private:
   int _currentWidth;
   int _currentHeight;
 
-  std::unordered_map<int, bool> _enabledAttributes;
-
   Frustum _frustum;
 
   // camera matrices cache
@@ -466,13 +444,11 @@ private:
 
   } _lights;
 
-  void* _gl;
+  GLInterfaceWrapper _gl;
 
   bool _glExtensionTextureFloat;
-  bool _glExtensionTextureFloatLinear;
   bool _glExtensionStandardDerivatives;
   bool _glExtensionTextureFilterAnisotropic;
-  bool _glExtensionCompressedTextureS3TC;
 
   // GPU capabilities
 

@@ -18,7 +18,7 @@ public:
   typedef std::shared_ptr<Mesh> Ptr;
 
   static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
-  
+
   THREE_IMPL_OBJECT(Mesh)
 
   float boundRadius;

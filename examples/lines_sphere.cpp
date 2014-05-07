@@ -1,22 +1,23 @@
 #include "common.h"
 
-#include <three/cameras/perspective_camera.h>
-#include <three/core/geometry.h>
-#include <three/lights/point_light.h>
-#include <three/materials/line_basic_material.h>
-#include <three/objects/line.h>
-#include <three/renderers/renderer_parameters.h>
-#include <three/renderers/gl_renderer.h>
-#include <three/scenes/fog.h>
+#include "three/cameras/perspective_camera.h"
+#include "three/core/geometry.h"
+#include "three/lights/point_light.h"
+#include "three/materials/line_basic_material.h"
+#include "three/objects/line.h"
+#include "three/renderers/renderer_parameters.h"
+#include "three/renderers/gl_renderer.h"
+#include "three/scenes/fog.h"
 
 #include <array>
 
 using namespace three;
+using namespace three_examples;
 
-void lines_sphere( GLRenderer::Ptr renderer ) {
+void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
 
   auto camera = PerspectiveCamera::create(
-    80, (float)renderer->width() / renderer->height(), 1, 3000
+    80, (float)renderer.width() / renderer.height(), 1, 3000
   );
   camera->position.z = 1000;
 
@@ -76,82 +77,48 @@ void lines_sphere( GLRenderer::Ptr renderer ) {
 
   //////////////////////////////////////////////////////////////////////////
 
-  auto running = true, renderStats = true;
-  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
-    switch (e.key.keysym.sym) {
-    case SDLK_q:
-    case SDLK_ESCAPE:
-      running = false; break;
-    default:
-      renderStats = !renderStats; break;
-    };
-  } );
-
-  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  } );
-
   auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+  window.addEventListener(SDL_MOUSEMOTION, [&]( const SDL_Event& event ) {
+    mouseX = 2.f * ((float)event.motion.x / renderer.width()  - 0.5f);
+    mouseY = 2.f * ((float)event.motion.y / renderer.height() - 0.5f);
   });
 
   //////////////////////////////////////////////////////////////////////////
 
-  stats::Stats stats( *renderer );
   auto time = 0.f;
 
-  anim::gameLoop(
+  window.animate( [&]( float dt ) -> bool {
 
-    [&]( float dt ) -> bool {
+    time += dt * 0.1f;
 
-      time += dt * 0.1f;
+    //camera->position.x += ( -500.f * mouseX - camera->position.x ) * 3 * dt;
+    camera->position.y += (  500.f * mouseY - camera->position.y ) * 3 * dt;
+    camera->lookAt( scene->position );
 
-      //camera->position.x += ( -500.f * mouseX - camera->position.x ) * 3 * dt;
-      camera->position.y += (  500.f * mouseY - camera->position.y ) * 3 * dt;
-      camera->lookAt( scene->position );
-
-      for ( size_t i = 0; i < scene->children.size(); i++ ) {
-        auto& object = *scene->children[i];
-        if ( object.type() == enums::Line ) {
-          object.rotation().y( time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) ) );
-          if ( i < 5 )
-            object.scale.x = object.scale.y
-                           = object.scale.z
-                           = originalScales[ i ] * ((float)i / 5.f + 1.f) * (1.f + 0.5f * Math::sin( 7.f * time ) );
-        }
+    for ( size_t i = 0; i < scene->children.size(); i++ ) {
+      auto& object = *scene->children[i];
+      if ( object.type() == enums::Line ) {
+        object.rotation().y( time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) ) );
+        if ( i < 5 )
+          object.scale.x = object.scale.y
+                         = object.scale.z
+                         = originalScales[ i ] * ((float)i / 5.f + 1.f) * (1.f + 0.5f * Math::sin( 7.f * time ) );
       }
-
-      renderer->render( *scene, *camera );
-
-      stats.update( dt, renderStats );
-
-      return running;
-
     }
 
-  );
+    renderer.render( *scene, *camera );
+
+    return true;
+
+  } );
 
 }
 
 int main ( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
-
   RendererParameters parameters;
   parameters.antialias = true;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
+  return RunExample( lines_sphere, parameters );
 
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  lines_sphere( renderer );
-
-  return 0;
 }

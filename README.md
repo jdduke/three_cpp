@@ -9,7 +9,7 @@ three.cpp
 [three.js](http://mrdoob.github.com/three.js/) is a popular and
 accessible 3D library (credits to mdroob and alteredq). The goal with three.cpp
 is to fully implement the relevant portions of the library in C++11, up
-to and including revision 50.
+to and including revision 65.
 
 Before you start raging, see the [FAQ](#faq).
 
@@ -20,27 +20,17 @@ Feel free to message me privately if you have specific requests and/or ideas.
 
 ## Usage ##
 
-three.cpp is optionally header-only; you can simply drop the
-"three" folder in your project and get started, or you can compile it into a
-static and/or dynamic library.  For most kinds of development you will want to
-use three.cpp as a library; header-only compiles are prohibitively expensive
-for any kind of dynamic code base. The design is similar to that
-found in [Boost Asio](http://www.boost.org/doc/libs/1_51_0/doc/html/boost_asio.html).
+three.cpp can be compile into a static or dynamic library.
 
 ### Setup ###
 * `git clone git://github.com/jdduke/three_cpp`
 * `cd three_cpp`
-
-### As header-only library ###
-* All set. Relevant library source files are in **three_cpp/three**, simply include and use.
-
-### As compiled library ###
 * `mkdir build`
 * `cd build`
-* `cmake ../ -DTHREE_HEADER_ONLY:BOOL=OFF`
+* `cmake ../`
 * `make` (or compile generated .sln with VC)
 
-This generates the static library `three.{a/lib}` in **three_cpp/lib**, or the dynamic library `three.{dylib/so/dll}` in **three_cpp/bin**, dependent on the `THREE_LIBRARY_STATIC` CMake flag.  Any code using the library must also define `THREE_SEPARATE_COMPILATION` when using three.cpp, and `THREE_DYN_LINK` if library is dynamic.
+This generates the static library `three.{a/lib}` in **three_cpp/lib**, or the dynamic library `three.{dylib/so/dll}` in **three_cpp/bin**, dependent on the `THREE_LIBRARY_STATIC` CMake flag.  Any code using the library should define `THREE_DYN_LINK` if the library is dynamic.
 
 cmake-gui is useful if you need to configure SDL/GLEW path dependencies when compiling.
 
@@ -142,7 +132,7 @@ TODO: Test with GLES (Android/iOS/NACL)
 You'll need a sufficiently modern C++11 compiler:
 * >= Clang 3.1
 * >= GCC 4.6.3
-* MSVC 2012
+* MSVC 2012 (Update 4 w/ Nov 2012 CTP)
 
 Implemented functionality tested via examples, and working on:
 * Mint 13 with GCC 4.6.3

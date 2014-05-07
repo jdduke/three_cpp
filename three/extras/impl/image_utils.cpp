@@ -1,6 +1,3 @@
-#ifndef THREE_IMAGE_UTILS_CPP
-#define THREE_IMAGE_UTILS_CPP
-
 #include <three/extras/image_utils.h>
 
 #include <three/console.h>
@@ -500,4 +497,3 @@ Texture::Ptr ImageUtils::loadCompressedTextureCube( std::array<std: string, 6> a
 
 } // namespace three
 
-#endif // THREE_IMAGE_UTILS_CPP

@@ -45,6 +45,12 @@
 #include <three/utils/conversion.h>
 #include <three/utils/template.h>
 
+#ifndef NDEBUG
+#define GL_CALL(a) (a); _gl.Error(__FILE__, __LINE__)
+#else
+#define GL_CALL(a) (a)
+#endif
+
 namespace three {
 
 struct ProgramParameters {
@@ -60,20 +66,14 @@ struct ProgramParameters {
   int boneTextureHeight;
   bool morphTargets;
   bool morphNormals;
-
   int maxMorphTargets;
   int maxMorphNormals;
   int maxDirLights;
   int maxPointLights;
   int maxSpotLights;
   int maxShadows;
-
-  // shadow map
-
   bool shadowMapEnabled;
-  bool shadowMapAutoUpdate;
-  enums::ShadowTypes shadowMapType;
-  enums::CullFace shadowMapCullFace;
+  bool shadowMapSoft;
   bool shadowMapDebug;
   bool shadowMapCascade;
 
@@ -82,20 +82,17 @@ struct ProgramParameters {
   bool perPixel;
   bool wrapAround;
   bool doubleSided;
-
 };
 
-GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters /*= Parameters()*/ ) {
-  auto renderer = make_shared<GLRenderer>( parameters );
+GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters,
+                                    const GLInterface& gl ) {
+  auto renderer = make_shared<GLRenderer>( parameters, gl );
   renderer->initialize();
-    
   return renderer;
 }
 
-GLRenderer::GLRenderer( const RendererParameters& parameters )
-  : context( nullptr ),
-    devicePixelRatio( 1 ),
-    autoClear( true ),
+GLRenderer::GLRenderer( const RendererParameters& parameters, const GLInterface& gl )
+  : autoClear( true ),
     autoClearColor( true ),
     autoClearDepth( true ),
     autoClearStencil( true ),
@@ -106,17 +103,16 @@ GLRenderer::GLRenderer( const RendererParameters& parameters )
     gammaOutput( false ),
     physicallyBasedShading( false ),
     shadowMapEnabled( false ),
-    shadowMapAutoUpdate ( true ),
-    shadowMapType ( enums::PCFShadowMap ),
-    shadowMapCullFace ( enums::CullFaceFront ),
-    shadowMapDebug ( false ),
-    shadowMapCascade (false),
+    shadowMapAutoUpdate( true ),
+    shadowMapSoft( true ),
+    shadowMapCullFrontFaces( true ),
+    shadowMapDebug( false ),
+    shadowMapCascade( false ),
     maxMorphTargets( 8 ),
     maxMorphNormals( 4 ),
     autoScaleCubemaps( true ),
     _width( parameters.width ),
     _height( parameters.height ),
-    _vsync ( parameters.vsync ),
     _precision( parameters.precision ),
     _alpha( parameters.alpha ),
     _premultipliedAlpha( parameters.premultipliedAlpha ),
@@ -152,21 +148,100 @@ GLRenderer::GLRenderer( const RendererParameters& parameters )
     _viewportHeight( 0 ),
     _currentWidth( 0 ),
     _currentHeight( 0 ),
-    _lightsNeedUpdate( true ) {
-  console().log() << "THREE::GLRenderer created";
+    _lightsNeedUpdate( true ),
+    _gl( gl ) {
+  console().log() << "GLRenderer created";
+}
+
+/*
+// default plugins (order is important)
+
+shadowMapPlugin = new enums::ShadowMapPlugin();
+addPrePlugin( shadowMapPlugin );
+
+addPostPlugin( new enums::SpritePlugin() );
+addPostPlugin( new enums::LensFlarePlugin() );
+*/
+
+void GLRenderer::initialize() {
+
+  console().log() << "GLRenderer initializing";
+
+  initGL();
+
+  setDefaultGLState();
+
+  // GPU capabilities
+
+  _maxTextures       = _gl.GetParameteri( GL_MAX_TEXTURE_IMAGE_UNITS );
+  _maxVertexTextures = _gl.GetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
+  _maxTextureSize    = _gl.GetParameteri( GL_MAX_TEXTURE_SIZE ),
+  _maxCubemapSize    = _gl.GetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
+  _maxAnisotropy = _glExtensionTextureFilterAnisotropic ? _gl.GetTexParameterf( TEXTURE_MAX_ANISOTROPY_EXT ) : 0.f;
+  _supportsVertexTextures = ( _maxVertexTextures > 0 );
+  _supportsBoneTextures = _supportsVertexTextures && _glExtensionTextureFloat;
+
+  console().log() << "enums::GLRenderer initialized";
+
+}
+
+void GLRenderer::initGL() {
+
+  THREE_ASSERT( _gl.validate() );
+
+  THREE_REVIEW("Have client indicate whether these are supported.")
+  /*
+  _glExtensionTextureFloat = glewIsExtensionSupported( "ARB_texture_float" ) != 0 ? true : false;
+  _glExtensionStandardDerivatives = glewIsExtensionSupported( "OES_standard_derivatives" ) != 0 ? true : false;
+  _glExtensionTextureFilterAnisotropic = glewIsExtensionSupported( "EXT_texture_filter_anisotropic" ) != 0 ? true : false;
+
+  if ( ! _glExtensionTextureFloat ) {
+    console().log( "enums::GLRenderer: Float textures not supported." );
+  }
+
+  if ( ! _glExtensionStandardDerivatives ) {
+    console().log( "enums::GLRenderer: Standard derivatives not supported." );
+  }
+
+  if ( ! _glExtensionTextureFilterAnisotropic ) {
+    console().log( "enums::GLRenderer: Anisotropic texture filtering not supported." );
+  }
+
+  */
+  _glExtensionTextureFloat = false;
+  _glExtensionStandardDerivatives = false;
+  _glExtensionTextureFilterAnisotropic = false;
+}
+
+void GLRenderer::setDefaultGLState() {
+
+  _gl.ClearColor( 0, 0, 0, 1 );
+  _gl.ClearDepth( 1 );
+  _gl.ClearStencil( 0 );
+
+  _gl.Enable( GL_DEPTH_TEST );
+  _gl.DepthFunc( GL_LEQUAL );
+
+  _gl.FrontFace( GL_CCW );
+  _gl.CullFace( GL_BACK );
+  _gl.Enable( GL_CULL_FACE );
+
+  _gl.Enable( GL_BLEND );
+  _gl.BlendEquation( GL_FUNC_ADD );
+  _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+  _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+
 }
 
 void GLRenderer::setSize( int width, int height ) {
-
-  _width = (int)((float)width * devicePixelRatio);
-  _height = (int)((float)height * devicePixelRatio);
-
+  // TODO: Implement
+  _width = width;
+  _height = height;
   setViewport( 0, 0, _width, _height );
-  
 }
 
-void GLRenderer::setViewport( int x, int y, int width, int height ) {
-
+void GLRenderer::setViewport( int x /*= 0*/, int y /*= 0*/, int width /*= -1*/, int height /*= -1*/ ) {
   _viewportX = x;
   _viewportY = y;
 
@@ -174,7 +249,6 @@ void GLRenderer::setViewport( int x, int y, int width, int height ) {
   _viewportHeight = height != -1 ? height : _height;
 
   _gl.Viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
-
 }
 
 void GLRenderer::setScissor( int x, int y, int width, int height ) {
@@ -187,6 +261,13 @@ void GLRenderer::enableScissorTest( bool enable ) {
 
 // Clearing
 
+void GLRenderer::setClearColorHex( int hex, float alpha ) {
+  _clearColor.setHex( hex );
+  _clearAlpha = alpha;
+
+  _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
+}
+
 void GLRenderer::setClearColor( Color color, float alpha ) {
   _clearColor.copy( color );
   _clearAlpha = alpha;
@@ -194,7 +275,7 @@ void GLRenderer::setClearColor( Color color, float alpha ) {
   _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 }
 
-void GLRenderer::clear( bool color, bool depth, bool stencil) {
+void GLRenderer::clear( bool color /*= true*/, bool depth /*= true*/, bool stencil /*= true*/ ) {
   int bits = 0;
 
   if ( color )   bits |= GL_COLOR_BUFFER_BIT;
@@ -204,7 +285,7 @@ void GLRenderer::clear( bool color, bool depth, bool stencil) {
   _gl.Clear( bits );
 }
 
-void GLRenderer::clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color, bool depth, bool stencil ) {
+void GLRenderer::clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color /*= true*/, bool depth /*= true*/, bool stencil /*= true*/ ) {
 
   setRenderTarget( renderTarget );
   clear( color, depth, stencil );
@@ -213,191 +294,50 @@ void GLRenderer::clearTarget( const GLRenderTarget::Ptr& renderTarget, bool colo
 
 // Plugins
 
-/*
-// default plugins (order is important)
+void GLRenderer::addPostPlugin( const IPlugin::Ptr& plugin ) {
 
-shadowMapPlugin = new enums::ShadowMapPlugin();
-addPrePlugin( shadowMapPlugin );
-
-addPostPlugin( new enums::SpritePlugin() );
-addPostPlugin( new enums::LensFlarePlugin() );
-*/
-
-// Rendering
-
-void GLRenderer::updateShadowMap( const Scene& scene, const Camera& camera ) {
-
-  _currentProgram = 0;
-  _oldBlending = -1;
-  _oldDepthTest = -1;
-  _oldDepthWrite = -1;
-  _currentGeometryGroupHash = -1;
-  _currentMaterialId = -1;
-  _lightsNeedUpdate = true;
-  _oldDoubleSided = -1;
-  _oldFlipSided = -1;
-
-  // TODO:
-  //shadowMapPlugin.update( scene, camera );
+  plugin->init( *this );
+  renderPluginsPost.push_back( plugin );
 
 }
 
-// Internal functions
+void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
 
-// Buffer allocation
-
-void GLRenderer::createParticleBuffers( Geometry& geometry ) {
- 
-  geometry.__glVertexBuffer = _gl.CreateBuffer();
-  geometry.__glColorBuffer = _gl.CreateBuffer();
-
-  _info.memory.geometries ++;
+  plugin->init( *this );
+  renderPluginsPre.push_back( plugin );
 
 }
 
-void GLRenderer::createLineBuffers( Geometry& geometry ) {
+// Deallocation
 
-  geometry.__glVertexBuffer = _gl.CreateBuffer();
-  geometry.__glColorBuffer = _gl.CreateBuffer();
-  geometry.__glLineDistanceBuffer = _gl.CreateBuffer();
+void GLRenderer::deallocateObject( Object3D& object ) {
 
-  _info.memory.geometries ++;
+  if ( ! object.glData.__glInit ) return;
+
+  object.glData.clear();
+
+  if ( !object.geometry ) {
+    console().warn( "Object3D contains no geometry" );
+    return;
+  }
+
+  auto& geometry = *object.geometry;
+
+  if ( object.type() == enums::Mesh ) {
+    for ( auto& geometryGroup : geometry.geometryGroups ) {
+      deleteMeshBuffers( *geometryGroup.second );
+    }
+  } else if ( object.type() == enums::Ribbon ) {
+    deleteRibbonBuffers( geometry );
+  } else if ( object.type() == enums::Line ) {
+    deleteLineBuffers( geometry );
+  } else if ( object.type() == enums::ParticleSystem ) {
+    deleteParticleBuffers( geometry );
+  }
 
 }
-
-void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
-
-  geometryGroup.__glVertexBuffer  = _gl.CreateBuffer();
-  geometryGroup.__glNormalBuffer  = _gl.CreateBuffer();
-  geometryGroup.__glTangentBuffer = _gl.CreateBuffer();
-  geometryGroup.__glColorBuffer   = _gl.CreateBuffer();
-  geometryGroup.__glUVBuffer      = _gl.CreateBuffer();
-  geometryGroup.__glUV2Buffer     = _gl.CreateBuffer();
-
-  geometryGroup.__glSkinIndicesBuffer = _gl.CreateBuffer();
-  geometryGroup.__glSkinWeightsBuffer = _gl.CreateBuffer();
-
-  geometryGroup.__glFaceBuffer = _gl.CreateBuffer();
-  geometryGroup.__glLineBuffer = _gl.CreateBuffer();
-
-  if ( geometryGroup.numMorphTargets > 0 ) {
-
-    geometryGroup.__glMorphTargetsBuffers.clear();
-
-    for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-      geometryGroup.__glMorphTargetsBuffers.push_back( _gl.CreateBuffer() );
-    }
-
-  }
-
-  if ( geometryGroup.numMorphNormals > 0 ) {
-
-    geometryGroup.__glMorphNormalsBuffers.clear();
-
-    for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
-      geometryGroup.__glMorphNormalsBuffers.push_back( _gl.CreateBuffer() );
-    }
-
-  }
-
-  _info.memory.geometries ++;
-
-}
-
-// Buffer deallocation
-
-void GLRenderer::deleteBuffers ( GeometryBuffer& geometry ) {
-
-  _gl.DeleteBuffer( geometry.__glVertexBuffer );
-  _gl.DeleteBuffer( geometry.__glNormalBuffer );
-  _gl.DeleteBuffer( geometry.__glTangentBuffer );
-  _gl.DeleteBuffer( geometry.__glColorBuffer );
-  _gl.DeleteBuffer( geometry.__glUVBuffer );
-  _gl.DeleteBuffer( geometry.__glUV2Buffer );
-
-  _gl.DeleteBuffer( geometry.__glSkinIndicesBuffer );
-  _gl.DeleteBuffer( geometry.__glSkinWeightsBuffer );
-
-  _gl.DeleteBuffer( geometry.__glFaceBuffer );
-  _gl.DeleteBuffer( geometry.__glLineBuffer );
-
-  _gl.DeleteBuffer( geometry.__glLineDistanceBuffer );
-
-  // custom attributes
-  for ( auto& attribute : geometry.__glCustomAttributesList ) {
-    _gl.DeleteBuffer( attribute->buffer );
-  }
-
-  _info.memory.geometries--;
-
-};
-
-
-void GLRenderer::deallocateGeometry( Geometry& geometry ) {
-
-  geometry.__glInit = false;
-
-  if ( geometry.type() == enums::BufferGeometry ) {
-
-    auto& attributes = geometry.attributes;
-
-     for ( auto& namedAttribute : attributes ) {
-
-      auto& a = namedAttribute.first;
-      auto& attribute = namedAttribute.second;
-
-      _gl.DeleteBuffer( attribute.buffer );
-
-    }
-
-    _info.memory.geometries --;
-
-  } else {
-
-    if ( geometry.geometryGroups.size() ) {
-
-      for ( auto& g : geometry.geometryGroups ) {
-
-        auto& geometryGroup = g.second;
-
-        if ( geometryGroup->morphTargets.size() ) {
-
-          for ( size_t m = 0, ml = geometryGroup->morphTargets.size(); m < ml; m ++ ) {
-
-            _gl.DeleteBuffer( geometryGroup->__glMorphTargetsBuffers[ m ] );
-
-          }
-
-        }
-
-        if ( geometryGroup->morphNormals.size() ) {
-
-          for ( size_t m = 0, ml = geometryGroup->morphNormals.size(); m < ml; m ++ ) {
-
-            _gl.DeleteBuffer( geometryGroup->__glMorphNormalsBuffers[ m ] );
-
-          }
-
-        }
-
-        deleteBuffers( *geometryGroup );
-
-      }
-
-    } else {
-
-      deleteBuffers( geometry );
-
-    }
-
-  }
-
-};
 
 void GLRenderer::deallocateTexture( Texture& texture ) {
-
-  // REVIEW Correctness
-  _gl.DeleteTexture( texture.__glTextureCube );
 
   if ( ! texture.__glInit ) return;
 
@@ -459,6 +399,164 @@ void GLRenderer::deallocateMaterial( Material& material ) {
 
 }
 
+// Rendering
+
+void GLRenderer::updateShadowMap( const Scene& scene, const Camera& camera ) {
+
+  _currentProgram = 0;
+  _oldBlending = -1;
+  _oldDepthTest = -1;
+  _oldDepthWrite = -1;
+  _currentGeometryGroupHash = -1;
+  _currentMaterialId = -1;
+  _lightsNeedUpdate = true;
+  _oldDoubleSided = -1;
+  _oldFlipSided = -1;
+
+  // TODO:
+  //shadowMapPlugin.update( scene, camera );
+
+}
+
+// Internal functions
+
+// Buffer allocation
+
+void GLRenderer::createParticleBuffers( Geometry& geometry ) {
+
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer = _gl.CreateBuffer();
+
+  _info.memory.geometries ++;
+
+}
+
+void GLRenderer::createLineBuffers( Geometry& geometry ) {
+
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer  = _gl.CreateBuffer();
+
+  _info.memory.geometries ++;
+
+}
+
+void GLRenderer::createRibbonBuffers( Geometry& geometry ) {
+
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer  = _gl.CreateBuffer();
+
+  _info.memory.geometries ++;
+
+}
+
+void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
+
+  geometryGroup.__glVertexBuffer  = _gl.CreateBuffer();
+  geometryGroup.__glNormalBuffer  = _gl.CreateBuffer();
+  geometryGroup.__glTangentBuffer = _gl.CreateBuffer();
+  geometryGroup.__glColorBuffer   = _gl.CreateBuffer();
+  geometryGroup.__glUVBuffer      = _gl.CreateBuffer();
+  geometryGroup.__glUV2Buffer     = _gl.CreateBuffer();
+
+  geometryGroup.__glSkinVertexABuffer = _gl.CreateBuffer();
+  geometryGroup.__glSkinVertexBBuffer = _gl.CreateBuffer();
+  geometryGroup.__glSkinIndicesBuffer = _gl.CreateBuffer();
+  geometryGroup.__glSkinWeightsBuffer = _gl.CreateBuffer();
+
+  geometryGroup.__glFaceBuffer = _gl.CreateBuffer();
+  geometryGroup.__glLineBuffer = _gl.CreateBuffer();
+
+  if ( geometryGroup.numMorphTargets > 0 ) {
+
+    geometryGroup.__glMorphTargetsBuffers.clear();
+
+    for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
+      geometryGroup.__glMorphTargetsBuffers.push_back( _gl.CreateBuffer() );
+    }
+
+  }
+
+  if ( geometryGroup.numMorphNormals > 0 ) {
+
+    geometryGroup.__glMorphNormalsBuffers.clear();
+
+    for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+      geometryGroup.__glMorphNormalsBuffers.push_back( _gl.CreateBuffer() );
+    }
+
+  }
+
+  _info.memory.geometries ++;
+
+}
+
+// Buffer deallocation
+
+void GLRenderer::deleteParticleBuffers( Geometry& geometry ) {
+
+  _gl.DeleteBuffer( geometry.__glVertexBuffer );
+  _gl.DeleteBuffer( geometry.__glColorBuffer );
+
+  _info.memory.geometries --;
+
+}
+
+void GLRenderer::deleteLineBuffers( Geometry& geometry ) {
+
+  _gl.DeleteBuffer( geometry.__glVertexBuffer );
+  _gl.DeleteBuffer( geometry.__glColorBuffer );
+
+  _info.memory.geometries --;
+
+}
+
+void GLRenderer::deleteRibbonBuffers( Geometry& geometry ) {
+
+  _gl.DeleteBuffer( geometry.__glVertexBuffer );
+  _gl.DeleteBuffer( geometry.__glColorBuffer );
+
+  _info.memory.geometries --;
+
+}
+
+void GLRenderer::deleteMeshBuffers( GeometryGroup& geometryGroup ) {
+
+  _gl.DeleteBuffer( geometryGroup.__glVertexBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glNormalBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glTangentBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glColorBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glUVBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glUV2Buffer );
+
+  _gl.DeleteBuffer( geometryGroup.__glSkinVertexABuffer );
+  _gl.DeleteBuffer( geometryGroup.__glSkinVertexBBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glSkinIndicesBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glSkinWeightsBuffer );
+
+  _gl.DeleteBuffer( geometryGroup.__glFaceBuffer );
+  _gl.DeleteBuffer( geometryGroup.__glLineBuffer );
+
+  if ( geometryGroup.numMorphTargets > 0 ) {
+    for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
+      _gl.DeleteBuffer( geometryGroup.__glMorphTargetsBuffers[ m ] );
+    }
+  }
+
+  if ( geometryGroup.numMorphNormals > 0 ) {
+    for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+      _gl.DeleteBuffer( geometryGroup.__glMorphNormalsBuffers[ m ] );
+    }
+  }
+
+  for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
+    _gl.DeleteBuffer( attribute->buffer );
+  }
+
+  _info.memory.geometries --;
+
+}
+
+
 // Buffer initialization
 
 void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
@@ -472,7 +570,7 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
   auto& material = *object.material;
 
-  if ( ! material.attributes.empty() )
+  //if ( material.attributes.size() > 0 )
   {
 
     geometry.__glCustomAttributesList.clear();
@@ -533,11 +631,21 @@ void GLRenderer::initLineBuffers( Geometry& geometry, Object3D& object ) {
 
   geometry.__vertexArray.resize( nvertices * 3 );
   geometry.__colorArray.resize( nvertices * 3 );
-  geometry.__lineDistanceArray.resize( nvertices * 1 );
 
   geometry.__glLineCount = ( int )nvertices;
 
   initCustomAttributes( geometry, object );
+
+}
+
+void GLRenderer::initRibbonBuffers( Geometry& geometry ) {
+
+  auto nvertices = ( int )geometry.vertices.size();
+
+  geometry.__vertexArray.resize( nvertices * 3 );
+  geometry.__colorArray.resize( nvertices * 3 );
+
+  geometry.__glVertexCount = nvertices;
 
 }
 
@@ -573,6 +681,7 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
   }
 
   if ( uvType ) {
+    THREE_REVIEW("Removed faceUVs during r65")
     if ( geometry.faceVertexUvs.size() > 0 ) {
       geometryGroup.__uvArray.resize( nvertices * 2 );
     }
@@ -585,6 +694,8 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
   if ( geometry.skinWeights.size() && geometry.skinIndices.size() ) {
 
+    geometryGroup.__skinVertexAArray.resize( nvertices * 4 );
+    geometryGroup.__skinVertexBArray.resize( nvertices * 4 );
     geometryGroup.__skinIndexArray.resize( nvertices * 4 );
     geometryGroup.__skinWeightArray.resize( nvertices * 4 );
 
@@ -633,6 +744,12 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
       auto& originalAttribute = a.second;
 
       GeometryBuffer::AttributePtr attribute( new Attribute(originalAttribute) );
+
+      /*for ( auto& property : originalAttribute ) {
+
+          attribute[ property ] = originalAttribute[ property ];
+
+      }*/
 
       if ( !attribute->__glInitialized || attribute->createUniqueBuffers ) {
 
@@ -684,10 +801,10 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geomet
         if( meshFaceMaterial ) {
           return meshFaceMaterial->materials[ geometryGroup->materialIndex.value ].get();
         }
-        
+
       }
 
-    } 
+    }
 
   }
 
@@ -725,18 +842,13 @@ enums::Colors GLRenderer::bufferGuessVertexColorType( const Material* material )
 
 bool GLRenderer::bufferGuessUVType( const Material* material ) {
   // material must use some texture to require uvs
-  if ( material 
-       && ( 
-        material->map || 
-        material->lightMap || 
-        material->bumpMap || 
-        material->specularMap || 
-        material->type() == enums::ShaderMaterial ) 
-   ) {
+  if ( material && ( material->map || material->lightMap || material->bumpMap || material->specularMap || material->type() == enums::ShaderMaterial ) ) {
     return true;
   }
   return false;
 }
+
+//
 
 void GLRenderer::initDirectBuffers( Geometry& geometry ) {
 
@@ -746,9 +858,6 @@ void GLRenderer::initDirectBuffers( Geometry& geometry ) {
                 : GL_ARRAY_BUFFER;
 
     auto& attribute = a.second;
-    
-    attribute.numItems = attribute.array.size();
-
     attribute.buffer = _gl.CreateBuffer();
 
     _gl.BindAndBuffer( type, attribute.buffer, attribute.array, GL_STATIC_DRAW );
@@ -762,10 +871,10 @@ void GLRenderer::initDirectBuffers( Geometry& geometry ) {
 void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& object ) {
 
   auto& vertices = geometry.vertices;
-  const auto vl = (int)vertices.size();
+  const auto vl = ( int )vertices.size();
 
   auto& colors = geometry.colors;
-  const auto cl = (int)colors.size();
+  const auto cl = ( int )colors.size();
 
   auto& vertexArray = geometry.__vertexArray;
   auto& colorArray = geometry.__colorArray;
@@ -773,7 +882,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
   auto& sortArray = geometry.__sortArray;
 
   auto dirtyVertices = geometry.verticesNeedUpdate;
-  auto dirtyElements = geometry.elementsNeedUpdate;
+  //auto dirtyElements = geometry.elementsNeedUpdate;
   auto dirtyColors = geometry.colorsNeedUpdate;
 
   auto& customAttributes = geometry.__glCustomAttributesList;
@@ -792,14 +901,20 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
       const auto& vertex = vertices[ v ];
 
       _vector3.copy( vertex );
-      _vector3.applyProjection( _projScreenMatrixPS );
+      _projScreenMatrixPS.multiplyVector3( _vector3 );
 
-      // JD: push_back ?
+      // push_back ?
       sortArray[ v ] = std::make_pair( _vector3.z, v );
 
     }
 
-    std::sort( sortArray.begin(), sortArray.end(), NumericalSort() );
+    typedef std::pair<float, int> SortPair;
+
+    std::sort( sortArray.begin(),
+               sortArray.end(),
+    []( const SortPair & a, const SortPair & b ) {
+      return a.first > b.first;
+    } );
 
     for ( int v = 0; v < vl; v ++ ) {
 
@@ -825,7 +940,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
     }
 
-    for ( int i = 0, il = (int)customAttributes.size(); i < il; i ++ ) {
+    for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
       auto& customAttribute = *customAttributes[ i ];
 
@@ -919,7 +1034,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
     _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
   }
 
-  for ( size_t i = 0, il = customAttributes.size(); i < il; i ++ ) {
+  for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
     auto& customAttribute = *customAttributes[ i ];
 
@@ -931,23 +1046,19 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
 
 }
 
+
 void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   const auto& vertices = geometry.vertices;
   const auto& colors = geometry.colors;
-  const auto& lineDistances = geometry.lineDistances;
-
   const auto vl = ( int )vertices.size();
   const auto cl = ( int )colors.size();
-  const auto dl = ( int )lineDistances.size();
 
   auto& vertexArray = geometry.__vertexArray;
   auto& colorArray = geometry.__colorArray;
-  auto& lineDistanceArray = geometry.__lineDistanceArray;
 
   auto dirtyVertices = geometry.verticesNeedUpdate;
   auto dirtyColors = geometry.colorsNeedUpdate;
-  auto dirtylineDistances = geometry.lineDistancesNeedUpdate;
 
   auto& customAttributes = geometry.__glCustomAttributesList;
 
@@ -989,18 +1100,6 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   }
 
-  if ( dirtylineDistances ) {
-
-      for ( int d = 0; d < dl; d ++ ) {
-
-        lineDistanceArray[ d ] = lineDistances[ d ];
-
-      }
-
-      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glLineDistanceBuffer, lineDistanceArray, hint );
-
-    }
-
   for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
     auto& customAttribute = *customAttributes[ i ];
@@ -1031,16 +1130,72 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
 }
 
+
+void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
+
+  const auto& vertices = geometry.vertices;
+  const auto& colors = geometry.colors;
+  const auto vl = ( int )vertices.size();
+  const auto cl = ( int )colors.size();
+
+  auto& vertexArray = geometry.__vertexArray;
+  auto& colorArray = geometry.__colorArray;
+
+  const auto dirtyVertices = geometry.verticesNeedUpdate;
+  const auto dirtyColors = geometry.colorsNeedUpdate;
+
+  int offset = 0;
+
+  if ( dirtyVertices ) {
+
+    for ( int v = 0; v < vl; v ++ ) {
+
+      const auto& vertex = vertices[ v ];
+
+      offset = v * 3;
+
+      vertexArray[ offset ]     = vertex.x;
+      vertexArray[ offset + 1 ] = vertex.y;
+      vertexArray[ offset + 2 ] = vertex.z;
+
+    }
+
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
+
+  }
+
+  if ( dirtyColors ) {
+
+    for ( int c = 0; c < cl; c++ ) {
+
+      const auto& color = colors[ c ];
+
+      offset = c * 3;
+
+      colorArray[ offset ]     = color.r;
+      colorArray[ offset + 1 ] = color.g;
+      colorArray[ offset + 2 ] = color.b;
+
+    }
+
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
+
+  }
+
+}
+
 void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object, int hint, bool dispose, Material* material ) {
 
   if ( ! geometryGroup.__inittedArrays ) {
+
+    // console().log( object );
     return;
+
   }
 
   const auto normalType      = bufferGuessNormalType( material );
   const auto vertexColorType = bufferGuessVertexColorType( material );
   const auto uvType          = bufferGuessUVType( material );
-
   const auto needsSmoothNormals = ( normalType == enums::SmoothShading );
 
   Color c1, c2, c3, c4;
@@ -1056,8 +1211,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       offset_color       = 0,
       offset_skin        = 0,
       offset_morphTarget = 0,
-      offset_custom      = 0,
-      offset_customSrc   = 0;
+      offset_custom      = 0;
+  // UNUSED: offset_customSrc = 0;
 
   auto& vertexArray  = geometryGroup.__vertexArray;
   auto& uvArray      = geometryGroup.__uvArray;
@@ -1066,6 +1221,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   auto& tangentArray = geometryGroup.__tangentArray;
   auto& colorArray   = geometryGroup.__colorArray;
 
+  auto& skinVertexAArray = geometryGroup.__skinVertexAArray;
+  auto& skinVertexBArray = geometryGroup.__skinVertexBArray;
   auto& skinIndexArray   = geometryGroup.__skinIndexArray;
   auto& skinWeightArray  = geometryGroup.__skinWeightArray;
 
@@ -1094,8 +1251,10 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   auto& obj_uvs  = geometry.faceVertexUvs[ 0 ];
   auto& obj_uvs2 = geometry.faceVertexUvs[ 1 ];
 
-  auto& obj_colors = geometry.colors;
+  // UNUSED: auto& obj_colors = geometry.colors;
 
+  auto& obj_skinVerticesA = geometry.skinVerticesA;
+  auto& obj_skinVerticesB = geometry.skinVerticesB;
   auto& obj_skinIndices   = geometry.skinIndices;
   auto& obj_skinWeights   = geometry.skinWeights;
 
@@ -1180,6 +1339,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
           } else {
 
             // TODO: FIgure out where the faceNormals array comes from
+            //n1 = morphNormals[ vk ].faceNormals[ chf ];
             n1 = morphNormals[ vk ].faceNormals[ chf ];
             n2 = n1;
             n3 = n1;
@@ -1272,12 +1432,56 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       skinIndexArray[ offset_skin + 10 ] = si3.z;
       skinIndexArray[ offset_skin + 11 ] = si3.w;
 
+      // vertices A
+
+      const auto& sa1 = obj_skinVerticesA[ face.a ];
+      const auto& sa2 = obj_skinVerticesA[ face.b ];
+      const auto& sa3 = obj_skinVerticesA[ face.c ];
+
+      skinVertexAArray[ offset_skin ]     = sa1.x;
+      skinVertexAArray[ offset_skin + 1 ] = sa1.y;
+      skinVertexAArray[ offset_skin + 2 ] = sa1.z;
+      skinVertexAArray[ offset_skin + 3 ] = 1; // pad for faster vertex shader
+
+      skinVertexAArray[ offset_skin + 4 ] = sa2.x;
+      skinVertexAArray[ offset_skin + 5 ] = sa2.y;
+      skinVertexAArray[ offset_skin + 6 ] = sa2.z;
+      skinVertexAArray[ offset_skin + 7 ] = 1;
+
+      skinVertexAArray[ offset_skin + 8 ]  = sa3.x;
+      skinVertexAArray[ offset_skin + 9 ]  = sa3.y;
+      skinVertexAArray[ offset_skin + 10 ] = sa3.z;
+      skinVertexAArray[ offset_skin + 11 ] = 1;
+
+      // vertices B
+
+      const auto& sb1 = obj_skinVerticesB[ face.a ];
+      const auto& sb2 = obj_skinVerticesB[ face.b ];
+      const auto& sb3 = obj_skinVerticesB[ face.c ];
+
+      skinVertexBArray[ offset_skin ]     = sb1.x;
+      skinVertexBArray[ offset_skin + 1 ] = sb1.y;
+      skinVertexBArray[ offset_skin + 2 ] = sb1.z;
+      skinVertexBArray[ offset_skin + 3 ] = 1; // pad for faster vertex shader
+
+      skinVertexBArray[ offset_skin + 4 ] = sb2.x;
+      skinVertexBArray[ offset_skin + 5 ] = sb2.y;
+      skinVertexBArray[ offset_skin + 6 ] = sb2.z;
+      skinVertexBArray[ offset_skin + 7 ] = 1;
+
+      skinVertexBArray[ offset_skin + 8 ]  = sb3.x;
+      skinVertexBArray[ offset_skin + 9 ]  = sb3.y;
+      skinVertexBArray[ offset_skin + 10 ] = sb3.z;
+      skinVertexBArray[ offset_skin + 11 ] = 1;
+
       offset_skin += 12;
 
     }
 
     if ( offset_skin > 0 ) {
 
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer, skinVertexAArray, hint );
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer, skinVertexBArray, hint );
       _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer, skinIndexArray, hint );
       _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer, skinWeightArray, hint );
 
@@ -1442,7 +1646,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
   }
 
-  if ( dirtyUvs && obj_uvs2.size() != 0 && uvType ) {
+  if ( dirtyUvs && obj_uvs2.size() > 0 && uvType ) {
 
     for ( const auto& fi : chunk_faces3 ) {
 
@@ -1475,6 +1679,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   if ( dirtyElements ) {
 
     for ( size_t f = 0; f < chunk_faces3.size(); ++ f ) {
+      //const auto& fi : chunk_faces3 ) {
+      //const auto& face = obj_faces[ fi ];
 
       faceArray[ offset_face ]     = vertexIndex;
       faceArray[ offset_face + 1 ] = vertexIndex + 1;
@@ -1509,13 +1715,13 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
     if ( customAttribute.__original && ( ! customAttribute.__original->needsUpdate ) ) continue;
 
     offset_custom = 0;
-    offset_customSrc = 0;
+    //offset_customSrc = 0;
 
     if ( customAttribute.size == 1 ) {
 
       const auto& values = customAttribute.value.cast<std::vector<float>>();
 
-      if ( customAttribute.boundTo.size() == 0 || customAttribute.boundTo == "vertices" ) {
+      if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
 
         for ( const auto& fi : chunk_faces3 ) {
 
@@ -1601,7 +1807,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     } else if ( customAttribute.size == 3 ) {
 
-      // TODO: Support colors! enums::c 
+      // TODO: Support colors!
       const auto& values = customAttribute.value.cast<std::vector<Vector3>>();
 
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
@@ -1795,253 +2001,62 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
 }
 
+
 void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) {
 
   auto& attributes = geometry.attributes;
 
-  for ( auto& a : attributes ) {
+  if ( geometry.elementsNeedUpdate && attributes.contains( AttributeKey::index() ) ) {
 
-    const auto& attributeName = a.first;    
-    auto& attributeItem = a.second;
-
-    if ( attributeItem.needsUpdate ) {
-
-      if( attributeName == AttributeKey::index() ) {
-        _gl.BindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, attributeItem.buffer, attributeItem.array, hint );
-      } else {
-        _gl.BindAndBuffer( GL_ARRAY_BUFFER, attributeItem.buffer, attributeItem.array, hint );
-      }
-
-      attributeItem.needsUpdate = false;
-    }
-
-    if ( dispose && !attributeItem.dynamic ) {
-
-      attributeItem.array.clear();
-
-    }
+    auto& index = attributes[ AttributeKey::index() ];
+    _gl.BindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer, index.array, hint );
 
   }
 
-}
+  if ( geometry.verticesNeedUpdate && attributes.contains( AttributeKey::position() ) ) {
 
+    auto& position = attributes[ AttributeKey::position() ];
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, position.buffer, position.array, hint );
 
+  }
 
+  if ( geometry.normalsNeedUpdate && attributes.contains( AttributeKey::normal() ) ) {
 
+    auto& normal   = attributes[ AttributeKey::normal() ];
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, normal.buffer, normal.array, hint );
 
+  }
 
+  if ( geometry.uvsNeedUpdate && attributes.contains( AttributeKey::uv() ) ) {
 
+    auto& uv       = attributes[ AttributeKey::uv() ];
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, uv.buffer, uv.array, hint );
 
+  }
 
+  if ( geometry.colorsNeedUpdate && attributes.contains( AttributeKey::color() ) ) {
 
+    auto& color    = attributes[ AttributeKey::color() ];
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, color.buffer, color.array, hint );
 
+  }
 
+  if ( geometry.tangentsNeedUpdate && attributes.contains( AttributeKey::tangent() ) ) {
 
+    auto& tangent  = attributes[ AttributeKey::tangent() ];
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, tangent.buffer, tangent.array, hint );
 
+  }
 
+  if ( dispose ) {
 
+    for ( auto& attribute : geometry.attributes ) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void GLRenderer::initialize() {
-
-  console().log() << "THREE::GLRenderer initializing";
-
-  initGL();
-
-  setDefaultGLState();
-
-  //context = _gl;
-
-  // GPU capabilities
-
-  _maxTextures       = _gl.GetParameteri( GL_MAX_TEXTURE_IMAGE_UNITS );
-  _maxVertexTextures = _gl.GetParameteri( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS ),
-  _maxTextureSize    = _gl.GetParameteri( GL_MAX_TEXTURE_SIZE ),
-  _maxCubemapSize    = _gl.GetParameteri( GL_MAX_CUBE_MAP_TEXTURE_SIZE );
-
-  _maxAnisotropy = __gl.ExtensionTextureFilterAnisotropic ? _gl.GetTexParameterf( TEXTURE_MAX_ANISOTROPY_EXT ) : 0.f;
-
-  _supportsVertexTextures = ( _maxVertexTextures > 0 );
-  _supportsBoneTextures = _supportsVertexTextures && __gl.ExtensionTextureFloat;
-
-  //auto _compressedTextureFormats = _gl.GetParameteri( GL_COMPRESSED_TEXTURE_FORMATS );
-
-  auto _vertexShaderPrecisionHighpFloat = _gl.GetShaderParameter( GL_VERTEX_SHADER, GL_HIGH_FLOAT );
-  auto _vertexShaderPrecisionMediumpFloat = _gl.GetShaderParameter( GL_VERTEX_SHADER, GL_MEDIUM_FLOAT );
-  //auto _vertexShaderPrecisionLowpFloat = _gl.GetShaderParameter( GL_VERTEX_SHADER, GL_LOW_FLOAT );
-
-  auto _fragmentShaderPrecisionHighpFloat = _gl.GetShaderParameter( GL_FRAGMENT_SHADER, GL_HIGH_FLOAT );
-  auto _fragmentShaderPrecisionMediumpFloat = _gl.GetShaderParameter( GL_FRAGMENT_SHADER, GL_MEDIUM_FLOAT );
-  //auto _fragmentShaderPrecisionLowpFloat = _gl.GetShaderParameter( GL_FRAGMENT_SHADER, GL_LOW_FLOAT );
-
-  //auto _vertexShaderPrecisionHighpInt = _gl.GetShaderParameter( GL_VERTEX_SHADER, GL_HIGH_INT );
-  //auto _vertexShaderPrecisionMediumpInt = _gl.GetShaderParameter( GL_VERTEX_SHADER, GL_MEDIUM_INT );
-  //auto _vertexShaderPrecisionLowpInt = _gl.GetShaderParameter( GL_VERTEX_SHADER, GL_LOW_INT );
-
-  //auto _fragmentShaderPrecisionHighpInt = _gl.GetShaderParameter( GL_FRAGMENT_SHADER, GL_HIGH_INT );
-  //auto _fragmentShaderPrecisionMediumpInt = _gl.GetShaderParameter( GL_FRAGMENT_SHADER, GL_MEDIUM_INT );
-  //auto _fragmentShaderPrecisionLowpInt = _gl.GetShaderParameter( GL_FRAGMENT_SHADER, GL_LOW_INT );
-
-  // clamp precision to maximum available
-
-  THREE_REVIEW("EA: Three.js uses _vertexShaderPrecisionHighpFloat.precision. Is the code bewow valid?")
-  bool highpAvailable = _vertexShaderPrecisionHighpFloat > 0.f && _fragmentShaderPrecisionHighpFloat > 0;
-  bool mediumpAvailable = _vertexShaderPrecisionMediumpFloat > 0 && _fragmentShaderPrecisionMediumpFloat > 0;
-
-  if ( _precision == enums::PrecisionHigh && ! highpAvailable ) {
-
-    if ( mediumpAvailable ) {
-
-      _precision = enums::PrecisionMedium;
-      console().warn( "WebGLRenderer: highp not supported, using mediump" );
-
-    } else {
-
-      _precision = enums::PrecisionLow;
-      console().warn( "WebGLRenderer: highp and mediump not supported, using lowp" );
+      attribute.second.array.clear();
 
     }
 
   }
-
-  if ( _precision == enums::PrecisionMedium && ! mediumpAvailable ) {
-
-    _precision = enums::PrecisionLow;
-    console().warn( "WebGLRenderer: mediump not supported, using lowp" );
-
-  }
-
-  console().log() << "THREE::GLRenderer initialized";
-
-}
-
-void GLRenderer::initGL() {
-
-  // TODO: Remove this
-#if defined(THREE_DYN_LINK) && defined(THREE_GLEW)
-  glewInit();
-#endif
-
-  // TODO: Force client to initialize opengl
-  if ( !_vsync )
-    _gl.EnableVSync( false );
-
-  /*
-  if ( glload::LoadFunctions() == glload::LS_LOAD_FAILED ) {
-      console().error( "Error loading OpenGL functions" );
-  }*/
-
-  __gl.ExtensionTextureFloat = glewIsExtensionSupported( "ARB_texture_float" ) != 0 ? true : false;
-  __gl.ExtensionTextureFloatLinear = glewIsExtensionSupported( "OES_texture_float_linear" ) != 0 ? true : false;
-  __gl.ExtensionStandardDerivatives = glewIsExtensionSupported( "OES_standard_derivatives" ) != 0 ? true : false;
-  __gl.ExtensionTextureFilterAnisotropic = glewIsExtensionSupported( "EXT_texture_filter_anisotropic" ) != 0 ? true : false;
-  __gl.ExtensionCompressedTextureS3TC = glewIsExtensionSupported( "EXT_texture_compression_s3tc" ) != 0 ? true : false;
-
-  if ( ! __gl.ExtensionTextureFloat ) {
-    console().log( "THREE::GLRenderer: Float textures not supported." );
-  }
-
-  if ( ! __gl.ExtensionTextureFloatLinear ) {
-    console().log( "THREE::GLRenderer: Float linear textures not supported." );
-  }
-
-  if ( ! __gl.ExtensionStandardDerivatives ) {
-    console().log( "THREE::GLRenderer: Standard derivatives not supported." );
-  }
-
-  if ( ! __gl.ExtensionTextureFilterAnisotropic ) {
-    console().log( "THREE::GLRenderer: Anisotropic texture filtering not supported." );
-  }
-
-  if ( ! __gl.ExtensionCompressedTextureS3TC ) {
-    console().log( "THREE::GLRenderer: Compressed texture S3TC not supported." );
-  }
-
-}
-
-void GLRenderer::setDefaultGLState() {
-
-  _gl.ClearColor( 0, 0, 0, 1 );
-  _gl.ClearDepth( 1 );
-  _gl.ClearStencil( 0 );
-
-  _gl.Enable( GL_DEPTH_TEST );
-  _gl.DepthFunc( GL_LEQUAL );
-
-  _gl.FrontFace( GL_CCW );
-  _gl.CullFace( GL_BACK );
-  _gl.Enable( GL_CULL_FACE );
-
-  _gl.Enable( GL_BLEND );
-  _gl.BlendEquation( GL_FUNC_ADD );
-  _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-  //_gl.viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
-
-  _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
-
-}
-
-// Plugins
-
-void GLRenderer::addPostPlugin( const IPlugin::Ptr& plugin ) {
-
-  plugin->init( *this );
-  renderPluginsPost.push_back( plugin );
-
-}
-
-void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
-
-  plugin->init( *this );
-  renderPluginsPre.push_back( plugin );
 
 }
 
@@ -2050,26 +2065,26 @@ void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
 
 void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Material& material ) {
 
-  if ( object._gl.ImmediateData.hasPositions && ! object._gl.ImmediateData.__glVertexBuffer ) object._gl.ImmediateData.__glVertexBuffer = _gl.CreateBuffer();
-  if ( object._gl.ImmediateData.hasNormals   && ! object._gl.ImmediateData.__glNormalBuffer ) object._gl.ImmediateData.__glNormalBuffer = _gl.CreateBuffer();
-  if ( object._gl.ImmediateData.hasUvs       && ! object._gl.ImmediateData.__glUvBuffer )     object._gl.ImmediateData.__glUvBuffer     = _gl.CreateBuffer();
-  if ( object._gl.ImmediateData.hasColors    && ! object._gl.ImmediateData.__glColorBuffer )  object._gl.ImmediateData.__glColorBuffer  = _gl.CreateBuffer();
+  if ( object.glImmediateData.hasPositions && ! object.glImmediateData.__glVertexBuffer ) object.glImmediateData.__glVertexBuffer = _gl.CreateBuffer();
+  if ( object.glImmediateData.hasNormals   && ! object.glImmediateData.__glNormalBuffer ) object.glImmediateData.__glNormalBuffer = _gl.CreateBuffer();
+  if ( object.glImmediateData.hasUvs       && ! object.glImmediateData.__glUvBuffer )     object.glImmediateData.__glUvBuffer     = _gl.CreateBuffer();
+  if ( object.glImmediateData.hasColors    && ! object.glImmediateData.__glColorBuffer )  object.glImmediateData.__glColorBuffer  = _gl.CreateBuffer();
 
-  if ( object._gl.ImmediateData.hasPositions ) {
+  if ( object.glImmediateData.hasPositions ) {
 
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object._gl.ImmediateData.__glVertexBuffer, object._gl.ImmediateData.positionArray, GL_DYNAMIC_DRAW );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glVertexBuffer, object.glImmediateData.positionArray, GL_DYNAMIC_DRAW );
     _gl.EnableVertexAttribArray( program.attributes[AttributeKey::position()] );
     _gl.VertexAttribPointer( program.attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
-  if ( object._gl.ImmediateData.hasNormals ) {
+  if ( object.glImmediateData.hasNormals ) {
 
     if ( material.shading == enums::FlatShading ) {
 
-      auto& normalArray = object._gl.ImmediateData.normalArray;
+      auto& normalArray = object.glImmediateData.normalArray;
 
-      for ( int i = 0, il = object._gl.ImmediateData.count; i < il; i += 9 ) {
+      for ( int i = 0, il = object.glImmediateData.count; i < il; i += 9 ) {
 
         const auto nax  = normalArray[ i ];
         const auto nay  = normalArray[ i + 1 ];
@@ -2103,31 +2118,31 @@ void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Mate
 
     }
 
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object._gl.ImmediateData.__glNormalBuffer, object._gl.ImmediateData.normalArray, GL_DYNAMIC_DRAW );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glNormalBuffer, object.glImmediateData.normalArray, GL_DYNAMIC_DRAW );
     _gl.EnableVertexAttribArray( program.attributes[AttributeKey::normal()] );
     _gl.VertexAttribPointer( program.attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
-  if ( object._gl.ImmediateData.hasUvs && material.map ) {
+  if ( object.glImmediateData.hasUvs && material.map ) {
 
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object._gl.ImmediateData.__glUvBuffer, object._gl.ImmediateData.uvArray, GL_DYNAMIC_DRAW );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glUvBuffer, object.glImmediateData.uvArray, GL_DYNAMIC_DRAW );
     _gl.EnableVertexAttribArray( program.attributes[AttributeKey::uv()] );
     _gl.VertexAttribPointer( program.attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
 
   }
 
-  if ( object._gl.ImmediateData.hasColors && material.vertexColors != enums::NoColors ) {
+  if ( object.glImmediateData.hasColors && material.vertexColors != enums::NoColors ) {
 
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object._gl.ImmediateData.__glColorBuffer, object._gl.ImmediateData.colorArray, GL_DYNAMIC_DRAW );
+    _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glColorBuffer, object.glImmediateData.colorArray, GL_DYNAMIC_DRAW );
     _gl.EnableVertexAttribArray( program.attributes[AttributeKey::color()] );
     _gl.VertexAttribPointer( program.attributes[AttributeKey::color()], 3, GL_FLOAT, false, 0, 0 );
 
   }
 
-  _gl.DrawArrays( GL_TRIANGLES, 0, object._gl.ImmediateData.count );
+  _gl.DrawArrays( GL_TRIANGLES, 0, object.glImmediateData.count );
 
-  object._gl.ImmediateData.count = 0;
+  object.glImmediateData.count = 0;
 
 }
 
@@ -2137,8 +2152,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
   auto& program = setProgram( camera, lights, fog, material, object );
 
-  auto& programAttributes = program.attributes;
-  auto& geometryAttributes = geometry.attributes;
+  auto& attributes = program.attributes;
 
   auto updateBuffers = false;
   auto wireframeBit = material.wireframe ? 1 : 0;
@@ -2151,232 +2165,109 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
   }
 
-  if ( updateBuffers ) {
-
-      disableAttributes();
-
-  }
-
   // render mesh
 
   if ( object.type() == enums::Mesh ) {
 
-    if( geometry.attributes.contains( AttributeKey::index() ) ) {
+    const auto& offsets = geometry.offsets;
 
-      const auto& offsets = geometry.offsets;
+    // if there is more than 1 chunk
+    // must set attribute pointers to use new offsets for each chunk
+    // even if geometry and materials didn't change
 
-      // if there is more than 1 chunk
-      // must set attribute pointers to use new offsets for each chunk
-      // even if geometry and materials didn't change
+    if ( offsets.size() > 1 ) updateBuffers = true;
 
-      if ( offsets.size() > 1 ) updateBuffers = true;
+    for ( size_t i = 0, il = offsets.size(); i < il; ++ i ) {
 
-      for ( size_t i = 0, il = offsets.size(); i < il; ++ i ) {
+      const auto startIndex = offsets[ i ].index;
 
-        const auto startIndex = offsets[ i ].index;
+      if ( updateBuffers ) {
 
-        if ( updateBuffers ) {
+        // vertices
 
-          // EA: TODO REVIEW Correctness
-          for ( auto& namedAttribute : programAttributes ) {
+        auto& position = geometry.attributes[ AttributeKey::position() ];
+        const auto positionSize = position.itemSize;
 
-            auto& attrKey = namedAttribute.first;
-            auto& attributePointer = namedAttribute.second;
+        _gl.BindBuffer( GL_ARRAY_BUFFER, position.buffer );
+        _gl.VertexAttribPointer( attributes[AttributeKey::position()], positionSize, GL_FLOAT, false, 0, toOffset( startIndex * positionSize * 4 ) ); // 4 bytes per Float32
 
-            if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
-              auto& attributeItem = geometryAttributes[ attrKey ];
+        // normals
 
+        if ( attributes[AttributeKey::normal()].valid() && geometry.attributes.contains( AttributeKey::normal() ) ) {
 
-                const auto attributeItemSize = attributeItem.itemSize;
+          auto& normal = geometry.attributes[ AttributeKey::normal() ];
+          auto normalSize = normal.itemSize;
 
-                _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
-                enableAttribute( attributePointer );
-                _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, toOffset( startIndex * attributeItemSize * 4 ) );
-
-              
-
-            }
-            else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
-
-              if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
-
-                _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
-
-              } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
-
-                _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
-
-              }
-
-            }
-
-          }
-
-          // indices
-
-          const auto& index = geometry.attributes[ AttributeKey::index() ];
-
-          _gl.BindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
+          _gl.BindBuffer( GL_ARRAY_BUFFER, normal.buffer );
+          _gl.VertexAttribPointer( attributes[AttributeKey::normal()], normalSize, GL_FLOAT, false, 0, toOffset( startIndex * normalSize * 4 ) );
 
         }
 
-        // render indexed triangles
+        // uvs
 
-        _gl.DrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
+        if ( attributes[AttributeKey::uv()].valid() && geometry.attributes.contains( AttributeKey::uv() ) ) {
 
-        _info.render.calls ++;
-        _info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
-        _info.render.faces += offsets[ i ].count / 3;
+          const auto& uv = geometry.attributes[ AttributeKey::uv() ];
 
-      }
-    
-    // non-indexed triangles
+          if ( uv.buffer ) {
 
-    } else {
+            const auto uvSize = uv.itemSize;
 
-        if ( updateBuffers ) {
+            _gl.BindBuffer( GL_ARRAY_BUFFER, uv.buffer );
+            _gl.VertexAttribPointer( attributes[AttributeKey::uv()], uvSize, GL_FLOAT, false, 0, toOffset( startIndex * uvSize * 4 ) );
 
-          // EA: TODO REVIEW Correctness
-          for ( auto& namedAttribute : programAttributes ) {
+            _gl.EnableVertexAttribArray( attributes[AttributeKey::uv()] );
 
-            if ( namedAttribute.first == "index") continue;
+          } else {
 
-            auto& attrKey = namedAttribute.first;
-            auto& attributePointer = namedAttribute.second;
-
-            if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
-              auto& attributeItem = geometryAttributes[ attrKey ];
-
-                const auto attributeItemSize = attributeItem.itemSize;
-
-                _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
-                enableAttribute( attributePointer );
-                _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
-
-            }
-            else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
-
-              if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
-
-                _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
-
-              } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
-
-                _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
-
-              }
-
-            }
-
-          }
-        }
-
-        // render non-indexed triangles
-
-        const auto& position = geometry.attributes[ AttributeKey::position() ];
-
-        _gl.DrawArrays(GL_TRIANGLES, 0, position.numItems / 3);
-
-        _info.render.calls ++;
-        _info.render.vertices += position.numItems / 3; 
-        _info.render.faces += position.numItems / 3 / 3;
-
-    }
-
-    // render particles
-
-  } else if ( object.type() == enums::ParticleSystem ) {
-
-    if ( updateBuffers ) {
-
-      // EA: TODO REVIEW Correctness
-      for ( auto& namedAttribute : programAttributes ) {
-
-        auto& attrKey = namedAttribute.first;
-        auto& attributePointer = namedAttribute.second;
-
-        if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
-          auto& attributeItem = geometryAttributes[ attrKey ];
-
-            const auto attributeItemSize = attributeItem.itemSize;
-
-            _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
-            enableAttribute( attributePointer );
-            _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
-
-        }
-        else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
-
-          if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
-
-            _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
-
-          } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
-
-            _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+            _gl.DisableVertexAttribArray( attributes[AttributeKey::uv()] );
 
           }
 
         }
 
-      }
-    }
+        // colors
 
-    const auto& position = geometry.attributes[ AttributeKey::position() ];
+        if ( attributes[AttributeKey::color()].valid() && geometry.attributes.contains( AttributeKey::color() ) ) {
 
-    _gl.DrawArrays(GL_POINTS, 0, position.numItems / 3);
+          const auto& color = geometry.attributes[ AttributeKey::color() ];
+          const auto colorSize = color.itemSize;
 
-    _info.render.calls ++;
-    _info.render.points += position.numItems / 3; 
-
-  } // ParticleSystem
-  else if ( object.type() == enums::Line ) {
-
-  if ( updateBuffers ) {
-
-    // EA: TODO REVIEW Correctness
-    for ( auto& namedAttribute : programAttributes ) {
-
-      auto& attrKey = namedAttribute.first;
-      auto& attributePointer = namedAttribute.second;
-
-      if((int)attributePointer >= 0 && geometry.attributes.contains( attrKey ) ) {
-        auto& attributeItem = geometryAttributes[ attrKey ];
-
-          const auto attributeItemSize = attributeItem.itemSize;
-
-          _gl.BindBuffer( GL_ARRAY_BUFFER, attributeItem.buffer );
-          enableAttribute( attributePointer );
-          _gl.VertexAttribPointer( attributePointer, attributeItemSize, GL_FLOAT, false, 0, 0 );
-
-
-      }
-      else if ( material.defaultAttributeValues.find( attrKey ) != material.defaultAttributeValues.end() ) {
-
-        if ( material.defaultAttributeValues[ attrKey ].size() == 2 ) {
-
-          _gl.VertexAttrib2fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
-
-        } else if ( material.defaultAttributeValues[ attrKey ].size() == 3 ) {
-
-          _gl.VertexAttrib3fv( attributePointer, &material.defaultAttributeValues[ attrKey ][0] );
+          _gl.BindBuffer( GL_ARRAY_BUFFER, color.buffer );
+          _gl.VertexAttribPointer( attributes[AttributeKey::color()], colorSize, GL_FLOAT, false, 0, toOffset( startIndex * colorSize * 4 ) );
 
         }
 
+        // tangents
+
+        if ( attributes[AttributeKey::tangent()].valid() && geometry.attributes.contains( AttributeKey::tangent() ) ) {
+
+          const auto& tangent = geometry.attributes[ AttributeKey::tangent() ];
+          const auto tangentSize = tangent.itemSize;
+
+          _gl.BindBuffer( GL_ARRAY_BUFFER, tangent.buffer );
+          _gl.VertexAttribPointer( attributes[AttributeKey::tangent()], tangentSize, GL_FLOAT, false, 0, toOffset( startIndex * tangentSize * 4 ) );
+
+        }
+
+        // indices
+
+        const auto& index = geometry.attributes[ AttributeKey::index() ];
+
+        _gl.BindBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer );
+
       }
-      
+
+      // render indexed triangles
+
+      _gl.DrawElements( GL_TRIANGLES, offsets[ i ].count, GL_UNSIGNED_SHORT, toOffset( offsets[ i ].start * 2 ) ); // 2 bytes per Uint16
+
+      _info.render.calls ++;
+      _info.render.vertices += offsets[ i ].count; // not really true, here vertices can be shared
+      _info.render.faces += offsets[ i ].count / 3;
+
     }
 
-    const auto& position = geometry.attributes[ AttributeKey::position() ];
-
-    const auto primitives = ( static_cast<Line&>(object).lineType == enums::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
-
-    _gl.DrawArrays(primitives, 0, position.numItems / 3);
-
-    _info.render.calls ++;
-    _info.render.points += position.numItems; 
-
-  }
   }
 
 }
@@ -2509,6 +2400,12 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
          attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
          attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::skinVertexA()], 4, GL_FLOAT, false, 0, 0 );
+
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer );
+      _gl.VertexAttribPointer( attributes[AttributeKey::skinVertexB()], 4, GL_FLOAT, false, 0, 0 );
+
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
       _gl.VertexAttribPointer( attributes[AttributeKey::skinIndex()], 4, GL_FLOAT, false, 0, 0 );
 
@@ -2563,9 +2460,11 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
   } else if ( object.type() == enums::ParticleSystem ) {
 
 #ifndef THREE_GLES
+    // TODO(jdd): Check usage with core profile.
     _gl.Enable(GL_VERTEX_PROGRAM_POINT_SIZE);
-    _gl.Enable(GL_POINT_SPRITE);
+    /*_gl.Enable(GL_POINT_SPRITE);
     _gl.TexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+    */
 #endif
 
     _gl.DrawArrays( GL_POINTS, 0, geometryGroup.__glParticleCount );
@@ -2585,29 +2484,14 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
 }
 
-void GLRenderer::enableAttribute( int attributeId ) {
-
-  _gl.EnableVertexAttribArray( attributeId );
-  _enabledAttributes[ attributeId ] = true;
-
-}
-
-void GLRenderer::disableAttributes() {
-
-  for ( auto& attribute : _enabledAttributes ) {
-
-    _gl.DisableVertexAttribArray( attribute.first );
-
-    _enabledAttributes[ attribute.first ] = false;
-
-  }
-
-}
-
-
-
 // Sorting
 
+struct NumericalSort {
+  template < typename T, typename U >
+  bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
+    return a.second > b.second;
+  }
+};
 
 void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
@@ -2639,7 +2523,7 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
     auto m = 0;
     auto& order = object.morphTargetForcedOrder;
-    auto& influences = object._gl.Data.morphTargetInfluences;
+    auto& influences = object.glData.morphTargetInfluences;
 
     while ( m < material.numSupportedMorphTargets && m < order.size() ) {
 
@@ -2653,7 +2537,7 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
       }
 
-      object._gl.Data.__glMorphTargetInfluences[ m ] = influences[ order[ m ] ];
+      object.glData.__glMorphTargetInfluences[ m ] = influences[ order[ m ] ];
 
       m ++;
     }
@@ -2740,7 +2624,7 @@ void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryG
 
   // load updated influences uniform
 
-  if ( ! material.program.uniforms.morphTargetInfluences.empty() ) {
+  if ( material.program.uniforms.morphTargetInfluences.size() > 0 ) {
 
     _gl.Uniform1fv( material.program.uniforms.morphTargetInfluences, object.__glMorphTargetInfluences );
 
@@ -2804,11 +2688,11 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   auto& renderList = scene.__glObjects;
 
-  for ( auto& _gl.Object : renderList ) {
+  for ( auto& glObject : renderList ) {
 
-    auto& object = *_gl.Object.object;
+    auto& object = *glObject.object;
 
-    _gl.Object.render = false;
+    glObject.render = false;
 
     if ( object.visible ) {
 
@@ -2817,17 +2701,17 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
         //object.matrixWorld.flattenToArray( object._modelMatrixArray );
 
         setupMatrices( object, camera );
-        unrollBufferMaterial( _gl.Object );
-        _gl.Object.render = true;
+        unrollBufferMaterial( glObject );
+        glObject.render = true;
 
         if ( sortObjects ) {
 
           if ( object.renderDepth ) {
-            _gl.Object.z = object.renderDepth;
+            glObject.z = object.renderDepth;
           } else {
             _vector3.copy( object.matrixWorld.getPosition() );
             _projScreenMatrix.multiplyVector3( _vector3 );
-            _gl.Object.z = _vector3.z;
+            glObject.z = _vector3.z;
           }
 
         }
@@ -2846,18 +2730,18 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   auto& immediateList = scene.__glObjectsImmediate;
 
-  for ( auto& _gl.Object : immediateList ) {
+  for ( auto& glObject : immediateList ) {
 
-    auto& object = *_gl.Object.object;
+    auto& object = *glObject.object;
 
     if ( object.visible ) {
 
       if ( object.matrixAutoUpdate ) {
-        object.matrixWorld.flattenToArray( object._gl.Data._modelMatrixArray );
+        object.matrixWorld.flattenToArray( object.glData._modelMatrixArray );
       }
 
       setupMatrices( object, camera );
-      unrollImmediateBufferMaterial( _gl.Object );
+      unrollImmediateBufferMaterial( glObject );
     }
   }
 
@@ -2949,12 +2833,12 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::Ren
 
   for ( auto i = start; i != end; i += delta ) {
 
-    auto& _gl.Object = renderList[ i ];
+    auto& glObject = renderList[ i ];
 
-    if ( _gl.Object.render ) {
+    if ( glObject.render ) {
 
-      auto& object = *_gl.Object.object;
-      auto& buffer = *_gl.Object.buffer;
+      auto& object = *glObject.object;
+      auto& buffer = *glObject.buffer;
 
       Material* material = nullptr;
 
@@ -2964,7 +2848,7 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::Ren
 
       } else {
 
-        material = materialType == enums::Opaque ? _gl.Object.opaque : _gl.Object.transparent;
+        material = materialType == enums::Opaque ? glObject.opaque : glObject.transparent;
 
         if ( ! material ) continue;
 
@@ -2991,9 +2875,9 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::Ren
 
 void GLRenderer::renderObjectsImmediate( RenderList& renderList, enums::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial /*= nullptr*/ ) {
 
-  for ( auto& _gl.Object : renderList ) {
+  for ( auto& glObject : renderList ) {
 
-    auto& object = *_gl.Object.object;
+    auto& object = *glObject.object;
 
     if ( object.visible ) {
 
@@ -3005,7 +2889,7 @@ void GLRenderer::renderObjectsImmediate( RenderList& renderList, enums::RenderTy
 
       } else {
 
-        material = materialType == enums::Opaque ? _gl.Object.opaque : _gl.Object.transparent;
+        material = materialType == enums::Opaque ? glObject.opaque : glObject.transparent;
 
         if ( ! material ) continue;
 
@@ -3034,7 +2918,7 @@ void GLRenderer::renderImmediateObject( Camera& camera, Lights& lights, IFog* fo
   setMaterialFaces( material );
 
   if ( object.immediateRenderCallback ) {
-    object.immediateRenderCallback( &program, _gl, &_frustum );
+    object.immediateRenderCallback( &program, &_gl, &_frustum );
   } else {
     object.render( [this, &program, &material]( Object3D & object ) {
       renderBufferImmediate( object, program, material );
@@ -3207,8 +3091,8 @@ void GLRenderer::initGLObjects( Scene& scene ) {
 
   // update must be called after objects adding / removal
 
-  for ( auto& _gl.Object : scene.__glObjects ) {
-    updateObject( *_gl.Object.object );
+  for ( auto& glObject : scene.__glObjects ) {
+    updateObject( *glObject.object );
   }
 
 }
@@ -3237,9 +3121,9 @@ static inline void addBufferImmediate( RenderList& objlist, Object3D& object ) {
 
 void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
-  if ( ! object._gl.Data.__glInit ) {
+  if ( ! object.glData.__glInit ) {
 
-    object._gl.Data.__glInit = true;
+    object.glData.__glInit = true;
 
     if ( object.type() == enums::Mesh ) {
 
@@ -3284,7 +3168,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
       if ( ! geometry.__glVertexBuffer ) {
 
-        //createRibbonBuffers( geometry );
+        createRibbonBuffers( geometry );
         initRibbonBuffers( geometry );
 
         geometry.verticesNeedUpdate = true;
@@ -3324,7 +3208,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
   }
 
-  if ( ! object._gl.Data.__glActive ) {
+  if ( ! object.glData.__glActive ) {
 
     if ( object.type() == enums::Mesh ) {
 
@@ -3365,7 +3249,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
     }
 
-    object._gl.Data.__glActive = true;
+    object.glData.__glActive = true;
 
   }
 
@@ -3441,7 +3325,7 @@ void GLRenderer::updateObject( Object3D& object ) {
   } else if ( object.type() == enums::Ribbon ) {
 
     if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate ) {
-      //setRibbonBuffers( geometry, GL_DYNAMIC_DRAW );
+      setRibbonBuffers( geometry, GL_DYNAMIC_DRAW );
     }
 
     geometry.verticesNeedUpdate = false;
@@ -3522,7 +3406,7 @@ void GLRenderer::removeObject( Object3D& object, Scene& scene ) {
     removeInstances( scene.__glObjectsImmediate, object );
   }
 
-  object._gl.Data.__glActive = false;
+  object.glData.__glActive = false;
 
 }
 
@@ -3623,9 +3507,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
     maxShadows,
     shadowMapEnabled && object.receiveShadow,
-    shadowMapAutoUpdate,
-    shadowMapType,
-    shadowMapCullFace,
+    shadowMapSoft,
     shadowMapDebug,
     shadowMapCascade,
 
@@ -3636,8 +3518,8 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     material.side == enums::DoubleSide
 
   };
-    
-    material.program = buildProgram( shaderID,
+
+  material.program = buildProgram( shaderID,
                                    material.fragmentShader,
                                    material.vertexShader,
                                    material.uniforms,
@@ -3740,7 +3622,7 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
   }
 
   if ( material.morphTargets ) {
-    object._gl.Data.__glMorphTargetInfluences.resize( maxMorphTargets );
+    object.glData.__glMorphTargetInfluences.resize( maxMorphTargets );
   }
 
   auto refreshMaterial = false;
@@ -4074,10 +3956,10 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 
 void GLRenderer::loadUniformsMatrices( UniformLocations& uniforms, Object3D& object ) {
 
-  _gl.UniformMatrix4fv( uniforms[UniformKey::modelViewMatrix()], 1, false, object._gl.Data._modelViewMatrix.elements );
+  _gl.UniformMatrix4fv( uniforms[UniformKey::modelViewMatrix()], 1, false, object.glData._modelViewMatrix.elements );
   const auto normalMatrixLocation = uniformLocation( uniforms, "normalMatrix" );
   if ( validUniformLocation( normalMatrixLocation ) ) {
-    _gl.UniformMatrix3fv( normalMatrixLocation, 1, false, object._gl.Data._normalMatrix.elements );
+    _gl.UniformMatrix3fv( normalMatrixLocation, 1, false, object.glData._normalMatrix.elements );
   }
 
 }
@@ -4110,7 +3992,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     auto& uniform = *uniformAndKey.first;
 
-    uniform.load( location );
+    uniform.load( _gl, location );
 
     if ( uniform.type == enums::t ) { // single enums::Texture (2d or cube)
 
@@ -4158,9 +4040,9 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
 void GLRenderer::setupMatrices( Object3D& object, Camera& camera ) {
 
-  object._gl.Data._modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld );
-  object._gl.Data._normalMatrix.getInverse( object._gl.Data._modelViewMatrix );
-  object._gl.Data._normalMatrix.transpose();
+  object.glData._modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld );
+  object.glData._normalMatrix.getInverse( object.glData._modelViewMatrix );
+  object.glData._normalMatrix.transpose();
 
 }
 
@@ -4640,7 +4522,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   //
 
-  auto _gl.Program = GL_CALL( _gl.CreateProgram() );
+  auto glProgram = GL_CALL( _gl.CreateProgram() );
 
   auto prefix_vertex = [this, &parameters]() -> std::string {
     std::stringstream ss;
@@ -4680,7 +4562,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.doubleSided )  ss << "#define DOUBLE_SIDED" << std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" << std::endl;
-    if ( parameters.shadowMapType )    ss << "#define SHADOWMAP_SOFT" << std::endl;
+    if ( parameters.shadowMapSoft )    ss << "#define SHADOWMAP_SOFT" << std::endl;
     if ( parameters.shadowMapDebug )   ss << "#define SHADOWMAP_DEBUG" << std::endl;
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" << std::endl;
 
@@ -4784,7 +4666,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.doubleSided ) ss << "#define DOUBLE_SIDED" <<  std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" <<  std::endl;
-    if ( parameters.shadowMapType )    ss << "#define SHADOWMAP_SOFT" <<  std::endl;
+    if ( parameters.shadowMapSoft )    ss << "#define SHADOWMAP_SOFT" <<  std::endl;
     if ( parameters.shadowMapDebug )   ss << "#define SHADOWMAP_DEBUG" <<  std::endl;
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" <<  std::endl;
 
@@ -4795,32 +4677,32 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   }();
 
-  auto _gl.FragmentShader = getShader( enums::ShaderFragment, prefix_fragment + fragmentShader );
-  auto _gl.VertexShader   = getShader( enums::ShaderVertex,   prefix_vertex   + vertexShader );
+  auto glFragmentShader = getShader( enums::ShaderFragment, prefix_fragment + fragmentShader );
+  auto glVertexShader   = getShader( enums::ShaderVertex,   prefix_vertex   + vertexShader );
 
-  GL_CALL( _gl.AttachShader( _gl.Program, _gl.VertexShader ) );
-  GL_CALL( _gl.AttachShader( _gl.Program, _gl.FragmentShader ) );
+  GL_CALL( _gl.AttachShader( glProgram, glVertexShader ) );
+  GL_CALL( _gl.AttachShader( glProgram, glFragmentShader ) );
 
-  GL_CALL( _gl.LinkProgram( _gl.Program ) );
+  GL_CALL( _gl.LinkProgram( glProgram ) );
 
-  if ( !_gl.True( _gl.GetProgramParameter( _gl.Program, GL_LINK_STATUS ) ) ) {
+  if ( GL_TRUE != _gl.GetProgramParameter( glProgram, GL_LINK_STATUS ) ) {
     int loglen;
     char logbuffer[1000];
-    _gl.GetProgramInfoLog( _gl.Program, sizeof( logbuffer ), &loglen, logbuffer );
+    _gl.GetProgramInfoLog( glProgram, sizeof( logbuffer ), &loglen, logbuffer );
     console().error( logbuffer );
     //console().error() << addLineNumbers( source );
-    _gl.DeleteProgram( _gl.Program );
-    _gl.Program = 0;
+    _gl.DeleteProgram( glProgram );
+    glProgram = 0;
   }
 
   // clean up
 
-  _gl.DeleteShader( _gl.FragmentShader );
-  _gl.FragmentShader = 0;
-  _gl.DeleteShader( _gl.VertexShader );
-  _gl.VertexShader = 0;
+  _gl.DeleteShader( glFragmentShader );
+  glFragmentShader = 0;
+  _gl.DeleteShader( glVertexShader );
+  glVertexShader = 0;
 
-  if ( !_gl.Program ) {
+  if ( !glProgram ) {
 
     return Program::Ptr();
 
@@ -4829,7 +4711,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
   //console().log() << prefix_fragment + fragmentShader;
   //console().log() << prefix_vertex   + vertexShader;
 
-  auto program = Program::create( _gl.Program, _programs_counter++ );
+  auto program = Program::create( glProgram, _programs_counter++ );
 
   {
     // cache uniform locations
@@ -4953,7 +4835,7 @@ Buffer GLRenderer::getShader( enums::ShaderType type, const std::string& source 
   GL_CALL( _gl.ShaderSource( shader, 1, &source_str, nullptr ) );
   GL_CALL( _gl.CompileShader( shader ) );
 
-  if ( !_gl.True( _gl.GetShaderParameter( shader, GL_COMPILE_STATUS ) ) ) {
+  if ( GL_TRUE != _gl.GetShaderParameter( shader, GL_COMPILE_STATUS ) ) {
     int loglen;
     char logbuffer[1000];
     _gl.GetShaderInfoLog( shader, sizeof( logbuffer ), &loglen, logbuffer );
@@ -4985,25 +4867,25 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
     _gl.ActiveTexture( GL_TEXTURE0 + slot );
     _gl.BindTexture( GL_TEXTURE_2D, texture.__glTexture );
 
-#ifdef TODO__gl.UnPACK
+#ifdef TODO_glUnPACK
     _gl.PixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
     _gl.PixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
 #endif
 
     const auto& image = texture.image[0];
     const auto isImagePowerOfTwo = Math::isPowerOfTwo( image.width ) && Math::isPowerOfTwo( image.height );
-    const auto _gl.Format = paramThreeToGL( texture.format );
-    const auto _gl.Type = paramThreeToGL( texture.dataType );
+    const auto glFormat = paramThreeToGL( texture.format );
+    const auto glType = paramThreeToGL( texture.dataType );
 
     setTextureParameters( GL_TEXTURE_2D, texture, isImagePowerOfTwo );
 
     //if ( texture.type() == enums::DataTexture ) {
 
-    _gl.TexImage2D( GL_TEXTURE_2D, 0, _gl.Format, image.width, image.height, 0, _gl.Format, _gl.Type, image.data.data() );
+    _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data.data() );
 
     //} else {
 
-    //    _gl.TexImage2D( GL_TEXTURE_2D, 0, _gl.Format, _gl.Format, _gl.Type, texture.image );
+    //    _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, glFormat, glType, texture.image );
 
     //}
 
@@ -5094,14 +4976,14 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
 
       const auto& image = cubeImage[ 0 ];
       const auto isImagePowerOfTwo = Math::isPowerOfTwo( image.width ) && Math::isPowerOfTwo( image.height );
-      const auto _gl.Format = paramThreeToGL( texture.format );
-      const auto _gl.Type = paramThreeToGL( texture.dataType );
+      const auto glFormat = paramThreeToGL( texture.format );
+      const auto glType = paramThreeToGL( texture.dataType );
 
       setTextureParameters( GL_TEXTURE_CUBE_MAP, texture, isImagePowerOfTwo );
 
       for ( auto i = 0; i < 6; i ++ ) {
-        //_gl.TexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _gl.Format, _gl.Format, _gl.Type, cubeImage[ i ] );
-        _gl.TexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _gl.Format, cubeImage[ 0 ].width, cubeImage[ 0 ].height, 0, _gl.Format, _gl.Type, cubeImage[ i ].data.data() );
+        //glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
+        _gl.TexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, cubeImage[ 0 ].width, cubeImage[ 0 ].height, 0, glFormat, glType, cubeImage[ i ].data.data() );
       }
 
       if ( texture.generateMipmaps && isImagePowerOfTwo ) {
@@ -5155,8 +5037,11 @@ void GLRenderer::setupRenderBuffer( Buffer renderbuffer, GLRenderTarget& renderT
     */
   } else if ( renderTarget.depthBuffer && renderTarget.stencilBuffer ) {
 
+#if !defined(THREE_GLES)
+    // TODO: Enable with GLES
     _gl.RenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_STENCIL, renderTarget.width, renderTarget.height );
     _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderbuffer );
+#endif
 
   } else {
 
@@ -5168,7 +5053,7 @@ void GLRenderer::setupRenderBuffer( Buffer renderbuffer, GLRenderTarget& renderT
 
 void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
 
-  auto isCube = false;// TODO: ( renderTarget.type() == enums::Web_gl.RenderTargetCube );
+  auto isCube = false;// TODO: ( renderTarget.type() == enums::WebglRenderTargetCube );
 
   if ( renderTarget && renderTarget->__glFramebuffer.size() == 0 ) {
 
@@ -5177,8 +5062,8 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
     // Setup texture, create render and frame buffers
 
     const auto isTargetPowerOfTwo = Math::isPowerOfTwo( renderTarget->width ) && Math::isPowerOfTwo( renderTarget->height );
-    const auto _gl.Format = paramThreeToGL( renderTarget->format );
-    const auto _gl.Type = paramThreeToGL( renderTarget->dataType );
+    const auto glFormat = paramThreeToGL( renderTarget->format );
+    const auto glType = paramThreeToGL( renderTarget->dataType );
 
     if ( isCube ) {
 
@@ -5193,7 +5078,7 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
         renderTarget->__glFramebuffer[ i ] = _gl.CreateFramebuffer();
         renderTarget->__glRenderbuffer[ i ] = _gl.CreateRenderbuffer();
 
-        _gl.TexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _gl.Format, renderTarget->width, renderTarget->height, 0, _gl.Format, _gl.Type, 0 );
+        _gl.TexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
 
         setupFrameBuffer( renderTarget->__glFramebuffer[ i ], *renderTarget, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i );
         setupRenderBuffer( renderTarget->__glRenderbuffer[ i ], *renderTarget );
@@ -5213,7 +5098,7 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
       _gl.BindTexture( GL_TEXTURE_2D, renderTarget->__glTexture );
       setTextureParameters( GL_TEXTURE_2D, *renderTarget, isTargetPowerOfTwo );
 
-      _gl.TexImage2D( GL_TEXTURE_2D, 0, _gl.Format, renderTarget->width, renderTarget->height, 0, _gl.Format, _gl.Type, 0 );
+      _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
 
       setupFrameBuffer( renderTarget->__glFramebuffer[ 0 ], *renderTarget, GL_TEXTURE_2D );
       setupRenderBuffer( renderTarget->__glRenderbuffer[ 0 ], *renderTarget );
@@ -5360,14 +5245,12 @@ int GLRenderer::paramThreeToGL( int p ) {
     return GL_RGB;
   case enums::RGBAFormat:
     return GL_RGBA;
+#if !defined(THREE_GLES)
   case enums::BGRFormat:
     return GL_BGR;
   case enums::BGRAFormat:
     return GL_BGRA;
-  case enums::LuminanceFormat:
-    return GL_LUMINANCE;
-  case enums::LuminanceAlphaFormat:
-    return GL_LUMINANCE_ALPHA;
+#endif
 
   case enums::AddEquation:
     return GL_FUNC_ADD;
@@ -5424,7 +5307,7 @@ int GLRenderer::allocateBones( Object3D& object ) {
     //  - limit here is ANGLE's 254 max uniform vectors
     //    (up to 54 should be safe)
 
-    auto nVertexUniforms = 254;//_gl.GetParameteri( GL_MAX_VERTEX_UNIFORM_VECTORS );
+    auto nVertexUniforms = 254;//glGetParameteri( GL_MAX_VERTEX_UNIFORM_VECTORS );
     auto nVertexMatrices = ( int )Math::floor( ( ( float )nVertexUniforms - 20 ) / 4 );
 
     auto maxBones = nVertexMatrices;

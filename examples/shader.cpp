@@ -1,12 +1,12 @@
 #include "common.h"
 
-#include <three/core/geometry.h>
-#include <three/cameras/camera.h>
-#include <three/objects/mesh.h>
-#include <three/extras/geometries/plane_geometry.h>
-#include <three/materials/shader_material.h>
-#include <three/renderers/renderer_parameters.h>
-#include <three/renderers/gl_renderer.h>
+#include "three/core/geometry.h"
+#include "three/cameras/camera.h"
+#include "three/objects/mesh.h"
+#include "three/extras/geometries/plane_geometry.h"
+#include "three/materials/shader_material.h"
+#include "three/renderers/renderer_parameters.h"
+#include "three/renderers/gl_renderer.h"
 
 std::string vertexShader() {
   return std::string(
@@ -52,8 +52,9 @@ void main() { \
 }
 
 using namespace three;
+using namespace three_examples;
 
-void shader( GLRenderer::Ptr renderer ) {
+void shader( GLWindow& window, GLRenderer& renderer ) {
 
   auto camera = Camera::create();
   camera->position.z = 1;
@@ -64,8 +65,8 @@ void shader( GLRenderer::Ptr renderer ) {
 
   Uniforms uniforms;
   uniforms[ "time" ]       = Uniform( enums::f, time);
-  uniforms[ "resolution" ] = Uniform( enums::v2, Vector2( (float)renderer->width(),
-                                                          (float)renderer->height()) );
+  uniforms[ "resolution" ] = Uniform( enums::v2, Vector2( (float)renderer.width(),
+                                                          (float)renderer.height()) );
 
   auto material = ShaderMaterial::create(
     vertexShader(),
@@ -79,24 +80,14 @@ void shader( GLRenderer::Ptr renderer ) {
 
   /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
-
-  /////////////////////////////////////////////////////////////////////////
-
-  anim::gameLoop( [&]( float dt ) -> bool {
+  window.animate( [&]( float dt ) -> bool {
 
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    renderer->render( *scene, *camera );
+    renderer.render( *scene, *camera );
 
-    return running;
+    return true;
 
   } );
 
@@ -104,20 +95,6 @@ void shader( GLRenderer::Ptr renderer ) {
 
 int main( int argc, char* argv[] ) {
 
-  auto onQuit = defer( sdl::quit );
+  return RunExample( shader );
 
-  RendererParameters parameters;
-
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
-    return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  shader( renderer );
-
-  return 0;
 }

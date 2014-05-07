@@ -13,6 +13,8 @@
 
 namespace three {
 
+struct GLInterfaceWrapper;
+
 class Uniform {
 
 public:
@@ -23,7 +25,7 @@ public:
   explicit Uniform( enums::UniformType type, any value = any() );
   Uniform& operator=( Uniform );
 
-  void load( int location );
+  void load( const GLInterfaceWrapper& gl, int location );
 
   enums::UniformType type;
   any value;

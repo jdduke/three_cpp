@@ -1,7 +1,7 @@
 #ifndef THREE_INDEX_H
 #define THREE_INDEX_H
 
-#include <cstdint>
+#include <cstddef>
 #include <map>
 
 namespace three {
