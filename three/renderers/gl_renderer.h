@@ -9,6 +9,7 @@
 #include <three/math/vector3.h>
 #include <three/math/matrix4.h>
 #include <three/core/interfaces.h>
+#include <three/core/event.h>
 
 #include <three/scenes/scene.h>
 #include <three/materials/program.h>
@@ -136,10 +137,10 @@ private:
 
   // Events
 
-  void onGeometryDispose( const SDL_Event& event );
-  void onTextureDispose( const SDL_Event& event );
-  void onRenderTargetDispose( const SDL_Event& event );
-  void onMaterialDispose( const SDL_Event& event );
+  void onGeometryDispose( Event& event );
+  void onTextureDispose( Event& event );
+  void onRenderTargetDispose( Event& event );
+  void onMaterialDispose( Event& event );
 
   // Buffer allocation
   

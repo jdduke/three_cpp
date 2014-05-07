@@ -431,17 +431,20 @@ void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
 
 // Events 
 
-void GLRenderer::onGeometryDispose( const SDL_Event& event ) {
-  //TODO
+void GLRenderer::onGeometryDispose( Event& event ) {
+  // TODO
 }
-void GLRenderer::onTextureDispose( const SDL_Event& event ) {
-  //TODO
+
+void GLRenderer::onTextureDispose( Event& event ) {
+  // TODO
 }
-void GLRenderer::onRenderTargetDispose( const SDL_Event& event ) {
-  //TODO
+
+void GLRenderer::onRenderTargetDispose( Event& event ) {
+  // TODO
 }
-void GLRenderer::onMaterialDispose( const SDL_Event& event ) {
-  //TODO
+
+void GLRenderer::onMaterialDispose( Event& event ) {
+  // TODO
 }
 
 // Buffer deallocation
