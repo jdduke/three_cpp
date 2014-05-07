@@ -1947,59 +1947,39 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
 
   auto& attributes = geometry.attributes;
 
-  if ( geometry.elementsNeedUpdate && attributes.contains( AttributeKey::index() ) ) {
+  for ( auto& a : attributes ) {
 
-    auto& index = attributes[ AttributeKey::index() ];
-    _gl.BindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, index.buffer, index.array, hint );
+    const auto& attributeName = a.first;    
+    auto& attributeItem = a.second;
 
-  }
+    if ( attributeItem.needsUpdate ) {
 
-  if ( geometry.verticesNeedUpdate && attributes.contains( AttributeKey::position() ) ) {
+      if( attributeName == AttributeKey::index() ) {
+        _gl.BindAndBuffer( GL_ELEMENT_ARRAY_BUFFER, attributeItem.buffer, attributeItem.array, hint );
+      } else {
+        _gl.BindAndBuffer( GL_ARRAY_BUFFER, attributeItem.buffer, attributeItem.array, hint );
+      }
 
-    auto& position = attributes[ AttributeKey::position() ];
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, position.buffer, position.array, hint );
+      attributeItem.needsUpdate = false;
+    }
 
-  }
+    if ( dispose && !attributeItem.dynamic ) {
 
-  if ( geometry.normalsNeedUpdate && attributes.contains( AttributeKey::normal() ) ) {
-
-    auto& normal   = attributes[ AttributeKey::normal() ];
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, normal.buffer, normal.array, hint );
-
-  }
-
-  if ( geometry.uvsNeedUpdate && attributes.contains( AttributeKey::uv() ) ) {
-
-    auto& uv       = attributes[ AttributeKey::uv() ];
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, uv.buffer, uv.array, hint );
-
-  }
-
-  if ( geometry.colorsNeedUpdate && attributes.contains( AttributeKey::color() ) ) {
-
-    auto& color    = attributes[ AttributeKey::color() ];
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, color.buffer, color.array, hint );
-
-  }
-
-  if ( geometry.tangentsNeedUpdate && attributes.contains( AttributeKey::tangent() ) ) {
-
-    auto& tangent  = attributes[ AttributeKey::tangent() ];
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, tangent.buffer, tangent.array, hint );
-
-  }
-
-  if ( dispose ) {
-
-    for ( auto& attribute : geometry.attributes ) {
-
-      attribute.second.array.clear();
+      attributeItem.array.clear();
 
     }
 
   }
 
 }
+
+
+
+
+
+
+
+
 
 // Buffer rendering
 
