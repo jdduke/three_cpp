@@ -66,7 +66,7 @@ public:
   bool shadowMapEnabled;
   bool shadowMapAutoUpdate;
   enums::ShadowTypes shadowMapType;
-  bool shadowMapCullFrontFaces;
+  enums::CullFace shadowMapCullFrontFace;
   bool shadowMapDebug;
   bool shadowMapCascade;
 

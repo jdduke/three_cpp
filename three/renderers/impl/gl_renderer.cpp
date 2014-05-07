@@ -106,7 +106,7 @@ GLRenderer::GLRenderer( const RendererParameters& parameters, const GLInterface&
     shadowMapEnabled( false ),
     shadowMapAutoUpdate( true ),
     shadowMapType( enums::PCFShadowMap ),
-    shadowMapCullFrontFaces( true ),
+    shadowMapCullFrontFace( enums::CullFaceFront ),
     shadowMapDebug( false ),
     shadowMapCascade( false ),
     maxMorphTargets( 8 ),
