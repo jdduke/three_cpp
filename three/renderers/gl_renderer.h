@@ -9,6 +9,7 @@
 #include <three/math/vector3.h>
 #include <three/math/matrix4.h>
 #include <three/core/interfaces.h>
+#include <three/core/event.h>
 
 #include <three/scenes/scene.h>
 #include <three/materials/program.h>
@@ -84,10 +85,15 @@ public:
 
 public:
 
+  GLInterface& getContext() { return _gl; }
+
   bool supportsVertexTextures() const { return _supportsVertexTextures; }
+  bool supportFloatTextures() const { return _glExtensionTextureFloat; }
+  bool supportsStandardDerivatives() const { return _glExtensionStandardDerivatives; }
+  bool supportsCompressedTextureS3TC() const { return _glExtensionCompressedTextureS3TC; }
+
   float getMaxAnisotropy() const { return _maxAnisotropy; }
-  int width() const { return _width; }
-  int height() const { return _height; }
+  enums::PrecisionType getPrecision() const { return _precision; }
 
   void setSize( int width, int height );
   void setViewport( int x = 0, int y = 0, int width = -1, int height = -1 );
@@ -95,13 +101,15 @@ public:
   void enableScissorTest( bool enable );
 
   // Clearing
-  void setClearColorHex( int hex, float alpha );
   void setClearColor( Color color, float alpha );
 
   Color getClearColor() const { return _clearColor; }
   float getClearAlpha() const { return _clearAlpha; }
 
   void clear( bool color = true, bool depth = true, bool stencil = true );
+  void clearColor() { _gl.Clear( GL_COLOR_BUFFER_BIT ); }
+  void clearDepth() { _gl.Clear( GL_DEPTH_BUFFER_BIT ); }
+  void clearStencil() { _gl.Clear( GL_STENCIL_BUFFER_BIT ); }
   void clearTarget( const GLRenderTarget::Ptr& renderTarget, bool color = true, bool depth = true, bool stencil = true );
 
   // Plugins
@@ -109,15 +117,16 @@ public:
   void addPrePlugin( const IPlugin::Ptr& plugin );
 
   // Deallocation
-  void deallocateObject( Object3D& object );
-  void deallocateTexture( Texture& texture );
-  void deallocateRenderTarget( GLRenderTarget& renderTarget );
-  void deallocateMaterial( Material& material );
+  //void deallocateObject( Object3D& object );
+  
 
   // Rendering
   void render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr& renderTarget = GLRenderTarget::Ptr(), bool forceClear = false );
   void updateShadowMap( const Scene& scene, const Camera& camera );
   void resetStates();
+
+  int width() const { return _width; }
+  int height() const { return _height; }
 
 private:
 
@@ -126,49 +135,58 @@ private:
   struct InternalLights;
   struct LightCount { int directional, point, spot, hemi; };
 
+  // Events
+
+  void onGeometryDispose( Event& event );
+  void onTextureDispose( Event& event );
+  void onRenderTargetDispose( Event& event );
+  void onMaterialDispose( Event& event );
+
   // Buffer allocation
+  
   void createParticleBuffers( Geometry& geometry );
   void createLineBuffers( Geometry& geometry );
-  void createRibbonBuffers( Geometry& geometry );
+  //void createRibbonBuffers( Geometry& geometry );
   void createMeshBuffers( GeometryGroup& geometryGroup );
 
   // Buffer deallocation
-  void deleteParticleBuffers( Geometry& geometry );
-  void deleteLineBuffers( Geometry& geometry );
-  void deleteRibbonBuffers( Geometry& geometry );
-  void deleteMeshBuffers( GeometryGroup& geometryGroup );
+
+  void deleteBuffers( GeometryBuffer& geometry );
+  void deallocateGeometry( Geometry& geometry );
+  void deallocateTexture( Texture& texture );
+  void deallocateRenderTarget( GLRenderTarget& renderTarget );
+  void deallocateMaterial( Material& material );
 
   // Buffer initialization
+
   void initCustomAttributes( Geometry& geometry, Object3D& object );
   void initParticleBuffers( Geometry& geometry, Object3D& object );
   void initLineBuffers( Geometry& geometry, Object3D& object );
-  void initRibbonBuffers( Geometry& geometry );
+  // void initRibbonBuffers( Geometry& geometry );
   void initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object );
-
   Material* getBufferMaterial( Object3D& object, GeometryGroup* geometryGroup );
   bool materialNeedsSmoothNormals( const Material* material );
   enums::Shading bufferGuessNormalType( const Material* material );
   enums::Colors bufferGuessVertexColorType( const Material* material );
   bool bufferGuessUVType( const Material* material );
-
-  //
-
   void initDirectBuffers( Geometry& geometry );
 
   // Buffer setting
+
   void setParticleBuffers( Geometry& geometry, int hint, Object3D& object );
   void setLineBuffers( Geometry& geometry, int hint );
-  void setRibbonBuffers( Geometry& geometry, int hint );
   void setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object, int hint, bool dispose, Material* material );
   void setDirectBuffers( Geometry& geometry, int hint, bool dispose );
 
   // Buffer rendering
-  void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
+
   void renderBufferImmediate( Object3D& object, Program& program, Material& material );
   void renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, Material& material, BufferGeometry& geometry, Object3D& object );
-
-  // Sorting
+  void renderBuffer( Camera& camera, Lights& lights, IFog* fog, Material& material, GeometryGroup& geometryGroup, Object3D& object );
+  void enableAttribute( int attributeId );
+  void disableAttributes();
   void setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object );
+
 
   // Rendering
   void renderPlugins( std::vector<IPlugin::Ptr>& plugins, Scene& scene, Camera& camera );
@@ -400,6 +418,8 @@ private:
   int _currentWidth;
   int _currentHeight;
 
+  std::unordered_map<int, bool> _enabledAttributes;
+
   Frustum _frustum;
 
   // camera matrices cache
@@ -449,8 +469,10 @@ private:
   GLInterfaceWrapper _gl;
 
   bool _glExtensionTextureFloat;
+  bool _glExtensionTextureFloatLinear;
   bool _glExtensionStandardDerivatives;
   bool _glExtensionTextureFilterAnisotropic;
+  bool _glExtensionCompressedTextureS3TC;
 
   // GPU capabilities
 

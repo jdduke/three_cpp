@@ -53,6 +53,13 @@
 
 namespace three {
 
+struct NumericalSort {
+    template < typename T, typename U >
+    bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
+        return a.second - b.second;
+    }
+};
+    
 struct ProgramParameters {
   bool map, envMap, lightMap, bumpMap, specularMap;
   enums::Colors vertexColors;
@@ -236,9 +243,10 @@ void GLRenderer::setDefaultGLState() {
 }
 
 void GLRenderer::setSize( int width, int height ) {
-  // TODO: Implement
-  _width = width;
-  _height = height;
+  
+  _width = (int)(width * devicePixelRatio);
+  _height = (int)(height * devicePixelRatio);
+
   setViewport( 0, 0, _width, _height );
 }
 
@@ -261,13 +269,6 @@ void GLRenderer::enableScissorTest( bool enable ) {
 }
 
 // Clearing
-
-void GLRenderer::setClearColorHex( int hex, float alpha ) {
-  _clearColor.setHex( hex );
-  _clearAlpha = alpha;
-
-  _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
-}
 
 void GLRenderer::setClearColor( Color color, float alpha ) {
   _clearColor.copy( color );
@@ -311,34 +312,236 @@ void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
 
 // Deallocation
 
-void GLRenderer::deallocateObject( Object3D& object ) {
+// void GLRenderer::deallocateObject( Object3D& object ) {
 
-  if ( ! object.glData.__glInit ) return;
+//   if ( ! object.glData.__glInit ) return;
 
-  object.glData.clear();
+//   object.glData.clear();
 
-  if ( !object.geometry ) {
-    console().warn( "Object3D contains no geometry" );
-    return;
-  }
+//   if ( !object.geometry ) {
+//     console().warn( "Object3D contains no geometry" );
+//     return;
+//   }
 
-  auto& geometry = *object.geometry;
+//   auto& geometry = *object.geometry;
 
-  if ( object.type() == enums::Mesh ) {
-    for ( auto& geometryGroup : geometry.geometryGroups ) {
-      deleteMeshBuffers( *geometryGroup.second );
-    }
-  } else if ( object.type() == enums::Ribbon ) {
-    deleteRibbonBuffers( geometry );
-  } else if ( object.type() == enums::Line ) {
-    deleteLineBuffers( geometry );
-  } else if ( object.type() == enums::ParticleSystem ) {
-    deleteParticleBuffers( geometry );
-  }
+//   if ( object.type() == enums::Mesh ) {
+//     for ( auto& geometryGroup : geometry.geometryGroups ) {
+//       deleteMeshBuffers( *geometryGroup.second );
+//     }
+//   } else if ( object.type() == enums::Ribbon ) {
+//     deleteRibbonBuffers( geometry );
+//   } else if ( object.type() == enums::Line ) {
+//     deleteLineBuffers( geometry );
+//   } else if ( object.type() == enums::ParticleSystem ) {
+//     deleteParticleBuffers( geometry );
+//   }
+
+// }
+
+// Rendering
+
+void GLRenderer::updateShadowMap( const Scene& scene, const Camera& camera ) {
+
+  _currentProgram = 0;
+  _oldBlending = -1;
+  _oldDepthTest = -1;
+  _oldDepthWrite = -1;
+  _currentGeometryGroupHash = -1;
+  _currentMaterialId = -1;
+  _lightsNeedUpdate = true;
+  _oldDoubleSided = -1;
+  _oldFlipSided = -1;
+
+  // TODO
+  //shadowMapPlugin.update( scene, camera );
 
 }
 
+// Internal functions
+
+// Buffer allocation
+
+void GLRenderer::createParticleBuffers( Geometry& geometry ) {
+
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer = _gl.CreateBuffer();
+
+  _info.memory.geometries ++;
+
+}
+
+void GLRenderer::createLineBuffers( Geometry& geometry ) {
+
+  geometry.__glVertexBuffer = _gl.CreateBuffer();
+  geometry.__glColorBuffer  = _gl.CreateBuffer();
+  geometry.__glLineDistanceBuffer  = _gl.CreateBuffer();
+
+  _info.memory.geometries ++;
+
+}
+
+// void GLRenderer::createRibbonBuffers( Geometry& geometry ) {
+
+//   geometry.__glVertexBuffer = _gl.CreateBuffer();
+//   geometry.__glColorBuffer  = _gl.CreateBuffer();
+
+//   _info.memory.geometries ++;
+
+// }
+
+void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
+
+  geometryGroup.__glVertexBuffer  = _gl.CreateBuffer();
+  geometryGroup.__glNormalBuffer  = _gl.CreateBuffer();
+  geometryGroup.__glTangentBuffer = _gl.CreateBuffer();
+  geometryGroup.__glColorBuffer   = _gl.CreateBuffer();
+  geometryGroup.__glUVBuffer      = _gl.CreateBuffer();
+  geometryGroup.__glUV2Buffer     = _gl.CreateBuffer();
+
+  geometryGroup.__glSkinIndicesBuffer = _gl.CreateBuffer();
+  geometryGroup.__glSkinWeightsBuffer = _gl.CreateBuffer();
+
+  geometryGroup.__glFaceBuffer = _gl.CreateBuffer();
+  geometryGroup.__glLineBuffer = _gl.CreateBuffer();
+
+  if ( geometryGroup.numMorphTargets > 0 ) {
+
+    geometryGroup.__glMorphTargetsBuffers.clear();
+
+    for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
+      geometryGroup.__glMorphTargetsBuffers.push_back( _gl.CreateBuffer() );
+    }
+
+  }
+
+  if ( geometryGroup.numMorphNormals > 0 ) {
+
+    geometryGroup.__glMorphNormalsBuffers.clear();
+
+    for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
+      geometryGroup.__glMorphNormalsBuffers.push_back( _gl.CreateBuffer() );
+    }
+
+  }
+
+  _info.memory.geometries ++;
+
+}
+
+// Events 
+
+void GLRenderer::onGeometryDispose( Event& event ) {
+  // TODO
+}
+
+void GLRenderer::onTextureDispose( Event& event ) {
+  // TODO
+}
+
+void GLRenderer::onRenderTargetDispose( Event& event ) {
+  // TODO
+}
+
+void GLRenderer::onMaterialDispose( Event& event ) {
+  // TODO
+}
+
+// Buffer deallocation
+
+void GLRenderer::deleteBuffers( GeometryBuffer& geometry ) {
+
+  _gl.DeleteBuffer( geometry.__glVertexBuffer );
+  _gl.DeleteBuffer( geometry.__glNormalBuffer );
+  _gl.DeleteBuffer( geometry.__glTangentBuffer );
+  _gl.DeleteBuffer( geometry.__glColorBuffer );
+  _gl.DeleteBuffer( geometry.__glUVBuffer );
+  _gl.DeleteBuffer( geometry.__glUV2Buffer );
+
+  _gl.DeleteBuffer( geometry.__glSkinIndicesBuffer );
+  _gl.DeleteBuffer( geometry.__glSkinWeightsBuffer );
+
+  _gl.DeleteBuffer( geometry.__glFaceBuffer );
+  _gl.DeleteBuffer( geometry.__glLineBuffer );
+
+  _gl.DeleteBuffer( geometry.__glLineDistanceBuffer );
+
+  // custom attributes
+
+  for ( auto& attribute : geometry.__glCustomAttributesList ) {
+    _gl.DeleteBuffer( attribute->buffer );
+  }
+
+  _info.memory.geometries --;
+
+}
+
+void GLRenderer::deallocateGeometry( Geometry& geometry ) {
+
+  geometry.__glInit = false;
+
+  if ( geometry.type() == enums::BufferGeometry ) {
+
+    auto& attributes = geometry.attributes;
+
+     for ( auto& namedAttribute : attributes ) {
+
+      //auto& a = namedAttribute.first;
+      auto& attribute = namedAttribute.second;
+
+      _gl.DeleteBuffer( attribute.buffer );
+
+    }
+
+    _info.memory.geometries --;
+
+  } else {
+
+    if ( geometry.geometryGroups.size() ) {
+
+      for ( auto& g : geometry.geometryGroups ) {
+
+        auto& geometryGroup = g.second;
+
+        if ( geometryGroup->morphTargets.size() ) {
+
+          for ( size_t m = 0, ml = geometryGroup->morphTargets.size(); m < ml; m ++ ) {
+
+            _gl.DeleteBuffer( geometryGroup->__glMorphTargetsBuffers[ m ] );
+
+          }
+
+        }
+
+        if ( geometryGroup->morphNormals.size() ) {
+
+          for ( size_t m = 0, ml = geometryGroup->morphNormals.size(); m < ml; m ++ ) {
+
+            _gl.DeleteBuffer( geometryGroup->__glMorphNormalsBuffers[ m ] );
+
+          }
+
+        }
+
+        deleteBuffers( *geometryGroup );
+
+      }
+
+    } else {
+
+      deleteBuffers( geometry );
+
+    }
+
+  }
+
+};
+
+
 void GLRenderer::deallocateTexture( Texture& texture ) {
+
+  // REVIEW Correctness
+  _gl.DeleteTexture( texture.__glTextureCube );
 
   if ( ! texture.__glInit ) return;
 
@@ -399,160 +602,6 @@ void GLRenderer::deallocateMaterial( Material& material ) {
   }
 
 }
-
-// Rendering
-
-void GLRenderer::updateShadowMap( const Scene& scene, const Camera& camera ) {
-
-  _currentProgram = 0;
-  _oldBlending = -1;
-  _oldDepthTest = -1;
-  _oldDepthWrite = -1;
-  _currentGeometryGroupHash = -1;
-  _currentMaterialId = -1;
-  _lightsNeedUpdate = true;
-  _oldDoubleSided = -1;
-  _oldFlipSided = -1;
-
-  // TODO:
-  //shadowMapPlugin.update( scene, camera );
-
-}
-
-// Internal functions
-
-// Buffer allocation
-
-void GLRenderer::createParticleBuffers( Geometry& geometry ) {
-
-  geometry.__glVertexBuffer = _gl.CreateBuffer();
-  geometry.__glColorBuffer = _gl.CreateBuffer();
-
-  _info.memory.geometries ++;
-
-}
-
-void GLRenderer::createLineBuffers( Geometry& geometry ) {
-
-  geometry.__glVertexBuffer = _gl.CreateBuffer();
-  geometry.__glColorBuffer  = _gl.CreateBuffer();
-
-  _info.memory.geometries ++;
-
-}
-
-void GLRenderer::createRibbonBuffers( Geometry& geometry ) {
-
-  geometry.__glVertexBuffer = _gl.CreateBuffer();
-  geometry.__glColorBuffer  = _gl.CreateBuffer();
-
-  _info.memory.geometries ++;
-
-}
-
-void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
-
-  geometryGroup.__glVertexBuffer  = _gl.CreateBuffer();
-  geometryGroup.__glNormalBuffer  = _gl.CreateBuffer();
-  geometryGroup.__glTangentBuffer = _gl.CreateBuffer();
-  geometryGroup.__glColorBuffer   = _gl.CreateBuffer();
-  geometryGroup.__glUVBuffer      = _gl.CreateBuffer();
-  geometryGroup.__glUV2Buffer     = _gl.CreateBuffer();
-
-  geometryGroup.__glSkinIndicesBuffer = _gl.CreateBuffer();
-  geometryGroup.__glSkinWeightsBuffer = _gl.CreateBuffer();
-
-  geometryGroup.__glFaceBuffer = _gl.CreateBuffer();
-  geometryGroup.__glLineBuffer = _gl.CreateBuffer();
-
-  if ( geometryGroup.numMorphTargets > 0 ) {
-
-    geometryGroup.__glMorphTargetsBuffers.clear();
-
-    for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-      geometryGroup.__glMorphTargetsBuffers.push_back( _gl.CreateBuffer() );
-    }
-
-  }
-
-  if ( geometryGroup.numMorphNormals > 0 ) {
-
-    geometryGroup.__glMorphNormalsBuffers.clear();
-
-    for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
-      geometryGroup.__glMorphNormalsBuffers.push_back( _gl.CreateBuffer() );
-    }
-
-  }
-
-  _info.memory.geometries ++;
-
-}
-
-// Buffer deallocation
-
-void GLRenderer::deleteParticleBuffers( Geometry& geometry ) {
-
-  _gl.DeleteBuffer( geometry.__glVertexBuffer );
-  _gl.DeleteBuffer( geometry.__glColorBuffer );
-
-  _info.memory.geometries --;
-
-}
-
-void GLRenderer::deleteLineBuffers( Geometry& geometry ) {
-
-  _gl.DeleteBuffer( geometry.__glVertexBuffer );
-  _gl.DeleteBuffer( geometry.__glColorBuffer );
-
-  _info.memory.geometries --;
-
-}
-
-void GLRenderer::deleteRibbonBuffers( Geometry& geometry ) {
-
-  _gl.DeleteBuffer( geometry.__glVertexBuffer );
-  _gl.DeleteBuffer( geometry.__glColorBuffer );
-
-  _info.memory.geometries --;
-
-}
-
-void GLRenderer::deleteMeshBuffers( GeometryGroup& geometryGroup ) {
-
-  _gl.DeleteBuffer( geometryGroup.__glVertexBuffer );
-  _gl.DeleteBuffer( geometryGroup.__glNormalBuffer );
-  _gl.DeleteBuffer( geometryGroup.__glTangentBuffer );
-  _gl.DeleteBuffer( geometryGroup.__glColorBuffer );
-  _gl.DeleteBuffer( geometryGroup.__glUVBuffer );
-  _gl.DeleteBuffer( geometryGroup.__glUV2Buffer );
-
-  _gl.DeleteBuffer( geometryGroup.__glSkinIndicesBuffer );
-  _gl.DeleteBuffer( geometryGroup.__glSkinWeightsBuffer );
-
-  _gl.DeleteBuffer( geometryGroup.__glFaceBuffer );
-  _gl.DeleteBuffer( geometryGroup.__glLineBuffer );
-
-  if ( geometryGroup.numMorphTargets > 0 ) {
-    for ( int m = 0, ml = geometryGroup.numMorphTargets; m < ml; m ++ ) {
-      _gl.DeleteBuffer( geometryGroup.__glMorphTargetsBuffers[ m ] );
-    }
-  }
-
-  if ( geometryGroup.numMorphNormals > 0 ) {
-    for ( int m = 0, ml = geometryGroup.numMorphNormals; m < ml; m ++ ) {
-      _gl.DeleteBuffer( geometryGroup.__glMorphNormalsBuffers[ m ] );
-    }
-  }
-
-  for ( auto& attribute : geometryGroup.__glCustomAttributesList ) {
-    _gl.DeleteBuffer( attribute->buffer );
-  }
-
-  _info.memory.geometries --;
-
-}
-
 
 // Buffer initialization
 
@@ -628,21 +677,11 @@ void GLRenderer::initLineBuffers( Geometry& geometry, Object3D& object ) {
 
   geometry.__vertexArray.resize( nvertices * 3 );
   geometry.__colorArray.resize( nvertices * 3 );
+  geometry.__lineDistanceArray.resize( nvertices );
 
   geometry.__glLineCount = ( int )nvertices;
 
   initCustomAttributes( geometry, object );
-
-}
-
-void GLRenderer::initRibbonBuffers( Geometry& geometry ) {
-
-  auto nvertices = ( int )geometry.vertices.size();
-
-  geometry.__vertexArray.resize( nvertices * 3 );
-  geometry.__colorArray.resize( nvertices * 3 );
-
-  geometry.__glVertexCount = nvertices;
 
 }
 
@@ -678,7 +717,6 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
   }
 
   if ( uvType ) {
-    THREE_REVIEW("Removed faceUVs during r65")
     if ( geometry.faceVertexUvs.size() > 0 ) {
       geometryGroup.__uvArray.resize( nvertices * 2 );
     }
@@ -691,8 +729,6 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
   if ( geometry.skinWeights.size() && geometry.skinIndices.size() ) {
 
-    geometryGroup.__skinVertexAArray.resize( nvertices * 4 );
-    geometryGroup.__skinVertexBArray.resize( nvertices * 4 );
     geometryGroup.__skinIndexArray.resize( nvertices * 4 );
     geometryGroup.__skinWeightArray.resize( nvertices * 4 );
 
@@ -729,7 +765,7 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
   // custom attributes
 
-  if ( material ) {//&& material->attributes.size() > 0 ) {
+  if ( material ) {
 
     geometryGroup.__glCustomAttributesList.clear();
 
@@ -856,6 +892,7 @@ void GLRenderer::initDirectBuffers( Geometry& geometry ) {
 
     auto& attribute = a.second;
     attribute.buffer = _gl.CreateBuffer();
+    attribute.numItems = attribute.array.size();
 
     _gl.BindAndBuffer( type, attribute.buffer, attribute.array, GL_STATIC_DRAW );
 
@@ -908,10 +945,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
     typedef std::pair<float, int> SortPair;
 
     std::sort( sortArray.begin(),
-               sortArray.end(),
-    []( const SortPair & a, const SortPair & b ) {
-      return a.first > b.first;
-    } );
+               sortArray.end(), NumericalSort() );
 
     for ( int v = 0; v < vl; v ++ ) {
 
@@ -1048,14 +1082,19 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   const auto& vertices = geometry.vertices;
   const auto& colors = geometry.colors;
+  const auto& lineDistances = geometry.lineDistances;
+
   const auto vl = ( int )vertices.size();
   const auto cl = ( int )colors.size();
+  const auto dl = ( int )lineDistances.size();
 
   auto& vertexArray = geometry.__vertexArray;
   auto& colorArray = geometry.__colorArray;
+  auto& lineDistanceArray = geometry.__lineDistanceArray;
 
   auto dirtyVertices = geometry.verticesNeedUpdate;
   auto dirtyColors = geometry.colorsNeedUpdate;
+  auto dirtylineDistances = geometry.lineDistancesNeedUpdate;
 
   auto& customAttributes = geometry.__glCustomAttributesList;
 
@@ -1097,6 +1136,18 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 
   }
 
+  if ( dirtylineDistances ) {
+
+      for ( int d = 0; d < dl; d ++ ) {
+
+        lineDistanceArray[ d ] = lineDistances[ d ];
+
+      }
+
+      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glLineDistanceBuffer, lineDistanceArray, hint );
+
+    }
+
   for ( int i = 0, il = ( int )customAttributes.size(); i < il; i ++ ) {
 
     auto& customAttribute = *customAttributes[ i ];
@@ -1128,71 +1179,16 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
 }
 
 
-void GLRenderer::setRibbonBuffers( Geometry& geometry, int hint ) {
-
-  const auto& vertices = geometry.vertices;
-  const auto& colors = geometry.colors;
-  const auto vl = ( int )vertices.size();
-  const auto cl = ( int )colors.size();
-
-  auto& vertexArray = geometry.__vertexArray;
-  auto& colorArray = geometry.__colorArray;
-
-  const auto dirtyVertices = geometry.verticesNeedUpdate;
-  const auto dirtyColors = geometry.colorsNeedUpdate;
-
-  int offset = 0;
-
-  if ( dirtyVertices ) {
-
-    for ( int v = 0; v < vl; v ++ ) {
-
-      const auto& vertex = vertices[ v ];
-
-      offset = v * 3;
-
-      vertexArray[ offset ]     = vertex.x;
-      vertexArray[ offset + 1 ] = vertex.y;
-      vertexArray[ offset + 2 ] = vertex.z;
-
-    }
-
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glVertexBuffer, vertexArray, hint );
-
-  }
-
-  if ( dirtyColors ) {
-
-    for ( int c = 0; c < cl; c++ ) {
-
-      const auto& color = colors[ c ];
-
-      offset = c * 3;
-
-      colorArray[ offset ]     = color.r;
-      colorArray[ offset + 1 ] = color.g;
-      colorArray[ offset + 2 ] = color.b;
-
-    }
-
-    _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometry.__glColorBuffer, colorArray, hint );
-
-  }
-
-}
-
 void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object, int hint, bool dispose, Material* material ) {
 
   if ( ! geometryGroup.__inittedArrays ) {
-
-    // console().log( object );
     return;
-
   }
 
   const auto normalType      = bufferGuessNormalType( material );
   const auto vertexColorType = bufferGuessVertexColorType( material );
   const auto uvType          = bufferGuessUVType( material );
+
   const auto needsSmoothNormals = ( normalType == enums::SmoothShading );
 
   Color c1, c2, c3, c4;
@@ -1208,8 +1204,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       offset_color       = 0,
       offset_skin        = 0,
       offset_morphTarget = 0,
-      offset_custom      = 0;
-  // UNUSED: offset_customSrc = 0;
+      offset_custom      = 0,
+      offset_customSrc   = 0;
 
   auto& vertexArray  = geometryGroup.__vertexArray;
   auto& uvArray      = geometryGroup.__uvArray;
@@ -1218,8 +1214,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   auto& tangentArray = geometryGroup.__tangentArray;
   auto& colorArray   = geometryGroup.__colorArray;
 
-  auto& skinVertexAArray = geometryGroup.__skinVertexAArray;
-  auto& skinVertexBArray = geometryGroup.__skinVertexBArray;
   auto& skinIndexArray   = geometryGroup.__skinIndexArray;
   auto& skinWeightArray  = geometryGroup.__skinWeightArray;
 
@@ -1248,10 +1242,8 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   auto& obj_uvs  = geometry.faceVertexUvs[ 0 ];
   auto& obj_uvs2 = geometry.faceVertexUvs[ 1 ];
 
-  // UNUSED: auto& obj_colors = geometry.colors;
+  auto& obj_colors = geometry.colors;
 
-  auto& obj_skinVerticesA = geometry.skinVerticesA;
-  auto& obj_skinVerticesB = geometry.skinVerticesB;
   auto& obj_skinIndices   = geometry.skinIndices;
   auto& obj_skinWeights   = geometry.skinWeights;
 
@@ -1336,7 +1328,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
           } else {
 
             // TODO: FIgure out where the faceNormals array comes from
-            //n1 = morphNormals[ vk ].faceNormals[ chf ];
             n1 = morphNormals[ vk ].faceNormals[ chf ];
             n2 = n1;
             n3 = n1;
@@ -1428,48 +1419,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       skinIndexArray[ offset_skin + 9 ]  = si3.y;
       skinIndexArray[ offset_skin + 10 ] = si3.z;
       skinIndexArray[ offset_skin + 11 ] = si3.w;
-
-      // vertices A
-
-      const auto& sa1 = obj_skinVerticesA[ face.a ];
-      const auto& sa2 = obj_skinVerticesA[ face.b ];
-      const auto& sa3 = obj_skinVerticesA[ face.c ];
-
-      skinVertexAArray[ offset_skin ]     = sa1.x;
-      skinVertexAArray[ offset_skin + 1 ] = sa1.y;
-      skinVertexAArray[ offset_skin + 2 ] = sa1.z;
-      skinVertexAArray[ offset_skin + 3 ] = 1; // pad for faster vertex shader
-
-      skinVertexAArray[ offset_skin + 4 ] = sa2.x;
-      skinVertexAArray[ offset_skin + 5 ] = sa2.y;
-      skinVertexAArray[ offset_skin + 6 ] = sa2.z;
-      skinVertexAArray[ offset_skin + 7 ] = 1;
-
-      skinVertexAArray[ offset_skin + 8 ]  = sa3.x;
-      skinVertexAArray[ offset_skin + 9 ]  = sa3.y;
-      skinVertexAArray[ offset_skin + 10 ] = sa3.z;
-      skinVertexAArray[ offset_skin + 11 ] = 1;
-
-      // vertices B
-
-      const auto& sb1 = obj_skinVerticesB[ face.a ];
-      const auto& sb2 = obj_skinVerticesB[ face.b ];
-      const auto& sb3 = obj_skinVerticesB[ face.c ];
-
-      skinVertexBArray[ offset_skin ]     = sb1.x;
-      skinVertexBArray[ offset_skin + 1 ] = sb1.y;
-      skinVertexBArray[ offset_skin + 2 ] = sb1.z;
-      skinVertexBArray[ offset_skin + 3 ] = 1; // pad for faster vertex shader
-
-      skinVertexBArray[ offset_skin + 4 ] = sb2.x;
-      skinVertexBArray[ offset_skin + 5 ] = sb2.y;
-      skinVertexBArray[ offset_skin + 6 ] = sb2.z;
-      skinVertexBArray[ offset_skin + 7 ] = 1;
-
-      skinVertexBArray[ offset_skin + 8 ]  = sb3.x;
-      skinVertexBArray[ offset_skin + 9 ]  = sb3.y;
-      skinVertexBArray[ offset_skin + 10 ] = sb3.z;
-      skinVertexBArray[ offset_skin + 11 ] = 1;
 
       offset_skin += 12;
 
@@ -1641,7 +1590,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
   }
 
-  if ( dirtyUvs && obj_uvs2.size() > 0 && uvType ) {
+  if ( dirtyUvs && obj_uvs2.size() != 0 && uvType ) {
 
     for ( const auto& fi : chunk_faces3 ) {
 
@@ -1674,8 +1623,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   if ( dirtyElements ) {
 
     for ( size_t f = 0; f < chunk_faces3.size(); ++ f ) {
-      //const auto& fi : chunk_faces3 ) {
-      //const auto& face = obj_faces[ fi ];
 
       faceArray[ offset_face ]     = vertexIndex;
       faceArray[ offset_face + 1 ] = vertexIndex + 1;
@@ -1710,13 +1657,13 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
     if ( customAttribute.__original && ( ! customAttribute.__original->needsUpdate ) ) continue;
 
     offset_custom = 0;
-    //offset_customSrc = 0;
+    offset_customSrc = 0;
 
     if ( customAttribute.size == 1 ) {
 
       const auto& values = customAttribute.value.cast<std::vector<float>>();
 
-      if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
+      if ( customAttribute.boundTo.size() == 0 || customAttribute.boundTo == "vertices" ) {
 
         for ( const auto& fi : chunk_faces3 ) {
 
@@ -1802,7 +1749,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     } else if ( customAttribute.size == 3 ) {
 
-      // TODO: Support colors!
+      // TODO: Support colors! enums::c 
       const auto& values = customAttribute.value.cast<std::vector<Vector3>>();
 
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
@@ -1995,7 +1942,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   }
 
 }
-
 
 void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) {
 
@@ -2474,13 +2420,6 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 }
 
 // Sorting
-
-struct NumericalSort {
-  template < typename T, typename U >
-  bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
-    return a.second > b.second;
-  }
-};
 
 void GLRenderer::setupMorphTargets( Material& material, GeometryGroup& geometryGroup, Object3D& object ) {
 
@@ -3157,8 +3096,8 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
       if ( ! geometry.__glVertexBuffer ) {
 
-        createRibbonBuffers( geometry );
-        initRibbonBuffers( geometry );
+        //createRibbonBuffers( geometry );
+        //initRibbonBuffers( geometry );
 
         geometry.verticesNeedUpdate = true;
         geometry.colorsNeedUpdate = true;
@@ -3313,9 +3252,9 @@ void GLRenderer::updateObject( Object3D& object ) {
 
   } else if ( object.type() == enums::Ribbon ) {
 
-    if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate ) {
-      setRibbonBuffers( geometry, GL_DYNAMIC_DRAW );
-    }
+//    if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate ) {
+//      setRibbonBuffers( geometry, GL_DYNAMIC_DRAW );
+//    }
 
     geometry.verticesNeedUpdate = false;
     geometry.colorsNeedUpdate = false;

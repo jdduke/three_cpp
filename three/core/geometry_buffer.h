@@ -99,8 +99,6 @@ struct MorphNormal {
   std::vector<float> __uvArray;
   std::vector<float> __uv2Array;
 
-  std::vector<float> __skinVertexAArray;
-  std::vector<float> __skinVertexBArray;
   std::vector<int> __skinIndexArray;
   std::vector<float> __skinWeightArray;
 
@@ -120,8 +118,8 @@ struct MorphNormal {
     __faceArray.clear();
     __vertexArray.clear();
     __lineArray.clear();
-    __skinVertexAArray.clear();
-    __skinVertexBArray.clear();
+    //__skinVertexAArray.clear();
+    //__skinVertexBArray.clear();
     __skinIndexArray.clear();
     __skinWeightArray.clear();
   }
