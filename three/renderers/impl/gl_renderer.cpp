@@ -2319,6 +2319,10 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   }
 
+  if( updateBuffers ) {
+    disableAttributes();
+  }
+
   // vertices
 
   if ( !material.morphTargets && attributes[AttributeKey::position()].valid() ) {
@@ -2326,6 +2330,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     if ( updateBuffers ) {
 
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glVertexBuffer );
+      enableAttribute( attributes[AttributeKey::position()] );
       _gl.VertexAttribPointer( attributes[AttributeKey::position()], 3, GL_FLOAT, false, 0, 0 );
 
     }
@@ -2353,6 +2358,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
       if ( attributeIt != attributes.end() ) {
 
         _gl.BindBuffer( GL_ARRAY_BUFFER, attribute->buffer );
+        enableAttribute( attributeIt->second );
         _gl.VertexAttribPointer( attributeIt->second, attribute->size, GL_FLOAT, false, 0, 0 );
 
       }
@@ -2366,7 +2372,12 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     if ( (index = attributes[AttributeKey::color()]) >= 0 ) {
 
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
+      enableAttribute( attributes[AttributeKey::color()] );
       _gl.VertexAttribPointer( index, 3, GL_FLOAT, false, 0, 0 );
+
+    } else {
+
+      _gl.VertexAttrib3fv( attributes[AttributeKey::color()], &material.defaultAttributeValues[ AttributeKey::color() ][0] );
 
     }
 
@@ -2375,6 +2386,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     if ( attributes[AttributeKey::normal()].valid() ) {
 
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glNormalBuffer );
+      enableAttribute( attributes[AttributeKey::normal()] );
       _gl.VertexAttribPointer( attributes[AttributeKey::normal()], 3, GL_FLOAT, false, 0, 0 );
 
     }
@@ -2384,6 +2396,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     if ( attributes[AttributeKey::tangent()].valid() ) {
 
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glTangentBuffer );
+      enableAttribute( attributes[AttributeKey::tangent()] );
       _gl.VertexAttribPointer( attributes[AttributeKey::tangent()], 4, GL_FLOAT, false, 0, 0 );
 
     }
@@ -2392,16 +2405,17 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     if ( attributes[AttributeKey::uv()].valid() ) {
 
-      if ( geometryGroup.__glUVBuffer ) {
+      if ( object.geometry->faceVertexUvs.size() > 0 ) {
 
         _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUVBuffer );
+        enableAttribute( attributes[AttributeKey::uv()] );
         _gl.VertexAttribPointer( attributes[AttributeKey::uv()], 2, GL_FLOAT, false, 0, 0 );
 
         _gl.EnableVertexAttribArray( attributes[AttributeKey::uv()] );
 
       } else {
 
-        _gl.DisableVertexAttribArray( attributes[AttributeKey::uv()] );
+        _gl.VertexAttrib3fv( attributes[AttributeKey::uv()], &material.defaultAttributeValues[ AttributeKey::uv() ][0] );
 
       }
 
@@ -2409,7 +2423,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     if ( attributes[AttributeKey::uv2()].valid() ) {
 
-      if ( geometryGroup.__glUV2Buffer ) {
+      if ( object.geometry->faceVertexUvs.size() > 1 ) {
 
         _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glUV2Buffer );
         _gl.VertexAttribPointer( attributes[AttributeKey::uv2()], 2, GL_FLOAT, false, 0, 0 );
@@ -2425,14 +2439,25 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     }
 
     if ( material.skinning &&
-         attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
          attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
+      enableAttribute( attributes[AttributeKey::skinIndex()] );
       _gl.VertexAttribPointer( attributes[AttributeKey::skinIndex()], 4, GL_FLOAT, false, 0, 0 );
 
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer );
+      enableAttribute( attributes[AttributeKey::skinWeight()] );
       _gl.VertexAttribPointer( attributes[AttributeKey::skinWeight()], 4, GL_FLOAT, false, 0, 0 );
+
+    }
+
+      int lineDistance =attributes[AttributeKey::lineDistance()];
+
+    if ( lineDistance >= 0 ) {
+
+      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glLineDistanceBuffer );
+      enableAttribute( lineDistance );
+      _gl.VertexAttribPointer( lineDistance, 1, GL_FLOAT, false, 0, 0 );
 
     }
 
@@ -2494,19 +2519,9 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     _info.render.calls ++;
     _info.render.points += geometryGroup.__glParticleCount;
 
-    // render ribbon
-
-  } else if ( object.type() == enums::Ribbon ) {
-
-    _gl.DrawArrays( GL_TRIANGLE_STRIP, 0, geometryGroup.__glVertexCount );
-
-    _info.render.calls ++;
-
-  }
+  } 
 
 }
-
-// Sorting
 
 void GLRenderer::enableAttribute( int attributeId ) {
 
@@ -2682,16 +2697,13 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   // update scene graph
 
-  if ( autoUpdateScene ) scene.updateMatrixWorld();
+  if ( scene.autoUpdate ) scene.updateMatrixWorld();
 
   // update camera matrices and frustum
 
   if ( ! camera.parent ) camera.updateMatrixWorld();
 
   camera.matrixWorldInverse.getInverse( camera.matrixWorld );
-
-  camera.matrixWorldInverse.flattenToArray( camera._viewMatrixArray );
-  camera.projectionMatrix.flattenToArray( camera._projectionMatrixArray );
 
   _projScreenMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
   _frustum.setFromMatrix( _projScreenMatrix );
@@ -2722,17 +2734,18 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   auto& renderList = scene.__glObjects;
 
-  for ( auto& glObject : renderList ) {
+  for ( int i = 0; i < renderList.size(); i++) {
 
+    auto& glObject =  renderList[i];
     auto& object = *glObject.object;
 
+    glObject.id = i;
     glObject.render = false;
 
     if ( object.visible ) {
 
       if ( !( object.type() == enums::Mesh || object.type() == enums::ParticleSystem ) ||
            !( object.frustumCulled ) || _frustum.contains( object ) ) {
-        //object.matrixWorld.flattenToArray( object._modelMatrixArray );
 
         setupMatrices( object, camera );
         unrollBufferMaterial( glObject );
@@ -2744,7 +2757,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
             glObject.z = object.renderDepth;
           } else {
             _vector3.copy( object.matrixWorld.getPosition() );
-            _projScreenMatrix.multiplyVector3( _vector3 );
+            _vector3.applyProjection( _projScreenMatrix );
             glObject.z = _vector3.z;
           }
 
@@ -2757,7 +2770,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
   }
 
   if ( sortObjects ) {
-    std::sort( renderList.begin(), renderList.end(), PainterSort() );
+    std::sort( renderList.begin(), renderList.end(), PainterSortStable() );
   }
 
   // set matrices for immediate objects
@@ -2795,7 +2808,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
     // opaque pass (front-to-back order)
 
-    setBlending( enums::NormalBlending );
+    setBlending( enums::NoBlending );
 
     renderObjects( scene.__glObjects, true, enums::Opaque, camera, lights, fog, false );
     renderObjectsImmediate( scene.__glObjectsImmediate, enums::Opaque, camera, lights, fog, false );
