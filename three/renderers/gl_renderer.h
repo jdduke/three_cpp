@@ -39,6 +39,8 @@ public:
 
 public:
 
+  float devicePixelRatio;
+
   // clearing
 
   bool autoClear;
@@ -63,7 +65,7 @@ public:
 
   bool shadowMapEnabled;
   bool shadowMapAutoUpdate;
-  bool shadowMapSoft;
+  enums::ShadowTypes shadowMapType;
   bool shadowMapCullFrontFaces;
   bool shadowMapDebug;
   bool shadowMapCascade;

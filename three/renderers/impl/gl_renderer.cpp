@@ -73,7 +73,7 @@ struct ProgramParameters {
   int maxSpotLights;
   int maxShadows;
   bool shadowMapEnabled;
-  bool shadowMapSoft;
+  enums::ShadowTypes shadowMapType;
   bool shadowMapDebug;
   bool shadowMapCascade;
 
@@ -92,7 +92,8 @@ GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters,
 }
 
 GLRenderer::GLRenderer( const RendererParameters& parameters, const GLInterface& gl )
-  : autoClear( true ),
+  : devicePixelRatio( 1 ),
+    autoClear( true ),
     autoClearColor( true ),
     autoClearDepth( true ),
     autoClearStencil( true ),
@@ -104,7 +105,7 @@ GLRenderer::GLRenderer( const RendererParameters& parameters, const GLInterface&
     physicallyBasedShading( false ),
     shadowMapEnabled( false ),
     shadowMapAutoUpdate( true ),
-    shadowMapSoft( true ),
+    shadowMapType( enums::PCFShadowMap ),
     shadowMapCullFrontFaces( true ),
     shadowMapDebug( false ),
     shadowMapCascade( false ),
@@ -3495,7 +3496,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
     maxShadows,
     shadowMapEnabled && object.receiveShadow,
-    shadowMapSoft,
+    shadowMapType,
     shadowMapDebug,
     shadowMapCascade,
 
@@ -4506,6 +4507,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     }
   }
 
+
   //console().log( "building new program " );
 
   //
@@ -4514,6 +4516,18 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   auto prefix_vertex = [this, &parameters]() -> std::string {
     std::stringstream ss;
+      
+      auto shadowMapTypeDefine = "SHADOWMAP_TYPE_BASIC";
+      
+      if ( parameters.shadowMapType == enums::PCFShadowMap ) {
+          
+          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF";
+          
+      } else if ( parameters.shadowMapType == enums::PCFSoftShadowMap ) {
+          
+          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF_SOFT";
+          
+      }
 
 #if defined(THREE_GLES)
     ss << "precision " << _precision << " float;" << std::endl;
@@ -4550,7 +4564,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.doubleSided )  ss << "#define DOUBLE_SIDED" << std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" << std::endl;
-    if ( parameters.shadowMapSoft )    ss << "#define SHADOWMAP_SOFT" << std::endl;
+    if ( parameters.shadowMapType )    ss << "#define " << shadowMapTypeDefine << std::endl;
     if ( parameters.shadowMapDebug )   ss << "#define SHADOWMAP_DEBUG" << std::endl;
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" << std::endl;
 
@@ -4616,6 +4630,18 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   auto prefix_fragment = [this, &parameters]() -> std::string {
     std::stringstream ss;
+      
+      auto shadowMapTypeDefine = "SHADOWMAP_TYPE_BASIC";
+      
+      if ( parameters.shadowMapType == enums::PCFShadowMap ) {
+          
+          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF";
+          
+      } else if ( parameters.shadowMapType == enums::PCFSoftShadowMap ) {
+          
+          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF_SOFT";
+          
+      }
 
 #if defined(THREE_GLES)
     ss << "precision " << _precision << " float;" << std::endl;
@@ -4654,7 +4680,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.doubleSided ) ss << "#define DOUBLE_SIDED" <<  std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" <<  std::endl;
-    if ( parameters.shadowMapSoft )    ss << "#define SHADOWMAP_SOFT" <<  std::endl;
+    if ( parameters.shadowMapType )    ss << "#define " << shadowMapTypeDefine <<  std::endl;
     if ( parameters.shadowMapDebug )   ss << "#define SHADOWMAP_DEBUG" <<  std::endl;
     if ( parameters.shadowMapCascade ) ss << "#define SHADOWMAP_CASCADE" <<  std::endl;
 
