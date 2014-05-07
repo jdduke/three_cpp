@@ -29,7 +29,7 @@ public:
     struct {
       int a, b, c;
     };
-    int abcd[3];
+    int abc[3];
   };
 
   Vector3 normal;

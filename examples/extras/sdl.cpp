@@ -8,8 +8,8 @@
 #include "examples/extras/stats.h"
 
 // TODO(jdduke): Include gles where appropriate.
-#include "SDL_assert.h"
-#include "SDL_timer.h"
+#include <SDL2/SDL_assert.h>
+#include <SDL2/SDL_timer.h>
 
 #define M_CONC(A, B) M_CONC_(A, B)
 #define M_CONC_(A, B) A##B

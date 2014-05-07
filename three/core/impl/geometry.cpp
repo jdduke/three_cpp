@@ -140,7 +140,7 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
 
       for ( auto i = 0; i < face.size(); ++i ) {
 
-        vertices[ face.abcd[ i ] ].add( face.normal );
+        vertices[ face.abc[ i ] ].add( face.normal );
 
       }
 
@@ -157,10 +157,9 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
 
   for ( auto& face : faces ) {
 
-    THREE_REVIEW("EA: Make Face3/abc")
-    face.vertexNormals[ 0 ].copy( vertices[ face.abcd[ 0 ] ] );
-    face.vertexNormals[ 1 ].copy( vertices[ face.abcd[ 1 ] ] );
-    face.vertexNormals[ 2 ].copy( vertices[ face.abcd[ 2 ] ] );
+    face.vertexNormals[ 0 ].copy( vertices[ face.abc[ 0 ] ] );
+    face.vertexNormals[ 1 ].copy( vertices[ face.abc[ 1 ] ] );
+    face.vertexNormals[ 2 ].copy( vertices[ face.abc[ 2 ] ] );
 
   }
 
@@ -303,7 +302,7 @@ void Geometry::computeTangents() {
 
       n.copy( face.vertexNormals[ i ] );
 
-      auto vertexIndex = face.abcd[ i ];
+      auto vertexIndex = face.abc[ i ];
 
       const auto& t = tan1[ vertexIndex ];
 
@@ -395,7 +394,7 @@ void Geometry::mergeVertices() {
 
   for ( auto& face : faces ) {
     for ( int i = 0; i < face.size(); ++i ) {
-      face.abcd[ i ] = changes[ face.abcd[ i ] ];
+      face.abc[ i ] = changes[ face.abc[ i ] ];
     }
   }
 

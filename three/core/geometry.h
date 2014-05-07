@@ -58,7 +58,7 @@ public:
 
   std::vector<Face> faces;
 
-  std::vector<std::vector<std::array<Vector2, 3>>> faceVertexUvs;
+  std::vector<std::vector<std::array<Vector2, 3> > > faceVertexUvs;
 
   std::vector<Vector4> skinWeights;
   std::vector<SkinIndices> skinIndices;

@@ -42,10 +42,10 @@ struct PainterSortStable {
 		return a.id - b.id;
 
 	}
-  }
+}
 
-  bool operator()( const Renderable* a, const Renderable* b ) const {
-    if ( a->z != b->z ) {
+bool operator()( const Renderable* a, const Renderable* b ) const {
+  if ( a->z != b->z ) {
 
 		return b->z - a->z;
 
@@ -58,13 +58,6 @@ struct PainterSortStable {
 
 };
 
-
-struct NumericalSort {
-  template < typename T, typename U >
-  bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
-    return a.second - b.second;
-  }
-};
 
 } // namespace three
 

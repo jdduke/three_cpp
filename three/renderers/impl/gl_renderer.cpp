@@ -458,8 +458,6 @@ void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
   geometryGroup.__glUVBuffer      = _gl.CreateBuffer();
   geometryGroup.__glUV2Buffer     = _gl.CreateBuffer();
 
-  geometryGroup.__glSkinVertexABuffer = _gl.CreateBuffer();
-  geometryGroup.__glSkinVertexBBuffer = _gl.CreateBuffer();
   geometryGroup.__glSkinIndicesBuffer = _gl.CreateBuffer();
   geometryGroup.__glSkinWeightsBuffer = _gl.CreateBuffer();
 
@@ -528,8 +526,6 @@ void GLRenderer::deleteMeshBuffers( GeometryGroup& geometryGroup ) {
   _gl.DeleteBuffer( geometryGroup.__glUVBuffer );
   _gl.DeleteBuffer( geometryGroup.__glUV2Buffer );
 
-  _gl.DeleteBuffer( geometryGroup.__glSkinVertexABuffer );
-  _gl.DeleteBuffer( geometryGroup.__glSkinVertexBBuffer );
   _gl.DeleteBuffer( geometryGroup.__glSkinIndicesBuffer );
   _gl.DeleteBuffer( geometryGroup.__glSkinWeightsBuffer );
 
@@ -1480,8 +1476,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     if ( offset_skin > 0 ) {
 
-      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer, skinVertexAArray, hint );
-      _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer, skinVertexBArray, hint );
       _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer, skinIndexArray, hint );
       _gl.BindAndBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinWeightsBuffer, skinWeightArray, hint );
 
@@ -2399,12 +2393,6 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     if ( material.skinning &&
          attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
          attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
-
-      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexABuffer );
-      _gl.VertexAttribPointer( attributes[AttributeKey::skinVertexA()], 4, GL_FLOAT, false, 0, 0 );
-
-      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinVertexBBuffer );
-      _gl.VertexAttribPointer( attributes[AttributeKey::skinVertexB()], 4, GL_FLOAT, false, 0, 0 );
 
       _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glSkinIndicesBuffer );
       _gl.VertexAttribPointer( attributes[AttributeKey::skinIndex()], 4, GL_FLOAT, false, 0, 0 );
