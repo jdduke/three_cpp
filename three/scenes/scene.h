@@ -38,18 +38,20 @@ public:
   std::vector<Object3D::Ptr> __objectsRemoved;
 
   struct GLObject : RenderableObject {
-    explicit GLObject( GeometryBuffer* buffer = nullptr,
+    explicit GLObject( unsigned int id        = 0,
+                       GeometryBuffer* buffer = nullptr,
                        Object3D* object       = nullptr,
                        bool render            = false,
                        Material* opaque       = nullptr,
                        Material* transparent  = nullptr,
                        float z                = 0.f )
       : RenderableObject( object, z ),
+        id( id ),
         buffer( buffer ),
         render( render ),
         opaque( opaque ),
         transparent( transparent ) { }
-
+    unsigned int id;
     GeometryBuffer* buffer;
     bool render;
     Material* opaque;

@@ -75,7 +75,8 @@ Material& Material::clone( Material& material ) const {
   material.numSupportedMorphTargets = numSupportedMorphTargets;
   material.numSupportedMorphNormals = numSupportedMorphNormals;
 
-  THREE_REVIEW("Missing normalMap / normalScale?")
+  material.normalMap           = normalMap;
+  material.normalScale         = normalScale;
 
   material.fragmentShader      = fragmentShader;
   material.vertexShader        = vertexShader;
@@ -92,6 +93,10 @@ Material& Material::clone( Material& material ) const {
   material.fog             = fog;
   material.lights          = lights;
   material.shadowPass      = shadowPass;
+
+  material.scale           = scale;
+  material.gapSize         = shadowPass;
+  material.dashSize        = shadowPass;
 
   return material;
 
@@ -150,7 +155,10 @@ Material::Material( )
     normalScale( 1, 1, 1 ),
     fog( false ),
     lights( false ),
-    shadowPass( false ) { 
+    shadowPass( false ),
+    scale( 1.0f ),
+    gapSize ( 1.0f ),
+    dashSize( 3.0f ) {
 
       // TODO not for every material...
       defaultAttributeValues["color"] = {1,1,1};
@@ -242,12 +250,14 @@ void Material::setParameters( const Parameters& parameters,
   PARAM_LOAD( fog );
   PARAM_LOAD( lights );
   PARAM_LOAD( shadowPass );
-
   PARAM_LOAD( map );
   PARAM_LOAD( specularMap );
   PARAM_LOAD( envMap );
   PARAM_LOAD( bumpMap );
   PARAM_LOAD( lightMap );
+  PARAM_LOAD( scale );
+  PARAM_LOAD( dashSize );
+  PARAM_LOAD( gapSize );
 }
 
 #undef PARAM_LOAD

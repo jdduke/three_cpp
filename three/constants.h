@@ -207,6 +207,7 @@ enum MaterialType {
   MeshLambertMaterial,
   MeshPhongMaterial,
   LineBasicMaterial,
+  LineDashedMaterial,
   MeshNormalMaterial,
   ParticleSystemMaterial,
   ShaderMaterial

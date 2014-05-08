@@ -34,6 +34,8 @@ public:
   typedef Properties<std::string, any> Parameters;
   typedef std::unordered_set<std::string> ParameterKeys;
 
+  typedef Properties<std::string, any> Defines;
+
   typedef std::shared_ptr<Material> Ptr;
 
   static Ptr create() {
@@ -128,13 +130,19 @@ public:
   Uniforms uniforms;
   UniformsList uniformsList;
 
-  Texture::Ptr map, envMap, lightMap, bumpMap, specularMap;
+  Defines defines;
+
+  Texture::Ptr map, envMap, lightMap, bumpMap, normalMap, specularMap;
   float bumpScale;
   Vector3 normalScale;
 
   bool fog;
   bool lights;
   bool shadowPass;
+
+  float scale;
+  float gapSize;
+  float dashSize;
 
   void setParameters( const Parameters& parameters,
                       const ParameterKeys& keys = ParameterKeys() );

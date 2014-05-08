@@ -23,6 +23,7 @@
 #include <three/lights/spot_light.h>
 #include <three/lights/hemisphere_light.h>
 
+#include <three/materials/material.h>
 #include <three/materials/program.h>
 #include <three/materials/mesh_face_material.h>
 
@@ -61,16 +62,17 @@ struct NumericalSort {
 };
     
 struct ProgramParameters {
-  bool map, envMap, lightMap, bumpMap, specularMap;
+  bool map, envMap, lightMap, bumpMap, normalMap, specularMap;
   enums::Colors vertexColors;
   IFog* fog;
   bool useFog;
+  bool fogExp; 
   bool sizeAttenuation;
   bool skinning;
   int maxBones;
   bool useVertexTexture;
-  int boneTextureWidth;
-  int boneTextureHeight;
+  //int boneTextureWidth;
+  //int boneTextureHeight;
   bool morphTargets;
   bool morphNormals;
   int maxMorphTargets;
@@ -78,6 +80,7 @@ struct ProgramParameters {
   int maxDirLights;
   int maxPointLights;
   int maxSpotLights;
+  int maxHemiLights;
   int maxShadows;
   bool shadowMapEnabled;
   enums::ShadowTypes shadowMapType;
@@ -89,6 +92,7 @@ struct ProgramParameters {
   bool perPixel;
   bool wrapAround;
   bool doubleSided;
+  bool flipSided;
 };
 
 GLRenderer::Ptr GLRenderer::create( const RendererParameters& parameters,
@@ -817,22 +821,22 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
 }
 
-Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryGroup* geometryGroup ) {
+Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryBuffer* geometryBuffer ) {
 
   auto material = object.material.get();
 
   if( material ) {
 
-    if ( geometryGroup && material->type() == enums::MeshFaceMaterial) {
+    if ( geometryBuffer && material->type() == enums::MeshFaceMaterial) {
 
       auto geometry = object.geometry.get();
 
-      if( geometry && geometryGroup->materialIndex.valid() ) {
+      if( geometry && geometryBuffer->materialIndex.valid() ) {
 
         auto meshFaceMaterial = static_cast<MeshFaceMaterial*>(material);
 
         if( meshFaceMaterial ) {
-          return meshFaceMaterial->materials[ geometryGroup->materialIndex.value ].get();
+          return meshFaceMaterial->materials[ geometryBuffer->materialIndex.value ].get();
         }
 
       }
@@ -1242,7 +1246,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   auto& obj_uvs  = geometry.faceVertexUvs[ 0 ];
   auto& obj_uvs2 = geometry.faceVertexUvs[ 1 ];
 
-  auto& obj_colors = geometry.colors;
+  //auto& obj_colors = geometry.colors;
 
   auto& obj_skinIndices   = geometry.skinIndices;
   auto& obj_skinWeights   = geometry.skinWeights;
@@ -3009,28 +3013,27 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
 
   auto& buffer = *globject.buffer;
 
-  auto& meshMaterial = *object.material;
+  auto& meshMaterial = object.material;
 
-  if ( meshMaterial.type() == enums::MeshFaceMaterial ) {
+  if ( meshMaterial->type() == enums::MeshFaceMaterial ) {
 
     const auto materialIndex = buffer.materialIndex;
 
     if ( materialIndex.valid() ) {
-      // TODO "MEAT"
 
-      //auto& material = *object.geometry->materials[ materialIndex.value ];
+        const auto& material = std::static_pointer_cast<MeshFaceMaterial>(meshMaterial)->materials[ materialIndex.value ];
 
-      //if ( material.transparent ) {
+      if ( material->transparent ) {
 
-      //  globject.transparent = &material;
-      //  globject.opaque = nullptr;
+        globject.transparent = material.get();
+        globject.opaque = nullptr;
 
-      //} else {
+      } else {
 
-      //  globject.opaque = &material;
-      //  globject.transparent = nullptr;
+        globject.opaque = material.get();
+        globject.transparent = nullptr;
 
-      //}
+      }
 
     }
 
@@ -3038,14 +3041,14 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
 
     auto& material = meshMaterial;
 
-    if ( material.transparent ) {
+    if ( material->transparent ) {
 
-      globject.transparent = &material;
+      globject.transparent = material.get();
       globject.opaque = nullptr;
 
     } else {
 
-      globject.opaque = &material;
+      globject.opaque = material.get();
       globject.transparent = nullptr;
 
     }
@@ -3056,7 +3059,7 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
 
 // Geometry splitting
 
-void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
+void GLRenderer::sortFacesByMaterial( Geometry& geometry, Material& material ) {
 
   // 0: index, 1: count
   typedef std::pair<int, int> MaterialHashValue;
@@ -3066,13 +3069,15 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
   const auto numMorphTargets = ( int )geometry.morphTargets.size();
   const auto numMorphNormals = ( int )geometry.morphNormals.size();
 
+  const auto useFaceMaterial = material.type() == enums::MeshFaceMaterial;
+
   geometry.geometryGroups.clear();
 
   for ( int f = 0, fl = ( int )geometry.faces.size(); f < fl; ++f ) {
 
     const auto& face = geometry.faces[ f ];
 
-    const auto materialIndex = face.materialIndex;
+    const auto materialIndex = useFaceMaterial ? face.materialIndex : 0;
     const auto materialHash = materialIndex;
 
     if ( hash_map.count( materialHash ) == 0 ) {
@@ -3087,7 +3092,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry ) {
 
     auto geometryGroup = geometry.geometryGroups[ groupHash ];
 
-    const auto vertices = face.type() == enums::Face3 ? 3 : 4;
+    const auto vertices = 3;
 
     if ( geometryGroup->vertices + vertices > 65535 ) {
 
@@ -3139,6 +3144,9 @@ void GLRenderer::initGLObjects( Scene& scene ) {
   // update must be called after objects adding / removal
 
   for ( auto& glObject : scene.__glObjects ) {
+    
+    //TODO(ea): Do we need the hack here?
+
     updateObject( *glObject.object );
   }
 
@@ -3148,6 +3156,7 @@ void GLRenderer::initGLObjects( Scene& scene ) {
 
 static inline void addBuffer( RenderList& objlist, GeometryBuffer& buffer, Object3D& object ) {
   objlist.emplace_back( Scene::GLObject(
+                          0,
                           &buffer,
                           &object,
                           false,
@@ -3158,6 +3167,7 @@ static inline void addBuffer( RenderList& objlist, GeometryBuffer& buffer, Objec
 
 static inline void addBufferImmediate( RenderList& objlist, Object3D& object ) {
   objlist.emplace_back( Scene::GLObject(
+                          0,
                           nullptr,
                           &object,
                           false,
@@ -3168,64 +3178,50 @@ static inline void addBufferImmediate( RenderList& objlist, Object3D& object ) {
 
 void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
+  Geometry& geometry = *object.geometry;
+    
   if ( ! object.glData.__glInit ) {
 
     object.glData.__glInit = true;
 
-    if ( object.type() == enums::Mesh ) {
+    geometry.__glInit = true;
+    // TODO ea: impl
+    //object.geometry.addEventListener( 'dispose', onGeometryDispose );
 
-      Geometry& geometry = *object.geometry;
+    if ( geometry.type() == enums::BufferGeometry ) {
 
-      if ( geometry.type() == enums::Geometry ) {
-
-        if ( geometry.geometryGroups.empty() ) {
-          sortFacesByMaterial( geometry );
-        }
-
-        // create separate VBOs per geometry chunk
-
-        for ( auto& geometryGroup : geometry.geometryGroups ) {
-
-          // initialise VBO on the first access
-
-          if ( ! geometryGroup.second->__glVertexBuffer ) {
-
-            createMeshBuffers( *geometryGroup.second );
-            initMeshBuffers( *geometryGroup.second, static_cast<Mesh&>( object ) );
-
-            geometry.verticesNeedUpdate     = true;
-            geometry.morphTargetsNeedUpdate = true;
-            geometry.elementsNeedUpdate     = true;
-            geometry.uvsNeedUpdate          = true;
-            geometry.normalsNeedUpdate      = true;
-            geometry.tangentsNeedUpdate     = true;
-            geometry.colorsNeedUpdate       = true;
-
-          }
-
-        }
-
-      } else if ( geometry.type() == enums::BufferGeometry ) {
         initDirectBuffers( geometry );
+
+    } else if ( object.type() == enums::Mesh ) {
+
+      if ( geometry.geometryGroups.empty() ) {
+        sortFacesByMaterial( geometry, *static_cast<Mesh&>( object ).material );
       }
 
-    } else if ( object.type() == enums::Ribbon ) {
+      // create separate VBOs per geometry chunk
 
-      auto& geometry = *object.geometry;
+      for ( auto& geometryGroup : geometry.geometryGroups ) {
 
-      if ( ! geometry.__glVertexBuffer ) {
+        // initialise VBO on the first access
 
-        //createRibbonBuffers( geometry );
-        //initRibbonBuffers( geometry );
+        if ( ! geometryGroup.second->__glVertexBuffer ) {
 
-        geometry.verticesNeedUpdate = true;
-        geometry.colorsNeedUpdate = true;
+          createMeshBuffers( *geometryGroup.second );
+          initMeshBuffers( *geometryGroup.second, static_cast<Mesh&>( object ) );
+
+          geometry.verticesNeedUpdate     = true;
+          geometry.morphTargetsNeedUpdate = true;
+          geometry.elementsNeedUpdate     = true;
+          geometry.uvsNeedUpdate          = true;
+          geometry.normalsNeedUpdate      = true;
+          geometry.tangentsNeedUpdate     = true;
+          geometry.colorsNeedUpdate       = true;
+
+        }
 
       }
 
     } else if ( object.type() == enums::Line ) {
-
-      auto& geometry = *object.geometry;
 
       if ( ! geometry.__glVertexBuffer ) {
 
@@ -3234,12 +3230,11 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
         geometry.verticesNeedUpdate = true;
         geometry.colorsNeedUpdate = true;
+        geometry.lineDistancesNeedUpdate = true;
 
       }
 
     } else if ( object.type() == enums::ParticleSystem ) {
-
-      auto& geometry = *object.geometry;
 
       if ( ! geometry.__glVertexBuffer ) {
 
@@ -3259,8 +3254,6 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
     if ( object.type() == enums::Mesh ) {
 
-      auto& geometry = *object.geometry;
-
       if ( geometry.type() == enums::BufferGeometry ) {
 
         addBuffer( scene.__glObjects, geometry, object );
@@ -3275,11 +3268,9 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
       }
 
-    } else if ( object.type() == enums::Ribbon ||
-                object.type() == enums::Line ||
+    } else if ( object.type() == enums::Line ||
                 object.type() == enums::ParticleSystem ) {
 
-      auto& geometry = *object.geometry;
       addBuffer( scene.__glObjects, geometry, object );
 
     } else if ( object.type() == enums::ImmediateRenderObject || object.immediateRenderCallback ) {
@@ -3312,92 +3303,70 @@ void GLRenderer::updateObject( Object3D& object ) {
   auto& geometry = *object.geometry;
 
   Material* material = nullptr;
-  GeometryGroup* geometryGroup = nullptr;
+  //GeometryGroup* geometryGroup = nullptr;
 
-  if ( object.type() == enums::Mesh ) {
+  if ( geometry.type() == enums::BufferGeometry ) {
+    setDirectBuffers( geometry, GL_DYNAMIC_DRAW, !geometry.dynamic );
+  }
+  else if ( object.type() == enums::Mesh ) {
 
-    if ( geometry.type() == enums::BufferGeometry ) {
+    // check all geometry groups
 
-      if ( geometry.verticesNeedUpdate || geometry.elementsNeedUpdate ||
-           geometry.uvsNeedUpdate      || geometry.normalsNeedUpdate ||
-           geometry.colorsNeedUpdate   || geometry.tangentsNeedUpdate ) {
+    for ( auto& geometryGroup : geometry.geometryGroupsList ) {
 
-        setDirectBuffers( geometry, GL_DYNAMIC_DRAW, !geometry.dynamic );
+      material = getBufferMaterial( object, geometryGroup );
 
-      }
+      if ( !material ) continue;
 
-      geometry.verticesNeedUpdate = false;
-      geometry.elementsNeedUpdate = false;
-      geometry.uvsNeedUpdate = false;
-      geometry.normalsNeedUpdate = false;
-      geometry.colorsNeedUpdate = false;
-      geometry.tangentsNeedUpdate = false;
+      const auto customAttributesDirty = areCustomAttributesDirty( *material );
 
-    } else {
+      if ( geometry.verticesNeedUpdate  || geometry.morphTargetsNeedUpdate ||
+           geometry.uvsNeedUpdate       || geometry.normalsNeedUpdate      ||
+           geometry.colorsNeedUpdate    || geometry.tangentsNeedUpdate     ||
+           geometry.elementsNeedUpdate  || customAttributesDirty ) {
 
-      // check all geometry groups
-
-      for ( auto& geometryGroup : geometry.geometryGroupsList ) {
-
-        material = getBufferMaterial( object, geometryGroup );
-
-        if ( !material ) continue;
-
-        const auto customAttributesDirty = areCustomAttributesDirty( *material );
-
-        if ( geometry.verticesNeedUpdate  || geometry.morphTargetsNeedUpdate ||
-             geometry.uvsNeedUpdate       || geometry.normalsNeedUpdate      ||
-             geometry.colorsNeedUpdate    || geometry.tangentsNeedUpdate     ||
-             geometry.elementsNeedUpdate  || customAttributesDirty ) {
-
-          setMeshBuffers( *geometryGroup, object, GL_DYNAMIC_DRAW, !geometry.dynamic, material );
-
-        }
-
-        clearCustomAttributes( *material );
+        setMeshBuffers( *geometryGroup, object, GL_DYNAMIC_DRAW, !geometry.dynamic, material );
 
       }
 
-      geometry.verticesNeedUpdate     = false;
-      geometry.morphTargetsNeedUpdate = false;
-      geometry.elementsNeedUpdate     = false;
-      geometry.uvsNeedUpdate          = false;
-      geometry.normalsNeedUpdate      = false;
-      geometry.colorsNeedUpdate       = false;
-      geometry.tangentsNeedUpdate     = false;
-
+      clearCustomAttributes( *material );
 
     }
 
-  } else if ( object.type() == enums::Ribbon ) {
+    geometry.verticesNeedUpdate     = false;
+    geometry.morphTargetsNeedUpdate = false;
+    geometry.elementsNeedUpdate     = false;
+    geometry.uvsNeedUpdate          = false;
+    geometry.normalsNeedUpdate      = false;
+    geometry.colorsNeedUpdate       = false;
+    geometry.tangentsNeedUpdate     = false;
 
-//    if ( geometry.verticesNeedUpdate || geometry.colorsNeedUpdate ) {
-//      setRibbonBuffers( geometry, GL_DYNAMIC_DRAW );
-//    }
+    geometry.buffersNeedUpdate      = false;
 
-    geometry.verticesNeedUpdate = false;
-    geometry.colorsNeedUpdate = false;
+    if( material->attributes.size() ) clearCustomAttributes( *material );
+
 
   } else if ( object.type() == enums::Line ) {
 
-    auto material = getBufferMaterial( object, geometryGroup );
+    auto material = getBufferMaterial( object, &geometry );
 
     if ( !material ) return;
 
     const auto customAttributesDirty = areCustomAttributesDirty( *material );
 
-    if ( geometry.verticesNeedUpdate ||  geometry.colorsNeedUpdate || customAttributesDirty ) {
+    if ( geometry.verticesNeedUpdate ||  geometry.colorsNeedUpdate || geometry.lineDistancesNeedUpdate || customAttributesDirty ) {
       setLineBuffers( geometry, GL_DYNAMIC_DRAW );
     }
 
     geometry.verticesNeedUpdate = false;
     geometry.colorsNeedUpdate = false;
+    geometry.lineDistancesNeedUpdate = false;
 
     clearCustomAttributes( *material );
 
   } else if ( object.type() == enums::ParticleSystem ) {
 
-    auto material = getBufferMaterial( object, geometryGroup );
+    auto material = getBufferMaterial( object, &geometry );
 
     if ( !material ) return;
 
@@ -3442,7 +3411,6 @@ void GLRenderer::removeObject( Object3D& object, Scene& scene ) {
 
   if ( object.type() == enums::Mesh  ||
        object.type() == enums::ParticleSystem ||
-       object.type() == enums::Ribbon ||
        object.type() == enums::Line ) {
     removeInstances( scene.__glObjects, object );
   } else if ( object.type() == enums::Sprite ) {
@@ -3481,6 +3449,9 @@ void GLRenderer::removeInstancesDirect( RenderListDirect& objlist, Object3D& obj
 
 void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Object3D& object ) {
 
+  // TODO ea: impl
+  //material.addEventListener( 'dispose', onMaterialDispose );
+
   std::string shaderID;
 
   switch ( material.type() ) {
@@ -3501,6 +3472,9 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     break;
   case enums::LineBasicMaterial:
     setMaterialShaders( material, ShaderLib::basic() );
+    break;
+  case enums::LineDashedMaterial:
+    setMaterialShaders( material, ShaderLib::dashed() );
     break;
   case enums::ParticleSystemMaterial:
     setMaterialShaders( material, ShaderLib::particleBasic() );
@@ -3525,24 +3499,20 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     !!material.envMap,
     !!material.lightMap,
     !!material.bumpMap,
+    !!material.normalMap,
     !!material.specularMap,
 
     material.vertexColors,
 
     fog,
     !!material.fog,
+    fog ? fog->type() == enums::FogExp2 : false,
 
     material.sizeAttenuation,
 
     material.skinning,
     maxBones,
-    //_supportsBoneTextures && object && object.useVertexTexture,
     _supportsBoneTextures && object.useVertexTexture,
-    //object && object.boneTextureWidth,
-    object.boneTextureWidth,
-    //object && object.boneTextureHeight,
-    object.boneTextureHeight,
-
     material.morphTargets,
     material.morphNormals,
     maxMorphTargets,
@@ -3551,6 +3521,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     maxLightCount.directional,
     maxLightCount.point,
     maxLightCount.spot,
+    maxLightCount.hemi,
 
     maxShadows,
     shadowMapEnabled && object.receiveShadow,
@@ -3562,7 +3533,8 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
     material.metal,
     material.perPixel,
     material.wrapAround,
-    material.side == enums::DoubleSide
+    material.side == enums::DoubleSide,
+    material.side == enums::BackSide
 
   };
 
@@ -3571,7 +3543,9 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
                                    material.vertexShader,
                                    material.uniforms,
                                    material.attributes,
-                                   parameters );
+                                   material.defines,
+                                   parameters,
+                                   material.index0AttributeName );
 
   if ( !material.program ) {
     console().error() << "Aborting material initialization";
@@ -3580,35 +3554,35 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
 
   auto& attributes = material.program->attributes;
 
-  if ( attributes[AttributeKey::position()].valid() )
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::position()] );
+  // if ( attributes[AttributeKey::position()].valid() )
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::position()] );
 
-  if ( attributes[AttributeKey::color()].valid() )
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::color()] );
+  // if ( attributes[AttributeKey::color()].valid() )
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::color()] );
 
-  if ( attributes[AttributeKey::normal()].valid() )
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::normal()] );
+  // if ( attributes[AttributeKey::normal()].valid() )
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::normal()] );
 
-  if ( attributes[AttributeKey::tangent()].valid() )
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::tangent()] );
+  // if ( attributes[AttributeKey::tangent()].valid() )
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::tangent()] );
 
-  if ( material.skinning &&
-       attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
-       attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
+  // if ( material.skinning &&
+  //      attributes[AttributeKey::skinVertexA()].valid() && attributes[AttributeKey::skinVertexB()].valid() &&
+  //      attributes[AttributeKey::skinIndex()].valid() && attributes[AttributeKey::skinWeight()].valid() ) {
 
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinVertexA()] );
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinVertexB()] );
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinIndex()] );
-    _gl.EnableVertexAttribArray( attributes[AttributeKey::skinWeight()] );
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::skinVertexA()] );
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::skinVertexB()] );
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::skinIndex()] );
+  //   _gl.EnableVertexAttribArray( attributes[AttributeKey::skinWeight()] );
 
-  }
+  // }
 
-  for ( const auto& a : material.attributes ) {
-    auto attributeIt = attributes.find( a.first );
-    if ( attributeIt != attributes.end() && attributeIt->second.valid() ) {
-      _gl.EnableVertexAttribArray( attributeIt->second );
-    }
-  }
+  // for ( const auto& a : material.attributes ) {
+  //   auto attributeIt = attributes.find( a.first );
+  //   if ( attributeIt != attributes.end() && attributeIt->second.valid() ) {
+  //     _gl.EnableVertexAttribArray( attributeIt->second );
+  //   }
+  // }
 
   if ( material.morphTargets ) {
 
@@ -3694,6 +3668,39 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
     if ( &camera != _currentCamera ) _currentCamera = &camera;
   }
 
+  // skinning uniforms must be set even if material didn't change
+  // auto-setting of texture unit for bone texture must go before other textures
+  // not sure why, but otherwise weird things happen
+
+   if ( material.skinning ) {
+    if ( _supportsBoneTextures && object.useVertexTexture ) {
+      const auto boneTextureLocation = uniformLocation( p_uniforms, "boneTexture" );
+      if ( validUniformLocation( boneTextureLocation ) ) {
+        auto textureUnit = getTextureUnit();
+        _gl.Uniform1i( boneTextureLocation, textureUnit );
+        setTexture( *object.boneTexture, textureUnit );
+      }
+
+      const auto boneTextureWidthLocation = uniformLocation( p_uniforms, "boneTextureWidth" );
+      if ( validUniformLocation( boneTextureWidthLocation ) ) {
+        _gl.Uniform1i( boneTextureWidthLocation, object.boneTextureWidth );
+      }
+
+      const auto boneTextureHeightLocation = uniformLocation( p_uniforms, "boneTextureHeight" );
+      if ( validUniformLocation( boneTextureHeightLocation ) ) {
+        _gl.Uniform1i( boneTextureHeightLocation, object.boneTextureHeight );
+      }
+    } else {
+      const auto boneMatricesLocation = uniformLocation( p_uniforms, "boneGlobalMatrices" );
+      if ( validUniformLocation( boneMatricesLocation ) ) {
+        _gl.UniformMatrix4fv( boneMatricesLocation,
+                            ( int )object.boneMatrices.size(),
+                            false,
+                            reinterpret_cast<const float*>( &object.boneMatrices[0] ) );
+      }
+    }
+  }
+
   if ( refreshMaterial ) {
     // refresh uniforms common to several materials
     if ( fog && material.fog ) {
@@ -3722,6 +3729,9 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
     if ( material.type() == enums::LineBasicMaterial ) {
       refreshUniformsLine( m_uniforms, material );
+    } else if ( material.type() == enums::LineDashedMaterial ) {
+      refreshUniformsLine( m_uniforms, material );
+      refreshUniformsDash( m_uniforms, material );
     } else if ( material.type() == enums::ParticleSystemMaterial ) {
       refreshUniformsParticle( m_uniforms, material );
     } else if ( material.type() == enums::MeshPhongMaterial ) {
@@ -3754,8 +3764,8 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
       const auto cameraPositionLocation = uniformLocation( p_uniforms, "cameraPosition" );
       if ( validUniformLocation( cameraPositionLocation ) ) {
-        auto position = camera.matrixWorld.getPosition();
-        _gl.Uniform3f( cameraPositionLocation, position.x, position.y, position.z );
+        _vector3.setFromMatrixPosition( camera.matrixWorld );
+        _gl.Uniform3f( cameraPositionLocation, _vector3.x, _vector3.y, _vector3.z );
       }
 
     }
@@ -3771,26 +3781,6 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
       }
 
     }
-  }
-
-  if ( material.skinning ) {
-    if ( _supportsBoneTextures && object.useVertexTexture ) {
-      const auto boneTextureLocation = uniformLocation( p_uniforms, "boneTexture" );
-      if ( validUniformLocation( boneTextureLocation ) ) {
-        auto textureUnit = getTextureUnit();
-        _gl.Uniform1i( boneTextureLocation, textureUnit );
-        setTexture( *object.boneTexture, textureUnit );
-      }
-    } else {
-      const auto boneMatricesLocation = uniformLocation( p_uniforms, "boneGlobalMatrices" );
-      if ( validUniformLocation( boneMatricesLocation ) ) {
-        _gl.UniformMatrix4fv( boneMatricesLocation,
-                            ( int )object.boneMatrices.size(),
-                            false,
-                            reinterpret_cast<const float*>( &object.boneMatrices[0] ) );
-      }
-    }
-
   }
 
   loadUniformsMatrices( p_uniforms, object );
@@ -3826,10 +3816,16 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
     uniforms[UniformKey::bumpScale()].value = material.bumpScale;
   }
 
+  if ( material.normalMap ) {
+    uniforms[UniformKey::normalMap()].value   = material.normalMap.get();
+    uniforms[UniformKey::normalScale()].value = material.normalScale;
+  }
+
   // uv repeat and offset setting priorities
   //  1. color map
   //  2. specular map
   //  3. bump map
+  //  4. normal map
 
   Texture* uvScaleMap = nullptr;
 
@@ -3839,6 +3835,8 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
     uvScaleMap = material.specularMap.get();
   } else if ( material.bumpMap ) {
     uvScaleMap = material.bumpMap.get();
+  } else if ( material.normalMap ) {
+    uvScaleMap = material.normalMap.get();
   }
 
   if ( uvScaleMap ) {
@@ -3868,6 +3866,14 @@ void GLRenderer::refreshUniformsLine( Uniforms& uniforms, Material& material ) {
 
   uniforms[UniformKey::diffuse()].value = material.color;
   uniforms[UniformKey::opacity()].value = material.opacity;
+
+}
+
+void GLRenderer::refreshUniformsDash( Uniforms& uniforms, Material& material ) {
+
+  uniforms[UniformKey::dashSize()].value = material.dashSize;
+  uniforms[UniformKey::totalSize()].value = material.dashSize + material.gapSize;
+  uniforms[UniformKey::scale()].value = material.scale;
 
 }
 
@@ -3952,12 +3958,12 @@ void GLRenderer::refreshUniformsLights( Uniforms& uniforms, InternalLights& ligh
   uniforms[UniformKey::spotLightPosition()].value         = lights.spot.positions;
   uniforms[UniformKey::spotLightDistance()].value         = lights.spot.distances;
   uniforms[UniformKey::spotLightDirection()].value        = lights.spot.directions;
-  uniforms[UniformKey::spotLightAngle()].value            = lights.spot.angles;
+  uniforms[UniformKey::spotLightAngleCos()].value         = lights.spot.anglesCos;
   uniforms[UniformKey::spotLightExponent()].value         = lights.spot.exponents;
 
   uniforms[UniformKey::hemisphereLightSkyColor()].value   = lights.hemi.skyColors;
   uniforms[UniformKey::hemisphereLightGroundColor()].value = lights.hemi.groundColors;
-  uniforms[UniformKey::hemisphereLightPosition()].value   = lights.hemi.positions;
+  uniforms[UniformKey::hemisphereLightDirection()].value   = lights.hemi.positions;
 
 }
 
@@ -4079,6 +4085,8 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
         setTexture( *texture, textureUnit );
       }
 
+    } else {
+        //console().warn("THREE.WebGLRenderer: Unknown uniform type " );
     }
 
   }
@@ -4088,8 +4096,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 void GLRenderer::setupMatrices( Object3D& object, Camera& camera ) {
 
   object.glData._modelViewMatrix.multiplyMatrices( camera.matrixWorldInverse, object.matrixWorld );
-  object.glData._normalMatrix.getInverse( object.glData._modelViewMatrix );
-  object.glData._normalMatrix.transpose();
+  object.glData._normalMatrix.getNormalMatrix( object.glData._modelViewMatrix );
 
 }
 
@@ -4113,26 +4120,27 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
   auto& zlights = _lights;
 
-  auto& dcolors     = zlights.directional.colors;
-  auto& dpositions  = zlights.directional.positions;
+  auto& dirColors     = zlights.directional.colors;
+  auto& dirPositions  = zlights.directional.positions;
 
-  auto& pcolors     = zlights.point.colors;
-  auto& ppositions  = zlights.point.positions;
-  auto& pdistances  = zlights.point.distances;
+  auto& pointColors     = zlights.point.colors;
+  auto& pointPositions  = zlights.point.positions;
+  auto& pointDistances  = zlights.point.distances;
 
-  auto& scolors     = zlights.spot.colors;
-  auto& spositions  = zlights.spot.positions;
-  auto& sdistances  = zlights.spot.distances;
-  auto& sdirections = zlights.spot.directions;
-  auto& sangles     = zlights.spot.angles;
-  auto& sexponents  = zlights.spot.exponents;
+  auto& spotColors     = zlights.spot.colors;
+  auto& spotPositions  = zlights.spot.positions;
+  auto& spotDistances  = zlights.spot.distances;
+  auto& spotDirections = zlights.spot.directions;
+  auto& spotAnglesCos  = zlights.spot.anglesCos;
+  auto& spotExponents  = zlights.spot.exponents;
 
-  auto& hskyColors    = zlights.hemi.skyColors;
-  auto& hgroundColors = zlights.hemi.groundColors;
-  auto& hpositions    = zlights.hemi.positions;
+  auto& hemiSkyColors    = zlights.hemi.skyColors;
+  auto& hemiGroundColors = zlights.hemi.groundColors;
+  auto& hemiPositions    = zlights.hemi.positions;
 
-  int dlength = 0, plength = 0, slength = 0, hlength = 0;
-  int doffset = 0, poffset = 0, soffset = 0, hoffset = 0;
+  int dirLength = 0, pointLength = 0, spotLength = 0, hemiLength = 0;
+  int dirOffset = 0, pointOffset = 0, spotOffset = 0, hemiOffset = 0;
+  int dirCount = 0, pointCount = 0, spotCount = 0, hemiCount = 0;
 
   float r  = 0, g = 0, b = 0;
 
@@ -4140,13 +4148,15 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
     auto& light = *lights[ l ];
 
-    if ( light.onlyShadow || ! light.visible ) continue;
+    if ( light.onlyShadow ) continue;
 
     const auto& color    = light.color;
     const auto intensity = light.intensity;
     const auto distance  = light.distance;
 
     if ( light.type() == enums::AmbientLight ) {
+      
+      if ( ! light.visible ) continue;
 
       if ( gammaInput ) {
 
@@ -4164,146 +4174,155 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
     } else if ( light.type() == enums::DirectionalLight ) {
 
-      doffset = dlength * 3;
+      dirCount += 1;
 
-      grow( dcolors, doffset + 3 );
-      grow( dpositions, doffset + 3 );
+      if ( ! light.visible ) continue;
+
+      _direction.setFromMatrixPosition( light.matrixWorld );
+      _vector3.setFromMatrixPosition( light.target->matrixWorld );
+      _direction.sub( _vector3 );
+      _direction.normalize();
+
+      // skip lights with undefined direction
+      // these create troubles in OpenGL (making pixel black)
+
+      if(_direction.x == 0 && _direction.y == 0 && _direction.z == 0 ) continue;
+
+      dirOffset = dirLength * 3;
+
+      grow( dirColors, dirOffset + 3 );
+      grow( dirPositions, dirOffset + 3 );
+
+      dirPositions[ dirOffset ]     = _direction.x;
+      dirPositions[ dirOffset + 1 ] = _direction.y;
+      dirPositions[ dirOffset + 2 ] = _direction.z;
 
       if ( gammaInput ) {
 
-        dcolors[ doffset ]     = color.r * color.r * intensity * intensity;
-        dcolors[ doffset + 1 ] = color.g * color.g * intensity * intensity;
-        dcolors[ doffset + 2 ] = color.b * color.b * intensity * intensity;
+        setColorGamma( dirColors, dirOffset, color, intensity * intensity );
 
       } else {
 
-        dcolors[ doffset ]     = color.r * intensity;
-        dcolors[ doffset + 1 ] = color.g * intensity;
-        dcolors[ doffset + 2 ] = color.b * intensity;
+        setColorLinear( dirColors, dirOffset, color, intensity );
 
       }
 
-      Vector3 _direction = light.matrixWorld.getPosition();
-      _direction.sub( light.target->matrixWorld.getPosition() );
-      _direction.normalize();
-
-      dpositions[ doffset ]     = _direction.x;
-      dpositions[ doffset + 1 ] = _direction.y;
-      dpositions[ doffset + 2 ] = _direction.z;
-
-      dlength += 1;
+      dirLength += 1;
 
     } else if ( light.type() == enums::PointLight ) {
 
-      poffset = plength * 3;
+      pointCount += 1;
 
-      grow( pcolors, poffset + 3 );
-      grow( ppositions, poffset + 3 );
-      grow( pdistances, plength + 1 );
+      if ( ! light.visible ) continue;
+
+      pointOffset = pointLength * 3;
+
+      grow( pointColors, pointOffset + 3 );
+      grow( pointPositions, pointOffset + 3 );
+      grow( pointDistances, pointLength + 1 );
 
       if ( gammaInput ) {
 
-        pcolors[ poffset ]     = color.r * color.r * intensity * intensity;
-        pcolors[ poffset + 1 ] = color.g * color.g * intensity * intensity;
-        pcolors[ poffset + 2 ] = color.b * color.b * intensity * intensity;
+        setColorGamma( pointColors, pointOffset, color, intensity * intensity );
 
       } else {
 
-        pcolors[ poffset ]     = color.r * intensity;
-        pcolors[ poffset + 1 ] = color.g * intensity;
-        pcolors[ poffset + 2 ] = color.b * intensity;
+        setColorLinear( pointColors, pointOffset, color, intensity );
 
       }
 
-      const auto& position = light.matrixWorld.getPosition();
+      _vector3.setFromMatrixPosition( light.matrixWorld );
 
-      ppositions[ poffset ]     = position.x;
-      ppositions[ poffset + 1 ] = position.y;
-      ppositions[ poffset + 2 ] = position.z;
+      pointPositions[ pointOffset ]     = _vector3.x;
+      pointPositions[ pointOffset + 1 ] = _vector3.y;
+      pointPositions[ pointOffset + 2 ] = _vector3.z;
 
-      pdistances[ plength ] = distance;
+      pointDistances[ pointLength ] = distance;
 
-      plength += 1;
+      pointLength += 1;
 
     } else if ( light.type() == enums::SpotLight ) {
 
-      auto& slight = static_cast<SpotLight&>( light );
+      spotCount += 1;
 
-      soffset = slength * 3;
+      if ( ! light.visible ) continue;
 
-      grow( scolors, soffset + 3 );
-      grow( spositions, soffset + 3 );
-      grow( sdistances, slength + 1 );
+      auto& spotLight = static_cast<SpotLight&>( light );
+
+      spotOffset = spotLength * 3;
+
+      grow( spotColors, spotOffset + 3 );
+      grow( spotPositions, spotOffset + 3 );
+      grow( spotDistances, spotLength + 1 );
 
       if ( gammaInput ) {
 
-        scolors[ soffset ]     = color.r * color.r * intensity * intensity;
-        scolors[ soffset + 1 ] = color.g * color.g * intensity * intensity;
-        scolors[ soffset + 2 ] = color.b * color.b * intensity * intensity;
+        setColorGamma( spotColors, spotOffset, color, intensity * intensity );
 
       } else {
 
-        scolors[ soffset ]     = color.r * intensity;
-        scolors[ soffset + 1 ] = color.g * intensity;
-        scolors[ soffset + 2 ] = color.b * intensity;
+        setColorLinear( spotColors, spotOffset, color, intensity );
 
       }
 
-      const auto& position = light.matrixWorld.getPosition();
+      _vector3.setFromMatrixPosition( spotLight.matrixWorld );
 
-      spositions[ soffset ]     = position.x;
-      spositions[ soffset + 1 ] = position.y;
-      spositions[ soffset + 2 ] = position.z;
+      spotPositions[ spotOffset ]     = _vector3.x;
+      spotPositions[ spotOffset + 1 ] = _vector3.y;
+      spotPositions[ spotOffset + 2 ] = _vector3.z;
 
-      sdistances[ slength ] = distance;
+      spotDistances[ spotLength ] = distance;
 
-      _direction.copy( position );
-      _direction.sub( light.target->matrixWorld.getPosition() );
+      _direction.copy( _vector3 );
+      _vector3.setFromMatrixPosition( spotLight.target->matrixWorld );
+      _direction.sub( _vector3 );
       _direction.normalize();
 
-      sdirections[ soffset ]     = _direction.x;
-      sdirections[ soffset + 1 ] = _direction.y;
-      sdirections[ soffset + 2 ] = _direction.z;
+      spotDirections[ spotOffset ]     = _direction.x;
+      spotDirections[ spotOffset + 1 ] = _direction.y;
+      spotDirections[ spotOffset + 2 ] = _direction.z;
 
-      sangles[ slength ] = Math::cos( slight.angle );
-      sexponents[ slength ] = slight.exponent;
+      spotAnglesCos[ spotLength ] = Math::cos( spotLight.angle );
+      spotExponents[ spotLength ] = spotLight.exponent;
 
-      slength += 1;
+      spotLength += 1;
 
     } else if ( light.type() == enums::HemisphereLight ) {
 
-      auto& hlight = static_cast<HemisphereLight&>( light );
+      hemiCount += 1;
 
-      const auto& skyColor = hlight.color;
-      const auto& groundColor = hlight.groundColor;
+      if ( ! light.visible ) continue;
 
-      hoffset = hlength * 3;
+      auto& hemiLight = static_cast<HemisphereLight&>( light );
 
-      grow( hpositions, hoffset + 3 );
-      grow( hgroundColors, hoffset + 3 );
-      grow( hskyColors, hoffset + 3 );
+      const auto& skyColor = hemiLight.color;
+      const auto& groundColor = hemiLight.groundColor;
+
+      hemiOffset = hemiLength * 3;
+
+      grow( hemiPositions, hemiOffset + 3 );
+      grow( hemiGroundColors, hemiOffset + 3 );
+      grow( hemiSkyColors, hemiOffset + 3 );
+
+      hemiPositions[ hemiOffset ]     = _direction.x;
+      hemiPositions[ hemiOffset + 1 ] = _direction.y;
+      hemiPositions[ hemiOffset + 2 ] = _direction.z;
 
       if ( gammaInput ) {
 
         auto intensitySq = intensity * intensity;
 
-        setColorGamma( hskyColors, hoffset, skyColor, intensitySq );
-        setColorGamma( hgroundColors, hoffset, groundColor, intensitySq );
+        setColorGamma( hemiSkyColors, hemiOffset, skyColor, intensitySq );
+        setColorGamma( hemiGroundColors, hemiOffset, groundColor, intensitySq );
 
       } else {
 
-        setColorLinear( hskyColors, hoffset, skyColor, intensity );
-        setColorLinear( hgroundColors, hoffset, groundColor, intensity );
+        setColorLinear( hemiSkyColors, hemiOffset, skyColor, intensity );
+        setColorLinear( hemiGroundColors, hemiOffset, groundColor, intensity );
 
       }
 
-      const auto& position = light.matrixWorld.getPosition();
-
-      hpositions[ hoffset ]     = position.x;
-      hpositions[ hoffset + 1 ] = position.y;
-      hpositions[ hoffset + 2 ] = position.z;
-
-      hlength += 1;
+      hemiLength += 1;
 
     }
 
@@ -4312,16 +4331,16 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
   // 0 eventual remains from removed lights
   // (this is to avoid if in shader)
 
-  for ( size_t l = dlength * 3, ll = dcolors.size(); l < ll; l ++ ) dcolors[ l ] = 0.0;
-  for ( size_t l = plength * 3, ll = pcolors.size(); l < ll; l ++ ) pcolors[ l ] = 0.0;
-  for ( size_t l = slength * 3, ll = scolors.size(); l < ll; l ++ ) scolors[ l ] = 0.0;
-  for ( size_t l = hlength * 3, ll = hskyColors.size(); l < ll; l ++ ) hskyColors[ l ] = 0.0;
-  for ( size_t l = hlength * 3, ll = hgroundColors.size(); l < ll; l ++ ) hgroundColors[ l ] = 0.0;
+  for ( size_t l = dirLength * 3, ll = dirColors.size(); l < ll; l ++ ) dirColors[ l ] = 0.0;
+  for ( size_t l = pointLength * 3, ll = pointColors.size(); l < ll; l ++ ) pointColors[ l ] = 0.0;
+  for ( size_t l = spotLength * 3, ll = spotColors.size(); l < ll; l ++ ) spotColors[ l ] = 0.0;
+  for ( size_t l = hemiLength * 3, ll = hemiSkyColors.size(); l < ll; l ++ ) hemiSkyColors[ l ] = 0.0;
+  for ( size_t l = hemiLength * 3, ll = hemiGroundColors.size(); l < ll; l ++ ) hemiGroundColors[ l ] = 0.0;
 
-  zlights.directional.length = dlength;
-  zlights.point.length = plength;
-  zlights.spot.length = slength;
-  zlights.hemi.length = hlength;
+  zlights.directional.length = dirLength;
+  zlights.point.length = pointLength;
+  zlights.spot.length = spotLength;
+  zlights.hemi.length = hemiLength;
 
   grow( zlights.ambient, 3 );
   zlights.ambient[ 0 ] = r;
@@ -4538,7 +4557,9 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
                                        const std::string& vertexShader,
                                        const Uniforms& uniforms,
                                        const Attributes& attributes,
-                                       ProgramParameters& parameters ) {
+                                       const Material::Defines& defines,
+                                       ProgramParameters& parameters,
+                                       const std::string& index0AttributeName ) {
 
 
   // Generate code
@@ -4612,8 +4633,9 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     if ( parameters.skinning )          ss << "#define USE_SKINNING" << std::endl;
     if ( parameters.useVertexTexture )  ss << "#define BONE_TEXTURE" << std::endl;
-    if ( parameters.boneTextureWidth )  ss << "#define N_BONE_PIXEL_X " << parameters.boneTextureWidth << std::endl;
-    if ( parameters.boneTextureHeight ) ss << "#define N_BONE_PIXEL_Y " << parameters.boneTextureHeight << std::endl;
+    THREE_REVIEW("EA: Obsolete?")
+    //if ( parameters.boneTextureWidth )  ss << "#define N_BONE_PIXEL_X " << parameters.boneTextureWidth << std::endl;
+    //if ( parameters.boneTextureHeight ) ss << "#define N_BONE_PIXEL_Y " << parameters.boneTextureHeight << std::endl;
 
     if ( parameters.morphTargets ) ss << "#define USE_MORPHTARGETS" << std::endl;
     if ( parameters.morphNormals ) ss << "#define USE_MORPHNORMALS" << std::endl;

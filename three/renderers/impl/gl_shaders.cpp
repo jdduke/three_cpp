@@ -1526,6 +1526,12 @@ static Shader basicCreate() {
 
 }
 
+static Shader dashedCreate() {
+  Uniforms uniforms;
+  // TODO ea: impl
+  return Shader( std::move( uniforms ), "", "" );
+}
+
 static Shader lambertCreate() {
 
   std::array<Uniforms, 4> sourceUniforms = {
@@ -1872,6 +1878,11 @@ const Shader& ShaderLib::normal() {
 
 const Shader& ShaderLib::basic() {
   static Shader sShader = detail::basicCreate();
+  return sShader;
+}
+
+const Shader& ShaderLib::dashed() {
+  static Shader sShader = detail::dashedCreate();
   return sShader;
 }
 

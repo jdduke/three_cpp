@@ -96,6 +96,7 @@ public:
   static const Shader& depth();
   static const Shader& normal();
   static const Shader& basic();
+  static const Shader& dashed();
   static const Shader& lambert();
   static const Shader& phong();
   static const Shader& particleBasic();

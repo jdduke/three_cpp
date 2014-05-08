@@ -12,6 +12,7 @@
 #include <three/core/event.h>
 
 #include <three/scenes/scene.h>
+#include <three/materials/material.h>
 #include <three/materials/program.h>
 #include <three/textures/texture.h>
 
@@ -164,7 +165,7 @@ private:
   void initLineBuffers( Geometry& geometry, Object3D& object );
   // void initRibbonBuffers( Geometry& geometry );
   void initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object );
-  Material* getBufferMaterial( Object3D& object, GeometryGroup* geometryGroup );
+  Material* getBufferMaterial( Object3D& object, GeometryBuffer* geometryBuffer );
   bool materialNeedsSmoothNormals( const Material* material );
   enums::Shading bufferGuessNormalType( const Material* material );
   enums::Colors bufferGuessVertexColorType( const Material* material );
@@ -197,7 +198,7 @@ private:
   void unrollBufferMaterial( Scene::GLObject& globject );
 
   // Geometry splitting
-  void sortFacesByMaterial( Geometry& geometry );
+  void sortFacesByMaterial( Geometry& geometry, Material& material );
 
   // Objects refresh
   void initGLObjects( Scene& scene );
@@ -225,6 +226,7 @@ private:
   // Uniforms (refresh uniforms objects)
   void refreshUniformsCommon( Uniforms& uniforms, Material& material );
   void refreshUniformsLine( Uniforms& uniforms, Material& material );
+  void refreshUniformsDash( Uniforms& uniforms, Material& material );
   void refreshUniformsParticle( Uniforms& uniforms, Material& material );
   void refreshUniformsFog( Uniforms& uniforms, IFog& fog );
   void refreshUniformsPhong( Uniforms& uniforms, Material& material );
@@ -260,7 +262,9 @@ private:
                              const std::string& vertexShader,
                              const Uniforms& uniforms,
                              const Attributes& attributes,
-                             ProgramParameters& parameters );
+                             const Material::Defines& defines,
+                             ProgramParameters& parameters,
+                             const std::string& index0AttributeName );
 
   // Shader parameters cache
   void cacheUniformLocations( Program& program, const Identifiers& identifiers );
@@ -454,7 +458,7 @@ private:
       std::vector<float> positions;
       std::vector<float> distances;
       std::vector<float> directions;
-      std::vector<float> angles;
+      std::vector<float> anglesCos;
       std::vector<float> exponents;
     } spot;
 
