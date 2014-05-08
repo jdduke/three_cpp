@@ -2709,6 +2709,9 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
+  camera.matrixWorldInverse.flattenToArray( camera._viewMatrixArray );
+  camera.projectionMatrix.flattenToArray( camera._projectionMatrixArray );
+
   _projScreenMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
   _frustum.setFromMatrix( _projScreenMatrix );
 
