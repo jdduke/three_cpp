@@ -4355,19 +4355,23 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
 // GL state setting
 
-void GLRenderer::setFaceCulling( enums::Side cullFace /*= enums::NoSide*/, enums::Dir frontFace /*= enums::CCW*/ ) {
+void GLRenderer::setFaceCulling( enums::Side cullFace, enums::Dir frontFaceDirection ) {
 
-  if ( cullFace != enums::NoSide ) {
+  if ( cullFace == enums::CullFaceNone || cullFace == enums:NoSide ) {
 
-    if ( frontFace == enums::CCW ) {
-      _gl.FrontFace( GL_CCW );
-    } else {
+    _gl.Disable( GL_CULL_FACE );
+
+  } else {
+
+    if ( frontFaceDirection == enums::FrontFaceDirectionCW ) {
       _gl.FrontFace( GL_CW );
+    } else {
+      _gl.FrontFace( GL_CCW );
     }
 
-    if ( cullFace == enums::BackSide ) {
+    if ( cullFace == enums::CallFaceBack ) {
       _gl.CullFace( GL_BACK );
-    } else if ( cullFace == enums::FrontSide ) {
+    } else if ( cullFace == enums::CullFaceFront ) {
       _gl.CullFace( GL_FRONT );
     } else {
       _gl.CullFace( GL_FRONT_AND_BACK );
@@ -4375,8 +4379,6 @@ void GLRenderer::setFaceCulling( enums::Side cullFace /*= enums::NoSide*/, enums
 
     _gl.Enable( GL_CULL_FACE );
 
-  } else {
-    _gl.Disable( GL_CULL_FACE );
   }
 
 }
