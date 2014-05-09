@@ -4050,6 +4050,8 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     uniform.load( _gl, location );
 
+    THREE_REVIEW("EA: What about the rest of the uniforms?")
+
     if ( uniform.type == enums::t ) { // single enums::Texture (2d or cube)
 
       const auto& texture = uniform.value.cast<Texture*>();
@@ -4088,9 +4090,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
         setTexture( *texture, textureUnit );
       }
 
-    } else {
-        //console().warn("THREE.WebGLRenderer: Unknown uniform type " );
-    }
+    } 
 
   }
 
