@@ -4355,9 +4355,9 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
 // GL state setting
 
-void GLRenderer::setFaceCulling( enums::Side cullFace, enums::Dir frontFaceDirection ) {
+void GLRenderer::setFaceCulling( enums::CullFace cullFace, enums::FrontFaceDirection frontFaceDirection ) {
 
-  if ( cullFace == enums::CullFaceNone || cullFace == enums:NoSide ) {
+  if ( cullFace == enums::CullFaceNone ) {
 
     _gl.Disable( GL_CULL_FACE );
 
@@ -4369,7 +4369,7 @@ void GLRenderer::setFaceCulling( enums::Side cullFace, enums::Dir frontFaceDirec
       _gl.FrontFace( GL_CCW );
     }
 
-    if ( cullFace == enums::CallFaceBack ) {
+    if ( cullFace == enums::CullFaceBack ) {
       _gl.CullFace( GL_BACK );
     } else if ( cullFace == enums::CullFaceFront ) {
       _gl.CullFace( GL_FRONT );

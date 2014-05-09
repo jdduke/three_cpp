@@ -245,7 +245,7 @@ private:
 
 
   // GL state setting
-  void setFaceCulling( enums::Side cullFace = enums::NoSide, enums::Dir frontFace = enums::CCW );
+  void setFaceCulling( enums::CullFace cullFace = enums::CullFaceNone, enums::FrontFaceDirection frontFace = enums::FrontFaceDirectionCW );
   void setMaterialFaces( Material& material );
   void setDepthTest( bool depthTest );
   void setDepthWrite( bool depthWrite );
