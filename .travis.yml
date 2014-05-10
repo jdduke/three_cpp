@@ -1,4 +1,4 @@
-language: 
+language:
   - cpp
 
 compiler:
@@ -8,9 +8,9 @@ before_install:
   - sudo apt-get -qq update
 
 install:
-  - sudo apt-get -qq install libglew-dev libsdl1.2-dev
+  - sudo apt-get -qq install libsdl2-dev
 
-script: 
+script:
   - mkdir build
   - cd build
   - cmake ..
