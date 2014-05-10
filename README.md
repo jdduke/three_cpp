@@ -2,7 +2,7 @@ three.cpp
 =========
 
 ### Status
-[![Build Status](https://travis-ci.org/elwinarens/three_cpp.png)](https://travis-ci.org/elwinarens/three_cpp)
+[![Build Status](https://travis-ci.org/jdduke/three_cpp.svg?branch=dev_r65)](https://travis-ci.org/jdduke/three_cpp?branch=dev_r65)
 
 #### A port of three.js to C++ #####
 
