@@ -221,8 +221,10 @@ void GLRenderer::initGL() {
 
   */
   _glExtensionTextureFloat = false;
+  _glExtensionTextureFloatLinear = false;
   _glExtensionStandardDerivatives = false;
   _glExtensionTextureFilterAnisotropic = false;
+  _glExtensionCompressedTextureS3TC = false;
 }
 
 void GLRenderer::setDefaultGLState() {
@@ -241,6 +243,8 @@ void GLRenderer::setDefaultGLState() {
   _gl.Enable( GL_BLEND );
   _gl.BlendEquation( GL_FUNC_ADD );
   _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  
+  _gl.Viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
 
   _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 
@@ -5515,26 +5519,8 @@ GLRenderer::LightCount GLRenderer::allocateLights( Lights& lights ) {
     if ( light->type() == enums::SpotLight ) hemiLights ++;
   }
 
-  if ( ( pointLights + spotLights + dirLights ) <= _maxLights ) {
-
-    maxDirLights = dirLights;
-    maxPointLights = pointLights;
-    maxSpotLights = spotLights;
-    maxHemiLights = hemiLights;
-
-  } else {
-
-    maxDirLights = ( int )Math::ceil( ( float )_maxLights * dirLights / ( pointLights + dirLights ) );
-    maxPointLights = _maxLights - maxDirLights;
-
-    // these are not really correct
-
-    maxSpotLights = maxPointLights;
-    maxHemiLights = maxDirLights;
-
-  }
-
   LightCount lightCount = { maxDirLights, maxPointLights, maxSpotLights, maxHemiLights };
+
   return lightCount;
 
 }
