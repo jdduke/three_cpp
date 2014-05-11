@@ -3547,8 +3547,8 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
                                    material.uniforms,
                                    material.attributes,
                                    material.defines,
-                                   parameters,
-                                   material.index0AttributeName );
+                                   parameters/*,
+                                   material.index0AttributeName*/ );
 
   if ( !material.program ) {
     console().error() << "Aborting material initialization";
