@@ -254,6 +254,7 @@ void Material::setParameters( const Parameters& parameters,
   PARAM_LOAD( specularMap );
   PARAM_LOAD( envMap );
   PARAM_LOAD( bumpMap );
+  PARAM_LOAD( normalMap );
   PARAM_LOAD( lightMap );
   PARAM_LOAD( scale );
   PARAM_LOAD( dashSize );

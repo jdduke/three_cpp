@@ -46,7 +46,7 @@ inline static std::string generateUUID() {
 
     } else {
 
-      if (rnd <= 0x02) rnd = 0x2000000 + ((std::rand()*0x1000000)|0);
+      if (rnd <= 0x02) rnd = 0x2000000 + ((random()*0x1000000)|0);
       r = rnd & 0xf;
       rnd = rnd >> 4;
       uuid.append(&chars[(i == 19) ? (r & 0x3) | 0x8 : r]);
