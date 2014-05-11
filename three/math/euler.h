@@ -16,13 +16,13 @@ public:
   static const enums::EulerRotationOrder DefaultOrder = enums::EulerRotationOrder::XYZ;
 
   Euler()
-    : _x(0.f), _y(0.f), _z(0.f), _order(enums::EulerRotationOrder::XYZ) {};
+    : _x(0.f), _y(0.f), _z(0.f), _order(enums::EulerRotationOrder::XYZ), _quaternion( nullptr ) {};
 
   Euler(float xIn, float yIn, float zIn)
-    : _x(xIn), _y(yIn), _z(zIn), _order(enums::EulerRotationOrder::XYZ) {};
+    : _x(xIn), _y(yIn), _z(zIn), _order(enums::EulerRotationOrder::XYZ), _quaternion( nullptr ) {};
 
   Euler(float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn)
-    : _x(xIn), _y(yIn), _z(zIn), _order(orderIn) {};
+    : _x(xIn), _y(yIn), _z(zIn), _order(orderIn), _quaternion( nullptr ) {};
 
   inline float x() const {
 
@@ -171,13 +171,9 @@ private:
 
   inline void _updateQuaternion() {
 
-    if(_quaternion == nullptr) {
-
-      _quaternion = make_shared<Quaternion>();
-
+    if(_quaternion) {
+        _quaternion->setFromEuler( *this, false );
     }
-
-    _quaternion->setFromEuler( *this, false );
 
   }
 
@@ -191,7 +187,7 @@ private:
 
   enums::EulerRotationOrder _order;
 
-  std::shared_ptr<Quaternion> _quaternion;
+  Quaternion* _quaternion;
 
 };
 

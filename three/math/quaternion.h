@@ -14,11 +14,11 @@ class Quaternion {
 public:
 
   Quaternion()
-    : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ) {}
+    : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ), _euler( nullptr ) {}
 
   Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f )
-    : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ) {}
-
+    : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ), _euler( nullptr ) {}
+    
   inline float x() const {
 
     return _x;
@@ -192,7 +192,7 @@ private:
     float _xyzw[4];
   };
 
-  std::shared_ptr<Euler> _euler;
+  Euler* _euler;
 
   void _updateEuler();
 

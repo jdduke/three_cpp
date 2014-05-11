@@ -240,10 +240,9 @@ Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
 }
 
 void Quaternion::_updateEuler() {
-  if(_euler == nullptr) {
-    _euler = make_shared<Euler>(Euler());
+  if(_euler) {
+    _euler->setFromQuaternion( *this, false );
   }
-  _euler->setFromQuaternion( *this, false );
 }
 
 } // namespace three
