@@ -133,13 +133,6 @@ bool Frustum::intersectsBox( const Box3& box ) {
 
 }
 
-bool Frustum::contains( const Object3D& object ) const {
-
-  // DEPRECATED, REMOVE
-  return false;
-
-}
-
 bool Frustum::containsPoint( const Vector3& point ) const {
 
   for ( unsigned char i = 0; i < 6; i ++ ) {

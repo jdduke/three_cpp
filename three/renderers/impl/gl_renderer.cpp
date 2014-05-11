@@ -2757,7 +2757,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
     if ( object.visible ) {
 
       if ( !( object.type() == enums::Mesh || object.type() == enums::ParticleSystem ) ||
-           !( object.frustumCulled ) || _frustum.contains( object ) ) {
+           !( object.frustumCulled ) || _frustum.intersectsObject( object ) ) {
 
         setupMatrices( object, camera );
         unrollBufferMaterial( glObject );

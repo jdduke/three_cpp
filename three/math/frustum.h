@@ -33,8 +33,6 @@ public:
 
   bool intersectsBox( const Box3& box );
 
-  THREE_OBSOLETE bool contains( const Object3D& point ) const;
-
   bool containsPoint( const Vector3& point ) const;
 
   // TODO "Frustum::clone"

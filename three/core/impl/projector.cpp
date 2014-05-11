@@ -520,7 +520,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
     if ( !object.visible ) return;
 
     if ( ( object.type() == enums::Mesh || object.type() == enums::Line ) &&
-         ( !object.frustumCulled || d._frustum.contains( object ) ) ) {
+         ( !object.frustumCulled || d._frustum.intersectsObject( object ) ) ) {
 
       auto& vector3 = d._vector3;
 
