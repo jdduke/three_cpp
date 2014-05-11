@@ -243,8 +243,9 @@ void GLRenderer::setDefaultGLState() {
   _gl.Enable( GL_BLEND );
   _gl.BlendEquation( GL_FUNC_ADD );
   _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-  
-  _gl.Viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
+
+  THREE_REVIEW("EA: Viewport values are 0/-1 here. Why?")
+  //_gl.Viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
 
   _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
 
