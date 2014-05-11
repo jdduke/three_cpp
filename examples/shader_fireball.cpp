@@ -145,7 +145,7 @@ void shader_fireball( GLWindow& window, GLRenderer& renderer ) {
   auto mesh = Mesh::create( SphereGeometry::create( 0.75f, 64, 32 ), material );
   scene->add( mesh );
 
-  renderer.setClearColorHex( 0x050505, 0 );
+  renderer.setClearColor( Color(0x050505), 0 );
 
   /////////////////////////////////////////////////////////////////////////
 

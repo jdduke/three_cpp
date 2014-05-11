@@ -72,7 +72,7 @@ void test_memory( GLWindow& window, GLRenderer& renderer ) {
     renderer.render( *scene, *camera );
     scene->remove( mesh );
 
-    renderer.deallocateObject( *mesh );
+    renderer.deallocateGeometry( *geometry );
     renderer.deallocateTexture( *texture );
     renderer.deallocateMaterial( *material );
 

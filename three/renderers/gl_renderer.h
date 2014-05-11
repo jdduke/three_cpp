@@ -119,7 +119,10 @@ public:
 
   // Deallocation
   //void deallocateObject( Object3D& object );
-  
+  void deallocateGeometry( Geometry& geometry );
+  void deallocateTexture( Texture& texture );
+  void deallocateRenderTarget( GLRenderTarget& renderTarget );
+  void deallocateMaterial( Material& material );
 
   // Rendering
   void render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr& renderTarget = GLRenderTarget::Ptr(), bool forceClear = false );
@@ -153,10 +156,7 @@ private:
   // Buffer deallocation
 
   void deleteBuffers( GeometryBuffer& geometry );
-  void deallocateGeometry( Geometry& geometry );
-  void deallocateTexture( Texture& texture );
-  void deallocateRenderTarget( GLRenderTarget& renderTarget );
-  void deallocateMaterial( Material& material );
+
 
   // Buffer initialization
 
