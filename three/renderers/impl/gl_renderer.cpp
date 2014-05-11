@@ -4983,6 +4983,10 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
     if ( ! texture.__glInit ) {
 
       texture.__glInit = true;
+
+      // TODO(Ea): impl
+      //texture.addEventListener( 'dispose', onTextureDispose );
+
       texture.__glTexture = _gl.CreateTexture();
 
       _info.memory.textures ++;
@@ -4995,6 +4999,7 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
 #ifdef TODO_glUnPACK
     _gl.PixelStorei( GL_UNPACK_FLIP_Y_WEBGL, texture.flipY );
     _gl.PixelStorei( GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultiplyAlpha );
+    _gl.PixelStorei( GL_UNPACK_ALIGNMENT, texture.unpackAlignment );
 #endif
 
     const auto& image = texture.image[0];
@@ -5004,6 +5009,7 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
 
     setTextureParameters( GL_TEXTURE_2D, texture, isImagePowerOfTwo );
 
+    // TODO(ea): Update setTexture to r65+ 
     //if ( texture.type() == enums::DataTexture ) {
 
     _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data.data() );
@@ -5071,8 +5077,12 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
 
       if ( ! texture.__glTextureCube ) {
 
+        // TODO(ea): impl
+        //texture.addEventListener( 'dispose', onTextureDispose );
+
         texture.__glTextureCube = _gl.CreateTexture();
 
+        _info.memory.textures ++;
       }
 
       _gl.ActiveTexture( GL_TEXTURE0 + slot );
@@ -5182,7 +5192,12 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
 
   if ( renderTarget && renderTarget->__glFramebuffer.size() == 0 ) {
 
+    // TODO(ea): impl
+    //renderTarget.addEventListener( 'dispose', onRenderTargetDispose );
+
     renderTarget->__glTexture = _gl.CreateTexture();
+
+    _info.memory.textures ++;
 
     // Setup texture, create render and frame buffers
 
@@ -5218,7 +5233,12 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
       renderTarget->__glRenderbuffer.resize( 1 );
 
       renderTarget->__glFramebuffer[ 0 ] = _gl.CreateFramebuffer();
-      renderTarget->__glRenderbuffer[ 0 ] = _gl.CreateRenderbuffer();
+
+      if(renderTarget->shareDepthFrom) {
+        renderTarget->__glRenderbuffer = renderTarget->shareDepthFrom->__glRenderbuffer;
+      } else {
+        renderTarget->__glRenderbuffer[ 0 ] = _gl.CreateRenderbuffer();
+      }
 
       _gl.BindTexture( GL_TEXTURE_2D, renderTarget->__glTexture );
       setTextureParameters( GL_TEXTURE_2D, *renderTarget, isTargetPowerOfTwo );
@@ -5226,7 +5246,23 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
       _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, renderTarget->width, renderTarget->height, 0, glFormat, glType, 0 );
 
       setupFrameBuffer( renderTarget->__glFramebuffer[ 0 ], *renderTarget, GL_TEXTURE_2D );
-      setupRenderBuffer( renderTarget->__glRenderbuffer[ 0 ], *renderTarget );
+
+
+      if ( renderTarget->shareDepthFrom ) {
+
+        if ( renderTarget->depthBuffer && ! renderTarget->stencilBuffer ) {
+
+          _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderTarget->__glRenderbuffer[0] );
+
+        } else if ( renderTarget->depthBuffer && renderTarget->stencilBuffer ) {
+
+          _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderTarget->__glRenderbuffer[0] );
+
+        }
+        
+      } else {
+        setupRenderBuffer( renderTarget->__glRenderbuffer[ 0 ], *renderTarget );
+      }
 
       if ( isTargetPowerOfTwo ) _gl.GenerateMipmap( GL_TEXTURE_2D );
 
@@ -5407,6 +5443,10 @@ int GLRenderer::paramThreeToGL( int p ) {
     return GL_ONE_MINUS_DST_COLOR;
   case enums::SrcAlphaSaturateFactor:
     return GL_SRC_ALPHA_SATURATE;
+
+  /*
+    TODO S3TC/Compressed textures 
+  */
 
   default:
     return 0;
