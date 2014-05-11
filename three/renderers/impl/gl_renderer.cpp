@@ -4555,6 +4555,17 @@ void GLRenderer::resetStates() {
   _lightsNeedUpdate = true;
 }
 
+// Defines
+std::string GLRenderer::generateDefines( const Material::Defines& defines ) const {
+  std::stringstream chunks;
+
+  for( auto& d : defines ) {
+    chunks << "#define " << d.first << " " << d.second << std::endl;
+  }
+
+  return chunks.str();
+}
+
 // Shaders
 
 Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
@@ -4563,8 +4574,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
                                        const Uniforms& uniforms,
                                        const Attributes& attributes,
                                        const Material::Defines& defines,
-                                       ProgramParameters& parameters,
-                                       const std::string& index0AttributeName ) {
+                                       ProgramParameters& parameters/*,
+                                       const std::string& index0AttributeName*/) {
 
 
   // Generate code
@@ -4577,6 +4588,9 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     chunks << hash( fragmentShader );
     chunks << hash( vertexShader );
   }
+
+  chunks << jenkins_hash( &defines );
+
   chunks << jenkins_hash( &parameters );
 
   auto code = chunks.str();
@@ -4591,48 +4605,55 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     }
   }
 
+  auto shadowMapTypeDefine = "SHADOWMAP_TYPE_BASIC";
+      
+  if ( parameters.shadowMapType == enums::PCFShadowMap ) {
+      
+      shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF";
+      
+  } else if ( parameters.shadowMapType == enums::PCFSoftShadowMap ) {
+      
+      shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF_SOFT";
+      
+  }
 
   //console().log( "building new program " );
 
-  //
+  auto customDefines = generateDefines( defines );
 
   auto glProgram = GL_CALL( _gl.CreateProgram() );
 
-  auto prefix_vertex = [this, &parameters]() -> std::string {
+  auto prefix_vertex = [this, &parameters, &customDefines, &shadowMapTypeDefine]() -> std::string {
     std::stringstream ss;
-      
-      auto shadowMapTypeDefine = "SHADOWMAP_TYPE_BASIC";
-      
-      if ( parameters.shadowMapType == enums::PCFShadowMap ) {
-          
-          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF";
-          
-      } else if ( parameters.shadowMapType == enums::PCFSoftShadowMap ) {
-          
-          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF_SOFT";
-          
-      }
 
 #if defined(THREE_GLES)
     ss << "precision " << _precision << " float;" << std::endl;
+    ss << "precision " << _precision << " int;" << std::endl;
 #endif
+
+    ss << customDefines;
 
     if ( _supportsVertexTextures ) ss << "#define VERTEX_TEXTURES" << std::endl;
 
     if ( gammaInput )             ss << "#define GAMMA_INPUT" << std::endl;
     if ( gammaOutput )            ss << "#define GAMMA_OUTPUT" << std::endl;
-    if ( physicallyBasedShading ) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
+    THREE_REVIEW("EA: Obsolete?")
+    //if ( physicallyBasedShading ) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
 
     ss << "#define MAX_DIR_LIGHTS "   << parameters.maxDirLights << std::endl <<
     "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
     "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
+    "#define MAX_HEMI_LIGHTS "  << parameters.maxHemiLights << std::endl <<
+
     "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl <<
+
     "#define MAX_BONES "        << parameters.maxBones << std::endl;
 
     if ( parameters.map )          ss << "#define USE_MAP" << std::endl;
     if ( parameters.envMap )       ss << "#define USE_ENVMAP" << std::endl;
     if ( parameters.lightMap )     ss << "#define USE_LIGHTMAP" << std::endl;
     if ( parameters.bumpMap )      ss << "#define USE_BUMPMAP" << std::endl;
+    if ( parameters.normalMap )    ss << "#define USE_NORMALMAP" << std::endl;
     if ( parameters.specularMap )  ss << "#define USE_SPECULARMAP" << std::endl;
     if ( parameters.vertexColors ) ss << "#define USE_COLOR" << std::endl;
 
@@ -4647,6 +4668,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.perPixel )     ss << "#define PHONG_PER_PIXEL" << std::endl;
     if ( parameters.wrapAround )   ss << "#define WRAP_AROUND" << std::endl;
     if ( parameters.doubleSided )  ss << "#define DOUBLE_SIDED" << std::endl;
+    if ( parameters.flipSided )    ss << "#define FLIP_SIDED" << std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" << std::endl;
     if ( parameters.shadowMapType )    ss << "#define " << shadowMapTypeDefine << std::endl;
@@ -4702,8 +4724,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     "#ifdef USE_SKINNING" << std::endl <<
 
-    "attribute vec4 skinVertexA;" << std::endl <<
-    "attribute vec4 skinVertexB;" << std::endl <<
+    //"attribute vec4 skinVertexA;" << std::endl <<
+    //"attribute vec4 skinVertexB;" << std::endl <<
     "attribute vec4 skinIndex;" << std::endl <<
     "attribute vec4 skinWeight;" << std::endl <<
 
@@ -4713,34 +4735,26 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   }();
 
-  auto prefix_fragment = [this, &parameters]() -> std::string {
+  auto prefix_fragment = [this, &parameters, &customDefines, &shadowMapTypeDefine]() -> std::string {
     std::stringstream ss;
       
-      auto shadowMapTypeDefine = "SHADOWMAP_TYPE_BASIC";
-      
-      if ( parameters.shadowMapType == enums::PCFShadowMap ) {
-          
-          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF";
-          
-      } else if ( parameters.shadowMapType == enums::PCFSoftShadowMap ) {
-          
-          shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF_SOFT";
-          
-      }
-
 #if defined(THREE_GLES)
     ss << "precision " << _precision << " float;" << std::endl;
+    ss << "precision " << _precision << " int;" << std::endl;
 #elif defined(__APPLE__)
     ss << "#version 120" << std::endl;
 #else
     ss << "#version 140" << std::endl;
 #endif
 
-    if ( parameters.bumpMap ) ss << "#extension GL_OES_standard_derivatives : enable" << std::endl;
+    ss << customDefines;
+
+    if ( parameters.bumpMap || parameters.normalMap ) ss << "#extension GL_OES_standard_derivatives : enable" << std::endl;
 
     ss << "#define MAX_DIR_LIGHTS "   << parameters.maxDirLights << std::endl <<
     "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
     "#define MAX_SPOT_LIGHTS "  << parameters.maxSpotLights << std::endl <<
+    "#define MAX_HEMI_LIGHTS "  << parameters.maxHemiLights << std::endl <<
     "#define MAX_SHADOWS "      << parameters.maxShadows << std::endl;
 
     if ( parameters.alphaTest ) ss << "#define ALPHATEST " << parameters.alphaTest << std::endl;
@@ -4750,12 +4764,13 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( physicallyBasedShading ) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
 
     if ( parameters.useFog && parameters.fog != nullptr ) ss << "#define USE_FOG" << std::endl;
-    if ( parameters.useFog && parameters.fog != nullptr && parameters.fog->type() == enums::FogExp2 ) ss << "#define FOG_EXP2" << std::endl;
+    if ( parameters.useFog && parameters.fogExp )        ss << "#define FOG_EXP2" << std::endl;
 
     if ( parameters.map )          ss << "#define USE_MAP" <<  std::endl;
     if ( parameters.envMap )       ss << "#define USE_ENVMAP" <<  std::endl;
     if ( parameters.lightMap )     ss << "#define USE_LIGHTMAP" <<  std::endl;
     if ( parameters.bumpMap )      ss << "#define USE_BUMPMAP" <<  std::endl;
+    if ( parameters.normalMap )    ss << "#define USE_NORMALMAP" <<  std::endl;
     if ( parameters.specularMap )  ss << "#define USE_SPECULARMAP" <<  std::endl;
     if ( parameters.vertexColors ) ss << "#define USE_COLOR" <<  std::endl;
 
@@ -4763,6 +4778,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     if ( parameters.perPixel )    ss << "#define PHONG_PER_PIXEL" <<  std::endl;
     if ( parameters.wrapAround )  ss << "#define WRAP_AROUND" <<  std::endl;
     if ( parameters.doubleSided ) ss << "#define DOUBLE_SIDED" <<  std::endl;
+    if ( parameters.flipSided )   ss << "#define FLIP_SIDED" <<  std::endl;
 
     if ( parameters.shadowMapEnabled ) ss << "#define USE_SHADOWMAP" <<  std::endl;
     if ( parameters.shadowMapType )    ss << "#define " << shadowMapTypeDefine <<  std::endl;
@@ -4776,11 +4792,18 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   }();
 
-  auto glFragmentShader = getShader( enums::ShaderFragment, prefix_fragment + fragmentShader );
   auto glVertexShader   = getShader( enums::ShaderVertex,   prefix_vertex   + vertexShader );
+  auto glFragmentShader = getShader( enums::ShaderFragment, prefix_fragment + fragmentShader );
 
   GL_CALL( _gl.AttachShader( glProgram, glVertexShader ) );
   GL_CALL( _gl.AttachShader( glProgram, glFragmentShader ) );
+
+  //Force a particular attribute to index 0.
+  // because potentially expensive emulation is done by browser if attribute 0 is disabled.
+  //And, color, for example is often automatically bound to index 0 so disabling it
+  //if ( index0AttributeName.length() ) {
+  //  _gl.BindAttribLocation( glProgram, 0, index0AttributeName );
+  //}
 
   GL_CALL( _gl.LinkProgram( glProgram ) );
 
@@ -4789,6 +4812,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
     char logbuffer[1000];
     _gl.GetProgramInfoLog( glProgram, sizeof( logbuffer ), &loglen, logbuffer );
     console().error( logbuffer );
+    //console.error( "Program Info Log: " + _gl.getProgramInfoLog( program ) );
     //console().error() << addLineNumbers( source );
     _gl.DeleteProgram( glProgram );
     glProgram = 0;
@@ -4831,6 +4855,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     if ( parameters.useVertexTexture ) {
       identifiers.push_back( "boneTexture" );
+      identifiers.push_back( "boneTextureWidth" );
+      identifiers.push_back( "boneTextureHeight" );
     } else {
       identifiers.push_back( "boneGlobalMatrices" );
     }
@@ -4852,8 +4878,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
       AttributeKey::uv(), AttributeKey::uv2(),
       AttributeKey::tangent(),
       AttributeKey::color(),
-      AttributeKey::skinVertexA(), AttributeKey::skinVertexB(),
-      AttributeKey::skinIndex(), AttributeKey::skinWeight()
+      AttributeKey::skinIndex(), AttributeKey::skinWeight(),
+      AttributeKey::lineDistance()
 
     };
 

@@ -150,13 +150,10 @@ private:
   
   void createParticleBuffers( Geometry& geometry );
   void createLineBuffers( Geometry& geometry );
-  //void createRibbonBuffers( Geometry& geometry );
   void createMeshBuffers( GeometryGroup& geometryGroup );
 
   // Buffer deallocation
-
   void deleteBuffers( GeometryBuffer& geometry );
-
 
   // Buffer initialization
 
@@ -256,6 +253,9 @@ private:
                     enums::BlendFactor blendSrc = enums::OneFactor,
                     enums::BlendFactor blendDst = enums::OneFactor );
 
+  // Defines
+  std::string generateDefines ( const Material::Defines& defines ) const;
+
   // Shaders
   Program::Ptr buildProgram( const std::string& shaderID,
                              const std::string& fragmentShader,
@@ -263,8 +263,8 @@ private:
                              const Uniforms& uniforms,
                              const Attributes& attributes,
                              const Material::Defines& defines,
-                             ProgramParameters& parameters,
-                             const std::string& index0AttributeName );
+                             ProgramParameters& parameters/*,
+                             const std::string& index0AttributeName = ""*/);
 
   // Shader parameters cache
   void cacheUniformLocations( Program& program, const Identifiers& identifiers );

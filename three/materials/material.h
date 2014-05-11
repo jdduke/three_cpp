@@ -34,7 +34,8 @@ public:
   typedef Properties<std::string, any> Parameters;
   typedef std::unordered_set<std::string> ParameterKeys;
 
-  typedef Properties<std::string, any> Defines;
+  // TODO(ea): make this work with any and stringstream
+  typedef std::unordered_map<std::string, std::string> Defines;
 
   typedef std::shared_ptr<Material> Ptr;
 
