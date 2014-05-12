@@ -6,7 +6,11 @@ compiler:
 
 before_install:
   - sudo apt-add-repository --yes ppa:zoogie/sdl2-snapshots  #libsdl2
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y #for gcc4.8
   - sudo apt-get -qq update
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90; fi
 
 install:
   - sudo apt-get -qq install libsdl2-dev
