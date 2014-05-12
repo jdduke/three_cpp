@@ -2746,7 +2746,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   auto& renderList = scene.__glObjects;
 
-  for ( int i = 0; i < renderList.size(); i++) {
+  for ( size_t i = 0; i < renderList.size(); i++) {
 
     auto& glObject =  renderList[i];
     auto& object = *glObject.object;
