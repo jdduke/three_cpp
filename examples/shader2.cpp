@@ -9,7 +9,7 @@
 #include "three/renderers/gl_renderer.h"
 
 #include "three/extras/image_utils.h"
-#include "three/extras/geometries/cube_geometry.h"
+#include "three/extras/geometries/box_geometry.h"
 
 const std::string vertexShader =
 "\
@@ -139,10 +139,8 @@ void shader2( GLWindow& window, GLRenderer& renderer ) {
 
     mlib.push_back( material );
 
-    auto mesh = Mesh::create( CubeGeometry::create( size, size, size,
-                                                    1, 1, 1,
-                                                    std::vector<Material::Ptr>( 1, material ) ),
-                              MeshFaceMaterial::create() );
+    auto mesh = Mesh::create( BoxGeometry::create( size, size, size ),
+                             MeshFaceMaterial::create(std::vector<Material::Ptr>( 6, material ) ) );
     mesh->position.x = x;
     mesh->position.y = y;
     scene->add( mesh );
