@@ -5,6 +5,8 @@
 
 #include <cmath>
 #include <random>
+#include <sstream>
+#include <string>
 
 #define NEAR_ZERO_FLOAT_32 0.0000000000000000001f
 #define MATH_PI 3.1415926535897932384f
@@ -30,7 +32,7 @@ inline static std::string generateUUID() {
 
   char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-  std::string uuid;
+  std::stringstream uuid;
 
   int rnd = 0, r;
 
@@ -38,23 +40,23 @@ inline static std::string generateUUID() {
 
     if ( i == 8 || i == 13 || i == 18 || i == 23 ) {
 
-      uuid.append("-");
+      uuid << "-";
 
     } else if ( i == 14 ) {
 
-      uuid.append("4");
+      uuid << "4";
 
     } else {
 
       if (rnd <= 0x02) rnd = 0x2000000 + ((random()*0x1000000)|0);
       r = rnd & 0xf;
       rnd = rnd >> 4;
-      uuid.append(&chars[(i == 19) ? (r & 0x3) | 0x8 : r]);
+      uuid << chars[(i == 19) ? (r & 0x3) | 0x8 : r];
 
     }
   }
 
-  return uuid;
+  return uuid.str();
 
 };
 
