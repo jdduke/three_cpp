@@ -2,6 +2,7 @@
 #define THREE_UNIFORM_H
 
 #include <three/common.h>
+#include <three/constants.h>
 
 #include <three/utils/any.h>
 #include <three/utils/index.h>

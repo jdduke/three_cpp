@@ -77,21 +77,19 @@ void Geometry::computeCentroids() {
 
 void Geometry::computeFaceNormals() {
 
+  Vector3 cb, ab;
+  
   for ( auto& face : faces ) {
 
     auto& vA = vertices[ face.a ];
     auto& vB = vertices[ face.b ];
     auto& vC = vertices[ face.c ];
 
-    auto cb = sub( vC, vB );
-    auto ab = sub( vA, vB );
+    cb.subVectors( vC, vB );
+    ab.subVectors( vA, vB );
     cb.cross( ab );
 
-    if ( !cb.isZero() ) {
-
-      cb.normalize();
-
-    }
+    cb.normalize();
 
     face.normal.copy( cb );
 

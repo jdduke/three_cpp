@@ -32,7 +32,8 @@
 #include <three/objects/particle_system.h>
 
 #include <three/renderers/gl_render_target.h>
-#include <three/renderers/gl_shaders.h>
+#include <three/renderers/gl/gl_shader.h>
+#include <three/renderers/shaders/shader_lib.h>
 #include <three/renderers/renderer_parameters.h>
 #include <three/renderers/renderables/renderable_object.h>
 
@@ -3541,8 +3542,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
                                    material.uniforms,
                                    material.attributes,
                                    material.defines,
-                                   parameters/*,
-                                   material.index0AttributeName*/ );
+                                   parameters );
 
   if ( !material.program ) {
     console().error() << "Aborting material initialization";

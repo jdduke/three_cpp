@@ -1,11 +1,10 @@
-#ifndef THREE_GL_SHADERS_H
-#define THREE_GL_SHADERS_H
-
-#include <three/materials/uniform.h>
+#ifndef THREE_SHADERS_SHADER_CHUNK_H
+#define THREE_SHADERS_SHADER_CHUNK_H
 
 namespace three {
 
 class ShaderChunk {
+
 public:
 
   static const char* fog_pars_fragment();
@@ -68,42 +67,9 @@ public:
   static const char* alphatest_fragment();
 
   static const char* linear_to_gamma_fragment();
-};
-
-class UniformsLib {
-public:
-
-  static Uniforms common();
-  static Uniforms bump();
-  static Uniforms fog();
-  static Uniforms lights();
-  static Uniforms particle();
-  static Uniforms shadowmap();
-
-};
-
-class Shader {
-public:
-  Shader( Uniforms uniforms, std::string vs, std::string fs )
-    : uniforms( std::move( uniforms ) ), vertexShader( std::move( vs ) ), fragmentShader( std::move( fs ) ) { }
-  Uniforms uniforms;
-  std::string vertexShader, fragmentShader;
-};
-
-class ShaderLib {
-public:
-
-  static const Shader& depth();
-  static const Shader& normal();
-  static const Shader& basic();
-  static const Shader& dashed();
-  static const Shader& lambert();
-  static const Shader& phong();
-  static const Shader& particleBasic();
-  static const Shader& depthRGBA();
 
 };
 
 } // namespace three
 
-#endif // THREE_GL_SHADERS_H
+#endif // THREE_SHADERS_SHADER_CHUNK_H
