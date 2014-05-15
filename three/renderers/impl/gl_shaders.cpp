@@ -915,8 +915,8 @@ const char* ShaderChunk::skinning_vertex() {
   return
 
     "#ifdef USE_SKINNING\n"
-    "vec4 skinned  = boneMatX * skinVertexA * skinWeight.x;\n"
-    "skinned      += boneMatY * skinVertexB * skinWeight.y;\n"
+    "vec4 skinned  = boneMatX  * skinWeight.x;\n"
+    "skinned      += boneMatY  * skinWeight.y;\n"
     "gl_Position   = projectionMatrix * modelViewMatrix * skinned;\n"
     "#endif\n";
 
