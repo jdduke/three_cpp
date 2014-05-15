@@ -13,6 +13,7 @@ public:
   static const char* envmap_pars_fragment();
   static const char* envmap_fragment();
   static const char* envmap_pars_vertex();
+  static const char* worldpos_vertex ();
   static const char* envmap_vertex();
 
   static const char* map_particle_pars_fragment();
@@ -29,6 +30,8 @@ public:
   static const char* lightmap_vertex();
 
   static const char* bumpmap_pars_fragment();
+    
+  static const char* normalmap_pars_fragment();
 
   static const char* specularmap_pars_fragment();
   static const char* specularmap_fragment();

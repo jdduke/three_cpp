@@ -58,13 +58,15 @@ namespace three {
       Uniforms uniforms;
       uniforms.add( "opacity", Uniform( enums::f, 1.0f ) );
 
-      const char* vertexShader =
-        "varying vec3 vNormal;\n"
-        "void main() {\n"
-          "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
-          "vNormal = normalMatrix * normal;\n"
-          "gl_Position = projectionMatrix * mvPosition;\n"
-        "}\n";
+      std::stringstream vss;
+      vss <<
+        "varying vec3 vNormal;" << std::endl <<
+        ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+        "void main() {" << std::endl <<
+          "vNormal = normalize( normalMatrix * normal );" << std::endl <<
+          ShaderChunk::morphtarget_vertex() << std::endl <<
+          ShaderChunk::default_vertex() << std::endl <<
+        "}" << std::endl;
 
       const char* fragmentShader =
         "uniform float opacity;\n"
@@ -73,7 +75,7 @@ namespace three {
           "gl_FragColor = vec4( 0.5 * normalize( vNormal ) + 0.5, opacity );\n"
         "}\n";
 
-      return Shader( std::move( uniforms ), vertexShader, fragmentShader );
+      return Shader( std::move( uniforms ), vss.str(), fragmentShader );
     }
 
     static Shader basicCreate() {
@@ -92,23 +94,32 @@ namespace three {
       ShaderChunk::lightmap_pars_vertex() << std::endl <<
       ShaderChunk::envmap_pars_vertex() << std::endl <<
       ShaderChunk::color_pars_vertex() << std::endl <<
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
       ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+      ShaderChunk::skinning_pars_vertex() << std::endl <<
       ShaderChunk::shadowmap_pars_vertex() << std::endl <<
 
-      "void main() {"  << std::endl <<
+      "void main() {" << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
+        ShaderChunk::map_vertex() << std::endl <<
+        ShaderChunk::lightmap_vertex() << std::endl <<
+        ShaderChunk::color_vertex() << std::endl <<
+        ShaderChunk::skinbase_vertex() << std::endl <<
 
-      ShaderChunk::map_vertex() << std::endl <<
-      ShaderChunk::lightmap_vertex() << std::endl <<
-      ShaderChunk::envmap_vertex() << std::endl <<
-      ShaderChunk::color_vertex() << std::endl <<
-      ShaderChunk::skinbase_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
-      ShaderChunk::morphtarget_vertex() << std::endl <<
-      ShaderChunk::default_vertex() << std::endl <<
-      ShaderChunk::shadowmap_vertex() << std::endl <<
+        "#ifdef USE_ENVMAP" << std::endl <<
+
+        ShaderChunk::morphnormal_vertex() << std::endl <<
+        ShaderChunk::skinnormal_vertex() << std::endl <<
+        ShaderChunk::defaultnormal_vertex() << std::endl <<
+
+        "#endif" << std::endl <<
+
+        ShaderChunk::morphtarget_vertex() << std::endl <<
+        ShaderChunk::skinning_vertex() << std::endl <<
+        ShaderChunk::default_vertex() << std::endl <<
+
+        ShaderChunk::worldpos_vertex() << std::endl <<
+        ShaderChunk::envmap_vertex() << std::endl <<
+        ShaderChunk::shadowmap_vertex() << std::endl <<
 
       "}" << std::endl;
 
@@ -149,8 +160,66 @@ namespace three {
     }
 
     static Shader dashedCreate() {
-      Uniforms uniforms;
-  // TODO ea: impl
+
+      std::array<Uniforms, 2> sourceUniforms = {
+        UniformsLib::common(),
+        UniformsLib::fog()
+      };
+
+      auto uniforms = UniformsUtils::merge( sourceUniforms );
+
+      uniforms.add( "scale",   Uniform( enums::f, 1.0f ) )
+              .add( "dashSize",    Uniform( enums::f, 1.0f ) )
+              .add( "totalSize", Uniform( enums::f, 2.0f ) );
+
+       std::stringstream vss;
+        vss << 
+        "uniform float scale;" << std::endl << 
+        "attribute float lineDistance;" << std::endl << 
+
+        "varying float vLineDistance;" << std::endl << 
+
+        ShaderChunk::color_pars_vertex() << std::endl << 
+
+        "void main() {" << std::endl << 
+
+          ShaderChunk::color_vertex() << std::endl << 
+
+          "vLineDistance = scale * lineDistance;" << std::endl << 
+
+          "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl << 
+          "gl_Position = projectionMatrix * mvPosition;" << std::endl << 
+
+        "}" << std::endl;
+
+       std::stringstream fss;
+        fss << 
+        "uniform vec3 diffuse;" << std::endl << 
+        "uniform float opacity;" << std::endl << 
+
+        "uniform float dashSize;" << std::endl << 
+        "uniform float totalSize;" << std::endl << 
+
+        "varying float vLineDistance;" << std::endl << 
+
+        ShaderChunk::color_pars_fragment() << std::endl << 
+        ShaderChunk::fog_pars_fragment() << std::endl << 
+
+        "void main() {" << std::endl << 
+
+          "if ( mod( vLineDistance, totalSize ) > dashSize ) {" << std::endl << 
+
+            "discard;" << std::endl << 
+
+          "}" << std::endl << 
+
+          "gl_FragColor = vec4( diffuse, opacity );" << std::endl << 
+
+          ShaderChunk::color_fragment() << std::endl << 
+          ShaderChunk::fog_fragment() << std::endl << 
+
+        "}" << std::endl;
+
       return Shader( std::move( uniforms ), "", "" );
     }
 
@@ -170,9 +239,10 @@ namespace three {
 
       std::stringstream vss;
       vss <<
+      "#define LAMBERT" << std::endl <<
       "varying vec3 vLightFront;" << std::endl <<
       "#ifdef DOUBLE_SIDED" << std::endl <<
-      "varying vec3 vLightBack;" << std::endl <<
+        "varying vec3 vLightBack;" << std::endl <<
       "#endif" << std::endl <<
 
       ShaderChunk::map_pars_vertex() << std::endl <<
@@ -180,17 +250,14 @@ namespace three {
       ShaderChunk::envmap_pars_vertex() << std::endl <<
       ShaderChunk::lights_lambert_pars_vertex() << std::endl <<
       ShaderChunk::color_pars_vertex() << std::endl <<
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
       ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+      ShaderChunk::skinning_pars_vertex() << std::endl <<
       ShaderChunk::shadowmap_pars_vertex() << std::endl <<
 
       "void main() {"  << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
-
       ShaderChunk::map_vertex() << std::endl <<
       ShaderChunk::lightmap_vertex() << std::endl <<
-      ShaderChunk::envmap_vertex() << std::endl <<
       ShaderChunk::color_vertex() << std::endl <<
 
       ShaderChunk::morphnormal_vertex() << std::endl <<
@@ -198,14 +265,13 @@ namespace three {
       ShaderChunk::skinnormal_vertex() << std::endl <<
       ShaderChunk::defaultnormal_vertex() << std::endl <<
 
-      "#ifndef USE_ENVMAP" << std::endl <<
-      "vec4 mPosition = modelMatrix * vec4( position, 1.0 );" << std::endl <<
-      "#endif" << std::endl <<
-
-      ShaderChunk::lights_lambert_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
       ShaderChunk::morphtarget_vertex() << std::endl <<
+      ShaderChunk::skinning_vertex() << std::endl <<
       ShaderChunk::default_vertex() << std::endl <<
+
+      ShaderChunk::worldpos_vertex() << std::endl <<
+      ShaderChunk::envmap_vertex() << std::endl <<
+      ShaderChunk::lights_lambert_vertex() << std::endl <<
       ShaderChunk::shadowmap_vertex() << std::endl <<
 
       "}";
@@ -264,9 +330,10 @@ namespace three {
 
     static Shader phongCreate() {
 
-      std::array<Uniforms, 5> sourceUniforms = {
+      std::array<Uniforms, 6> sourceUniforms = {
         UniformsLib::common(),
         UniformsLib::bump(),
+        UniformsLib::normalmap(),
         UniformsLib::fog(),
         UniformsLib::lights(),
         UniformsLib::shadowmap()
@@ -281,7 +348,7 @@ namespace three {
 
       std::stringstream vss;
       vss <<
-
+      "#define PHONG" << std::endl <<
       "varying vec3 vViewPosition;" << std::endl <<
       "varying vec3 vNormal;" << std::endl <<
 
@@ -290,24 +357,15 @@ namespace three {
       ShaderChunk::envmap_pars_vertex() << std::endl <<
       ShaderChunk::lights_phong_pars_vertex() << std::endl <<
       ShaderChunk::color_pars_vertex() << std::endl <<
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
       ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+      ShaderChunk::skinning_pars_vertex() << std::endl <<
       ShaderChunk::shadowmap_pars_vertex() << std::endl <<
 
       "void main() {" << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
-
       ShaderChunk::map_vertex() << std::endl <<
       ShaderChunk::lightmap_vertex() << std::endl <<
-      ShaderChunk::envmap_vertex() << std::endl <<
       ShaderChunk::color_vertex() << std::endl <<
-
-      "#ifndef USE_ENVMAP" << std::endl <<
-      "vec4 mPosition = modelMatrix * vec4( position, 1.0 );" << std::endl <<
-      "#endif" << std::endl <<
-
-      "vViewPosition = -mvPosition.xyz;" << std::endl <<
 
       ShaderChunk::morphnormal_vertex() << std::endl <<
       ShaderChunk::skinbase_vertex() << std::endl <<
@@ -316,10 +374,13 @@ namespace three {
 
       "vNormal = transformedNormal;" << std::endl <<
 
-      ShaderChunk::lights_phong_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
       ShaderChunk::morphtarget_vertex() << std::endl <<
+      ShaderChunk::skinning_vertex() << std::endl <<
       ShaderChunk::default_vertex() << std::endl <<
+
+      ShaderChunk::worldpos_vertex() << std::endl <<
+      ShaderChunk::envmap_vertex() << std::endl <<
+      ShaderChunk::lights_phong_vertex() << std::endl <<
       ShaderChunk::shadowmap_vertex() << std::endl <<
 
       "}" << std::endl;
@@ -342,6 +403,7 @@ namespace three {
       ShaderChunk::lights_phong_pars_fragment() << std::endl <<
       ShaderChunk::shadowmap_pars_fragment() << std::endl <<
       ShaderChunk::bumpmap_pars_fragment() << std::endl <<
+      ShaderChunk::normalmap_pars_fragment() << std::endl <<
       ShaderChunk::specularmap_pars_fragment() << std::endl <<
 
       "void main() {" << std::endl <<
@@ -399,6 +461,7 @@ namespace three {
 
       "gl_Position = projectionMatrix * mvPosition;" << std::endl <<
 
+      ShaderChunk::worldpos_vertex() << std::endl <<
       ShaderChunk::shadowmap_vertex() << std::endl <<
 
       "}" << std::endl;
@@ -444,16 +507,14 @@ namespace three {
       std::stringstream vss;
       vss <<
 
-      ShaderChunk::skinning_pars_vertex() << std::endl <<
       ShaderChunk::morphtarget_pars_vertex() << std::endl <<
+      ShaderChunk::skinning_pars_vertex() << std::endl <<
 
       "void main() {" << std::endl <<
 
-      "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );" << std::endl <<
-
       ShaderChunk::skinbase_vertex() << std::endl <<
-      ShaderChunk::skinning_vertex() << std::endl <<
       ShaderChunk::morphtarget_vertex() << std::endl <<
+      ShaderChunk::skinning_vertex() << std::endl <<
       ShaderChunk::default_vertex() << std::endl <<
 
       "}" << std::endl;

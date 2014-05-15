@@ -11,6 +11,7 @@ public:
 
   static Uniforms common();
   static Uniforms bump();
+  static Uniforms normalmap();
   static Uniforms fog();
   static Uniforms lights();
   static Uniforms particle();

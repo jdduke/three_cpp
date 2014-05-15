@@ -5,6 +5,7 @@
 
 #include <three/math/color.h>
 #include <three/math/vector4.h>
+#include <three/math/vector2.h>
 
 namespace three {
 
@@ -43,6 +44,15 @@ Uniforms UniformsLib::bump() {
   return uniforms;
 }
 
+Uniforms UniformsLib::normalmap() {
+  Uniforms uniforms;
+
+  uniforms.add( "normalMap",   Uniform( enums::t, 5 ) )
+  .add( "normalScale", Uniform( enums::v2, Vector2( 1.f, 1.f ) ) );
+
+  return uniforms;
+}
+
 Uniforms UniformsLib::fog() {
   Uniforms uniforms;
 
@@ -57,21 +67,25 @@ Uniforms UniformsLib::fog() {
 Uniforms UniformsLib::lights() {
   Uniforms uniforms;
 
-  uniforms.add( "ambientLightColor",         Uniform( enums::fv ) )
+  uniforms.add( "ambientLightColor",  Uniform( enums::fv ) )
 
-  .add( "directionalLightDirection", Uniform( enums::fv ) )
-  .add( "directionalLightColor",     Uniform( enums::fv ) )
+  .add( "directionalLightDirection",  Uniform( enums::fv ) )
+  .add( "directionalLightColor",      Uniform( enums::fv ) )
 
-  .add( "pointLightColor",           Uniform( enums::fv ) )
-  .add( "pointLightPosition",        Uniform( enums::fv ) )
-  .add( "pointLightDistance",        Uniform( enums::fv1 ) )
+  .add( "hemisphereLightDirection",   Uniform( enums::fv ) )
+  .add( "hemisphereLightSkyColor",    Uniform( enums::fv ) )
+  .add( "hemisphereLightGroundColor", Uniform( enums::fv ) )
 
-  .add( "spotLightColor",            Uniform( enums::fv ) )
-  .add( "spotLightPosition",         Uniform( enums::fv ) )
-  .add( "spotLightDirection",        Uniform( enums::fv ) )
-  .add( "spotLightDistance",         Uniform( enums::fv1 ) )
-  .add( "spotLightAngle",            Uniform( enums::fv1 ) )
-  .add( "spotLightExponent",         Uniform( enums::fv1 ) );
+  .add( "pointLightColor",            Uniform( enums::fv ) )
+  .add( "pointLightPosition",         Uniform( enums::fv ) )
+  .add( "pointLightDistance",         Uniform( enums::fv1 ) )
+
+  .add( "spotLightColor",             Uniform( enums::fv ) )
+  .add( "spotLightPosition",          Uniform( enums::fv ) )
+  .add( "spotLightDirection",         Uniform( enums::fv ) )
+  .add( "spotLightDistance",          Uniform( enums::fv1 ) )
+  .add( "spotLightAngle",             Uniform( enums::fv1 ) )
+  .add( "spotLightExponent",          Uniform( enums::fv1 ) );
 
   return uniforms;
 }
