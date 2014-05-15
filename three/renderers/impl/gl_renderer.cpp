@@ -3501,50 +3501,39 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   const auto maxShadows = allocateShadows( lights );
   const auto maxBones = allocateBones( object );
 
-  ProgramParameters parameters = {
-
-    !!material.map,
-    !!material.envMap,
-    !!material.lightMap,
-    !!material.bumpMap,
-    !!material.normalMap,
-    !!material.specularMap,
-
-    material.vertexColors,
-
-    fog,
-    !!material.fog,
-    fog ? fog->type() == enums::FogExp2 : false,
-
-    material.sizeAttenuation,
-
-    material.skinning,
-    maxBones,
-    _supportsBoneTextures && object.useVertexTexture,
-    material.morphTargets,
-    material.morphNormals,
-    maxMorphTargets,
-    maxMorphNormals,
-
-    maxLightCount.directional,
-    maxLightCount.point,
-    maxLightCount.spot,
-    maxLightCount.hemi,
-
-    maxShadows,
-    shadowMapEnabled && object.receiveShadow,
-    shadowMapType,
-    shadowMapDebug,
-    shadowMapCascade,
-
-    material.alphaTest,
-    material.metal,
-    material.perPixel,
-    material.wrapAround,
-    material.side == enums::DoubleSide,
-    material.side == enums::BackSide
-
-  };
+    ProgramParameters parameters;
+    parameters.map = !!material.map;
+    parameters.envMap = !!material.envMap;
+    parameters.bumpMap = !!material.bumpMap;
+    parameters.normalMap = !!material.normalMap;
+    parameters.specularMap = !!material.specularMap;
+    parameters.vertexColors = material.vertexColors;
+    parameters.fog = fog;
+    parameters.useFog = !!material.fog;
+    parameters.fogExp = fog ? fog->type() == enums::FogExp2 : false;
+    parameters.sizeAttenuation = material.sizeAttenuation;
+    parameters.skinning = material.skinning;
+    parameters.maxBones = maxBones;
+    parameters.useVertexTexture = _supportsBoneTextures && object.useVertexTexture;
+    parameters.morphTargets = material.morphTargets;
+    parameters.morphNormals = material.morphNormals;
+    parameters.maxMorphTargets = maxMorphTargets;
+    parameters.maxMorphNormals = maxMorphNormals;
+    parameters.maxDirLights = maxLightCount.directional;
+    parameters.maxPointLights = maxLightCount.point;
+    parameters.maxSpotLights = maxLightCount.spot;
+    parameters.maxHemiLights = maxLightCount.hemi;
+    parameters.maxShadows = maxShadows;
+    parameters.shadowMapEnabled = shadowMapEnabled && object.receiveShadow;
+    parameters.shadowMapType = shadowMapType;
+    parameters.shadowMapDebug = shadowMapDebug;
+    parameters.shadowMapCascade = shadowMapCascade;
+    parameters.alphaTest = material.alphaTest;
+    parameters.metal = material.metal;
+    parameters.perPixel = material.perPixel;
+    parameters.wrapAround = material.wrapAround;
+    parameters.doubleSided = material.side == enums::DoubleSide;
+    parameters.flipSided = material.side == enums::BackSide;
 
   material.program = buildProgram( shaderID,
                                    material.fragmentShader,
@@ -5505,11 +5494,7 @@ GLRenderer::LightCount GLRenderer::allocateLights( Lights& lights ) {
   int dirLights = 0,
       pointLights  = 0,
       spotLights = 0,
-      hemiLights = 0,
-      maxDirLights = 0,
-      maxPointLights = 0,
-      maxSpotLights = 0,
-      maxHemiLights = 0;
+      hemiLights = 0;
 
   for ( const auto& light : lights ) {
     if ( light->onlyShadow ) continue;
@@ -5519,8 +5504,12 @@ GLRenderer::LightCount GLRenderer::allocateLights( Lights& lights ) {
     if ( light->type() == enums::SpotLight ) spotLights ++;
     if ( light->type() == enums::SpotLight ) hemiLights ++;
   }
-
-  LightCount lightCount = { maxDirLights, maxPointLights, maxSpotLights, maxHemiLights };
+    
+  LightCount lightCount;
+  lightCount.directional = dirLights;
+  lightCount.point = pointLights;
+  lightCount.spot = spotLights;
+  lightCount.hemi = hemiLights;
 
   return lightCount;
 
