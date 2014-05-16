@@ -11,7 +11,7 @@ dissect_version()
 
 set(THREE_TREAT_WARNINGS_AS_ERRORS FALSE CACHE BOOL "Treat warnings as errors")
 set(THREE_BUILD_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
-#set(THREE_BUILD_TESTS        FALSE CACHE BOOL "Build three.cpp unit tests")
+set(THREE_BUILD_TESTS        TRUE CACHE BOOL "Build three.cpp unit tests")
 set(THREE_LIBRARY_STATIC     TRUE CACHE BOOL "If building three.cpp as a library, build statically")
 
 IF(NOT CMAKE_BUILD_TYPE)
@@ -179,8 +179,51 @@ if(THREE_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
+
+
+#
+#
+## TODO: Cross-platform
+#
+#
+
+#-------------------
+# Test
+#-------------------
+
+set(EXT_PROJECTS_DIR ${PROJECT_SOURCE_DIR}/externals)
+
+add_subdirectory(${EXT_PROJECTS_DIR}/googletest)
+
+#add_definitions(${THREE_COMMON_FLAGS})
+#add_definitions(${THREE_OUTPUT_SUBDIR})
+enable_testing()
+set(PROJECT_TEST_NAME tests)
+include_directories(${GTEST_INCLUDE_DIRS} ${COMMON_INCLUDES})
+
+file(GLOB TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES})
+add_dependencies(${PROJECT_TEST_NAME} googletest)
+add_dependencies(${PROJECT_TEST_NAME} three)
+
+target_link_libraries(${PROJECT_TEST_NAME}
+       debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest.a
+       optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest.a
+)
+target_link_libraries(${PROJECT_TEST_NAME}
+       debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest_main.a
+       optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest_main.a
+)
+target_link_libraries(${PROJECT_TEST_NAME}
+       debug ${THREE_LIBRARY_PATH}/libthree.a
+       optimized ${THREE_LIBRARY_PATH}/libthree.a
+)
+
+
+ADD_TEST(test1 ${THREE_BINARY_PATH}/${PROJECT_TEST_NAME} -V)
+
+
 #if(THREE_BUILD_TESTS)
-#  include_directories(${THREE_SOURCE_DIR}/tests)
 #  add_subdirectory(externals/googletest)
 #  add_subdirectory(tests)
 #endif()

@@ -52,14 +52,14 @@ public:
 
   inline Vector2& setX( float xIn ) {
 
-    x = x;
+    x = xIn;
 
     return *this;
   }
 
   inline Vector2& setY( float yIn ) {
 
-    y = y;
+    y = yIn;
 
     return *this;
   }
@@ -105,8 +105,8 @@ public:
 
   inline Vector2& add( const Vector2& v) {
 
-    x = v.x;
-    y = v.y;
+    x += v.x;
+    y += v.y;
 
     return *this;
 
@@ -204,19 +204,28 @@ public:
 
     // This function assumes min < max, if this assumption isn't true it will not operate correctly
 
-    if ( x < x ) {
+    if ( x < min.x ) {
+
       x = min.x;
+
     } else if ( x > max.x ) {
+
       x = max.x;
+
     }
 
     if ( y < min.y ) {
+
       y = min.y;
+
     } else if ( y > max.y ) {
+
       y = max.y;
+
     }
 
     return *this;
+
 
   }
 

@@ -2,6 +2,7 @@
 #define THREE_VECTOR3_H
 
 #include <three/common.h>
+#include <three/console.h>
 
 #include <three/constants.h>
 
@@ -75,6 +76,32 @@ public:
     z = zIn;
 
     return *this;
+
+  }
+
+  inline Vector3& setComponent( int index, float value ) {
+
+    switch ( index ) {
+
+      case 0: x = value; break;
+      case 1: y = value; break;
+      case 2: z = value; break;
+        default: break;
+
+    }
+    return *this;
+  }
+
+  inline float getComponent( int index ) {
+
+    switch ( index ) {
+
+      case 0: return x;
+      case 1: return y;
+      case 2: return z;
+      default: return x;
+
+    }
 
   }
 
@@ -397,13 +424,11 @@ public:
 
   inline float angleTo( const Vector3& v ) {
 
-    //@todo near zero correct behavior?
-    auto l = length() * v.length();
-    auto theta = dot( v ) / l == 0.f ? NEAR_ZERO_FLOAT_32 : l;
-
+    auto theta = dot( v ) / ( length() * v.length() );
+      
     // clamp, to handle numerical problems
+      
     return Math::acos( Math::clamp( theta, -1.f, 1.f ) );
-
   }
 
   inline float distanceTo( const Vector3& v ) const {
@@ -426,7 +451,7 @@ public:
 
   inline bool equals( const Vector3& v ) const {
 
-    return ( ( v.x == x ) && ( v.y == y ) && ( v.z == z ) );
+    return v.x == x && v.y == y && v.z == z;
 
   }
 
