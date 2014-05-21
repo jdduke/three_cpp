@@ -146,7 +146,7 @@ void lines_colors( GLWindow& window, GLRenderer& renderer ) {
 
     for ( size_t i = 0; i < scene->children.size(); i++ ) {
       if (scene->children[i]->type() == enums::Line )
-        scene->children[i]->rotation().y( time * ( i % 2 ? 1 : -1) );
+        scene->children[i]->rotation().y = time * ( i % 2 ? 1 : -1);
     }
 
     renderer.render( *scene, *camera );

@@ -91,7 +91,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
   for ( int v = 0; v < pointCount; v++ ) {
 
     values_size[ v ] = 10;
-    values_color[ v ].setHex( 0xffaa00 );
+    values_color[ v ].set( 0xffaa00 );
 
     if ( vertices[ v ].x < 0 )
       values_color[ v ].setHSL( 0.5f + 0.1f * ( (float)v / pointCount ), 0.7f, 0.5f );
@@ -124,7 +124,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
   window.animate( [&]( float dt ) -> bool {
 
     time += dt;
-    sphere->rotation().z( time * .03f );
+    sphere->rotation().z = time * .03f;
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

@@ -57,7 +57,7 @@ void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
 
     auto line = Line::create( geometry, material, enums::LinePieces );
     line->scale.x = line->scale.y = line->scale.z = scale;
-    line->rotation().y( Math::random() * Math::PI() );
+    line->rotation().y = Math::random() * Math::PI();
     line->updateMatrix();
     scene->add( line );
 
@@ -98,7 +98,7 @@ void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
     for ( size_t i = 0; i < scene->children.size(); i++ ) {
       auto& object = *scene->children[i];
       if ( object.type() == enums::Line ) {
-        object.rotation().y( time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) ) );
+        object.rotation().y = time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) ) ;
         if ( i < 5 )
           object.scale.x = object.scale.y
                          = object.scale.z

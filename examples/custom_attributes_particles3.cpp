@@ -101,7 +101,7 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
   auto addGeo = [&]( const Geometry::Ptr& geo, float x, float y, float z, float ry ) {
     auto m = Mesh::create( geo, dummyMaterial );
     m->position.set( x, y, z );
-    m->rotation().y( ry );
+    m->rotation().y = ry;
 
     GeometryUtils::merge( *geometry, *m );
   };

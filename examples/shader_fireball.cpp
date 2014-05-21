@@ -154,8 +154,8 @@ void shader_fireball( GLWindow& window, GLRenderer& renderer ) {
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    mesh->rotation().y( mesh->rotation().y() + 0.5f * dt );
-    mesh->rotation().x( mesh->rotation().x() + 0.1f * dt );
+    mesh->rotation().y = mesh->rotation().y + 0.5f * dt;
+    mesh->rotation().x = mesh->rotation().x + 0.1f * dt;
 
     renderer.render( *scene, *camera );
 
