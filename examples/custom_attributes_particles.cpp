@@ -10,25 +10,25 @@
 #include "three/renderers/gl_renderer.h"
 
 const std::string vertexShader =
+"uniform float amplitude;\n"
 "attribute float size;\n"
 "attribute vec3 customColor;\n"
 "varying vec3 vColor;\n"
 "void main() {\n"
-"  vColor = customColor;\n"
-"  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
-"  //gl_PointSize = size;\n"
-"  gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );\n"
-"  gl_Position = projectionMatrix * mvPosition;\n"
+"    vColor = customColor;\n"
+"    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
+"    //gl_PointSize = size;\n"
+"    gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );\n"
+"    gl_Position = projectionMatrix * mvPosition;\n"
 "}\n";
 
 const std::string fragmentShader =
-"\n"
 "uniform vec3 color;\n"
 "uniform sampler2D texture;\n"
 "varying vec3 vColor;\n"
 "void main() {\n"
-"  gl_FragColor = vec4( color * vColor, 1.0 );\n"
-"  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );\n"
+"    gl_FragColor = vec4( color * vColor, 1.0 );\n"
+"    gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );\n"
 "}\n";
 
 using namespace three;
@@ -64,7 +64,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
 
   // Geometries
   const auto radius = 200.f;
-  const auto pointCount = 100000;
+  const auto pointCount = 10000;
 
   auto geometry = Geometry::create();
 
