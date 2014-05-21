@@ -3,6 +3,7 @@ project(three)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(EXT_PROJECTS_DIR ${PROJECT_SOURCE_DIR}/externals)
 
 include(${PROJECT_SOURCE_DIR}/cmake/ThreeTargets.cmake)
 
@@ -179,52 +180,55 @@ if(THREE_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
+if(THREE_BUILD_TESTS)
 
+  #
+  #
+  # Tests
+  # TODO: Cross-platform and in separate cmake
+  #
+  #
 
-#
-#
-## TODO: Cross-platform
-#
-#
+  enable_testing()
+  set(PROJECT_TEST_NAME tests)
 
-#-------------------
-# Test
-#-------------------
+  add_subdirectory(${EXT_PROJECTS_DIR}/googletest)
 
-set(EXT_PROJECTS_DIR ${PROJECT_SOURCE_DIR}/externals)
+  include_directories(${GTEST_INCLUDE_DIRS} ${COMMON_INCLUDES})
 
-add_subdirectory(${EXT_PROJECTS_DIR}/googletest)
+  file(GLOB_RECURSE TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+  file(GLOB_RECURSE TEST_SRC_FILES ${TEST_SRC_FILES} ${PROJECT_SOURCE_DIR}/tests/*.h)
 
-#add_definitions(${THREE_COMMON_FLAGS})
-#add_definitions(${THREE_OUTPUT_SUBDIR})
-enable_testing()
-set(PROJECT_TEST_NAME tests)
-include_directories(${GTEST_INCLUDE_DIRS} ${COMMON_INCLUDES})
+  add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES})
 
-file(GLOB_RECURSE TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/tests/*.cpp)
-file(GLOB_RECURSE TEST_SRC_FILES ${TEST_SRC_FILES} ${PROJECT_SOURCE_DIR}/tests/*.h)
-add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES})
-add_dependencies(${PROJECT_TEST_NAME} googletest)
-add_dependencies(${PROJECT_TEST_NAME} three)
+  add_dependencies(${PROJECT_TEST_NAME} googletest)
+  add_dependencies(${PROJECT_TEST_NAME} three)
 
-target_link_libraries(${PROJECT_TEST_NAME}
-       debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest.a
-       optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest.a
-)
-target_link_libraries(${PROJECT_TEST_NAME}
-       debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest_main.a
-       optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest_main.a
-)
-target_link_libraries(${PROJECT_TEST_NAME}
-       debug ${THREE_LIBRARY_PATH}/libthree.a
-       optimized ${THREE_LIBRARY_PATH}/libthree.a
-)
+  if(APPLE)
+    target_link_libraries(${PROJECT_TEST_NAME}
+           debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest.a
+           optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest.a
+    )
+    target_link_libraries(${PROJECT_TEST_NAME}
+           debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest_main.a
+           optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest_main.a
+    )
+    target_link_libraries(${PROJECT_TEST_NAME}
+           debug ${THREE_LIBRARY_PATH}/Debug/libthreed.a
+           optimized ${THREE_LIBRARY_PATH}/Release/libthree.a
+    )
+  ELSEIF(WIN32)
+    MESSAGE("Tests lib linking not implemented yet for win32")
+  ELSE()
+    MESSAGE("Tests lib linking not implemented yet for other (linux?)")
+  ENDIF()
 
+  ADD_TEST(test1 ${THREE_BINARY_PATH}/${PROJECT_TEST_NAME} -V)
 
-ADD_TEST(test1 ${THREE_BINARY_PATH}/${PROJECT_TEST_NAME} -V)
+  MESSAGE("-- Adding tests done")
 
+  #if(THREE_BUILD_TESTS)
+  #  add_subdirectory(tests)
+  #endif()
 
-#if(THREE_BUILD_TESTS)
-#  add_subdirectory(externals/googletest)
-#  add_subdirectory(tests)
-#endif()
+endif()
