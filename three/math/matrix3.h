@@ -135,7 +135,7 @@ public:
 
   }
 
-  Matrix3& getInverse( const Matrix4& m );
+  Matrix3& getInverse(  const Matrix4& m, bool throwOnInvertable = false );
 
   inline Matrix3& transpose() {
 
@@ -154,8 +154,8 @@ public:
     return *this;
 
   }
-
-  inline Matrix3& getNormalMatrix( const Matrix4& m ) {
+  template<typename TMatrix>
+  inline Matrix3& getNormalMatrix( const TMatrix& m ) {
 
     getInverse(m).transpose();
 

@@ -9,7 +9,7 @@
 
 namespace three {
 
-Matrix3& Matrix3::getInverse( const Matrix4& m ) {
+Matrix3& Matrix3::getInverse( const Matrix4& m, bool throwOnInvertable ) {
 
   // input: THREE.Matrix4
   // ( based on http://code.google.com/p/webgl-mjs/ )
@@ -30,7 +30,7 @@ Matrix3& Matrix3::getInverse( const Matrix4& m ) {
 
   // no inverse
 
-  if ( det == 0.f ) {
+  if ( det == 0.f  && throwOnInvertable) {
 
     // TODO: console.warn( "Matrix3.getInverse(): determinant == 0" );
 
@@ -54,4 +54,4 @@ Matrix3& Matrix3::getInverse( const Matrix4& m ) {
 
 } // namespace three
 
-#endif // THREE_MATRIX4_H
+#endif // THREE_MATRIX3_H

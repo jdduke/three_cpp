@@ -10,13 +10,20 @@
 
 namespace three {
 
-THREE_REVIEW("EA: Tests imply copyability. Why was it NonCopyable?")
-class Frustum /*: public NonCopyable*/ {
+class Frustum : public NonCopyable {
 public:
 
-  Frustum() {}
+  Frustum() {
+    planes[0] = Plane();
+    planes[1] = Plane();
+    planes[2] = Plane();
+    planes[3] = Plane();
+    planes[4] = Plane();
+    planes[5] = Plane();
+  }
 
   Frustum( const Matrix4& m ) {
+    
     setFromMatrix( m );
   }
     
@@ -46,7 +53,7 @@ public:
   bool containsPoint( const Vector3& point ) const;
 
   Frustum clone() {
-    return *this;
+    return Frustum(*this);
   }
 
 

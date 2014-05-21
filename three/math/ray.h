@@ -39,11 +39,11 @@ public:
 
   Vector3 closestPointToPoint( const Vector3& point );
 
-  Vector3& closestPointToPoint( const Vector3& point, Vector3& target );
+  Vector3 closestPointToPoint( const Vector3& point, Vector3& target );
 
   float distanceToPoint( const Vector3& point ) const;
 
-  float distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3* optionalPointOnRay = nullptr, Vector3* optionalPointOnSegment = nullptr );
+  float distanceSqToSegment( const Vector3& v0, const Vector3& v1, Vector3* optionalPointOnRay = nullptr, Vector3* optionalPointOnSegment = nullptr);
 
   bool isIntersectionSphere( const Sphere& sphere ) const;
 
@@ -51,7 +51,7 @@ public:
 
   float distanceToPlane( const Plane& plane ) const;
 
-  Vector3 intersectPlane( const Plane& plane );
+  optional<Vector3> intersectPlane( const Plane& plane );
 
   optional<Vector3> intersectPlane( const Plane& plane, Vector3& target );
 

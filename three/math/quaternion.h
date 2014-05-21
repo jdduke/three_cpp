@@ -19,7 +19,7 @@ public:
   Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f )
     : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ), _euler( nullptr ) {}
     
-  inline float x() const {
+  inline const float& x() const {
 
     return _x;
 
@@ -184,7 +184,8 @@ public:
 private:
 
   friend class Object3D;
-
+  friend class Euler;
+    
   union {
     struct {
       float _x, _y, _z, _w;

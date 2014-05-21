@@ -6,6 +6,7 @@
 #include <three/math/math.h>
 #include <three/math/line3.h>
 #include <three/math/sphere.h>
+#include <three/utils/optional.h>
 
 namespace three {
 
@@ -77,8 +78,7 @@ public:
 
   Plane& normalize() {
 
-    auto divBy = normal.length();
-    auto inverseNormalLength = 1.0 / divBy != 0.f ? divBy : NEAR_ZERO_FLOAT_32;
+    auto inverseNormalLength = 1.0 / normal.length();
 
     normal.multiplyScalar( inverseNormalLength );
     constant *= inverseNormalLength;
@@ -146,9 +146,9 @@ public:
 
   }
 
-  Vector3 intersectLine( const Line3& line) const;
-
-  Vector3& intersectLine( const Line3& line, Vector3& target);
+  optional<Vector3> intersectLine( const Line3& line );
+  
+  optional<Vector3> intersectLine( const Line3& line, Vector3& target );
 
   inline Vector3 coplanarPoint() const {
 

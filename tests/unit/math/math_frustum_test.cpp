@@ -1,16 +1,10 @@
-#ifndef THREE_MATH_FRUSTUM_TEST
-#define THREE_MATH_FRUSTUM_TEST
-
 #include "gtest/gtest.h"
+#include <tests/test_constants.h>
 
 #include <three/math/frustum.h>
 #include <iostream>
 
-namespace FrustumTest {
-
 using namespace three;
-
-Vector3 unit3 = Vector3( 1, 0, 1 );
 
 bool planeEquals( const Plane& a, const Plane& b, const float tolerance ) {
     
@@ -61,7 +55,7 @@ TEST(math_frustum_test, copy) {
 	auto p5 = Plane( unit3, 5 );
     
 	auto b = Frustum( p0, p1, p2, p3, p4, p5 );
-	auto a = Frustum().copy (b );
+	auto a = Frustum().copy(b);
     
 	EXPECT_TRUE( a.planes[0].equals( p0 ) );
 	EXPECT_TRUE( a.planes[1].equals( p1 ) );
@@ -78,7 +72,7 @@ TEST(math_frustum_test, copy) {
 TEST(math_frustum_test, setFromMatrix_makeOrthographic_containsPoint) {
 	auto m = Matrix4().makeOrthographic( -1, 1, -1, 1, 1, 100 );
 	auto a = Frustum().setFromMatrix( m );
-    
+  
 	EXPECT_TRUE( ! a.containsPoint( Vector3( 0, 0, 0 ) ) );
 	EXPECT_TRUE( a.containsPoint( Vector3( 0, 0, -50 ) ) );
 	EXPECT_TRUE( a.containsPoint( Vector3( 0, 0, -1.001 ) ) );
@@ -162,7 +156,3 @@ TEST(math_frustum_test, clone) {
 	a.planes[0].copy( p1 );
 	EXPECT_TRUE( b.planes[0].equals( p0 ) );
 }
-
-}
-    
-#endif

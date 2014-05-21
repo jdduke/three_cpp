@@ -130,7 +130,7 @@ enum PixelFormat {
   RGBA_S3TC_DXT5_Format = 2004
 };
 
-enum EulerRotationOrder {
+enum class EulerRotationOrder {
   XYZ = 0,
   YZX,
   ZXY,

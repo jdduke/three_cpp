@@ -2,7 +2,7 @@
 #define THREE_BOX3_H
 
 #include <three/common.h>
-
+#include <three/utils/optional.h>
 #include <three/math/vector4.h>
 #include <three/math/sphere.h>
 
@@ -244,33 +244,42 @@ public:
 
   }
 
-  inline Vector3 getParameter( const Vector3& point ) const {
+  inline optional<Vector3> getParameter( const Vector3& point ) const {
 
-    auto divX = ( max.x - min.x );
-    auto divY = ( max.y - min.y );
-    auto divZ = ( max.z - min.z );
-
-    return Vector3().set(
-             ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
-             ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY,
-             ( point.z - min.z ) / divZ == 0 ? NEAR_ZERO_FLOAT_32 : divZ
-           );
-
-  }
-
-  inline Vector3& getParameter( const Vector3& point, Vector3& target ) {
-
-    auto divX = ( max.x - min.x );
-    auto divY = ( max.y - min.y );
-    auto divZ = ( max.z - min.z );
-
-    return target.set(
-             ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
-             ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY,
-             ( point.z - min.z ) / divZ == 0 ? NEAR_ZERO_FLOAT_32 : divZ
-           );
+      auto divX = max.x - min.x;
+      auto divY = max.y - min.y;
+      auto divZ = max.z - min.z;
+      
+      if(divX == 0.f || divY == 0.f || divZ == 0.f) {
+          return nullptr;
+      }
+      
+      return Vector3().set(
+                        ( point.x - min.x ) / divX,
+                        ( point.y - min.y ) / divY,
+                        ( point.z - min.z ) / divZ
+                        );
 
   }
+
+  inline optional<Vector3> getParameter( const Vector3& point, Vector3& target ) const {
+    
+      auto divX = max.x - min.x;
+      auto divY = max.y - min.y;
+      auto divZ = max.z - min.z;
+      
+      if(divX == 0.f || divY == 0.f || divZ == 0.f) {
+          return nullptr;
+      }
+      
+      return target.set(
+                           ( point.x - min.x ) / divX,
+                           ( point.y - min.y ) / divY,
+                           ( point.z - min.z ) / divZ
+                           );
+
+    };
+
 
   inline bool isIntersectionBox( const Box3& box ) const {
 
@@ -350,15 +359,7 @@ public:
   Box3& applyMatrix4( const Matrix4& matrix) {
 
     std::vector<Vector3> points;
-    points[0] = Vector3();
-    points[1] = Vector3();
-    points[2] = Vector3();
-    points[3] = Vector3();
-    points[4] = Vector3();
-    points[5] = Vector3();
-    points[6] = Vector3();
-    points[7] = Vector3();
-
+    points.resize(8);
 
     // NOTE: I am using a binary pattern to specify all 2^3 combinations below
     points[0].set( min.x, min.y, min.z ).applyMatrix4( matrix ); // 000
@@ -371,16 +372,17 @@ public:
     points[7].set( max.x, max.y, max.z ).applyMatrix4( matrix );  // 111
 
     makeEmpty();
+    
     setFromPoints( points );
 
     return *this;
 
   }
 
-  inline Box3& translate( float& offset ) {
+  inline Box3& translate( const Vector3& offset ) {
 
-    min.addScalar( offset );
-    max.addScalar( offset );
+    min.add( offset );
+    max.add( offset );
 
     return *this;
 
@@ -394,7 +396,7 @@ public:
 
   inline Box3 clone() const {
 
-    return *this;
+    return Box3(*this);
 
   }
 

@@ -39,11 +39,11 @@ Ray& Ray::recast( float t ) {
 }
 
 Vector3 Ray::closestPointToPoint( const Vector3& point ) {
-  Vector3 target;
+  auto target = Vector3();
   return closestPointToPoint( point, target );
 }
 
-Vector3& Ray::closestPointToPoint( const Vector3& point, Vector3& target ) {
+Vector3 Ray::closestPointToPoint( const Vector3& point, Vector3& target ) {
   target.subVectors( point, this->origin );
   auto directionDistance = target.dot( this->direction );
 
@@ -222,11 +222,11 @@ float Ray::distanceToPlane( const Plane& plane ) const {
   return t >= 0 ? t : -1;
 }
 
-Vector3 Ray::intersectPlane( const Plane& plane ) {
+optional<Vector3> Ray::intersectPlane( const Plane& plane ) {
 
   auto result = Vector3();
 
-  return *intersectPlane( plane, result );
+  return intersectPlane( plane, result );
 
 }
 
@@ -247,7 +247,7 @@ bool Ray::isIntersectionBox( const Box3& box )  {
 }
 
 optional<Vector3> Ray::intersectBox( const Box3& box ) {
-  //@todo mem check efficiency
+
   auto v = Vector3();
   return intersectBox(box, v );
 }

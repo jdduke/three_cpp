@@ -443,7 +443,7 @@ private:
       _particle.y = vector4.y / vector4.w;
       _particle.z = vector4.z;
 
-      _particle.rotation = object.rotation().z();
+      _particle.rotation = object.rotation().z;
 
       _particle.scale.x = object.scale.x * Math::abs( _particle.x - ( vector4.x + camera.projectionMatrix.elements[0] ) / ( vector4.w + camera.projectionMatrix.elements[12] ) );
       _particle.scale.y = object.scale.y * Math::abs( _particle.y - ( vector4.y + camera.projectionMatrix.elements[5] ) / ( vector4.w + camera.projectionMatrix.elements[13] ) );

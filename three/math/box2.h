@@ -11,10 +11,12 @@ class Box2 {
 public:
 
   Box2()
-    : min( Vector2() ), max( Vector2() ) { }
+    : min( Vector2( Math::INF(), Math::INF() ) ), max( Vector2( -Math::INF(), -Math::INF() ) ) { }
 
   Box2( const Vector2& minIn, const Vector2& maxIn )
     : min( minIn ), max( maxIn ) { }
+
+  Vector2 min, max;
 
   inline Box2& set( const Vector2& minIn, const Vector2& maxIn ) {
 
@@ -36,7 +38,7 @@ public:
 
   inline float distanceToPoint( const Vector2& point ) const {
 
-    auto v1 = point;
+    auto v1 = Vector2();
     auto clampedPoint = v1.copy( point ).clamp( min, max );
 
     return clampedPoint.sub( point ).length();
@@ -189,7 +191,7 @@ public:
 
   inline Box2 clone() const {
 
-    return *this;
+    return Box2(*this);
 
   }
 
@@ -235,10 +237,10 @@ public:
 
   }
 
-  inline Box2& translate( float& offset ) {
+  inline Box2& translate( const Vector2& offset ) {
 
-    min.addScalar( offset );
-    max.addScalar( offset );
+    min.add( offset );
+    max.add( offset );
 
     return *this;
 
@@ -251,30 +253,25 @@ public:
   }
 
   inline Vector2 getParameter( const Vector2& point ) const {
-
-    auto divX = ( max.x - min.x );
-    auto divY = ( max.y - min.y );
-
+      
+    // This can potentially have a divide by zero if the box
+    // has a size dimension of 0.
+      
     return Vector2().set(
-             ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
-             ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY
-           );
+      ( point.x - min.x ) / ( max.x - min.x ),
+      ( point.y - min.y ) / ( max.y - min.y )
+    );
 
   }
 
   inline Vector2& getParameter( const Vector2& point, Vector2& target ) {
 
-    auto divX = ( max.x - min.x );
-    auto divY = ( max.y - min.y );
-
     return target.set(
-             ( point.x - min.x ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divX,
-             ( point.y - min.y ) / divX == 0 ? NEAR_ZERO_FLOAT_32 : divY
-           );
+      ( point.x - min.x ) / ( max.x - min.x ),
+      ( point.y - min.y ) / ( max.y - min.y )
+    );
 
   }
-
-  Vector2 min, max;
 
 };
 

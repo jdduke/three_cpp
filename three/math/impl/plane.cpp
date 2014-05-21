@@ -5,43 +5,19 @@
 #include <three/math/line3.h>
 #include <three/math/vector3.h>
 #include <three/math/matrix3.h>
+#include <three/utils/optional.h>
 
 namespace three {
 
-Vector3 Plane::intersectLine( const Line3& line) const {
+optional<Vector3> Plane::intersectLine( const Line3& line) {
 
-  auto direction = line.delta();
-  auto denominator = normal.dot( direction );
+  auto target = Vector3();
 
-  auto result = Vector3();
-
-  if ( denominator == 0 ) {
-
-    // line is coplanar, return origin
-    if( distanceToPoint( line.start ) == 0 ) {
-
-      return result.copy( line.start );
-
-    }
-
-    // Unsure if this is the correct method to handle this case.
-    return result;
-
-  }
-
-  auto t = - ( line.start.dot( normal ) + constant ) / denominator;
-
-  if( t < 0 || t > 1 ) {
-
-    return result;
-
-  }
-
-  return result.copy( direction ).multiplyScalar( t ).add( line.start );
-
+  return intersectLine(line, target);
+    
 }
 
-Vector3& Plane::intersectLine( const Line3& line, Vector3& target) {
+optional<Vector3> Plane::intersectLine( const Line3& line, Vector3& target ) {
 
   auto direction = line.delta();
   auto denominator = normal.dot( direction );
@@ -50,12 +26,13 @@ Vector3& Plane::intersectLine( const Line3& line, Vector3& target) {
     // line is coplanar, return origin
     if( distanceToPoint( line.start ) == 0 ) {
 
-      return target.copy( line.start );
+      target.copy( line.start );
+      return target;
 
     }
 
     // Unsure if this is the correct method to handle this case.
-    return target;
+    return nullptr;
 
   }
 
@@ -63,9 +40,10 @@ Vector3& Plane::intersectLine( const Line3& line, Vector3& target) {
 
   if( t < 0 || t > 1 ) {
 
-    return target;
+    return nullptr;
 
   }
+    
   return target.copy( direction ).multiplyScalar( t ).add( line.start );
 }
 

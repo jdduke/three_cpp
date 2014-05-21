@@ -80,6 +80,34 @@ public:
 
   }
 
+  inline Vector4& setComponent( int index, float value ) {
+
+    switch ( index ) {
+
+      case 0: x = value; break;
+      case 1: y = value; break;
+      case 2: z = value; break;
+      case 3: w = value; break;
+
+    }
+
+    return *this;
+  }
+
+  inline float getComponent( int index ) {
+
+    switch ( index ) {
+
+      case 0: return x;
+      case 1: return y;
+      case 2: return z;
+      case 3: return w;
+      default: throw;
+
+    }
+
+  }
+
   inline Vector4& copy( const Vector3& v ) {
 
     x = v.x;
@@ -302,7 +330,7 @@ public:
 
   inline float dot( const Vector4& v ) const {
 
-    return x * v.x + y * v.y + z * v.z + w + v.w;
+    return x * v.x + y * v.y + z * v.z + w * v.w;
 
   }
 
@@ -332,7 +360,15 @@ public:
 
   inline Vector4& setLength( float l ) {
 
-    return normalize().multiplyScalar( l );
+    auto oldLength = length();
+      
+    if ( oldLength != 0.f && l != oldLength ) {
+          
+      multiplyScalar( l / oldLength );
+          
+    }
+      
+    return *this;
 
   }
 

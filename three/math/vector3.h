@@ -26,7 +26,7 @@ public:
   };
 
   Vector3()
-    : x( 0 ), y( 0 ), z( 0 ) {}
+    : x( 0.f ), y( 0.f ), z( 0.f ) {}
 
   Vector3( float xIn, float yIn, float zIn )
     : x( xIn ), y( yIn ), z( zIn ) {}
@@ -358,13 +358,13 @@ public:
 
   inline float dot( const Vector3& v ) const {
 
-    return x * v.x + y * v.y + z * v.z;
+    return (x * v.x) + (y * v.y) + (z * v.z);
 
   }
 
   inline float lengthSq() const {
 
-    return x * x + y * y + z * z;
+    return (x * x) + (y * y) + (z * z);
 
   }
 
@@ -404,9 +404,11 @@ public:
 
   inline Vector3& cross( const Vector3& v) {
 
-    x = y * v.z - z * v.y;
-    y = z * v.x - x * v.z;
-    z = x * v.y - y * v.x;
+    auto x = this->x, y = this->y, z = this->z;
+      
+    this->x = y * v.z - z * v.y;
+    this->y = z * v.x - x * v.z;
+    this->z = x * v.y - y * v.x;
 
     return *this;
 
@@ -414,9 +416,12 @@ public:
 
   inline Vector3& crossVectors( const Vector3& a, const Vector3& b ) {
 
-    x = a.y * b.z - a.z * b.y;
-    y = a.z * b.x - a.x * b.z;
-    z = a.x * b.y - a.y * b.x;
+    auto ax = a.x, ay = a.y, az = a.z;
+    auto bx = b.x, by = b.y, bz = b.z;
+      
+    this->x = ay * bz - az * by;
+    this->y = az * bx - ax * bz;
+    this->z = ax * by - ay * bx;
 
     return *this;
 
@@ -439,7 +444,11 @@ public:
 
   inline float distanceToSquared( const Vector3& v ) const {
 
-    return Vector3().subVectors( *this, v ).lengthSq();
+    auto dx = this->x - v.x;
+    auto dy = this->y - v.y;
+    auto dz = this->z - v.z;
+      
+    return dx * dx + dy * dy + dz * dz;
 
   }
 
@@ -457,7 +466,7 @@ public:
 
   inline Vector3 clone() const {
 
-    return *this;
+    return Vector3(*this);
 
   }
 

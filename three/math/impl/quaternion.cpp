@@ -18,12 +18,12 @@ Quaternion& Quaternion::setFromEuler( const Euler& euler, bool update ) {
   //  20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
   //  content/SpinCalc.m
 
-  auto c1 = Math::cos( euler.x() / 2 );
-  auto c2 = Math::cos( euler.y() / 2 );
-  auto c3 = Math::cos( euler.z() / 2 );
-  auto s1 = Math::sin( euler.x() / 2 );
-  auto s2 = Math::sin( euler.y() / 2 );
-  auto s3 = Math::sin( euler.z() / 2 );
+  auto c1 = Math::cos( euler.x / 2 );
+  auto c2 = Math::cos( euler.y / 2 );
+  auto c3 = Math::cos( euler.z / 2 );
+  auto s1 = Math::sin( euler.x / 2 );
+  auto s2 = Math::sin( euler.y / 2 );
+  auto s3 = Math::sin( euler.z / 2 );
 
   if ( euler.order() == enums::EulerRotationOrder::XYZ ) {
 

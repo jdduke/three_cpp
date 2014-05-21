@@ -1,6 +1,7 @@
 #ifndef THREE_OPTIONAL_H
 #define THREE_OPTIONAL_H
 
+#include <three/config.h>
 #include <type_traits>
 #include <new>
 

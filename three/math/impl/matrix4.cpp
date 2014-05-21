@@ -125,7 +125,7 @@ Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
 
   auto& te = elements;
 
-  auto x = euler.x(), y = euler.y(), z = euler.z();
+  float x = euler.x, y = euler.y, z = euler.z;
   auto a = Math::cos( x ), b = Math::sin( x );
   auto c = Math::cos( y ), d = Math::sin( y );
   auto e = Math::cos( z ), f = Math::sin( z );
@@ -632,20 +632,24 @@ Matrix4& Matrix4::getInverse( const Matrix4& m, bool throwOnInvertible ) {
   auto det = n11 * te[ 0 ] + n21 * te[ 4 ] + n31 * te[ 8 ] + n41 * te[ 12 ];
 
   if ( det == 0 ) {
-
-    /*
-    //@todo refactor
+        
     auto msg = "Matrix4.getInverse(): can't invert matrix, determinant is 0";
+        
     if ( throwOnInvertible || false ) {
-      throw new Error( msg );
+            
+      throw;
+            
     } else {
-      console.warn( msg );
-    }*/
-
+    
+      console().warn( msg );
+            
+    }
+        
     identity();
-
+        
     return *this;
   }
+
 
   multiplyScalar( 1 / det );
 
@@ -862,27 +866,15 @@ Matrix4& Matrix4::makeOrthographic( float left, float right, float top, float bo
   auto w = right - left;
   auto h = top - bottom;
   auto p = far - near;
-
+    
   auto x = ( right + left ) / w;
   auto y = ( top + bottom ) / h;
   auto z = ( far + near ) / p;
-
-  te[0] = 2 / w;
-  te[4] = 0;
-  te[8] = 0;
-  te[12] = -x;
-  te[1] = 0;
-  te[5] = 2 / h;
-  te[9] = 0;
-  te[13] = -y;
-  te[2] = 0;
-  te[6] = 0;
-  te[10] = -2/p;
-  te[14] = -z;
-  te[3] = 0;
-  te[7] = 0;
-  te[11] = 0;
-  te[15] = 1;
+    
+  te[0] = 2 / w;	te[4] = 0;	te[8] = 0;	te[12] = -x;
+  te[1] = 0;	te[5] = 2 / h;	te[9] = 0;	te[13] = -y;
+  te[2] = 0;	te[6] = 0;	te[10] = -2/p;	te[14] = -z;
+  te[3] = 0;	te[7] = 0;	te[11] = 0;	te[15] = 1;
 
   return *this;
 }

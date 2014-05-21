@@ -35,7 +35,7 @@ public:
 
   Color () : r ( 1.f ), g ( 1.f ), b ( 1.f ) { }
 
-  explicit Color ( unsigned hex ) { setHex ( hex ); }
+  explicit Color ( unsigned hex ) { set ( hex ); }
 
   Color ( float r, float g, float b )
   : r ( r ), g ( g ), b ( b ) { }
@@ -47,7 +47,7 @@ public:
     //Not implemented
   }
 
-  inline Color& setHex ( unsigned hex ) {
+  inline Color& set( unsigned hex ) {
 
     r =  (float) ( ( hex >> 16 ) & 255 ) / 255;
     g =  (float) ( ( hex >>  8 ) & 255 ) / 255;

@@ -37,8 +37,8 @@ void geometry_hierarchy( GLWindow& window, GLRenderer& renderer ) {
     mesh->position.y = Math::random() * 2000 - 1000;
     mesh->position.z = Math::random() * 2000 - 1000;
 
-    mesh->rotation().x( Math::random() * 2 * Math::PI() );
-    mesh->rotation().y( Math::random() * 2 * Math::PI() );
+    mesh->rotation().x = Math::random() * 2 * Math::PI();
+    mesh->rotation().y = Math::random() * 2 * Math::PI();
 
     mesh->matrixAutoUpdate = false;
     mesh->updateMatrix();

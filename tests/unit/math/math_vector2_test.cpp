@@ -1,15 +1,9 @@
-#ifndef THREE_MATH_VECTOR2_TEST
-#define THREE_MATH_VECTOR2_TEST
-
 #include "gtest/gtest.h"
+#include <tests/test_constants.h>
 
 #include <three/math/vector2.h>
 
-namespace Vector2Test {
-
 using namespace three;
-    
-float x = 1, y = 2;
 
 TEST(math_vector2_test, constructor) {
 	auto a = Vector2();
@@ -240,7 +234,3 @@ TEST(math_vector2_test, equals) {
 	EXPECT_TRUE( a.equals( b ) );
 	EXPECT_TRUE( b.equals( a ) );
 }
-    
-}
-
-#endif
