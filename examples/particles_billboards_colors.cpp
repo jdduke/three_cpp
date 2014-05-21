@@ -50,6 +50,7 @@ void particles_billboards_colors( GLWindow& window, GLRenderer& renderer ) {
     Material::Parameters().add( "size", 85.f )
                           .add( "map", sprite )
                           .add( "vertexColors", enums::VertexColors )
+                          .add( "transparent", true)
   );
   material->color.setHSL( 1.f, 0.2f, 0.7f );
   //material->depthTest = false;

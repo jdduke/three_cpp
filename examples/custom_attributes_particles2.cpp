@@ -18,10 +18,11 @@ const std::string vertexShader =
 "attribute vec3 ca;\n"
 "varying vec3 vColor;\n"
 "void main() {\n"
-"  vColor = ca;\n"
-"  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
-"  gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );\n"
-"  gl_Position = projectionMatrix * mvPosition;\n"
+"    vColor = ca;\n"
+"    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
+"    //gl_PointSize = size;\n"
+"    gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );\n"
+"    gl_Position = projectionMatrix * mvPosition;\n"
 "}\n";
 
 const std::string fragmentShader =
@@ -29,8 +30,8 @@ const std::string fragmentShader =
 "uniform sampler2D texture;\n"
 "varying vec3 vColor;\n"
 "void main() {\n"
-"  gl_FragColor = vec4( color * vColor, 1.0 );\n"
-"  gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );\n"
+"    gl_FragColor = vec4( color * vColor, 1.0 );\n"
+"    gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );\n"
 "}\n";
 
 using namespace three;
@@ -47,6 +48,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/disc.png" ) );
 
   Uniforms uniforms;
+  uniforms[ "amplitude" ]   = Uniform( enums::f, 1.0 );
   uniforms[ "color" ]   = Uniform( enums::c, Color( 0xffffff ) );
   uniforms[ "texture" ] = Uniform( enums::t, texture.get() );
   texture->wrapS = texture->wrapT = enums::RepeatWrapping;
@@ -59,7 +61,8 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
     vertexShader,
     fragmentShader,
     uniforms,
-    attributes
+    attributes,
+    Material::Parameters().add( "transparent", true )
   );
 
   // Geometries
