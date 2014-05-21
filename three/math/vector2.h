@@ -356,12 +356,6 @@ public:
 
   }
 
-  inline bool isZero() const {
-
-    return ( lengthSq() < 0.0001 /* almostZero */ );
-
-  }
-
 };
 
 static_assert( sizeof( Vector2 ) == sizeof( float ) * 2, "Invalid Vector2 storage size" );

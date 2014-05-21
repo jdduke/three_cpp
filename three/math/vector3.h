@@ -470,12 +470,6 @@ public:
 
   }
 
-  inline bool isZero() const {
-
-    return ( lengthSq() < 0.0001f /* almostZero */ );
-
-  }
-
   Vector3& applyEuler( const Euler& euler );
 
   Vector3& applyAxisAngle( const Vector3& axis, float angle );
