@@ -1,10 +1,8 @@
 #ifndef THREE_TESTS_CONSTANTS_H
 #define THREE_TESTS_CONSTANTS_H
 
-#include <three/utils/optional.h>
 #include <three/math/vector2.h>
 #include <three/math/vector3.h>
-#include <three/math/line3.h>
 
 using namespace three;
 

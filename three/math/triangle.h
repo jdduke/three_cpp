@@ -166,7 +166,7 @@ public:
 
   inline Vector3& midpoint( Vector3& target ) const {
 
-    return target.addVectors( a, b ).add( c ).multiplyScalar( 1 / 3 );
+    return target.addVectors( a, b ).add( c ).multiplyScalar( 1.f / 3.f );
 
   }
 

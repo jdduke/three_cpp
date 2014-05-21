@@ -2,6 +2,9 @@
 #include <tests/test_constants.h>
 
 #include <three/math/plane.h>
+#include <three/math/impl/plane.cpp>
+#include <three/math/matrix3.h>
+#include <three/math/impl/matrix3.cpp>
 
 using namespace three;
 
@@ -9,7 +12,6 @@ bool comparePlane( const Plane& a, const Plane& b, float threshold = 0.0001 ) {
 	return ( a.normal.distanceTo( b.normal ) < threshold &&
 	Math::abs( a.constant - b.constant ) < threshold );
 }
-
 
 TEST(math_plane_test, constructor) {
 	auto a = Plane();

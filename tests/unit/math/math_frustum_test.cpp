@@ -2,6 +2,7 @@
 #include <tests/test_constants.h>
 
 #include <three/math/frustum.h>
+#include <three/math/impl/frustum.cpp>
 #include <iostream>
 
 using namespace three;

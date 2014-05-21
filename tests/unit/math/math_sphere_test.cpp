@@ -2,6 +2,7 @@
 #include <tests/test_constants.h>
 
 #include <three/math/sphere.h>
+#include <three/math/impl/sphere.cpp>
 #include <three/math/box3.h>
 
 using namespace three;

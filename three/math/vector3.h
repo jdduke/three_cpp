@@ -448,7 +448,7 @@ public:
     auto dy = this->y - v.y;
     auto dz = this->z - v.z;
       
-    return dx * dx + dy * dy + dz * dz;
+    return (dx * dx) + (dy * dy) + (dz * dz);
 
   }
 

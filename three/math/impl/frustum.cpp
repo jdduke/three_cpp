@@ -31,6 +31,7 @@ Frustum& Frustum::set( const Plane& p0, const Plane& p1, const Plane& p2, const 
 
 Frustum& Frustum::copy( const Frustum& frustum ) {
 
+  // TODO EA: use STL
   for( char i = 0; i < 6; i ++ ) {
 
     planes[i].copy( frustum.planes[i] );

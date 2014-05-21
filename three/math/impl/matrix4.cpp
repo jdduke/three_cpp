@@ -637,7 +637,7 @@ Matrix4& Matrix4::getInverse( const Matrix4& m, bool throwOnInvertible ) {
         
     if ( throwOnInvertible || false ) {
             
-      throw;
+      throw -1;
             
     } else {
     

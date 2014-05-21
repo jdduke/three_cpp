@@ -10,7 +10,7 @@
 
 namespace three {
 
-class Frustum : public NonCopyable {
+class Frustum {
 public:
 
   Frustum() {

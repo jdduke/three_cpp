@@ -2,7 +2,6 @@
 #include <tests/test_constants.h>
 
 #include <three/math/box2.h>
-#include <three/math/vector2.h>
 
 using namespace three;
 

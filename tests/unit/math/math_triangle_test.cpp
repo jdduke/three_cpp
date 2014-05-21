@@ -60,7 +60,6 @@ TEST(math_triangle_test, area) {
 	EXPECT_TRUE( a.area() == 0.f );
 
 	a = Triangle( Vector3( 0, 0, 0 ), Vector3( 1, 0, 0 ), Vector3( 0, 1, 0 ) );
-    std::cout << "a.area() = 0.5 ? " << a.area() << std::endl;
 	EXPECT_TRUE( a.area() == 0.5 );
 
 	a = Triangle( Vector3( 2, 0, 0 ), Vector3( 0, 0, 0 ), Vector3( 0, 0, 2 ) );

@@ -1,3 +1,6 @@
+#ifndef THREE_CONSOLE_CPP
+#define THREE_CONSOLE_CPP
+
 #include <three/console.h>
 
 #include <memory>
@@ -55,3 +58,4 @@ Console& console() { return Console::instance(); }
 
 } // namespace three
 
+#endif

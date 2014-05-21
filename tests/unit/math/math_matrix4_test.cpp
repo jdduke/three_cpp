@@ -1,9 +1,14 @@
 #include "gtest/gtest.h"
 #include <tests/test_constants.h>
 
+#include <three/console.h>
+#include <three/impl/console.cpp>
+
 #include <three/math/matrix4.h>
+#include <three/math/impl/matrix4.cpp>
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
+#include <three/math/impl/quaternion.cpp>
 #include <three/math/euler.h>
 
 using namespace three;
@@ -157,13 +162,7 @@ TEST(math_matrix4_test, getInverse) {
 	b.getInverse( a, false );
 	EXPECT_TRUE( matrixEquals4( b, Matrix4() ) );
 
-	try { 
-		b.getInverse( c, true );
-		EXPECT_TRUE( false ); // should never get here.
-	}
-	catch( ... ) {
-		EXPECT_TRUE( true );
-	}
+    EXPECT_THROW(b.getInverse( c, true ), int);
 
     std::vector<Matrix4> testMatrices = {
 		Matrix4().makeRotationX( 0.3 ),
