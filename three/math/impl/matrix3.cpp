@@ -32,7 +32,7 @@ Matrix3& Matrix3::getInverse( const Matrix4& m, bool throwOnInvertable ) {
 
   if ( det == 0.f  && throwOnInvertable) {
 
-    // TODO: console.warn( "Matrix3.getInverse(): determinant == 0" );
+      throw -1;
 
   }
 

@@ -8,7 +8,6 @@
 #include <three/math/impl/matrix4.cpp>
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
-#include <three/math/impl/quaternion.cpp>
 #include <three/math/euler.h>
 
 using namespace three;
@@ -172,7 +171,7 @@ TEST(math_matrix4_test, getInverse) {
 		Matrix4().makeRotationZ( 0.3 ),
 		Matrix4().makeRotationZ( -0.3 ),
 		Matrix4().makeScale( 1, 2, 3 ),
-		Matrix4().makeScale( 1/8, 1/2, 1/3 ),
+		Matrix4().makeScale( 1.f/8, 1.f/2, 1.f/3 ),
 		Matrix4().makeFrustum( -1, 1, -1, 1, 1, 1000 ),
 		Matrix4().makeFrustum( -16, 16, -9, 9, 0.1, 10000 ),
 		Matrix4().makeTranslation( 1, 2, 3 )

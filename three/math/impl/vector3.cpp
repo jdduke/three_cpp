@@ -11,67 +11,77 @@ namespace three {
 
 Vector3& Vector3::applyMatrix3( const Matrix3& m ) {
 
-  const auto& e = m.elements;
-
-  x = e[0] * x + e[3] * y + e[6] * z;
-  y = e[1] * x + e[4] * y + e[7] * z;
-  z = e[2] * x + e[5] * y + e[8] * z;
-
-  return *this;
-
+    auto x = this->x, y = this->y, z = this->z;
+    
+    const auto& e = m.elements;
+    
+    this->x = e[0] * x + e[3] * y + e[6] * z;
+    this->y = e[1] * x + e[4] * y + e[7] * z;
+    this->z = e[2] * x + e[5] * y + e[8] * z;
+    
+    return *this;
 }
 
 Vector3& Vector3::applyMatrix4( const Matrix4& m ) {
 
-  const auto& e = m.elements;
-
-  x = e[0] * x + e[4] * y + e[8]  * z + e[12];
-  y = e[1] * x + e[5] * y + e[9]  * z + e[13];
-  z = e[2] * x + e[6] * y + e[10] * z + e[14];
-
-  return *this;
+    // input: THREE.Matrix4 affine matrix
+    
+    auto x = this->x, y = this->y, z = this->z;
+    
+    const auto& e = m.elements;
+    
+    this->x = e[0] * x + e[4] * y + e[8]  * z + e[12];
+    this->y = e[1] * x + e[5] * y + e[9]  * z + e[13];
+    this->z = e[2] * x + e[6] * y + e[10] * z + e[14];
+    
+    return *this;
 
 }
 
 Vector3& Vector3::applyProjection( const Matrix4& m ) {
 
-  const auto& e = m.elements;
-
-  auto d = 1.0f / ( e[3] * x + e[7] * y + e[11] * z + e[15] ); // perspective divide
-
-  x = ( e[0] * x + e[4] * y + e[8]  * z + e[12] ) * d;
-  y = ( e[1] * x + e[5] * y + e[9]  * z + e[13] ) * d;
-  z = ( e[2] * x + e[6] * y + e[10] * z + e[14] ) * d;
-
-  return *this;
+    // input: THREE.Matrix4 projection matrix
+    
+    auto x = this->x, y = this->y, z = this->z;
+    
+    const auto& e = m.elements;
+    auto d = 1.f / ( e[3] * x + e[7] * y + e[11] * z + e[15] ); // perspective divide
+    
+    this->x = ( e[0] * x + e[4] * y + e[8]  * z + e[12] ) * d;
+    this->y = ( e[1] * x + e[5] * y + e[9]  * z + e[13] ) * d;
+    this->z = ( e[2] * x + e[6] * y + e[10] * z + e[14] ) * d;
+    
+    return *this;
 
 }
 
 Vector3& Vector3::applyQuaternion( const Quaternion& q ) {
 
-  float qx = q.x();
-  auto qy = q.y();
-  auto qz = q.z();
-  auto qw = q.w();
-
-  // calculate quat * vector
-
-  auto ix =  qw * x + qy * z - qz * y;
-  auto iy =  qw * y + qz * x - qx * z;
-  auto iz =  qw * z + qx * y - qy * x;
-  auto iw = -qx * x - qy * y - qz * z;
-
-  // calculate result * inverse quat
-
-  x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-  y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-  z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-
-  return *this;
+    auto x = this->x, y = this->y, z = this->z;
+    
+    auto qx = q.x();
+    auto qy = q.y();
+    auto qz = q.z();
+    auto qw = q.w();
+    
+    // calculate quat * vector
+    
+    auto ix =  qw * x + qy * z - qz * y;
+    auto iy =  qw * y + qz * x - qx * z;
+    auto iz =  qw * z + qx * y - qy * x;
+    auto iw = -qx * x - qy * y - qz * z;
+    
+    // calculate result * inverse quat
+    
+    this->x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+    this->y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+    this->z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+    
+    return *this;
 
 }
 
-    Vector3& Vector3::copy( const Vector4& v ) {
+Vector3& Vector3::copy( const Vector4& v ) {
 
     x = v.x;
     y = v.y;
@@ -79,19 +89,24 @@ Vector3& Vector3::applyQuaternion( const Quaternion& q ) {
 
     return *this;
 
-  }
+}
 
 Vector3& Vector3::transformDirection( const Matrix4& m ) {
 
-  const auto& e = m.elements;
-
-  x = e[0] * x + e[4] * y + e[8]  * z;
-  y = e[1] * x + e[5] * y + e[9]  * z;
-  z = e[2] * x + e[6] * y + e[10] * z;
-
-  normalize();
-
-  return *this;
+    // input: THREE.Matrix4 affine matrix
+    // vector interpreted as a direction
+    
+    auto x = this->x, y = this->y, z = this->z;
+    
+    const auto& e = m.elements;
+    
+    this->x = e[0] * x + e[4] * y + e[8]  * z;
+    this->y = e[1] * x + e[5] * y + e[9]  * z;
+    this->z = e[2] * x + e[6] * y + e[10] * z;
+    
+    normalize();
+    
+    return *this;
 
 }
 

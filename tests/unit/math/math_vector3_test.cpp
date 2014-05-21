@@ -2,6 +2,7 @@
 #include <tests/test_constants.h>
 
 #include <three/math/vector3.h>
+#include <three/math/impl/vector3.cpp>
 
 using namespace three;
 

@@ -2,6 +2,7 @@
 #include <tests/test_constants.h>
 
 #include <three/math/matrix3.h>
+#include <three/math/impl/matrix3.cpp>
 #include <three/math/matrix4.h>
 
 using namespace three;
@@ -139,50 +140,44 @@ TEST(math_matrix3_test, determinant) {
 }
 
 
-//TEST(math_matrix3_test, getInverse) {
-//	auto identity = Matrix4();
-//	auto a = Matrix4();
-//	auto b = Matrix3( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
-//	auto c = Matrix4( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-//
-//	EXPECT_TRUE( ! matrixEquals3( a, b, 0.00001 ) );
-//	b.getInverse( a, false );
-//	EXPECT_TRUE( matrixEquals3( b, Matrix3(), 0.00001 ) );
-//
-//	try { 
-//		b.getInverse( c, true );
-//		EXPECT_TRUE( false ); // should never get here.
-//	}
-//	catch(...) {
-//		EXPECT_TRUE( true );
-//	}
-//
-//    std::vector<Matrix4> testMatrices = {
-//		Matrix4().makeRotationX( 0.3 ),
-//		Matrix4().makeRotationX( -0.3 ),
-//		Matrix4().makeRotationY( 0.3 ),
-//		Matrix4().makeRotationY( -0.3 ),
-//		Matrix4().makeRotationZ( 0.3 ),
-//		Matrix4().makeRotationZ( -0.3 ),
-//		Matrix4().makeScale( 1, 2, 3 ),
-//		Matrix4().makeScale( 1/8, 1/2, 1/3 )
-//    };
-//
-//	for( int i = 0; i < testMatrices.size(); i ++ ) {
-//		auto m = testMatrices[i];
-//		auto mInverse3 = Matrix3().getInverse( m );
-//
-//		auto mInverse = toMatrix4( mInverse3 );
-//
-//		// the determinant of the inverse should be the reciprocal
-//		EXPECT_TRUE( Math::abs( m.determinant() * mInverse3.determinant() - 1 ) < 0.0001 );
-//		EXPECT_TRUE( Math::abs( m.determinant() * mInverse.determinant() - 1 ) < 0.0001 );
-//
-//		auto mProduct = Matrix4().multiplyMatrices( m, mInverse );
-//		EXPECT_TRUE( Math::abs( mProduct.determinant() - 1 ) < 0.0001 );
-//		EXPECT_TRUE( matrixEquals3( mProduct, identity, 0.0001 ) );
-//	}
-//}
+TEST(math_matrix3_test, getInverse) {
+	auto identity = Matrix4();
+	auto a = Matrix4();
+	auto b = Matrix3( 0, 0, 0, 0, 0, 0, 0, 0, 0 );
+	auto c = Matrix4( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+	EXPECT_TRUE( ! matrixEquals3( a, b, 0.00001 ) );
+	b.getInverse( a, false );
+	EXPECT_TRUE( matrixEquals3( b, Matrix3(), 0.00001 ) );
+
+    EXPECT_THROW(b.getInverse( c, true ), int);
+
+    std::vector<Matrix4> testMatrices = {
+		Matrix4().makeRotationX( 0.3 ),
+		Matrix4().makeRotationX( -0.3 ),
+		Matrix4().makeRotationY( 0.3 ),
+		Matrix4().makeRotationY( -0.3 ),
+		Matrix4().makeRotationZ( 0.3 ),
+		Matrix4().makeRotationZ( -0.3 ),
+		Matrix4().makeScale( 1, 2, 3 ),
+		Matrix4().makeScale( 1.f/8, 1.f/2, 1.f/3 )
+    };
+
+	for( int i = 0; i < testMatrices.size(); i ++ ) {
+		auto m = testMatrices[i];
+		auto mInverse3 = Matrix3().getInverse( m );
+
+		auto mInverse = toMatrix4( mInverse3 );
+
+		// the determinant of the inverse should be the reciprocal
+		EXPECT_TRUE( Math::abs( m.determinant() * mInverse3.determinant() - 1 ) < 0.0001 );
+		EXPECT_TRUE( Math::abs( m.determinant() * mInverse.determinant() - 1 ) < 0.0001 );
+
+		auto mProduct = Matrix4().multiplyMatrices( m, mInverse );
+		EXPECT_TRUE( Math::abs( mProduct.determinant() - 1 ) < 0.0001 );
+		EXPECT_TRUE( matrixEquals3( mProduct, identity, 0.0001 ) );
+	}
+}
 
 TEST(math_matrix3_test, transpose) {
 	auto a = Matrix3();

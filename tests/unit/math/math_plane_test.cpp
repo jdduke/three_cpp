@@ -4,7 +4,6 @@
 #include <three/math/plane.h>
 #include <three/math/impl/plane.cpp>
 #include <three/math/matrix3.h>
-#include <three/math/impl/matrix3.cpp>
 
 using namespace three;
 

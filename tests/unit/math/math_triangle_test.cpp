@@ -74,12 +74,12 @@ TEST(math_triangle_test, midpoint) {
 	auto a = Triangle();
 
 	EXPECT_TRUE( a.midpoint().equals( Vector3( 0, 0, 0 ) ) );
-
+    
 	a = Triangle( Vector3( 0, 0, 0 ), Vector3( 1, 0, 0 ), Vector3( 0, 1, 0 ) );
-	EXPECT_TRUE( a.midpoint().equals( Vector3( 1/3, 1/3, 0 ) ) );
+	EXPECT_TRUE( a.midpoint().equals( Vector3( 1.f/3, 1.f/3, 0 ) ) );
 
 	a = Triangle( Vector3( 2, 0, 0 ), Vector3( 0, 0, 0 ), Vector3( 0, 0, 2 ) );
-	EXPECT_TRUE( a.midpoint().equals( Vector3( 2/3, 0, 2/3 ) ) );
+	EXPECT_TRUE( a.midpoint().equals( Vector3( 2.f/3, 0, 2.f/3 ) ) );
 }
 
 TEST(math_triangle_test, normal) {
@@ -129,13 +129,13 @@ TEST(math_triangle_test, barycoordFromPoint) {
 	EXPECT_TRUE( a.barycoordFromPoint( a.a ).equals( Vector3( 1, 0, 0 ) ) );
 	EXPECT_TRUE( a.barycoordFromPoint( a.b ).equals( Vector3( 0, 1, 0 ) ) );
 	EXPECT_TRUE( a.barycoordFromPoint( a.c ).equals( Vector3( 0, 0, 1 ) ) );
-	EXPECT_TRUE( a.barycoordFromPoint( a.midpoint() ).distanceTo( Vector3( 1/3, 1/3, 1/3 ) ) < 0.0001 );
+	EXPECT_TRUE( a.barycoordFromPoint( a.midpoint() ).distanceTo( Vector3( 1.f/3, 1.f/3, 1.f/3 ) ) < 0.0001 );
 
 	a = Triangle( Vector3( 2, 0, 0 ), Vector3( 0, 0, 0 ), Vector3( 0, 0, 2 ) );
 	EXPECT_TRUE( a.barycoordFromPoint( a.a ).equals( Vector3( 1, 0, 0 ) ) );
 	EXPECT_TRUE( a.barycoordFromPoint( a.b ).equals( Vector3( 0, 1, 0 ) ) );
 	EXPECT_TRUE( a.barycoordFromPoint( a.c ).equals( Vector3( 0, 0, 1 ) ) );
-	EXPECT_TRUE( a.barycoordFromPoint( a.midpoint() ).distanceTo( Vector3( 1/3, 1/3, 1/3 ) ) < 0.0001 );
+	EXPECT_TRUE( a.barycoordFromPoint( a.midpoint() ).distanceTo( Vector3( 1.f/3, 1.f/3, 1.f/3 ) ) < 0.0001 );
 }
 
 TEST(math_triangle_test, containsPoint) {
