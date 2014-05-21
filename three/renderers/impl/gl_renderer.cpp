@@ -2519,9 +2519,10 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 #ifndef THREE_GLES
     // TODO(jdd): Check usage with core profile.
     _gl.Enable(GL_VERTEX_PROGRAM_POINT_SIZE);
-    /*_gl.Enable(GL_POINT_SPRITE);
-    _gl.TexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-    */
+    //_gl.Enable(GL_POINT_SMOOTH);
+    THREE_REVIEW("EA: Without GL_POINT_SPRITE enabled, the particles aren't rendered, due to gl_PointCoord pointing to 0s")
+    _gl.Enable(GL_POINT_SPRITE);
+    //glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 #endif
 
     _gl.DrawArrays( GL_POINTS, 0, geometryGroup.__glParticleCount );
@@ -2912,7 +2913,9 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::Ren
 
         if ( ! material ) continue;
 
-        if ( useBlending ) setBlending( material->blending, material->blendEquation, material->blendSrc, material->blendDst );
+          if ( useBlending ) {
+             setBlending( material->blending, material->blendEquation, material->blendSrc, material->blendDst );
+          }
 
         setDepthTest( material->depthTest );
         setDepthWrite( material->depthWrite );

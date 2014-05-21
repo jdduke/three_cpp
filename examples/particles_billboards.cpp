@@ -42,6 +42,7 @@ void particles_billboards( GLWindow& window, GLRenderer& renderer ) {
     Material::Parameters().add( "size", 35.f )
                           .add( "map", sprite )
                           .add( "sizeAttenuation", false )
+                          .add( "transparent", true)
   );
   material->color.setHSL( 1.f, 0.3f, 0.7f );
 

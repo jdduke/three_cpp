@@ -722,6 +722,8 @@ typedef unsigned short GLushort;
 #define GL_DRAW_BUFFER14                  0x8833
 #define GL_DRAW_BUFFER15                  0x8834
 #define GL_BLEND_EQUATION_ALPHA           0x883D
+#define GL_POINT_SPRITE 				  0x8861
+#define GL_COORD_REPLACE 				  0x8862
 #define GL_MAX_VERTEX_ATTRIBS             0x8869
 #define GL_VERTEX_ATTRIB_ARRAY_NORMALIZED 0x886A
 #define GL_MAX_TEXTURE_IMAGE_UNITS        0x8872
