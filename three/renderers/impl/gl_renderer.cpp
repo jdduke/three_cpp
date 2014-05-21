@@ -57,8 +57,8 @@ namespace three {
 
 struct NumericalSort {
     template < typename T, typename U >
-    bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
-        return a.second - b.second;
+    inline bool operator()( const std::pair<T, U>& a, const std::pair<T, U>& b ) {
+        return a.second > b.second;
     }
 };
     

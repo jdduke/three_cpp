@@ -64,7 +64,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
 
   // Geometries
   const auto radius = 200.f;
-  const auto pointCount = 10000;
+  const auto pointCount = 100000;
 
   auto geometry = Geometry::create();
 
