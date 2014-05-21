@@ -955,7 +955,10 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
     typedef std::pair<float, int> SortPair;
 
     std::sort( sortArray.begin(),
-               sortArray.end(), NumericalSort() );
+              sortArray.end(),
+              []( const SortPair & a, const SortPair & b ) {
+                  return a.first > b.first;
+              }  );
 
     for ( int v = 0; v < vl; v ++ ) {
 

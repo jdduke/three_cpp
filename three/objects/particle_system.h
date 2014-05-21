@@ -19,14 +19,12 @@ public:
     return three::make_shared<ParticleSystem> ( geometry, material );
   }
 
-  bool sortParticles;
-
   THREE_IMPL_OBJECT(ParticleSystem)
 
 protected:
 
   ParticleSystem( const Geometry::Ptr& geometry, const Material::Ptr& material )
-    : Object3D( material, geometry ), sortParticles( false ) {
+    : Object3D( material, geometry ) {
 
     frustumCulled = false;
     if(!material) {
