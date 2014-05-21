@@ -337,14 +337,6 @@ Object3D& Object3D::updateMatrixWorld( bool force ) {
 
     force = true;
 
-    // update children
-
-    for ( size_t i = 0, l = children.size(); i < l; i ++ ) {
-
-      children[ i ]->updateMatrixWorld( force );
-
-    }
-
   }
 
   // update children
