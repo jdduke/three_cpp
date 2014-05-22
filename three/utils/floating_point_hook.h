@@ -11,7 +11,6 @@ class FloatingPointHook;
 
 template<typename T, class C>
 class FloatingPointHook<T, C, typename std::enable_if<std::is_floating_point<T>::value >::type> {
-    
 public:
     
     FloatingPointHook()
@@ -38,11 +37,6 @@ public:
     
     inline friend std::istream& operator>>(std::istream &in, const FloatingPointHook<T, C>& other) {
         in >> other.value;
-        return in;
-    }
-    
-    inline friend std::istream& operator>>(std::istream &in, const T other) {
-        in >> other;
         return in;
     }
 };
