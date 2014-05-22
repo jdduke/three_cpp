@@ -27,17 +27,30 @@ public:
 
     operator const T() const { return value; }
         
-    inline FloatingPointHook& operator=(const T other){ value = other; ((obj)->*(hook))(); return *this; }
-    inline FloatingPointHook& operator=(const FloatingPointHook& other){ value = other.value; hook = other.hook; ((obj)->*(hook))(); return *this; }
-    
-    inline friend std::ostream& operator<<(std::ostream &out, const FloatingPointHook<T, C>& other) {
-        out << other.value;
-        return out;
+    inline FloatingPointHook& operator=(const T other){ 
+
+        value = other; 
+
+        ((obj)->*(hook))(); 
+
+        return *this; 
+    }
+
+    inline FloatingPointHook& operator=(const FloatingPointHook& other){ 
+
+        value = other.value; 
+        hook = other.hook; 
+
+        ((obj)->*(hook))();
+
+        return *this; 
     }
     
-    inline friend std::istream& operator>>(std::istream &in, const FloatingPointHook<T, C>& other) {
-        in >> other.value;
-        return in;
+    inline friend std::ostream& operator<<(std::ostream &out, const FloatingPointHook<T, C>& property) {
+
+        out << property.value;
+
+        return out;
     }
 };
 
