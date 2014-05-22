@@ -38,7 +38,8 @@ public:
 
     inline FloatingPointHook& operator=(const FloatingPointHook& other){ 
 
-        value = other.value; 
+        value = other.value;
+        obj = other.obj; 
         hook = other.hook; 
 
         ((obj)->*(hook))();
