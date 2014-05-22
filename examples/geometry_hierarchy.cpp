@@ -21,10 +21,10 @@ void geometry_hierarchy( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     60, ( float )renderer.width() / renderer.height(), 1, 10000
   );
-  camera->position.z = 1000;
+  camera->position.z = 500;
 
   auto scene = Scene::create();
-  scene->fog = Fog::create( 0xffffff, 1, 1000 );
+  scene->fog = Fog::create( 0xffffff, 1, 10000 );
 
   auto material = MeshNormalMaterial::create();
   auto geometry = CubeGeometry::create( 100, 100, 100 );
@@ -97,6 +97,9 @@ void geometry_hierarchy( GLWindow& window, GLRenderer& renderer ) {
 int main( int argc, char* argv[] ) {
 
   RendererParameters parameters;
+  parameters.clearAlpha = 1.f;
+  parameters.clearColor = Color(0xFFFFFF);
+    
   parameters.vsync = false;
 
   return RunExample( geometry_hierarchy, parameters );

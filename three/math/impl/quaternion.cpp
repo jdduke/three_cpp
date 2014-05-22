@@ -27,45 +27,45 @@ Quaternion& Quaternion::setFromEuler( const Euler& euler, bool update ) {
 
   if ( euler.order() == enums::EulerRotationOrder::XYZ ) {
 
-    _x = s1 * c2 * c3 + c1 * s2 * s3;
-    _y = c1 * s2 * c3 - s1 * c2 * s3;
-    _z = c1 * c2 * s3 + s1 * s2 * c3;
-    _w = c1 * c2 * c3 - s1 * s2 * s3;
+    x.value = s1 * c2 * c3 + c1 * s2 * s3;
+    y.value = c1 * s2 * c3 - s1 * c2 * s3;
+    z.value = c1 * c2 * s3 + s1 * s2 * c3;
+    w.value = c1 * c2 * c3 - s1 * s2 * s3;
 
   } else if ( euler.order() == enums::EulerRotationOrder::YXZ ) {
 
-    _x = s1 * c2 * c3 + c1 * s2 * s3;
-    _y = c1 * s2 * c3 - s1 * c2 * s3;
-    _z = c1 * c2 * s3 - s1 * s2 * c3;
-    _w = c1 * c2 * c3 + s1 * s2 * s3;
+    x.value = s1 * c2 * c3 + c1 * s2 * s3;
+    y.value = c1 * s2 * c3 - s1 * c2 * s3;
+    z.value = c1 * c2 * s3 - s1 * s2 * c3;
+    w.value = c1 * c2 * c3 + s1 * s2 * s3;
 
   } else if ( euler.order() == enums::EulerRotationOrder::ZXY ) {
 
-    _x = s1 * c2 * c3 - c1 * s2 * s3;
-    _y = c1 * s2 * c3 + s1 * c2 * s3;
-    _z = c1 * c2 * s3 + s1 * s2 * c3;
-    _w = c1 * c2 * c3 - s1 * s2 * s3;
+    x.value = s1 * c2 * c3 - c1 * s2 * s3;
+    y.value = c1 * s2 * c3 + s1 * c2 * s3;
+    z.value = c1 * c2 * s3 + s1 * s2 * c3;
+    w.value = c1 * c2 * c3 - s1 * s2 * s3;
 
   } else if ( euler.order() == enums::EulerRotationOrder::ZYX ) {
 
-    _x = s1 * c2 * c3 - c1 * s2 * s3;
-    _y = c1 * s2 * c3 + s1 * c2 * s3;
-    _z = c1 * c2 * s3 - s1 * s2 * c3;
-    _w = c1 * c2 * c3 + s1 * s2 * s3;
+    x.value = s1 * c2 * c3 - c1 * s2 * s3;
+    y.value = c1 * s2 * c3 + s1 * c2 * s3;
+    z.value = c1 * c2 * s3 - s1 * s2 * c3;
+    w.value = c1 * c2 * c3 + s1 * s2 * s3;
 
   } else if ( euler.order() == enums::EulerRotationOrder::YZX ) {
 
-    _x = s1 * c2 * c3 + c1 * s2 * s3;
-    _y = c1 * s2 * c3 + s1 * c2 * s3;
-    _z = c1 * c2 * s3 - s1 * s2 * c3;
-    _w = c1 * c2 * c3 - s1 * s2 * s3;
+    x.value = s1 * c2 * c3 + c1 * s2 * s3;
+    y.value = c1 * s2 * c3 + s1 * c2 * s3;
+    z.value = c1 * c2 * s3 - s1 * s2 * c3;
+    w.value = c1 * c2 * c3 - s1 * s2 * s3;
 
   } else if ( euler.order() == enums::EulerRotationOrder::XZY ) {
 
-    _x = s1 * c2 * c3 - c1 * s2 * s3;
-    _y = c1 * s2 * c3 - s1 * c2 * s3;
-    _z = c1 * c2 * s3 + s1 * s2 * c3;
-    _w = c1 * c2 * c3 + s1 * s2 * s3;
+    x.value = s1 * c2 * c3 - c1 * s2 * s3;
+    y.value = c1 * s2 * c3 - s1 * c2 * s3;
+    z.value = c1 * c2 * s3 + s1 * s2 * c3;
+    w.value = c1 * c2 * c3 + s1 * s2 * s3;
 
   }
 
@@ -94,37 +94,37 @@ Quaternion& Quaternion::setFromRotationMatrix( const Matrix4& m ) {
 
     s = 0.5f / Math::sqrt( trace + 1.0f );
 
-    _w = 0.25f / s;
-    _x = ( m32 - m23 ) * s;
-    _y = ( m13 - m31 ) * s;
-    _z = ( m21 - m12 ) * s;
+    w.value = 0.25f / s;
+    x.value = ( m32 - m23 ) * s;
+    y.value = ( m13 - m31 ) * s;
+    z.value = ( m21 - m12 ) * s;
 
   } else if ( m11 > m22 && m11 > m33 ) {
 
     s = 2.0f * Math::sqrt( 1.0f + m11 - m22 - m33 );
 
-    _w = (m32 - m23 ) / s;
-    _x = 0.25f * s;
-    _y = (m12 + m21 ) / s;
-    _z = (m13 + m31 ) / s;
+    w.value = (m32 - m23 ) / s;
+    x.value = 0.25f * s;
+    y.value = (m12 + m21 ) / s;
+    z.value = (m13 + m31 ) / s;
 
   } else if ( m22 > m33 ) {
 
     s = 2.0f * Math::sqrt( 1.0f + m22 - m11 - m33 );
 
-    _w = (m13 - m31 ) / s;
-    _x = (m12 + m21 ) / s;
-    _y = 0.25f * s;
-    _z = (m23 + m32 ) / s;
+    w.value = (m13 - m31 ) / s;
+    x.value = (m12 + m21 ) / s;
+    y.value = 0.25f * s;
+    z.value = (m23 + m32 ) / s;
 
   } else {
 
     s = 2.0f * Math::sqrt( 1.0f + m33 - m11 - m22 );
 
-    _w = ( m21 - m12 ) / s;
-    _x = ( m13 + m31 ) / s;
-    _y = ( m23 + m32 ) / s;
-    _z = 0.25f * s;
+    w.value = ( m21 - m12 ) / s;
+    x.value = ( m13 + m31 ) / s;
+    y.value = ( m23 + m32 ) / s;
+    z.value = 0.25f * s;
 
   }
 
@@ -140,19 +140,19 @@ Quaternion& Quaternion::normalize() {
 
   if ( l == 0.f ) {
 
-    _x = 0;
-    _y = 0;
-    _z = 0;
-    _w = 1;
+    x.value = 0;
+    y.value = 0;
+    z.value = 0;
+    w.value = 1;
 
   } else {
 
     l = 1.f / l;
 
-    _x = _x * l;
-    _y = _y * l;
-    _z = _z * l;
-    _w = _w * l;
+    x.value = x.value * l;
+    y.value = y.value * l;
+    z.value = z.value * l;
+    w.value = w.value * l;
 
   }
 
@@ -163,13 +163,13 @@ Quaternion& Quaternion::multiplyQuaternions( const Quaternion& a, const Quaterni
 
   // from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
 
-  auto qax = a.x(), qay = a.y(), qaz = a.z(), qaw = a.w();
-  auto qbx = b.x(), qby = b.y(), qbz = b.z(), qbw = b.w();
+  auto qax = a.x.value, qay = a.y.value, qaz = a.z.value, qaw = a.w.value;
+  auto qbx = b.x.value, qby = b.y.value, qbz = b.z.value, qbw = b.w.value;
 
-  _x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
-  _y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
-  _z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
-  _w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+  x.value = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
+  y.value = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
+  z.value = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
+  w.value = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
 
   _updateEuler();
 
@@ -179,18 +179,18 @@ Quaternion& Quaternion::multiplyQuaternions( const Quaternion& a, const Quaterni
 
 Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
 
-  auto x = _x, y = _y, z = _z, w = _w;
+  auto x = this->x.value, y = this->y.value, z = this->z.value, w = this->w.value;
 
   // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
 
-  auto cosHalfTheta = w * qb.w() + x * qb.x() + y * qb.y() + z * qb.z();
+  auto cosHalfTheta = w * qb.w.value + x * qb.x.value + y * qb.y.value + z * qb.z.value;
 
   if ( cosHalfTheta < 0.f ) {
 
-    _w = -qb.w();
-    _x = -qb.x();
-    _y = -qb.y();
-    _z = -qb.z();
+    this->w.value = -qb.w.value;
+    this->x.value = -qb.x.value;
+    this->y.value = -qb.y.value;
+    this->z.value = -qb.z.value;
 
     cosHalfTheta = -cosHalfTheta;
 
@@ -202,10 +202,10 @@ Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
 
   if ( cosHalfTheta >= 1.0f ) {
 
-    _w = w;
-    _x = x;
-    _y = y;
-    _z = z;
+    this->w.value = w;
+    this->x.value = x;
+    this->y.value = y;
+    this->z.value = z;
 
     return *this;
 
@@ -216,10 +216,10 @@ Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
 
   if ( Math::abs( sinHalfTheta ) < 0.001f ) {
 
-    _w = 0.5f * ( w + _w );
-    _x = 0.5f * ( x + _x );
-    _y = 0.5f * ( y + _y );
-    _z = 0.5f * ( z + _z );
+    this->w.value = 0.5f * ( w + this->w.value );
+    this->x.value = 0.5f * ( x + this->x.value );
+    this->y.value = 0.5f * ( y + this->y.value );
+    this->z.value = 0.5f * ( z + this->z.value );
 
     return *this;
 
@@ -228,10 +228,10 @@ Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
   auto ratioA = Math::sin( ( 1.f - t ) * halfTheta ) / sinHalfTheta,
        ratioB = Math::sin( t * halfTheta ) / sinHalfTheta;
 
-  _w = ( w * ratioA + _w * ratioB );
-  _x = ( x * ratioA + _x * ratioB );
-  _y = ( y * ratioA + _y * ratioB );
-  _z = ( z * ratioA + _z * ratioB );
+  this->w.value = ( w * ratioA + this->w.value * ratioB );
+  this->x.value = ( x * ratioA + this->x.value * ratioB );
+  this->y.value = ( y * ratioA + this->y.value * ratioB );
+  this->z.value = ( z * ratioA + this->z.value * ratioB );
 
   _updateEuler();
 

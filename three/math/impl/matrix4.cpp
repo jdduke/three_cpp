@@ -253,7 +253,7 @@ Matrix4& Matrix4::makeRotationFromQuaternion( const Quaternion& q ) {
 
   auto& te = elements;
 
-  auto x = q.x(), y = q.y(), z = q.z(), w = q.w();
+  float x = q.x, y = q.y, z = q.z, w = q.w;
   auto x2 = x + x, y2 = y + y, z2 = z + z;
   auto xx = x * x2, xy = x * y2, xz = x * z2;
   auto yy = y * y2, yz = y * z2, zz = z * z2;

@@ -26,10 +26,10 @@ Quaternion qSub( const Quaternion& a, const Quaternion& b ) {
 	auto result = Quaternion();
 	result.copy( a );
 
-	result.x( result.x() - b.x() );
-	result.y( result.y() - b.y() );
-	result.z( result.z() - b.z() );
-	result.w( result.w() - b.w() );
+	result.x = result.x - b.x;
+	result.y = result.y - b.y;
+	result.z = result.z - b.z;
+	result.w = result.w - b.w;
 
 	return result;
 
@@ -37,47 +37,47 @@ Quaternion qSub( const Quaternion& a, const Quaternion& b ) {
 
 TEST(math_quaternion_test, constructor) {
 	auto a = Quaternion();
-	EXPECT_TRUE( a.x() == 0 );
-	EXPECT_TRUE( a.y() == 0 );
-	EXPECT_TRUE( a.z() == 0 );
-	EXPECT_TRUE( a.w() == 1 );
+	EXPECT_TRUE( a.x == 0 );
+	EXPECT_TRUE( a.y == 0 );
+	EXPECT_TRUE( a.z == 0 );
+	EXPECT_TRUE( a.w == 1 );
 
 	a = Quaternion( x, y, z, w );
-	EXPECT_TRUE( a.x() == x );
-	EXPECT_TRUE( a.y() == y );
-	EXPECT_TRUE( a.z() == z );
-	EXPECT_TRUE( a.w() == w );
+	EXPECT_TRUE( a.x == x );
+	EXPECT_TRUE( a.y == y );
+	EXPECT_TRUE( a.z == z );
+	EXPECT_TRUE( a.w == w );
 }
 
 TEST(math_quaternion_test, copy) {
 	auto a = Quaternion( x, y, z, w );
 	auto b = Quaternion().copy( a );
-	EXPECT_TRUE( b.x() == x );
-	EXPECT_TRUE( b.y() == y );
-	EXPECT_TRUE( b.z() == z );
-	EXPECT_TRUE( b.w() == w );
+	EXPECT_TRUE( b.x == x );
+	EXPECT_TRUE( b.y == y );
+	EXPECT_TRUE( b.z == z );
+	EXPECT_TRUE( b.w == w );
 
 	// ensure that it is a true copy
-	a.x(0);
-	a.y(-1);
-	a.z(0);
-	a.w(-1);
-	EXPECT_TRUE( b.x() == x );
-	EXPECT_TRUE( b.y() == y );
+	a.x = 0;
+	a.y = -1;
+	a.z = 0;
+	a.w = -1;
+	EXPECT_TRUE( b.x == x );
+	EXPECT_TRUE( b.y == y );
 }
 
 TEST(math_quaternion_test, set) {
 	auto a = Quaternion();
-	EXPECT_TRUE( a.x() == 0 );
-	EXPECT_TRUE( a.y() == 0 );
-	EXPECT_TRUE( a.z() == 0 );
-	EXPECT_TRUE( a.w() == 1 );
+	EXPECT_TRUE( a.x == 0 );
+	EXPECT_TRUE( a.y == 0 );
+	EXPECT_TRUE( a.z == 0 );
+	EXPECT_TRUE( a.w == 1 );
 
 	a.set( x, y, z, w );
-	EXPECT_TRUE( a.x() == x );
-	EXPECT_TRUE( a.y() == y );
-	EXPECT_TRUE( a.z() == z );
-	EXPECT_TRUE( a.w() == w );
+	EXPECT_TRUE( a.x == x );
+	EXPECT_TRUE( a.y == y );
+	EXPECT_TRUE( a.z == z );
+	EXPECT_TRUE( a.w == w );
 }
 
 TEST(math_quaternion_test, setFromAxisAngle) {
@@ -157,10 +157,10 @@ TEST(math_quaternion_test, inverse_conjugate) {
 
 	auto b = a.clone().conjugate();
 
-	EXPECT_TRUE( a.x() == -b.x() );
-	EXPECT_TRUE( a.y() == -b.y() );
-	EXPECT_TRUE( a.z() == -b.z() );
-	EXPECT_TRUE( a.w() == b.w() );
+	EXPECT_TRUE( a.x == -b.x );
+	EXPECT_TRUE( a.y == -b.y );
+	EXPECT_TRUE( a.z == -b.z );
+	EXPECT_TRUE( a.w == b.w );
 }
 
 
@@ -209,15 +209,15 @@ TEST(math_quaternion_test, equals) {
 	auto a = Quaternion( x, y, z, w );
 	auto b = Quaternion( -x, -y, -z, -w );
 	
-	EXPECT_TRUE( a.x() != b.x() );
-	EXPECT_TRUE( a.y() != b.y() );
+	EXPECT_TRUE( a.x != b.x );
+	EXPECT_TRUE( a.y != b.y );
 
 	EXPECT_TRUE( ! a.equals( b ) );
 	EXPECT_TRUE( ! b.equals( a ) );
 
 	a.copy( b );
-	EXPECT_TRUE( a.x() == b.x() );
-	EXPECT_TRUE( a.y() == b.y() );
+	EXPECT_TRUE( a.x == b.x );
+	EXPECT_TRUE( a.y == b.y );
 
 	EXPECT_TRUE( a.equals( b ) );
 	EXPECT_TRUE( b.equals( a ) );

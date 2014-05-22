@@ -5,6 +5,7 @@
 #include <three/math/math.h>
 #include <three/math/vector3.h>
 #include <three/utils/memory.h>
+#include <three/utils/floating_point_hook.h>
 #include <memory>
 
 namespace three {
@@ -14,81 +15,30 @@ class Quaternion {
 public:
 
   Quaternion()
-    : _x( 0.f ), _y( 0.f ), _z( 0.f ), _w( 1.f ), _euler( nullptr ) {}
+    : x( FLOAT_HOOK( Quaternion, _updateEuler, 0.f ) ),
+      y( FLOAT_HOOK( Quaternion, _updateEuler, 0.f ) ),
+      z( FLOAT_HOOK( Quaternion, _updateEuler, 0.f ) ),
+      w( FLOAT_HOOK( Quaternion, _updateEuler, 1.f ) ),
+      _euler( nullptr ) {}
 
   Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f )
-    : _x( xIn ), _y( yIn ), _z( zIn ), _w( wIn ), _euler( nullptr ) {}
-    
-  inline const float& x() const {
+    : x( FLOAT_HOOK( Quaternion, _updateEuler, xIn ) ),
+      y( FLOAT_HOOK( Quaternion, _updateEuler, yIn ) ),
+      z( FLOAT_HOOK( Quaternion, _updateEuler, zIn ) ),
+      w( FLOAT_HOOK( Quaternion, _updateEuler, wIn ) ),
+      _euler( nullptr ) {}
 
-    return _x;
+  FloatingPointHook<float, Quaternion> x;
+  FloatingPointHook<float, Quaternion> y;
+  FloatingPointHook<float, Quaternion> z;
+  FloatingPointHook<float, Quaternion> w;
 
-  }
+  inline Quaternion& set( float xIn, float yIn, float zIn, float wIn ) {
 
-  inline Quaternion& x( float value ) {
-
-    _x = value;
-
-    _updateEuler();
-
-    return *this;
-
-  }
-
-  inline float y() const {
-
-    return _y;
-
-  }
-
-  inline Quaternion& y( float value ) {
-
-    _y = value;
-
-    _updateEuler();
-
-    return *this;
-
-  }
-
-  inline float z() const {
-
-    return _z;
-
-  }
-
-  inline Quaternion& z(float value) {
-
-    _z = value;
-
-    _updateEuler();
-
-    return *this;
-
-  }
-
-  inline float w() const {
-
-    return _w;
-
-  }
-
-  inline Quaternion& w(float value) {
-
-    _w = value;
-
-    _updateEuler();
-
-    return *this;
-
-  }
-
-  inline Quaternion& set( float x, float y, float z, float w ) {
-
-    _x = x;
-    _y = y;
-    _z = z;
-    _w = w;
+    x.value = xIn;
+    y.value = yIn;
+    z.value = zIn;
+    w.value = wIn;
 
     _updateEuler();
 
@@ -98,10 +48,10 @@ public:
 
   inline Quaternion& copy( const Quaternion& quaternion ) {
 
-    _x = quaternion._x;
-    _y = quaternion._y;
-    _z = quaternion._z;
-    _w = quaternion._w;
+    x.value = quaternion.x.value;
+    y.value = quaternion.y.value;
+    z.value = quaternion.z.value;
+    w.value = quaternion.w.value;
 
     _updateEuler();
 
@@ -118,10 +68,10 @@ public:
 
     auto halfAngle = angle / 2.f, s = Math::sin( halfAngle );
 
-    _x = axis.x * s;
-    _y = axis.y * s;
-    _z = axis.z * s;
-    _w = Math::cos( halfAngle );
+    x.value = axis.x * s;
+    y.value = axis.y * s;
+    z.value = axis.z * s;
+    w.value = Math::cos( halfAngle );
 
     _updateEuler();
 
@@ -141,9 +91,9 @@ public:
 
   inline Quaternion& conjugate() {
 
-    _x *= -1;
-    _y *= -1;
-    _z *= -1;
+    x.value *= -1;
+    y.value *= -1;
+    z.value *= -1;
 
     _updateEuler();
 
@@ -153,13 +103,13 @@ public:
 
   inline float lengthSq() const {
 
-    return _x * _x + _y * _y + _z * _z + _w * _w;
+    return x.value * x.value + y.value * y.value + z.value * z.value + w.value * w.value;
 
   }
 
   inline float length() const {
 
-    return Math::sqrt( _x * _x + _y * _y + _z * _z + _w * _w );
+    return Math::sqrt( x.value * x.value + y.value * y.value + z.value * z.value + w.value * w.value );
 
   }
 
@@ -174,7 +124,7 @@ public:
   Quaternion& slerp( const Quaternion& qb, float t );
 
   inline bool equals( const Quaternion& quaternion ) const {
-    return ( quaternion.x() == _x ) && ( quaternion.y() == _y ) && ( quaternion.z() == _z ) && ( quaternion.w() == _w );
+    return ( quaternion.x.value == x.value ) && ( quaternion.y.value == y.value ) && ( quaternion.z.value == z.value ) && ( quaternion.w.value == w.value );
   }
 
   inline Quaternion clone() {
@@ -185,13 +135,6 @@ private:
 
   friend class Object3D;
   friend class Euler;
-    
-  union {
-    struct {
-      float _x, _y, _z, _w;
-    };
-    float _xyzw[4];
-  };
 
   Euler* _euler;
 

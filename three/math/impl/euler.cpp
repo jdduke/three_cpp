@@ -115,46 +115,46 @@ Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotation
 // q is assumed to be normalized
 // http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
 
-  auto sqx = q.x() * q.x();
-  auto sqy = q.y() * q.y();
-  auto sqz = q.z() * q.z();
-  auto sqw = q.w() * q.w();
+  auto sqx = q.x * q.x;
+  auto sqy = q.y * q.y;
+  auto sqz = q.z * q.z;
+  auto sqw = q.w * q.w;
 
   if ( order == enums::EulerRotationOrder::XYZ) {
 
-    x.value = Math::atan2( 2 * ( q.x() * q.w() - q.y() * q.z() ), ( sqw - sqx - sqy + sqz ) );
-    y.value = Math::asin(  _clamp( 2 * ( q.x() * q.z() + q.y() * q.w() ) ) );
-    z.value = Math::atan2( 2 * ( q.z() * q.w() - q.x() * q.y() ), ( sqw + sqx - sqy - sqz ) );
+    x.value = Math::atan2( 2 * ( q.x.value * q.w.value - q.y.value * q.z.value ), ( sqw - sqx - sqy + sqz ) );
+    y.value = Math::asin(  _clamp( 2 * ( q.x.value * q.z.value + q.y.value * q.w.value ) ) );
+    z.value = Math::atan2( 2 * ( q.z.value * q.w.value - q.x.value * q.y.value ), ( sqw + sqx - sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::YXZ ) {
 
-    x.value = Math::asin(  _clamp( 2 * ( q.x() * q.w() - q.y() * q.z() ) ) );
-    y.value = Math::atan2( 2 * ( q.x() * q.z() + q.y() * q.w() ), ( sqw - sqx - sqy + sqz ) );
-    z.value = Math::atan2( 2 * ( q.x() * q.y() + q.z() * q.w() ), ( sqw - sqx + sqy - sqz ) );
+    x.value = Math::asin(  _clamp( 2 * ( q.x.value * q.w.value - q.y.value * q.z.value ) ) );
+    y.value = Math::atan2( 2 * ( q.x.value * q.z.value + q.y.value * q.w.value ), ( sqw - sqx - sqy + sqz ) );
+    z.value = Math::atan2( 2 * ( q.x.value * q.y.value + q.z.value * q.w.value ), ( sqw - sqx + sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::ZXY ) {
 
-    x.value = Math::asin(  _clamp( 2 * ( q.x() * q.w() + q.y() * q.z() ) ) );
-    y.value = Math::atan2( 2 * ( q.y() * q.w() - q.z() * q.x() ), ( sqw - sqx - sqy + sqz ) );
-    z.value = Math::atan2( 2 * ( q.z() * q.w() - q.x() * q.y() ), ( sqw - sqx + sqy - sqz ) );
+    x.value = Math::asin(  _clamp( 2 * ( q.x.value * q.w.value + q.y.value * q.z.value ) ) );
+    y.value = Math::atan2( 2 * ( q.y.value * q.w.value - q.z.value * q.x.value ), ( sqw - sqx - sqy + sqz ) );
+    z.value = Math::atan2( 2 * ( q.z.value * q.w.value - q.x.value * q.y.value ), ( sqw - sqx + sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::ZYX ) {
 
-    x.value = Math::atan2( 2 * ( q.x() * q.w() + q.z() * q.y() ), ( sqw - sqx - sqy + sqz ) );
-    y.value = Math::asin(  _clamp( 2 * ( q.y() * q.w() - q.x() * q.z() ) ) );
-    z.value = Math::atan2( 2 * ( q.x() * q.y() + q.z() * q.w() ), ( sqw + sqx - sqy - sqz ) );
+    x.value = Math::atan2( 2 * ( q.x.value * q.w.value + q.z.value * q.y.value ), ( sqw - sqx - sqy + sqz ) );
+    y.value = Math::asin(  _clamp( 2 * ( q.y.value * q.w.value - q.x.value * q.z.value ) ) );
+    z.value = Math::atan2( 2 * ( q.x.value * q.y.value + q.z.value * q.w.value ), ( sqw + sqx - sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::YZX ) {
 
-    x.value = Math::atan2( 2 * ( q.x() * q.w() - q.z() * q.y() ), ( sqw - sqx + sqy - sqz ) );
-    y.value = Math::atan2( 2 * ( q.y() * q.w() - q.x() * q.z() ), ( sqw + sqx - sqy - sqz ) );
-    z.value = Math::asin(  _clamp( 2 * ( q.x() * q.y() + q.z() * q.w() ) ) );
+    x.value = Math::atan2( 2 * ( q.x.value * q.w.value - q.z.value * q.y.value ), ( sqw - sqx + sqy - sqz ) );
+    y.value = Math::atan2( 2 * ( q.y.value * q.w.value - q.x.value * q.z.value ), ( sqw + sqx - sqy - sqz ) );
+    z.value = Math::asin(  _clamp( 2 * ( q.x.value * q.y.value + q.z.value * q.w.value ) ) );
 
   } else if ( order == enums::EulerRotationOrder::XZY ) {
 
-    x.value = Math::atan2( 2 * ( q.x() * q.w() + q.y() * q.z() ), ( sqw - sqx + sqy - sqz ) );
-    y.value = Math::atan2( 2 * ( q.x() * q.z() + q.y() * q.w() ), ( sqw + sqx - sqy - sqz ) );
-    z.value = Math::asin(  _clamp( 2 * ( q.z() * q.w() - q.x() * q.y() ) ) );
+    x.value = Math::atan2( 2 * ( q.x.value * q.w.value + q.y.value * q.z.value ), ( sqw - sqx + sqy - sqz ) );
+    y.value = Math::atan2( 2 * ( q.x.value * q.z.value + q.y.value * q.w.value ), ( sqw + sqx - sqy - sqz ) );
+    z.value = Math::asin(  _clamp( 2 * ( q.z.value * q.w.value - q.x.value * q.y.value ) ) );
 
   } else {
     //@todo

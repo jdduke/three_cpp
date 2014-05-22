@@ -19,11 +19,12 @@ const std::string vertexShader =
 "attribute vec4 ca;\n"
 "varying vec4 vColor;\n"
 "void main() {\n"
-"  vColor = ca;\n"
-"  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
-"  gl_PointSize = size * ( 150.0 / length( mvPosition.xyz ) );\n"
-"  gl_Position = projectionMatrix * mvPosition;\n"
+"    vColor = ca;\n"
+"    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n"
+"    gl_PointSize = size * ( 150.0 / length( mvPosition.xyz ) );\n"
+"    gl_Position = projectionMatrix * mvPosition;\n"
 "}\n";
+
 
 const std::string fragmentShader =
 "uniform vec3 color;\n"
@@ -59,6 +60,7 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
   attributes[ "ca" ]   = Attribute( enums::c );
 
   Uniforms uniforms;
+  uniforms[ "amplitude" ]  = Uniform( enums::f, 1.0 );
   uniforms[ "color" ]      = Uniform( enums::c, Color( 0xffffff ) );
   uniforms[ "texture" ]    = Uniform( enums::t, texture.get() );
 

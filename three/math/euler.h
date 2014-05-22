@@ -11,29 +11,30 @@
 namespace three {
 
 class Euler {
-
 public:
 
   static const enums::EulerRotationOrder DefaultOrder = enums::EulerRotationOrder::XYZ;
 
-  THREE_REVIEW("EA: Initialization order x y z")
   Euler()
-    : x( FloatingPointHook<float, Euler>(0.f, this, &Euler::_updateQuaternion ) ),
-      y( FloatingPointHook<float, Euler>(0.f, this, &Euler::_updateQuaternion ) ),
-      z( FloatingPointHook<float, Euler>(0.f, this, &Euler::_updateQuaternion ) ),
-      _order(enums::EulerRotationOrder::XYZ), _quaternion( nullptr ) {};
+    : x( FLOAT_HOOK( Euler, _updateQuaternion, 0.f ) ),
+      y( FLOAT_HOOK( Euler, _updateQuaternion, 0.f ) ),
+      z( FLOAT_HOOK( Euler, _updateQuaternion, 0.f ) ),
+      _order( enums::EulerRotationOrder::XYZ ), 
+      _quaternion( nullptr ) {};
 
-  Euler( const float xIn, const float yIn, const float zIn)
-    : x( FLOAT_HOOK(Euler, _updateQuaternion, xIn) ), 
-      y( FLOAT_HOOK(Euler, _updateQuaternion, yIn) ), 
-      z( FLOAT_HOOK(Euler, _updateQuaternion, zIn) ), 
-      _order( enums::EulerRotationOrder::XYZ ), _quaternion( nullptr ) {};
+  Euler( const float xIn, const float yIn, const float zIn )
+    : x( FLOAT_HOOK(Euler, _updateQuaternion, xIn ) ), 
+      y( FLOAT_HOOK(Euler, _updateQuaternion, yIn ) ), 
+      z( FLOAT_HOOK(Euler, _updateQuaternion, zIn ) ), 
+      _order( enums::EulerRotationOrder::XYZ ), 
+      _quaternion( nullptr ) {};
 
-  Euler( const float xIn, const float yIn, const float zIn, const enums::EulerRotationOrder orderIn)
-    : x( FLOAT_HOOK(Euler, _updateQuaternion, xIn) ), 
-      y( FLOAT_HOOK(Euler, _updateQuaternion, yIn) ), 
-      z( FLOAT_HOOK(Euler, _updateQuaternion, zIn) ),  
-      _order(orderIn), _quaternion( nullptr ) {};
+  Euler( const float xIn, const float yIn, const float zIn, const enums::EulerRotationOrder orderIn )
+    : x( FLOAT_HOOK( Euler, _updateQuaternion, xIn ) ), 
+      y( FLOAT_HOOK( Euler, _updateQuaternion, yIn ) ), 
+      z( FLOAT_HOOK( Euler, _updateQuaternion, zIn ) ),  
+      _order( orderIn ), 
+      _quaternion( nullptr ) {};
 
   FloatingPointHook<float, Euler> x;
   FloatingPointHook<float, Euler> y;
@@ -43,15 +44,6 @@ public:
 
     return _order;
 
-  }
-
-  inline Euler& w(const enums::EulerRotationOrder& value) {
-
-    _order = value;
-
-    _updateQuaternion();
-
-    return *this;
   }
 
   inline Euler& set( float xIn, float yIn, float zIn) {
@@ -105,7 +97,7 @@ public:
 
   Euler& setFromQuaternion( const Quaternion& q, const enums::EulerRotationOrder order, bool update = false );
 
-  inline Euler& reorder(enums::EulerRotationOrder newOrder) {
+  inline Euler& reorder( enums::EulerRotationOrder newOrder ) {
 
     // WARNING: this discards revolution information -bhouston
 
@@ -135,7 +127,7 @@ private:
 
   void _updateQuaternion() {
 
-    if(_quaternion) {
+    if( _quaternion ) {
       _quaternion->setFromEuler( *this, false );
     }
 

@@ -15,17 +15,10 @@ class FloatingPointHook<T, C, typename std::enable_if<std::is_floating_point<T>:
 public:
     
     FloatingPointHook()
-    : value( 0 ), obj( nullptr ), hook( nullptr ) {
-    }
+      : value( 0 ), obj( nullptr ), hook( nullptr ) {}
     
     FloatingPointHook(const T other, C *objIn, void (C::*hookIn)() )
-    : value( other ), obj( objIn), hook( hookIn ) {
-        THREE_REVIEW("EA: Initialization order")
-        //((obj)->*(hook))();
-    }
-    
-   // FloatingPointHook(const FloatingPointHook& other)
-   // : value( other.value ), obj( other.obj ), hook( other.hook ) { ((obj)->*(hook))(); }
+      : value( other ), obj( objIn), hook( hookIn ) {}
     
     T value;
 
@@ -36,47 +29,7 @@ public:
     operator const T() const { return value; }
         
     inline FloatingPointHook& operator=(const T other){ value = other; ((obj)->*(hook))(); return *this; }
-
-    inline FloatingPointHook& operator*=(const T other){ value *= other; ((obj)->*(hook))(); return *this;}
-    inline FloatingPointHook& operator/=(const T other){ value /= other; ((obj)->*(hook))(); return *this; }
-    inline FloatingPointHook& operator+=(const T other){ value += other; ((obj)->*(hook))(); return *this; }
-    inline FloatingPointHook& operator-=(const T other){ value -= other; ((obj)->*(hook))(); return *this; }
-    inline FloatingPointHook& operator%=(const T other){ value %= other; ((obj)->*(hook))(); return *this; }
-    
-    inline T operator-(const T other){ return value - other; }
-    inline T operator+(const T other){ return value + other; }
-    inline T operator*(const T other){ return value * other; }
-    inline T operator/(const T other){ return value / other; }
-    inline T operator%(const T other){ return value % other; }
-    
-    inline bool operator==(const T& other) const { return value == other; }
-    inline bool operator!=(const T& other) const { return value != other; }
-    inline bool operator< (const T& other) const { return value < other; }
-    inline bool operator> (const T& other) const { return value < other; }
-    inline bool operator<=(const T& other) const { return value <= other; }
-    inline bool operator>=(const T& other) const { return value >= other; }
-    
-    
     inline FloatingPointHook& operator=(const FloatingPointHook& other){ value = other.value; hook = other.hook; ((obj)->*(hook))(); return *this; }
-    
-    inline FloatingPointHook& operator*=(const FloatingPointHook& other){ value *= other.value; ((obj)->*(hook))(); return *this;}
-    inline FloatingPointHook& operator/=(const FloatingPointHook& other){ value /= other.value; ((obj)->*(hook))(); return *this; }
-    inline FloatingPointHook& operator+=(const FloatingPointHook& other){ value += other.value; ((obj)->*(hook))(); return *this; }
-    inline FloatingPointHook& operator-=(const FloatingPointHook& other){ value -= other.value; ((obj)->*(hook))(); return *this; }
-    inline FloatingPointHook& operator%=(const FloatingPointHook& other){ value %= other.value; ((obj)->*(hook))(); return *this; }
-    
-    inline T operator-(const FloatingPointHook& other) const { return value - other.value; }
-    inline T operator+(const FloatingPointHook& other) const { return value - other.value; }
-    inline T operator*(const FloatingPointHook& other) const { return value - other.value; }
-    inline T operator/(const FloatingPointHook& other) const { return value - other.value; }
-    inline T operator%(const FloatingPointHook& other) const { return value - other.value; }
-    
-    inline bool operator==(const FloatingPointHook& other) const { return value == other.value; }
-    inline bool operator!=(const FloatingPointHook& other) const { return value != other.value; }
-    inline bool operator< (const FloatingPointHook& other) const { return value < other.value; }
-    inline bool operator> (const FloatingPointHook& other) const { return value < other.value; }
-    inline bool operator<=(const FloatingPointHook& other) const { return value <= other.value; }
-    inline bool operator>=(const FloatingPointHook& other) const { return value >= other.value; }
     
     inline friend std::ostream& operator<<(std::ostream &out, const FloatingPointHook<T, C>& other) {
         out << other.value;
