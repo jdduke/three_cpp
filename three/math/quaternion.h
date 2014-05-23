@@ -21,7 +21,7 @@ public:
       w( FLOAT_HOOK( Quaternion, _updateEuler, 1.f ) ),
       _euler( nullptr ) {}
 
-  Quaternion( float xIn, float yIn, float zIn, float wIn = 1.f )
+  Quaternion( const float xIn, const float yIn, const float zIn, const float wIn = 1.f )
     : x( FLOAT_HOOK( Quaternion, _updateEuler, xIn ) ),
       y( FLOAT_HOOK( Quaternion, _updateEuler, yIn ) ),
       z( FLOAT_HOOK( Quaternion, _updateEuler, zIn ) ),
@@ -33,7 +33,7 @@ public:
   NumericalHook<float, Quaternion> z;
   NumericalHook<float, Quaternion> w;
 
-  inline Quaternion& set( float xIn, float yIn, float zIn, float wIn ) {
+  inline Quaternion& set( const float xIn, const float yIn, const float zIn, const float wIn ) {
 
     x.value = xIn;
     y.value = yIn;
@@ -61,7 +61,7 @@ public:
 
   Quaternion& setFromEuler( const Euler& euler, bool update = false );
 
-  inline Quaternion& setFromAxisAngle( const Vector3& axis, float angle ) {
+  inline Quaternion& setFromAxisAngle( const Vector3& axis, const float angle ) {
 
     // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
     // axis have to be normalized

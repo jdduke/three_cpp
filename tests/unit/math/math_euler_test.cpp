@@ -16,6 +16,16 @@ TEST(math_euler_test, constructor_equals) {
 	EXPECT_TRUE( a.equals( eulerZero ) );
 	EXPECT_TRUE( ! a.equals( eulerAxyz ) );
 	EXPECT_TRUE( ! a.equals( eulerAzyx ) );
+    
+    a = Euler(x, y, z);
+	EXPECT_TRUE( a.x == x );
+	EXPECT_TRUE( a.y == y );
+	EXPECT_TRUE( a.z == z );
+    
+    auto b = Euler(x, y, z);
+	EXPECT_TRUE( b.x == x );
+	EXPECT_TRUE( b.y == y );
+	EXPECT_TRUE( b.z == z );
 }
 
 TEST(math_euler_test, clone_copy_equals) {

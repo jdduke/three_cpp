@@ -24,8 +24,22 @@ public:
 
     operator const T() const { return value; }
         
-    inline NumericalHook& operator=(const T other){ value = other; ((obj)->*(hook))(); return *this; }
-    inline T operator=(const NumericalHook& other){ return other.value; }
+    inline NumericalHook& operator=(const T other){
+        
+        value = other;
+        ((obj)->*(hook))(); 
+        
+        return *this;
+    }
+    inline NumericalHook operator=(const NumericalHook& other){
+        
+        // EA: Ugly..
+        value = other;
+        ((obj)->*(hook))();
+        
+        auto result = NumericalHook(other.value, other.obj, other.hook);
+        return result;
+    }
     
     template<typename N, typename std::enable_if<std::is_arithmetic<N>::value>::type>
     inline NumericalHook& operator*=(const N other){ value *= other; ((obj)->*(hook))(); return *this;}
