@@ -5,7 +5,7 @@
 #include <three/math/math.h>
 #include <three/math/vector3.h>
 #include <three/utils/memory.h>
-#include <three/utils/floating_point_hook.h>
+#include <three/utils/functional.h>
 #include <memory>
 
 namespace three {
@@ -28,10 +28,10 @@ public:
       w( FLOAT_HOOK( Quaternion, _updateEuler, wIn ) ),
       _euler( nullptr ) {}
 
-  FloatingPointHook<float, Quaternion> x;
-  FloatingPointHook<float, Quaternion> y;
-  FloatingPointHook<float, Quaternion> z;
-  FloatingPointHook<float, Quaternion> w;
+  NumericalHook<float, Quaternion> x;
+  NumericalHook<float, Quaternion> y;
+  NumericalHook<float, Quaternion> z;
+  NumericalHook<float, Quaternion> w;
 
   inline Quaternion& set( float xIn, float yIn, float zIn, float wIn ) {
 

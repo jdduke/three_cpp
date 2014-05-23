@@ -6,7 +6,7 @@
 #include <three/constants.h>
 
 #include <three/math/quaternion.h>
-#include <three/utils/floating_point_hook.h>
+#include <three/utils/functional.h>
 
 namespace three {
 
@@ -36,9 +36,9 @@ public:
       _order( orderIn ), 
       _quaternion( nullptr ) {};
 
-  FloatingPointHook<float, Euler> x;
-  FloatingPointHook<float, Euler> y;
-  FloatingPointHook<float, Euler> z;
+  NumericalHook<float, Euler> x;
+  NumericalHook<float, Euler> y;
+  NumericalHook<float, Euler> z;
     
   inline const enums::EulerRotationOrder order() const {
 
