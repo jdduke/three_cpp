@@ -28,39 +28,6 @@ inline const float INF()  {
   return std::numeric_limits<float>::max();
 }
 
-inline static std::string generateUUID() {
-
-  char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-  std::stringstream uuid;
-
-  int rnd = 0, r;
-
-  for ( auto i = 0; i < 36; i ++ ) {
-
-    if ( i == 8 || i == 13 || i == 18 || i == 23 ) {
-
-      uuid << "-";
-
-    } else if ( i == 14 ) {
-
-      uuid << "4";
-
-    } else {
-
-      if (rnd <= 0x02) rnd = 0x2000000 + ((random()*0x1000000)|0);
-      r = rnd & 0xf;
-      rnd = rnd >> 4;
-      uuid << chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-
-    }
-  }
-
-  return uuid.str();
-
-};
-
-
 template < typename T > inline T sqrt( T t ) {
   return std::sqrt( t );
 }
@@ -100,14 +67,14 @@ template < typename T > inline T degToRad( T a )   {
 }
 
 template < typename T > inline T radToDeg( T a ) {
-    return a * MATH_RAD_TO_DEG_FACTOR;
+  return a * MATH_RAD_TO_DEG_FACTOR;
 }
 
 #if defined(_MSC_VER) || defined(ANDROID)
 template < typename T > inline T round( T n ) {
   return ( n > static_cast<T>(0) )
-      ? std::floor( n + static_cast<T>(0.5) )
-      : std::ceil(  n - static_cast<T>(0.5) );
+         ? std::floor( n + static_cast<T>(0.5) )
+         : std::ceil(  n - static_cast<T>(0.5) );
 }
 #else
 template < typename T > inline T round( T t ) {
@@ -182,7 +149,7 @@ inline T randomT( T low, T high ) {
 
 #endif // !defined(__MINGW32__)
 
-inline float random( float low = 0, float high = 1 ) {
+inline float random( float low = 0.f, float high = 1.f ) {
   return randomT( low, high );
 }
 
@@ -227,6 +194,40 @@ inline int lowerPowerOfTwo( int value ) {
 inline int nearestPowerOfTwo( int value ) {
   return (int)pow( 2.f, round( log( (float)value ) / LN2() ) );
 }
+
+static std::string generateUUID() {
+
+	char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+	std::stringstream uuid;
+
+	int rnd = 0, r;
+
+	for (auto i = 0; i < 36; i++) {
+
+		if (i == 8 || i == 13 || i == 18 || i == 23) {
+
+			uuid << "-";
+
+		}
+		else if (i == 14) {
+
+			uuid << "4";
+
+		}
+		else {
+
+			if (rnd <= 0x02) rnd = 0x2000000 + ( (randInt(0, std::numeric_limits<int>::max()) * 0x1000000) | 0);
+			r = rnd & 0xf;
+			rnd = rnd >> 4;
+			uuid << chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+
+		}
+	}
+
+	return uuid.str();
+
+};
 
 }
 
