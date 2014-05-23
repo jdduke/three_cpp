@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <map>
+#include <stdint.h>
 
 namespace three {
 

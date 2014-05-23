@@ -78,7 +78,7 @@ public:
 
   Plane& normalize() {
 
-    auto inverseNormalLength = 1.0 / normal.length();
+    auto inverseNormalLength = 1.0f / normal.length();
 
     normal.multiplyScalar( inverseNormalLength );
     constant *= inverseNormalLength;

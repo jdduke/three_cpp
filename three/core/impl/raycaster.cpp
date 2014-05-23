@@ -226,7 +226,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
       const auto& offsets = geometry->offsets;
       const auto& positions = geometry->attributes.get( AttributeKey::position() )->array;
 
-      for ( size_t i = 0; i < offsets.size(); i += 3 ) {
+      for ( int i = 0; i < offsets.size(); i += 3 ) {
 
         a = i;
         b = i + 1;

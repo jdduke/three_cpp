@@ -310,7 +310,7 @@ struct SceneVisitor : public Visitor {
 
       }
 
-      _face->vertexNormalsLength = faceVertexNormals.size();
+      _face->vertexNormalsLength = (int)faceVertexNormals.size();
 
       for ( int c = 0, cl = face.size(); c < cl; c ++ ) {
 

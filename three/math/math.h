@@ -7,6 +7,7 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 #define NEAR_ZERO_FLOAT_32 0.0000000000000000001f
 #define MATH_PI 3.1415926535897932384f
@@ -217,7 +218,7 @@ static std::string generateUUID() {
 		}
 		else {
 
-			if (rnd <= 0x02) rnd = 0x2000000 + ( (randInt(0, std::numeric_limits<int>::max()) * 0x1000000) | 0);
+			if (rnd <= 0x02) rnd = 0x2000000 + ( (std::rand() * 0x1000000) | 0);
 			r = rnd & 0xf;
 			rnd = rnd >> 4;
 			uuid << chars[(i == 19) ? (r & 0x3) | 0x8 : r];

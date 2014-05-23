@@ -161,7 +161,7 @@ Material::Material( )
     dashSize( 3.0f ) {
 
       // TODO not for every material...
-      defaultAttributeValues["color"] = {1,1,1};
+      defaultAttributeValues["color"] = std::vector<float>{ 1,1,1};
       defaultAttributeValues["uv"] = {0,0};
       defaultAttributeValues["uv2"] = {0,0};
 

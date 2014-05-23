@@ -35,11 +35,11 @@ struct PainterSortStable {
   bool operator()( const RenderableObject& a, const RenderableObject& b ) const {
     if ( a.z != b.z ) {
 
-		return b.z - a.z;
+		return b.z - a.z < 0;
 
 	} else {
 
-		return a.id - b.id;
+		return a.id - b.id < 0;
 
 	}
 }
@@ -47,11 +47,11 @@ struct PainterSortStable {
 bool operator()( const Renderable* a, const Renderable* b ) const {
   if ( a->z != b->z ) {
 
-		return b->z - a->z;
+	  return b->z - a->z < 0;
 
 	} else {
 
-		return a->id - b->id;
+	  return a->id - b->id < 0;
 
 	}
   }
