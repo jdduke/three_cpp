@@ -65,8 +65,6 @@ struct MorphNormal {
   GLBuffer __glLineBuffer;
   GLBuffer __glNormalBuffer;
   GLBuffer __glSkinIndicesBuffer;
-  //GLBuffer __glSkinVertexABuffer;
-  //GLBuffer __glSkinVertexBBuffer;
   GLBuffer __glSkinWeightsBuffer;
   GLBuffer __glTangentBuffer;
   GLBuffer __glUV2Buffer;
@@ -118,8 +116,6 @@ struct MorphNormal {
     __faceArray.clear();
     __vertexArray.clear();
     __lineArray.clear();
-    //__skinVertexAArray.clear();
-    //__skinVertexBArray.clear();
     __skinIndexArray.clear();
     __skinWeightArray.clear();
   }
@@ -138,8 +134,6 @@ struct MorphNormal {
       __glLineBuffer( 0 ),
       __glNormalBuffer( 0 ),
       __glSkinIndicesBuffer( 0 ),
-      //__glSkinVertexABuffer( 0 ),
-      //__glSkinVertexBBuffer( 0 ),
       __glSkinWeightsBuffer( 0 ),
       __glTangentBuffer( 0 ),
       __glUV2Buffer( 0 ),

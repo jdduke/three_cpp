@@ -163,7 +163,6 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
 
 }
 
-THREE_REVIEW("EA: Correctness of computeMorphNormals")
 void Geometry::computeMorphNormals() {
 
   __originalFaceNormal.resize( faces.size() );

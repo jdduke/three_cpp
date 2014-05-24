@@ -163,7 +163,6 @@ public:
   bool sortParticles;
 
   bool useVertexTexture;
-  // TODO "Bone shouldnt be a pointer"
   std::vector<Bone*> bones;
   std::vector<Matrix4> boneMatrices;
   Texture::Ptr boneTexture;
@@ -194,9 +193,6 @@ public:
       __glActive = false;
       _modelViewMatrix.identity();
       _normalMatrix.identity();
-      //_normalMatrixArray.clear();
-      //_modelViewMatrixArray.clear();
-      //_modelMatrixArray.clear();
       __glMorphTargetInfluences.clear();
     }
   } glData;
@@ -231,8 +227,6 @@ private:
 
   Euler _rotation;
   Quaternion _quaternion;
-  //this._rotation._quaternion = this.quaternion;
-  //this._quaternion._euler = this.rotation;
 
   static unsigned & Object3DIdCount() {
     static unsigned int sObject3DIdCount = 0;

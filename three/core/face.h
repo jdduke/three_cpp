@@ -52,9 +52,8 @@ public:
     return 3;
   }
 
-  THREE_REVIEW("EA: Does this do a deep copy?")
   Face clone() const {
-    return Face( *this );
+    return *this;
   }
 
 private:
