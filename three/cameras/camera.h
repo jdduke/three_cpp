@@ -42,7 +42,6 @@ public:
 
   }
 
-  THREE_REVIEW("Correct cloning here?")
   Ptr clone() const {
 
     Ptr camera =  three::make_shared<Camera>( near, far );

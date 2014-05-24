@@ -15,7 +15,7 @@ public:
 
   typedef std::shared_ptr<OrthographicCamera> Ptr;
 
-  static Ptr create( float left, float right, float top, float bottom, float near = 0.1f, float far = 2000 ) {
+  static Ptr create( float left, float right, float top, float bottom, float near = 0.1f, float far = 2000.f ) {
 
     return make_shared<OrthographicCamera>( left, right, top, bottom, near, far );
 
@@ -31,7 +31,6 @@ public:
 
   }
 
-  THREE_REVIEW("Correct cloning here?")
   Ptr clone() {
 
     Camera::Ptr camera = Camera::clone();

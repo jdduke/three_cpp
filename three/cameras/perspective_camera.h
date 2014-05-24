@@ -14,7 +14,7 @@ public:
 
   typedef std::shared_ptr<PerspectiveCamera> Ptr;
 
-  static Ptr create( float fov = 50, float aspect = 1, float near = 0.1f, float far = 2000 ) {
+  static Ptr create( float fov = 50.f, float aspect = 1.f, float near = 0.1f, float far = 2000.f ) {
 
     return make_shared<PerspectiveCamera>( fov, aspect, near, far );
 
@@ -28,9 +28,9 @@ public:
 
   float width, height;
 
-  void setLens( float focalLength, float frameHeight = 24 ) {
+  void setLens( float focalLength, float frameHeight = 24.f ) {
 
-    fov = 2.f * Math::radToDeg( Math::atan( frameHeight / ( focalLength * 2 ) ) );
+    fov = 2.f * Math::radToDeg( Math::atan( frameHeight / ( focalLength * 2.f ) ) );
 
     updateProjectionMatrix();
 
@@ -111,7 +111,6 @@ public:
 
   }
 
-  THREE_REVIEW("Correct cloning here?")
   Ptr clone() {
 
     Camera::Ptr camera = Camera::clone();
