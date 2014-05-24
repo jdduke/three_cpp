@@ -4,7 +4,7 @@
 #include <three/materials/material.h>
 #include <three/materials/attribute.h>
 
-#include <vector>
+#include <three/utils/conversion.h>
 
 namespace three {
 
@@ -161,9 +161,9 @@ Material::Material( )
     dashSize( 3.0f ) {
 
       // TODO not for every material...
-      defaultAttributeValues["color"] = std::vector<float>{ 1,1,1};
-      defaultAttributeValues["uv"] = {0,0};
-      defaultAttributeValues["uv2"] = {0,0};
+      defaultAttributeValues["color"] = toVector( 1.f, 1.f, 1.f );
+      defaultAttributeValues["uv"] = toVector( 0.f, 0.f );
+      defaultAttributeValues["uv2"] = toVector( 0.f, 0.f );
 
     }
 

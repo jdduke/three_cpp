@@ -152,7 +152,6 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
     if ( material == nullptr ) return;
     if ( geometry->dynamic == false ) return;
 
-    int a, b, c;
     float precision = raycaster.precision;
 
     if ( geometry->attributes.contains( AttributeKey::index() ) ) {
@@ -170,9 +169,9 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
         for ( size_t i = start, il = start + count; i < il; i += 3 ) {
 
-          a = index + (int)indices[ i ];
-          b = index + (int)indices[ i + 1 ];
-          c = index + (int)indices[ i + 2 ];
+          int a = index + (int)indices[ i ];
+          int b = index + (int)indices[ i + 1 ];
+          int c = index + (int)indices[ i + 2 ];
 
           impl.vA.set(
             positions[ a * 3 ],
@@ -226,11 +225,11 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
       const auto& offsets = geometry->offsets;
       const auto& positions = geometry->attributes.get( AttributeKey::position() )->array;
 
-      for ( int i = 0; i < offsets.size(); i += 3 ) {
+      for ( size_t i = 0; i < offsets.size(); i += 3 ) {
 
-        a = i;
-        b = i + 1;
-        c = i + 2;
+        const auto a = i;
+        const auto b = i + 1;
+        const auto c = i + 2;
 
         impl.vA.set(
           positions[ a * 3 ],

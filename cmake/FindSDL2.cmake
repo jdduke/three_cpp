@@ -73,7 +73,7 @@
 FIND_PATH(SDL2_INCLUDE_DIR SDL2
   HINTS
   $ENV{SDL2DIR}
-  PATH_SUFFIXES msvc/include 
+  PATH_SUFFIXES include 
   PATHS
   ~/Library/Frameworks
   /Library/Frameworks

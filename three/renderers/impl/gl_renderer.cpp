@@ -1217,8 +1217,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       offset_color       = 0,
       offset_skin        = 0,
       offset_morphTarget = 0,
-      offset_custom      = 0,
-      offset_customSrc   = 0;
+      offset_custom      = 0;
 
   auto& vertexArray  = geometryGroup.__vertexArray;
   auto& uvArray      = geometryGroup.__uvArray;
@@ -1670,7 +1669,6 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
     if ( customAttribute.__original && ( ! customAttribute.__original->needsUpdate ) ) continue;
 
     offset_custom = 0;
-    offset_customSrc = 0;
 
     if ( customAttribute.size == 1 ) {
 
@@ -2751,12 +2749,12 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   auto& renderList = scene.__glObjects;
 
-  for ( int i = 0; i < renderList.size(); i++) {
+  for ( size_t i = 0; i < renderList.size(); ++i) {
 
-    auto& glObject =  renderList[i];
+    auto& glObject = renderList[i];
     auto& object = *glObject.object;
 
-    glObject.id = i;
+    glObject.id = static_cast<int>( i );
     glObject.render = false;
 
     if ( object.visible ) {
