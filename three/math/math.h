@@ -196,7 +196,7 @@ inline int nearestPowerOfTwo( int value ) {
   return (int)pow( 2.f, round( log( (float)value ) / LN2() ) );
 }
 
-static std::string generateUUID() {
+inline static std::string generateUUID() {
 
 	char chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
