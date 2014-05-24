@@ -234,28 +234,27 @@ TEST(math_box3_test, unionBox) {
 	EXPECT_TRUE( b.clone().unionBox( c ).equals( c ));
 }
 
-THREE_REVIEW("EA: This test is crashing gtest")
-//TEST(math_box3_test, applyMatrix4test) {
-//	auto a = Box3( zero3.clone(), zero3.clone() );
-//	auto b = Box3( zero3.clone(), one3.clone() );
-//	auto c = Box3( one3.clone().negate(), one3.clone() );
-//	auto d = Box3( one3.clone().negate(), zero3.clone() );
-//
-//	auto m = Matrix4().makeTranslation( 1, -2, 1 );
-//	auto t1 = Vector3( 1, -2, 1 );
-//
-//    auto aresult = compareBox( a.clone().applyMatrix4( m ), a.clone().translate( t1 ) );
-//	EXPECT_TRUE( aresult );
-//    
-//	auto bresult = compareBox( b.clone().applyMatrix4( m ), b.clone().translate( t1 ) );
-//	EXPECT_TRUE( bresult );
-//    
-//    auto cresult = compareBox( c.clone().applyMatrix4( m ), c.clone().translate( t1 ) );
-//	EXPECT_TRUE( cresult);
-//    
-//	auto dresult = compareBox( d.clone().applyMatrix4( m ), d.clone().translate( t1 ) );
-//	EXPECT_TRUE( dresult );
-//}
+TEST(math_box3_test, applyMatrix4test) {
+	auto a = Box3( zero3.clone(), zero3.clone() );
+	auto b = Box3( zero3.clone(), one3.clone() );
+	auto c = Box3( one3.clone().negate(), one3.clone() );
+	auto d = Box3( one3.clone().negate(), zero3.clone() );
+
+	auto m = Matrix4().makeTranslation( 1, -2, 1 );
+	auto t1 = Vector3( 1, -2, 1 );
+
+   auto aresult = compareBox( a.clone().applyMatrix4( m ), a.clone().translate( t1 ) );
+	EXPECT_TRUE( aresult );
+   
+	auto bresult = compareBox( b.clone().applyMatrix4( m ), b.clone().translate( t1 ) );
+	EXPECT_TRUE( bresult );
+   
+   auto cresult = compareBox( c.clone().applyMatrix4( m ), c.clone().translate( t1 ) );
+	EXPECT_TRUE( cresult);
+   
+	auto dresult = compareBox( d.clone().applyMatrix4( m ), d.clone().translate( t1 ) );
+	EXPECT_TRUE( dresult );
+}
 
 TEST(math_box3_test, translate) {
 	auto a = Box3( zero3.clone(), zero3.clone() );
