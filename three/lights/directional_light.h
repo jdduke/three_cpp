@@ -58,6 +58,49 @@ public:
   Camera::Ptr shadowCamera;
   Matrix4 shadowMatrix;
 
+  Ptr clone() {
+    
+    Light::Ptr light = Light::clone();
+
+    Ptr clone = std::static_pointer_cast<DirectionalLight>(light);
+
+    clone->shadowCameraNear = shadowCameraNear;
+    clone->shadowCameraFar = shadowCameraFar;
+
+    clone->shadowCameraLeft = shadowCameraLeft;
+    clone->shadowCameraRight = shadowCameraRight;
+    clone->shadowCameraTop = shadowCameraTop;
+    clone->shadowCameraBottom = shadowCameraBottom;
+
+    clone->shadowCameraVisible = shadowCameraVisible;
+
+    clone->shadowBias = shadowBias;
+    clone->shadowDarkness = shadowDarkness;
+
+    clone->shadowMapWidth = shadowMapWidth;
+    clone->shadowMapHeight = shadowMapHeight;
+
+    clone->shadowCascadeOffset = shadowCascadeOffset;
+    clone->shadowCascadeCount = clone->shadowCascadeCount;
+
+    clone->shadowCascadeBias = shadowCascadeBias;
+    clone->shadowCascadeWidth = shadowCascadeWidth;
+    clone->shadowCascadeHeight = shadowCascadeHeight;
+
+    clone->shadowCascadeNearZ = shadowCascadeNearZ;
+    clone->shadowCascadeFarZ = shadowCascadeFarZ;
+
+    clone->shadowCascadeArray = shadowCascadeArray;
+
+    clone->shadowMap = shadowMap;
+    clone->shadowMapSize = shadowMapSize;
+    clone->shadowCamera = shadowCamera;
+    clone->shadowMatrix = shadowMatrix;
+
+    return clone;
+    
+  }
+
 protected:
 
   DirectionalLight( int hex, float intensity, float distance )

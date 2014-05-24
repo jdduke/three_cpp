@@ -27,6 +27,26 @@ public:
 
   bool castShadow, onlyShadow, shadowCascade;
 
+  Ptr clone() {
+
+    Object3D::Ptr object3d = Object3D::clone();
+    
+    Ptr clone = std::static_pointer_cast<Light>(object3d);
+
+    clone->color = color;
+    clone->intensity = intensity;
+    clone->distance = distance;
+      
+    clone->target = target;
+
+    clone->castShadow = castShadow;
+    clone->onlyShadow = onlyShadow;
+    clone->shadowCascade = shadowCascade;
+
+    return clone;
+    
+  }
+
 protected:
 
   explicit Light( int hex, float intensity = 1, float distance = 0 )

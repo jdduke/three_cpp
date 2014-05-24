@@ -349,6 +349,54 @@ Object3D& Object3D::updateMatrixWorld( bool force ) {
 
 }
 
+Object3D::Ptr Object3D::clone( Object3D::Ptr object, bool recursive ) {
+
+  if(!object) {
+    object = Object3D::create();
+  }
+
+  object->name = this->name;
+
+  object->up.copy( this->up );
+
+  object->position.copy( this->position );
+  object->quaternion().copy( this->quaternion() );
+  object->scale.copy( this->scale );
+
+  object->renderDepth = this->renderDepth;
+
+  object->rotationAutoUpdate = this->rotationAutoUpdate;
+
+  object->matrix.copy( this->matrix );
+  object->matrixWorld.copy( this->matrixWorld );
+
+  object->matrixAutoUpdate = this->matrixAutoUpdate;
+  object->matrixWorldNeedsUpdate = this->matrixWorldNeedsUpdate;
+
+  object->visible = this->visible;
+
+  object->castShadow = this->castShadow;
+  object->receiveShadow = this->receiveShadow;
+
+  object->frustumCulled = this->frustumCulled;
+
+  // TODO
+  //object.userData = JSON.parse( JSON.stringify( this->userData ) );
+
+  if ( recursive ) {
+
+    for ( size_t i = 0; i < children.size(); i ++ ) {
+
+      auto& child = children[ i ];
+      object->add( child->clone() );
+
+    }
+
+  }
+
+  return object;
+}
+
 Object3D::Object3D( const Material::Ptr& material ,
                     const Geometry::Ptr& geometry )
   : id( Object3DIdCount()++ ),

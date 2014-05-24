@@ -27,6 +27,18 @@ public:
 
   Color groundColor;
 
+  Ptr clone() {
+    
+    auto light = Light::clone();
+
+    auto clone = std::static_pointer_cast<HemisphereLight>(light);
+
+    clone->groundColor = groundColor;
+
+    return clone;
+    
+  }
+
 protected:
 
   HemisphereLight( int skyColorHex, int groundColorHex, float intensity )

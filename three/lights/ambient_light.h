@@ -25,6 +25,14 @@ public:
 
   }
 
+  Ptr clone() {
+  	
+  	auto light = Light::clone();
+
+  	return std::static_pointer_cast<AmbientLight>(light);
+  	
+  }
+
 protected:
 
   AmbientLight( int hex ) 

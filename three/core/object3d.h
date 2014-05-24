@@ -158,7 +158,7 @@ public:
   Object3D& updateMatrix();
   Object3D& updateMatrixWorld( bool force = false );
 
-  
+  Object3D::Ptr clone( Object3D::Ptr object = nullptr, bool recursive = true );
   
   bool sortParticles;
 

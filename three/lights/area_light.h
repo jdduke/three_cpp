@@ -35,6 +35,26 @@ public:
 
   }
 
+  Ptr clone() {
+    
+    Light::Ptr light = Light::clone();
+
+    Ptr clone = std::static_pointer_cast<AreaLight>(light);
+
+    clone->normal = normal;
+    clone->right = right;
+
+    clone->right = width;
+    clone->right = height;
+
+    clone->constantAttenuation = constantAttenuation;
+    clone->linearAttenuation = linearAttenuation;
+    clone->quadraticAttenuation = quadraticAttenuation;
+
+    return clone;
+    
+  }
+
 protected:
 
   AreaLight( int hex , float intensity ) 

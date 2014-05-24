@@ -45,6 +45,36 @@ public:
   Camera::Ptr shadowCamera;
   Matrix4 shadowMatrix;
 
+  Ptr clone() {
+    
+    auto light = Light::clone();
+
+    auto clone = std::static_pointer_cast<SpotLight>(light);
+
+    clone->angle = angle;
+    clone->exponent = exponent;
+
+    clone->shadowCameraNear = shadowCameraNear;
+    clone->shadowCameraFar = shadowCameraFar;
+    clone->shadowCameraFov = shadowCameraFov;
+
+    clone->shadowCameraVisible = shadowCameraVisible;
+
+    clone->shadowBias = shadowBias;
+    clone->shadowDarkness = shadowDarkness;
+
+    clone->shadowMapWidth = shadowMapWidth;
+    clone->shadowMapHeight = shadowMapHeight;
+
+    clone->shadowMap = shadowMap;
+    clone->shadowMapSize = shadowMapSize;
+    clone->shadowCamera = shadowCamera;
+    clone->shadowMatrix = shadowMatrix;
+
+    return clone;
+    
+  }
+
 protected:
 
   SpotLight( int hex, float intensity, float distance, float angle, float exponent )
