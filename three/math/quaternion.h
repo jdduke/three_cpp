@@ -5,7 +5,6 @@
 #include <three/math/math.h>
 #include <three/math/vector3.h>
 #include <three/utils/memory.h>
-#include <three/utils/functional.h>
 #include <memory>
 
 namespace three {
@@ -15,32 +14,28 @@ class Quaternion {
 public:
 
   Quaternion()
-    : x( FLOAT_HOOK( Quaternion, _updateEuler, 0.f ) ),
-      y( FLOAT_HOOK( Quaternion, _updateEuler, 0.f ) ),
-      z( FLOAT_HOOK( Quaternion, _updateEuler, 0.f ) ),
-      w( FLOAT_HOOK( Quaternion, _updateEuler, 1.f ) ),
-      _euler( nullptr ) {}
+    : x( 0.f ),
+      y( 0.f ),
+      z( 0.f ),
+      w( 1.f ) {}
 
   Quaternion( const float xIn, const float yIn, const float zIn, const float wIn = 1.f )
-    : x( FLOAT_HOOK( Quaternion, _updateEuler, xIn ) ),
-      y( FLOAT_HOOK( Quaternion, _updateEuler, yIn ) ),
-      z( FLOAT_HOOK( Quaternion, _updateEuler, zIn ) ),
-      w( FLOAT_HOOK( Quaternion, _updateEuler, wIn ) ),
-      _euler( nullptr ) {}
+    : x( xIn ),
+      y( yIn ),
+      z( zIn ),
+      w( wIn ) {}
 
-  NumericalHook<float, Quaternion> x;
-  NumericalHook<float, Quaternion> y;
-  NumericalHook<float, Quaternion> z;
-  NumericalHook<float, Quaternion> w;
+  float x;
+  float y;
+  float z;
+  float w;
 
   inline Quaternion& set( const float xIn, const float yIn, const float zIn, const float wIn ) {
 
-    x.value = xIn;
-    y.value = yIn;
-    z.value = zIn;
-    w.value = wIn;
-
-    _updateEuler();
+    x = xIn;
+    y = yIn;
+    z = zIn;
+    w = wIn;
 
     return *this;
 
@@ -48,18 +43,16 @@ public:
 
   inline Quaternion& copy( const Quaternion& quaternion ) {
 
-    x.value = quaternion.x.value;
-    y.value = quaternion.y.value;
-    z.value = quaternion.z.value;
-    w.value = quaternion.w.value;
-
-    _updateEuler();
+    x = quaternion.x;
+    y = quaternion.y;
+    z = quaternion.z;
+    w = quaternion.w;
 
     return *this;
 
   }
 
-  Quaternion& setFromEuler( const Euler& euler, bool update = false );
+  Quaternion& setFromEuler( const Euler& euler );
 
   inline Quaternion& setFromAxisAngle( const Vector3& axis, const float angle ) {
 
@@ -68,12 +61,10 @@ public:
 
     auto halfAngle = angle / 2.f, s = Math::sin( halfAngle );
 
-    x.value = axis.x * s;
-    y.value = axis.y * s;
-    z.value = axis.z * s;
-    w.value = Math::cos( halfAngle );
-
-    _updateEuler();
+    x = axis.x * s;
+    y = axis.y * s;
+    z = axis.z * s;
+    w = Math::cos( halfAngle );
 
     return *this;
 
@@ -91,11 +82,9 @@ public:
 
   inline Quaternion& conjugate() {
 
-    x.value *= -1;
-    y.value *= -1;
-    z.value *= -1;
-
-    _updateEuler();
+    x *= -1;
+    y *= -1;
+    z *= -1;
 
     return *this;
 
@@ -103,13 +92,13 @@ public:
 
   inline float lengthSq() const {
 
-    return x.value * x.value + y.value * y.value + z.value * z.value + w.value * w.value;
+    return x * x + y * y + z * z + w * w;
 
   }
 
   inline float length() const {
 
-    return Math::sqrt( x.value * x.value + y.value * y.value + z.value * z.value + w.value * w.value );
+    return Math::sqrt( x * x + y * y + z * z + w * w );
 
   }
 
@@ -124,21 +113,12 @@ public:
   Quaternion& slerp( const Quaternion& qb, float t );
 
   inline bool equals( const Quaternion& quaternion ) const {
-    return ( quaternion.x.value == x.value ) && ( quaternion.y.value == y.value ) && ( quaternion.z.value == z.value ) && ( quaternion.w.value == w.value );
+    return ( quaternion.x == x ) && ( quaternion.y == y ) && ( quaternion.z == z ) && ( quaternion.w == w );
   }
 
   inline Quaternion clone() {
     return *this;
   }
-
-private:
-
-  friend class Object3D;
-  friend class Euler;
-
-  Euler* _euler;
-
-  void _updateEuler();
 
 };
 

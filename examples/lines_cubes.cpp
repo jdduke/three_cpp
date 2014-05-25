@@ -144,7 +144,7 @@ void lines_cubes( GLWindow& window, GLRenderer& renderer ) {
 
     for ( size_t i = 0; i < scene->children.size(); i++ ) {
       if (scene->children[i]->type() == enums::Line )
-        scene->children[i]->rotation().y = time * ( i % 2 ? 1 : -1);
+        scene->children[i]->rotation( Euler( 0, time * ( i % 2 ? 1 : -1), 0 ) );
     }
 
     renderer.render( *scene, *camera );

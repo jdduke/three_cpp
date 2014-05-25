@@ -43,9 +43,9 @@ void particles_random( GLWindow& window, GLRenderer& renderer ) {
 
     auto particles = ParticleSystem::create( geometry, material );
 
-    particles->rotation().set( Math::random() * 6,
-                               Math::random() * 6,
-                               Math::random() * 6);
+    particles->rotation( Euler( Math::random() * 6,
+                                Math::random() * 6,
+                                Math::random() * 6 ) );
 
     scene->add( particles );
   };
@@ -93,7 +93,9 @@ void particles_random( GLWindow& window, GLRenderer& renderer ) {
     for ( size_t i = 0; i < scene->children.size(); ++i ) {
       auto& object = *scene->children[ i ];
       if ( object.type() == enums::ParticleSystem ) {
-        object.rotation().y = time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) );
+        auto rotation = object.rotation();
+        rotation.y = time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) );
+        object.rotation( rotation );
       }
     }
 

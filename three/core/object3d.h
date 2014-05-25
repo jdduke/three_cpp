@@ -3,7 +3,6 @@
 
 #include <three/common.h>
 
-
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
 #include <three/math/euler.h>
@@ -77,35 +76,31 @@ public:
   // TODO
   //this.userdata = {};
 
-  inline Euler& rotation() {
+  inline const Euler& rotation() const {
 
     return _rotation;
 
   }
 
-  inline Object3D& rotation( Euler& value ) {
+  inline Object3D& rotation( const Euler& value ) {
 
     _rotation = value;
-    _rotation._quaternion->copy(_quaternion);
-    _quaternion._euler->copy(_rotation);
-    _rotation._updateQuaternion();
+    onRotationUpdated();
 
     return *this;
 
   }
 
-  inline Quaternion& quaternion() {
+  inline const Quaternion& quaternion() const {
 
     return _quaternion;
 
   }
 
-  inline Object3D& quaternion( Quaternion& value ) {
+  inline Object3D& quaternion( const Quaternion& value ) {
 
     _quaternion = value;
-    _quaternion._euler->copy(_rotation);
-    _rotation._quaternion->copy(_quaternion);
-    _quaternion._updateEuler();
+    onQuaternionUpdated();
 
     return *this;
 
@@ -159,7 +154,7 @@ public:
   Object3D& updateMatrixWorld( bool force = false );
 
   Object3D::Ptr clone( Object3D::Ptr object = nullptr, bool recursive = true );
-  
+
   bool sortParticles;
 
   bool useVertexTexture;
@@ -224,6 +219,9 @@ protected:
   virtual void __removeObject( const Ptr& object );
 
 private:
+
+  void onRotationUpdated();
+  void onQuaternionUpdated();
 
   Euler _rotation;
   Quaternion _quaternion;

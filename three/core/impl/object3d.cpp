@@ -1,6 +1,3 @@
-#ifndef THREE_OBJECT3D_CPP
-#define THREE_OBJECT3D_CPP
-
 #include <three/core/object3d.h>
 
 #include <three/math/math.h>
@@ -12,24 +9,26 @@ namespace three {
 Object3D& Object3D::applyMatrix( Matrix4& matrix ) {
 
   matrix.multiplyMatrices( matrix, this->matrix );
-
   matrix.decompose( position, _quaternion, scale );
+  onQuaternionUpdated();
 
   return *this;
 
 }
 
 Object3D& Object3D::setRotationFromAxisAngle( Vector3& axis, float angle ) {
-  
+
   _quaternion.setFromAxisAngle( axis, angle );
+  onQuaternionUpdated();
 
   return *this;
 
 }
 
 Object3D& Object3D::setRotationFromEuler( Euler& euler ) {
-  
-  _quaternion.setFromEuler( euler, true );
+
+  _quaternion.setFromEuler( euler );
+  onQuaternionUpdated();
 
   return *this;
 
@@ -40,6 +39,7 @@ Object3D& Object3D::setRotationFromMatrix( Matrix4& m ) {
   // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
   _quaternion.setFromRotationMatrix( m );
+  onQuaternionUpdated();
 
   return *this;
 
@@ -47,11 +47,12 @@ Object3D& Object3D::setRotationFromMatrix( Matrix4& m ) {
 
 Object3D& Object3D::setRotationFromQuaternion( Quaternion& q ) {
 
-    // assumes q is normalized
+  // assumes q is normalized
 
-    _quaternion.copy( q );
+  _quaternion.copy( q );
+  onQuaternionUpdated();
 
-    return *this;
+  return *this;
 
 }
 
@@ -65,10 +66,11 @@ Object3D& Object3D::rotateOnAxis( const Vector3& axis, float angle ) {
   q1.setFromAxisAngle( axis, angle );
 
   _quaternion.multiply( q1 );
+  onQuaternionUpdated();
 
   return *this;
 
-} 
+}
 
 Object3D& Object3D::rotateX( float angle ) {
 
@@ -108,20 +110,20 @@ Object3D& Object3D::translateOnAxis( const Vector3& axis, float distance ) {
   position.add( v1.multiplyScalar( distance ) );
 
   return *this;
-  
+
 }
 
 Object3D& Object3D::translateX( float distance ) {
-    
+
   auto v = Vector3( 1, 0, 0 );
   translateOnAxis( v, distance );
-  
+
   return *this;
 
 }
 
 Object3D& Object3D::translateY( float distance ) {
-    
+
   auto v = Vector3( 0, 1, 0 );
   translateOnAxis( v, distance );
 
@@ -130,7 +132,7 @@ Object3D& Object3D::translateY( float distance ) {
 }
 
 Object3D& Object3D::translateZ( float distance ) {
-    
+
   auto v = Vector3( 0, 0, 1 );
   translateOnAxis( v, distance );
 
@@ -149,7 +151,7 @@ Vector3& Object3D::worldToLocal( Vector3& vector ) const {
   auto m1 = Matrix4();
 
   return vector.applyMatrix4( m1.getInverse( matrixWorld ) );
-  
+
 }
 
 void Object3D::lookAt( const Vector3& vector ) {
@@ -161,6 +163,7 @@ void Object3D::lookAt( const Vector3& vector ) {
   m1.lookAt( vector, position, up );
 
   _quaternion.setFromRotationMatrix( m1 );
+  onQuaternionUpdated();
 
 }
 
@@ -206,7 +209,7 @@ void Object3D::remove( const Object3D::Ptr& object ) {
 
     object->parent = nullptr;
     children.erase( index );
-    
+
     // TODO "EA: Dispatch event"
 
     //object.dispatchEvent( { type: 'removed' } );
@@ -228,7 +231,7 @@ void Object3D::remove( const Object3D::Ptr& object ) {
 }
 
 Object3D& Object3D::traverse( const std::function<void(const Object3D&)> traverseCallback ) {
-  
+
   traverseCallback( *this );
 
   for ( auto it = children.begin(); it != children.end(); it++ ) {
@@ -240,7 +243,7 @@ Object3D& Object3D::traverse( const std::function<void(const Object3D&)> travers
 }
 
 Object3D::Ptr Object3D::getObjectById( unsigned int id, bool recursive ) const {
-  
+
   for ( size_t i = 0, l = children.size(); i < l; i ++ ) {
 
     auto& child = children[ i ];
@@ -360,7 +363,7 @@ Object3D::Ptr Object3D::clone( Object3D::Ptr object, bool recursive ) {
   object->up.copy( this->up );
 
   object->position.copy( this->position );
-  object->quaternion().copy( this->quaternion() );
+  object->quaternion( this->quaternion() );
   object->scale.copy( this->scale );
 
   object->renderDepth = this->renderDepth;
@@ -419,15 +422,8 @@ Object3D::Object3D( const Material::Ptr& material ,
     boneTextureHeight( 0 ),
     morphTargetBase( -1 ),
     material( material ),
-    geometry( geometry ) { 
-      
-      _rotation = Euler();
-      _quaternion = Quaternion();
-
-      _rotation._quaternion = &_quaternion;
-      _quaternion._euler = &_rotation;
-
-    }
+    geometry( geometry ) {
+}
 
 
 Object3D::~Object3D() { }
@@ -442,6 +438,12 @@ void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
   }
 }
 
-} // namespace three
+void Object3D::onRotationUpdated() {
+  _quaternion.setFromEuler( _rotation );
+}
 
-#endif // THREE_OBJECT3D_CPP
+void Object3D::onQuaternionUpdated() {
+  _rotation.setFromQuaternion( _quaternion );
+}
+
+} // namespace three

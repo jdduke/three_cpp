@@ -93,9 +93,7 @@ void geometry_hierarchy_2( GLWindow& window, GLRenderer& renderer ) {
     root->position.x = Math::sin( time ) * 1000;
 
     SceneUtils::traverseHierarchy( *root, [rx,ry,rz]( Object3D& object ) {
-      object.rotation().x = rx;
-      object.rotation().y = ry;
-      object.rotation().z = rz;
+      object.rotation( Euler( rx, ry, rz ) );
     } );
 
     renderer.render( *scene, *camera );

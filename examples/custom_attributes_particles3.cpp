@@ -103,8 +103,7 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
   auto addGeo = [&]( const Geometry::Ptr& geo, float x, float y, float z, float ry ) {
     auto m = Mesh::create( geo, dummyMaterial );
     m->position.set( x, y, z );
-    m->rotation().y = ry;
-
+    m->rotation( Euler( 0, ry, 0 ) );
     GeometryUtils::merge( *geometry, *m );
   };
 
@@ -184,7 +183,7 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
   window.animate( [&]( float dt ) -> bool {
 
     time += dt;
-    object->rotation().set( 0, 0.02f * time, 0.02f * time );
+    object->rotation( Euler( 0, 0.02f * time, 0.02f * time ) );
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

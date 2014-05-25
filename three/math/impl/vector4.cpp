@@ -27,7 +27,7 @@ Vector4& Vector4::applyMatrix4( const Matrix4& m ) {
 Vector4& Vector4::setAxisAngleFromQuaternion( const Quaternion& q ) {
   // http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/index.htm
   // q is assumed to be normalized
-  w = 2.f * Math::acos( q.w.value );
+  w = 2.f * Math::acos( q.w );
 
   auto s = Math::sqrt( 1.f - q.w * q.w );
 

@@ -125,7 +125,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
   window.animate( [&]( float dt ) -> bool {
 
     time += dt;
-    sphere->rotation().set( 0, time * .03f, time * .03f );
+    sphere->rotation( Euler( 0, time * .03f, time * .03f ) );
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

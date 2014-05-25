@@ -1,10 +1,8 @@
-#ifndef THREE_EULER_CPP
-#define THREE_EULER_CPP
+#include <three/math/euler.h>
 
 #include <three/constants.h>
 
 #include <three/math/math.h>
-#include <three/math/euler.h>
 #include <three/math/matrix4.h>
 #include <three/math/quaternion.h>
 
@@ -13,7 +11,7 @@ namespace three {
 Euler& Euler::setFromRotationMatrix( const Matrix4& m ) {
     return setFromRotationMatrix(m, _order);
 }
-    
+
 Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotationOrder order ) {
 
 // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
@@ -26,75 +24,75 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
 
   if ( order == enums::EulerRotationOrder::XYZ ) {
 
-    y.value = Math::asin( _clamp( m13 ) );
+    y = Math::asin( _clamp( m13 ) );
 
     if ( Math::abs( m13 ) < 0.99999f ) {
-      x.value = Math::atan2( - m23, m33 );
-      z.value = Math::atan2( - m12, m11 );
+      x = Math::atan2( - m23, m33 );
+      z = Math::atan2( - m12, m11 );
     } else {
-      x.value = Math::atan2( m32, m22 );
-      z.value = 0.f;
+      x = Math::atan2( m32, m22 );
+      z = 0.f;
     }
 
   } else if ( order == enums::EulerRotationOrder::YXZ ) {
 
-    x.value = Math::asin( - _clamp( m23 ) );
+    x = Math::asin( - _clamp( m23 ) );
 
     if ( Math::abs( m23 ) < 0.99999f ) {
-      y.value = Math::atan2( m13, m33 );
-      z.value = Math::atan2( m21, m22 );
+      y = Math::atan2( m13, m33 );
+      z = Math::atan2( m21, m22 );
     } else {
-      y.value = Math::atan2( - m31, m11 );
-      z.value = 0.f;
+      y = Math::atan2( - m31, m11 );
+      z = 0.f;
     }
 
   } else if ( order == enums::EulerRotationOrder::ZXY ) {
 
-    x.value = Math::asin( _clamp( m32 ) );
+    x = Math::asin( _clamp( m32 ) );
 
     if ( Math::abs( m32 ) < 0.99999f ) {
-      y.value = Math::atan2( - m31, m33 );
-      z.value = Math::atan2( - m12, m22 );
+      y = Math::atan2( - m31, m33 );
+      z = Math::atan2( - m12, m22 );
     } else {
-      y.value = 0.f;
-      z.value = Math::atan2( m21, m11 );
+      y = 0.f;
+      z = Math::atan2( m21, m11 );
     }
 
   } else if ( order == enums::EulerRotationOrder::ZYX ) {
 
-    y.value = Math::asin( - _clamp( m31 ) );
+    y = Math::asin( - _clamp( m31 ) );
 
     if ( Math::abs( m31 ) < 0.99999f ) {
-      x.value = Math::atan2( m32, m33 );
-      z.value = Math::atan2( m21, m11 );
+      x = Math::atan2( m32, m33 );
+      z = Math::atan2( m21, m11 );
     } else {
-      x.value = 0.f;
-      z.value = Math::atan2( - m12, m22 );
+      x = 0.f;
+      z = Math::atan2( - m12, m22 );
 
     }
 
   } else if ( order == enums::EulerRotationOrder::YZX ) {
 
-    z.value = Math::asin( _clamp( m21 ) );
+    z = Math::asin( _clamp( m21 ) );
 
     if ( Math::abs( m21 ) < 0.99999f ) {
-      x.value = Math::atan2( - m23, m22 );
-      y.value = Math::atan2( - m31, m11 );
+      x = Math::atan2( - m23, m22 );
+      y = Math::atan2( - m31, m11 );
     } else {
-      x.value = 0.f;
-      y.value = Math::atan2( m13, m33 );
+      x = 0.f;
+      y = Math::atan2( m13, m33 );
     }
 
   } else if ( order == enums::EulerRotationOrder::XZY ) {
 
-    z.value = Math::asin( - _clamp( m12 ) );
+    z = Math::asin( - _clamp( m12 ) );
 
     if ( Math::abs( m12 ) < 0.99999f ) {
-      x.value = Math::atan2( m32, m22 );
-      y.value = Math::atan2( m13, m11 );
+      x = Math::atan2( m32, m22 );
+      y = Math::atan2( m13, m11 );
     } else {
-      x.value = Math::atan2( - m23, m33 );
-      y.value = 0.f;
+      x = Math::atan2( - m23, m33 );
+      y = 0.f;
     }
 
   } else {
@@ -104,13 +102,11 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
 
   _order = order;
 
-  _updateQuaternion();
-
   return *this;
 
 }
 
-Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotationOrder order, bool update) {
+Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotationOrder order ) {
 
 // q is assumed to be normalized
 // http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
@@ -122,39 +118,39 @@ Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotation
 
   if ( order == enums::EulerRotationOrder::XYZ) {
 
-    x.value = Math::atan2( 2 * ( q.x.value * q.w.value - q.y.value * q.z.value ), ( sqw - sqx - sqy + sqz ) );
-    y.value = Math::asin(  _clamp( 2 * ( q.x.value * q.z.value + q.y.value * q.w.value ) ) );
-    z.value = Math::atan2( 2 * ( q.z.value * q.w.value - q.x.value * q.y.value ), ( sqw + sqx - sqy - sqz ) );
+    x = Math::atan2( 2 * ( q.x * q.w - q.y * q.z ), ( sqw - sqx - sqy + sqz ) );
+    y = Math::asin(  _clamp( 2 * ( q.x * q.z + q.y * q.w ) ) );
+    z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw + sqx - sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::YXZ ) {
 
-    x.value = Math::asin(  _clamp( 2 * ( q.x.value * q.w.value - q.y.value * q.z.value ) ) );
-    y.value = Math::atan2( 2 * ( q.x.value * q.z.value + q.y.value * q.w.value ), ( sqw - sqx - sqy + sqz ) );
-    z.value = Math::atan2( 2 * ( q.x.value * q.y.value + q.z.value * q.w.value ), ( sqw - sqx + sqy - sqz ) );
+    x = Math::asin(  _clamp( 2 * ( q.x * q.w - q.y * q.z ) ) );
+    y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw - sqx - sqy + sqz ) );
+    z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw - sqx + sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::ZXY ) {
 
-    x.value = Math::asin(  _clamp( 2 * ( q.x.value * q.w.value + q.y.value * q.z.value ) ) );
-    y.value = Math::atan2( 2 * ( q.y.value * q.w.value - q.z.value * q.x.value ), ( sqw - sqx - sqy + sqz ) );
-    z.value = Math::atan2( 2 * ( q.z.value * q.w.value - q.x.value * q.y.value ), ( sqw - sqx + sqy - sqz ) );
+    x = Math::asin(  _clamp( 2 * ( q.x * q.w + q.y * q.z ) ) );
+    y = Math::atan2( 2 * ( q.y * q.w - q.z * q.x ), ( sqw - sqx - sqy + sqz ) );
+    z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw - sqx + sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::ZYX ) {
 
-    x.value = Math::atan2( 2 * ( q.x.value * q.w.value + q.z.value * q.y.value ), ( sqw - sqx - sqy + sqz ) );
-    y.value = Math::asin(  _clamp( 2 * ( q.y.value * q.w.value - q.x.value * q.z.value ) ) );
-    z.value = Math::atan2( 2 * ( q.x.value * q.y.value + q.z.value * q.w.value ), ( sqw + sqx - sqy - sqz ) );
+    x = Math::atan2( 2 * ( q.x * q.w + q.z * q.y ), ( sqw - sqx - sqy + sqz ) );
+    y = Math::asin(  _clamp( 2 * ( q.y * q.w - q.x * q.z ) ) );
+    z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw + sqx - sqy - sqz ) );
 
   } else if ( order == enums::EulerRotationOrder::YZX ) {
 
-    x.value = Math::atan2( 2 * ( q.x.value * q.w.value - q.z.value * q.y.value ), ( sqw - sqx + sqy - sqz ) );
-    y.value = Math::atan2( 2 * ( q.y.value * q.w.value - q.x.value * q.z.value ), ( sqw + sqx - sqy - sqz ) );
-    z.value = Math::asin(  _clamp( 2 * ( q.x.value * q.y.value + q.z.value * q.w.value ) ) );
+    x = Math::atan2( 2 * ( q.x * q.w - q.z * q.y ), ( sqw - sqx + sqy - sqz ) );
+    y = Math::atan2( 2 * ( q.y * q.w - q.x * q.z ), ( sqw + sqx - sqy - sqz ) );
+    z = Math::asin(  _clamp( 2 * ( q.x * q.y + q.z * q.w ) ) );
 
   } else if ( order == enums::EulerRotationOrder::XZY ) {
 
-    x.value = Math::atan2( 2 * ( q.x.value * q.w.value + q.y.value * q.z.value ), ( sqw - sqx + sqy - sqz ) );
-    y.value = Math::atan2( 2 * ( q.x.value * q.z.value + q.y.value * q.w.value ), ( sqw + sqx - sqy - sqz ) );
-    z.value = Math::asin(  _clamp( 2 * ( q.z.value * q.w.value - q.x.value * q.y.value ) ) );
+    x = Math::atan2( 2 * ( q.x * q.w + q.y * q.z ), ( sqw - sqx + sqy - sqz ) );
+    y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw + sqx - sqy - sqz ) );
+    z = Math::asin(  _clamp( 2 * ( q.z * q.w - q.x * q.y ) ) );
 
   } else {
     //@todo
@@ -163,12 +159,8 @@ Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotation
 
   _order = order;
 
-  if ( update ) _updateQuaternion();
-
   return *this;
 
 }
 
 } // namespace three
-
-#endif // THREE_EULER_CPP

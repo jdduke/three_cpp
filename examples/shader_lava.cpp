@@ -97,7 +97,7 @@ void shader_lava( GLWindow& window, GLRenderer& renderer ) {
 
   // Geometries
   auto mesh = Mesh::create( TorusGeometry::create( 0.65f, 0.3f, 30, 30 ), material );
-  mesh->rotation().x = 0.3f;
+  mesh->rotation( Euler( 0.3f, 0, 0 ) );
   scene->add( mesh );
 
   /////////////////////////////////////////////////////////////////////////
@@ -119,8 +119,9 @@ void shader_lava( GLWindow& window, GLRenderer& renderer ) {
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    mesh->rotation().y = mesh->rotation().y + 0.0375f * dt;
-    mesh->rotation().x = mesh->rotation().x + 0.15f * dt;
+    mesh->rotation( Euler( mesh->rotation().x + 0.15f * dt,
+                           mesh->rotation().y + 0.0375f * dt,
+                           0 ) );
 
     renderer.render( *scene, *camera );
 
