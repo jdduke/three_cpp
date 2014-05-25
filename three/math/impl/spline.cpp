@@ -1,15 +1,9 @@
-#ifndef THREE_SPLINE_CPP
-#define THREE_SPLINE_CPP
-
-#include <three/common.h>
+#include <three/math/spline.h>
 
 #include <three/math/math.h>
-#include <three/math/vector3.h>
 
 #include <vector>
 #include <tuple>
-
-#include <three/math/spline.h>
 
 namespace three {
 
@@ -129,5 +123,3 @@ void Spline::reparametrizeByArcLength( float samplingCoef ) {
 }
 
 } // namespace three
-
-#endif // THREE_SPLINE_CPP

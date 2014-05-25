@@ -14,7 +14,7 @@
 
 namespace three {
 
-class Attribute { /*: public NonCopyable*/
+class THREE_DECL Attribute { /*: public NonCopyable*/
 public:
 
   explicit Attribute( enums::AttributeType type = enums::v3, int arraySize = 0 )

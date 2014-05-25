@@ -25,7 +25,7 @@
 
 namespace three {
 
-class Geometry : public IGeometry, public GeometryBuffer {
+class THREE_DECL Geometry : public IGeometry, public GeometryBuffer {
 
 public:
 

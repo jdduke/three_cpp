@@ -14,8 +14,8 @@ auto eulerAzyx = Euler( 0, 1, 0, enums::EulerRotationOrder::ZYX );
 TEST(math_euler_test, constructor_equals) {
   auto a = Euler();
   EXPECT_TRUE( a.equals( eulerZero ) );
-  EXPECT_TRUE( ! a.equals( eulerAxyz ) );
-  EXPECT_TRUE( ! a.equals( eulerAzyx ) );
+  EXPECT_FALSE( a.equals( eulerAxyz ) );
+  EXPECT_FALSE( a.equals( eulerAzyx ) );
 
   a = Euler(x, y, z);
   EXPECT_EQ( a.x, x );
@@ -31,13 +31,13 @@ TEST(math_euler_test, constructor_equals) {
 TEST(math_euler_test, clone_copy_equals) {
   auto a = eulerAxyz.clone();
   EXPECT_TRUE( a.equals( eulerAxyz ) );
-  EXPECT_TRUE( ! a.equals( eulerZero ) );
-  EXPECT_TRUE( ! a.equals( eulerAzyx ) );
+  EXPECT_FALSE( a.equals( eulerZero ) );
+  EXPECT_FALSE( a.equals( eulerAzyx ) );
 
   a.copy( eulerAzyx );
   EXPECT_TRUE( a.equals( eulerAzyx ) );
-  EXPECT_TRUE( ! a.equals( eulerAxyz ) );
-  EXPECT_TRUE( ! a.equals( eulerZero ) );
+  EXPECT_FALSE( a.equals( eulerAxyz ) );
+  EXPECT_FALSE( a.equals( eulerZero ) );
 
 }
 
@@ -46,14 +46,13 @@ TEST(math_euler_test, set) {
 
   a.set( 0, 1, 0, enums::EulerRotationOrder::ZYX );
   EXPECT_TRUE( a.equals( eulerAzyx ) );
-  EXPECT_TRUE( ! a.equals( eulerAxyz ) );
-  EXPECT_TRUE( ! a.equals( eulerZero ) );
+  EXPECT_FALSE( a.equals( eulerAxyz ) );
+  EXPECT_FALSE( a.equals( eulerZero ) );
 }
 
 TEST(math_euler_test, Quaternion_setFromEuler_Euler_fromQuaternion) {
-    std::array<Euler, 3> testValues = { eulerZero, eulerAxyz, eulerAzyx };
-  for( auto i = 0; i < testValues.size(); i ++ ) {
-    auto v = testValues[i];
+  std::array<Euler, 3> testValues = { eulerZero, eulerAxyz, eulerAzyx };
+  for( auto v : testValues ) {
     auto q = Quaternion().setFromEuler( v );
 
     auto v2 = Euler().setFromQuaternion( q, v.order() );
@@ -64,21 +63,19 @@ TEST(math_euler_test, Quaternion_setFromEuler_Euler_fromQuaternion) {
 
 
 TEST(math_euler_test, Matrix4_setFromEuler_Euler_fromRotationMatrix) {
-    std::array<Euler, 3> testValues = { eulerZero, eulerAxyz, eulerAzyx };
-  for( auto i = 0; i < testValues.size(); i ++ ) {
-    auto v = testValues[i];
+  std::array<Euler, 3> testValues = { eulerZero, eulerAxyz, eulerAzyx };
+  for( auto v : testValues ) {
     auto m = Matrix4().makeRotationFromEuler( v );
 
     auto v2 = Euler().setFromRotationMatrix( m, v.order() );
     auto m2 = Matrix4().makeRotationFromEuler( v2 );
-    EXPECT_TRUE( matrixEquals4( m, m2, 0.0001 ) );
+    EXPECT_TRUE( matrixEquals4( m, m2, 0.0001f ) );
   }
 }
 
 TEST(math_euler_test, reorder) {
-    std::array<Euler, 3> testValues = { eulerZero, eulerAxyz, eulerAzyx };
-  for( auto i = 0; i < testValues.size(); i ++ ) {
-    auto v = testValues[i];
+  std::array<Euler, 3> testValues = { eulerZero, eulerAxyz, eulerAzyx };
+  for( auto v : testValues ) {
     auto q = Quaternion().setFromEuler( v );
 
     v.reorder( enums::EulerRotationOrder::YZX );

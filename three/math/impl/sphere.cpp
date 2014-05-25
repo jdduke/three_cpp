@@ -1,7 +1,5 @@
-#ifndef THREE_SPHERE_CPP
-#define THREE_SPHERE_CPP
-
 #include <three/math/sphere.h>
+
 #include <three/math/box3.h>
 #include <three/math/vector3.h>
 
@@ -54,5 +52,3 @@ Box3& Sphere::getBoundingBox( Box3& target ) const {
 }
 
 } // end namespace
-
-#endif //THREE_SPHERE_CPP

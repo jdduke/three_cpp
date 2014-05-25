@@ -69,6 +69,22 @@ Quaternion& Quaternion::setFromEuler( const Euler& euler ) {
 
 }
 
+Quaternion& Quaternion::setFromAxisAngle( const Vector3& axis, const float angle ) {
+
+  // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
+  // axis have to be normalized
+
+  auto halfAngle = angle / 2.f, s = Math::sin( halfAngle );
+
+  x = axis.x * s;
+  y = axis.y * s;
+  z = axis.z * s;
+  w = Math::cos( halfAngle );
+
+  return *this;
+
+}
+
 Quaternion& Quaternion::setFromRotationMatrix( const Matrix4& m ) {
 
   // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
@@ -149,6 +165,12 @@ Quaternion& Quaternion::normalize() {
   }
 
   return *this;
+}
+
+Quaternion& Quaternion::multiply( const Quaternion& q ) {
+
+  return multiplyQuaternions( *this, q );
+
 }
 
 Quaternion& Quaternion::multiplyQuaternions( const Quaternion& a, const Quaternion& b ) {

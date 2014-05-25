@@ -7,7 +7,7 @@
 
 namespace three {
 
-class Box2 {
+class THREE_DECL Box2 {
 
 public:
 
@@ -37,156 +37,9 @@ public:
 
   }
 
-  inline float distanceToPoint( const Vector2& point ) const {
+  inline bool equals ( const Box2& box ) const {
 
-    auto v1 = Vector2();
-    auto clampedPoint = v1.copy( point ).clamp( min, max );
-
-    return clampedPoint.sub( point ).length();
-
-  }
-
-  Box2& setFromPoints(const std::vector<Vector2>& points ) {
-
-    if ( points.size() == 0 ) {
-      makeEmpty();
-
-      return *this;
-
-    }
-
-    min.copy( *points.begin() );
-    max.copy( *points.begin() );
-
-    for ( auto it = ++points.begin(); it != points.end(); it++ ) {
-
-      auto point = *it;
-
-      if ( point.x < min.x ) {
-
-        min.x = point.x;
-
-      } else if ( point.x > max.x ) {
-
-        max.x = point.x;
-
-      }
-
-      if ( point.y < min.y ) {
-
-        min.y = point.y;
-
-      } else if ( point.y > max.y ) {
-
-        max.y = point.y;
-
-      }
-      
-    }
-
-    return *this;
-    
-  }
-
-  inline Box2& setFromCenterAndSize( const Vector2& center, const Vector2& size ) {
-
-    auto v1 = Vector2();
-    auto halfSize = v1.copy( size ).multiplyScalar( 0.5 );
-
-    min.copy( center ).sub( halfSize );
-    max.copy( center ).add( halfSize );
-
-    return *this;
-
-  }
-
-  inline Box2& makeEmpty() {
-
-    min.x = min.y = Math::INF();
-    max.x = max.y = -Math::INF();
-
-    return *this;
-
-  }
-
-  inline bool empty() const {
-
-    return ( max.x < min.x ) || ( max.y < min.y );
-
-  }
-
-  inline Box2& expandByPoint( const Vector2& point ) {
-
-    min.min( point );
-    max.max( point );
-
-    return *this;
-
-  }
-
-  inline Box2& expandByVector( const Vector2& vector ) {
-
-    min.sub( vector );
-    max.add( vector );
-
-    return *this;
-
-  }
-
-  inline Box2& expandByScalar( float scalar ) {
-
-    min.addScalar( -scalar );
-    max.addScalar( scalar );
-
-    return *this;
-
-  }
-
-  inline Vector2 center() const {
-
-    return Vector2().addVectors( min, max ).multiplyScalar( 0.5 );
-
-  }
-
-  inline Vector2& center( Vector2& target ) {
-
-    return target.addVectors( min, max ).multiplyScalar( 0.5 );
-
-  }
-
-  inline bool containsBox( const Box2& box ) const {
-
-    if ( ( min.x <= box.min.x ) && ( box.max.x <= max.x ) && ( min.y <= box.min.y ) && ( box.max.y <= max.y ) ) {
-
-      return true;
-
-    }
-
-    return false;
-
-  }
-
-  inline bool containsPoint ( const Vector2& point ) const {
-
-    if ( point.x < min.x || point.x > max.x || point.y < min.y || point.y > max.y ) {
-
-      return false;
-
-    }
-
-    return true;
-
-  }
-
-  inline Vector2 clampPoint( const Vector2& point ) const {
-
-    return Vector2().copy( point ).clamp( min, max );
-
-  }
-
-  inline Vector2& clampPoint( const Vector2& point, Vector2& target ) {
-
-    return target.copy( point ).clamp( min, max );
+    return box.min.equals( min ) && box.max.equals( max );
 
   }
 
@@ -196,83 +49,38 @@ public:
 
   }
 
-  inline Vector2 size() const {
+  float distanceToPoint( const Vector2& point ) const;
 
-    return Vector2().subVectors( max, min );
+  Box2& setFromPoints(const std::vector<Vector2>& points );
+  Box2& setFromCenterAndSize( const Vector2& center, const Vector2& size );
 
-  }
+  Box2& makeEmpty();
+  bool empty() const;
 
-  inline Vector2& size( Vector2& target ) {
+  Box2& expandByPoint( const Vector2& point );
+  Box2& expandByVector( const Vector2& vector );
+  Box2& expandByScalar( float scalar );
 
-    return target.subVectors( min, max );
+  Vector2 center() const;
+  Vector2& center( Vector2& target );
 
-  }
+  bool containsBox( const Box2& box ) const;
+  bool containsPoint ( const Vector2& point ) const;
 
-  inline Box2& intersect( const Box2& box ) {
+  Vector2 clampPoint( const Vector2& point ) const;
+  Vector2& clampPoint( const Vector2& point, Vector2& target );
 
-    min.max( box.min );
-    max.min( box.max );
+  Vector2 size() const ;
+  Vector2& size( Vector2& target );
 
-    return *this;
+  Box2& intersect( const Box2& box );
+  bool isIntersectionBox( const Box2& box ) const;
 
-  }
+  Box2& unionBox( const Box2& box ) ;
+  Box2& translate( const Vector2& offset );
 
-  inline bool isIntersectionBox( const Box2& box ) const {
-
-    if ( box.max.x < min.x || box.min.x > max.x || box.max.y < min.y || box.min.y > max.y ) {
-
-      return false;
-
-    }
-
-    return true;
-
-  }
-
-  inline Box2& unionBox( const Box2& box ) {
-
-    min.min( box.min );
-    max.max( box.max );
-
-    return *this;
-
-  }
-
-  inline Box2& translate( const Vector2& offset ) {
-
-    min.add( offset );
-    max.add( offset );
-
-    return *this;
-
-  }
-
-  inline bool equals ( const Box2& box ) const {
-
-    return box.min.equals( min ) && box.max.equals( max );
-
-  }
-
-  inline Vector2 getParameter( const Vector2& point ) const {
-      
-    // This can potentially have a divide by zero if the box
-    // has a size dimension of 0.
-      
-    return Vector2().set(
-      ( point.x - min.x ) / ( max.x - min.x ),
-      ( point.y - min.y ) / ( max.y - min.y )
-    );
-
-  }
-
-  inline Vector2& getParameter( const Vector2& point, Vector2& target ) {
-
-    return target.set(
-      ( point.x - min.x ) / ( max.x - min.x ),
-      ( point.y - min.y ) / ( max.y - min.y )
-    );
-
-  }
+  Vector2 getParameter( const Vector2& point ) const;
+  Vector2& getParameter( const Vector2& point, Vector2& target );
 
 };
 

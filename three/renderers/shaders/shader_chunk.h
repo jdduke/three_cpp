@@ -1,9 +1,11 @@
 #ifndef THREE_SHADERS_SHADER_CHUNK_H
 #define THREE_SHADERS_SHADER_CHUNK_H
 
+#include <three/common.h>
+
 namespace three {
 
-class ShaderChunk {
+class THREE_DECL ShaderChunk {
 
 public:
 
@@ -30,7 +32,7 @@ public:
   static const char* lightmap_vertex();
 
   static const char* bumpmap_pars_fragment();
-    
+
   static const char* normalmap_pars_fragment();
 
   static const char* specularmap_pars_fragment();

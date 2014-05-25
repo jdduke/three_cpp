@@ -12,7 +12,7 @@ struct Offset {
   int start, count, index;
 };
 
-class BufferGeometry : public Geometry {
+class THREE_DECL BufferGeometry : public Geometry {
 public:
 
   typedef std::shared_ptr<BufferGeometry> Ptr;

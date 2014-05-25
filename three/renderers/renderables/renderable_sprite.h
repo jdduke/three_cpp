@@ -24,7 +24,7 @@ public:
   Vector2 scale;
 
   Material* material;
-  
+
 };
 
 } // namespace three

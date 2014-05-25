@@ -104,7 +104,10 @@ if(MSVC)
     set(THREE_BUILD_64_BIT TRUE CACHE INTERNAL "" FORCE)
   endif()
 
-  add_definitions("-D_VARIADIC_MAX=6")
+  if (MSVC_VERSION EQUAL 1700)
+    add_definitions("-D_VARIADIC_MAX=10")
+  endif()
+
   add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 
   set(THREE_LINK_STATIC_RUNTIME OFF CACHE BOOL "Link statically against C++ runtime")
@@ -175,6 +178,7 @@ set(THREE_LIB_SOURCE_FILES ${THREE_SOURCES} ${THREE_HEADERS})
 
 set(THREE_LIB three)
 three_add_library(${THREE_LIB} ${THREE_LIB_SOURCE_FILES})
+set_target_properties(${THREE_LIB} PROPERTIES COMPILE_DEFINITIONS "THREE_SOURCE")
 
 if(THREE_BUILD_EXAMPLES)
   add_subdirectory(examples)

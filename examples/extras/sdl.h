@@ -31,8 +31,6 @@ public:
   typedef std::function<bool(float)> Update;
   void animate( Update update );
 
-  //void animate( Update update, Render render, float frameRate = 60 );
-
   bool valid() const;
 
 private:

@@ -1,8 +1,6 @@
-#ifndef THREE_RAYCASTER_CPP
-#define THREE_RAYCASTER_CPP
+#include <three/core/raycaster.h>
 
 #include <three/core/buffer_geometry.h>
-#include <three/core/raycaster.h>
 #include <three/materials/mesh_face_material.h>
 #include <three/math/plane.h>
 #include <three/objects/sprite.h>
@@ -518,5 +516,3 @@ void Raycaster::_intersectObject( const Object3D::Ptr& object, Intersects& inter
 }
 
 } // end namespace
-
-#endif // THREE_RAYCASTER_CPP

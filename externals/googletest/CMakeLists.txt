@@ -8,6 +8,7 @@ ExternalProject_Add(googletest
                -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE:PATH=ReleaseLibs
                -DCMAKE_CXX_FLAGS=${MSVC_COMPILER_DEFS}
                -Dgtest_force_shared_crt=ON
+               -Dgtest_disable_pthreads=ON
      PREFIX "${CMAKE_CURRENT_BINARY_DIR}"
 # Disable install step
     INSTALL_COMMAND ""

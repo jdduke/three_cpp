@@ -8,7 +8,7 @@
 
 namespace three {
 
-class Vector4 {
+class THREE_DECL Vector4 {
 
 public:
 

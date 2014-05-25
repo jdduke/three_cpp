@@ -16,7 +16,7 @@ namespace three {
 
 struct GLInterfaceWrapper;
 
-class Uniform {
+class THREE_DECL Uniform {
 
 public:
 

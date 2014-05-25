@@ -12,7 +12,7 @@
 
 namespace three {
 
-class Mesh : public Object3D {
+class THREE_DECL Mesh : public Object3D {
 public:
 
   typedef std::shared_ptr<Mesh> Ptr;

@@ -11,7 +11,7 @@
 
 using namespace three;
 
-std::vector<enums::EulerRotationOrder> orders = {
+std::array<enums::EulerRotationOrder, 6> orders = {
     enums::EulerRotationOrder::XYZ,
     enums::EulerRotationOrder::YXZ,
     enums::EulerRotationOrder::ZXY,
@@ -106,14 +106,18 @@ TEST(math_quaternion_test, setFromAxisAngle) {
 
 TEST(math_quaternion_test, setFromEuler_setFromQuaternion) {
 
-    std::vector<Vector3> angles = { Vector3( 1, 0, 0 ), Vector3( 0, 1, 0 ), Vector3( 0, 0, 1 ) };
+  Vector3 angles[] = {
+    Vector3( 1, 0, 0 ),
+    Vector3( 0, 1, 0 ),
+    Vector3( 0, 0, 1 )
+  };
 
   // ensure euler conversion to/from Quaternion matches.
-  for( auto i = 0; i < orders.size(); i ++ ) {
-    for( auto j = 0; j < angles.size(); j ++ ) {
-      auto eulers2 = Euler().setFromQuaternion( Quaternion().setFromEuler( Euler( angles[j].x, angles[j].y, angles[j].z, orders[i] ) ), orders[i] );
+  for( const auto& order : orders ) {
+    for( const auto& angle : angles ) {
+      auto eulers2 = Euler().setFromQuaternion( Quaternion().setFromEuler( Euler( angle.x, angle.y, angle.z, order ) ), order );
       auto newAngle = Vector3( eulers2.x, eulers2.y, eulers2.z );
-      EXPECT_LT( newAngle.distanceTo( angles[j] ), 0.001 );
+      EXPECT_LT( newAngle.distanceTo( angle ), 0.001 );
     }
   }
 
@@ -122,7 +126,8 @@ TEST(math_quaternion_test, setFromEuler_setFromQuaternion) {
 TEST(math_quaternion_test, setFromEuler_setFromRotationMatrix) {
 
   // ensure euler conversion for Quaternion matches that of Matrix4
-  for( auto i = 0; i < orders.size(); i ++ ) {
+  THREE_REVIEW("We don't use the order here?");
+  for( const auto& order : orders ) {
     auto q = Quaternion().setFromEuler( eulerAngles ); // EA: 2nd param removed
     auto m = Matrix4().makeRotationFromEuler( eulerAngles ); // EA: 2nd param removed
     auto q2 = Quaternion().setFromRotationMatrix( m );
@@ -166,7 +171,11 @@ TEST(math_quaternion_test, inverse_conjugate) {
 
 TEST(math_quaternion_test, multiplyQuaternions_multiply) {
 
-  std::vector<Euler> angles = { Euler( 1, 0, 0 ), Euler( 0, 1, 0 ), Euler( 0, 0, 1 ) };
+  Euler angles[] = {
+    Euler( 1, 0, 0 ),
+    Euler( 0, 1, 0 ),
+    Euler( 0, 0, 1 )
+  };
 
   auto q1 = Quaternion().setFromEuler( angles[0] );
   auto q2 = Quaternion().setFromEuler( angles[1] );
@@ -187,13 +196,18 @@ TEST(math_quaternion_test, multiplyQuaternions_multiply) {
 
 TEST(math_quaternion_test, multiplyVector3) {
 
-  std::vector<Euler> angles = { Euler( 1, 0, 0 ), Euler( 0, 1, 0 ), Euler( 0, 0, 1 ) };
+  Euler angles[] = {
+    Euler( 1, 0, 0 ),
+    Euler( 0, 1, 0 ),
+    Euler( 0, 0, 1 )
+  };
 
   // ensure euler conversion for Quaternion matches that of Matrix4
-  for( auto i = 0; i < orders.size(); i ++ ) {
-    for( auto j = 0; j < angles.size(); j ++ ) {
-      auto q = Quaternion().setFromEuler( angles[j] );
-      auto m = Matrix4().makeRotationFromEuler( angles[j] );
+  THREE_REVIEW("We don't use the order here?");
+  for( const auto& order : orders ) {
+    for( const auto& angle : angles ) {
+      auto q = Quaternion().setFromEuler( angle );
+      auto m = Matrix4().makeRotationFromEuler( angle );
 
       auto v0 = Vector3(1, 0, 0);
       auto qv = v0.clone().applyQuaternion( q );

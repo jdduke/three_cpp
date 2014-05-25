@@ -9,7 +9,7 @@
 
 namespace three {
 
-class Quaternion {
+class THREE_DECL Quaternion {
 
 public:
 
@@ -54,21 +54,7 @@ public:
 
   Quaternion& setFromEuler( const Euler& euler );
 
-  inline Quaternion& setFromAxisAngle( const Vector3& axis, const float angle ) {
-
-    // from http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
-    // axis have to be normalized
-
-    auto halfAngle = angle / 2.f, s = Math::sin( halfAngle );
-
-    x = axis.x * s;
-    y = axis.y * s;
-    z = axis.z * s;
-    w = Math::cos( halfAngle );
-
-    return *this;
-
-  }
+  Quaternion& setFromAxisAngle( const Vector3& axis, const float angle );
 
   Quaternion& setFromRotationMatrix( const Matrix4& m );
 
@@ -98,15 +84,13 @@ public:
 
   inline float length() const {
 
-    return Math::sqrt( x * x + y * y + z * z + w * w );
+    return Math::sqrt( lengthSq() );
 
   }
 
   Quaternion& normalize();
 
-  Quaternion& multiply( const Quaternion& q ) {
-    return multiplyQuaternions( *this, q );
-  }
+  Quaternion& multiply( const Quaternion& q );
 
   Quaternion& multiplyQuaternions( const Quaternion& a, const Quaternion& b );
 

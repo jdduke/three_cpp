@@ -1,6 +1,3 @@
-#ifndef THREE_FONT_CPP
-#define THREE_FONT_CPP
-
 #include <three/extras/utils/font.h>
 
 #include <three/gl.h>
@@ -269,5 +266,3 @@ const Texture::Ptr& Font::texture() const {
 }
 
 } // namespace three
-
-#endif // THREE_FONT2_CPP

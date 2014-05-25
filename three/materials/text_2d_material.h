@@ -7,7 +7,7 @@
 
 namespace three {
 
-class Text2DMaterial {
+class THREE_DECL Text2DMaterial {
 public:
 
   typedef std::shared_ptr<ShaderMaterial> Ptr;

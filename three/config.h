@@ -9,6 +9,9 @@
 // We need to import/export our code only if the user has specifically asked
 // for it by defining THREE_DYN_LINK.
 # if defined(THREE_DYN_LINK)
+// WARNING: Shared library support is very much experimental, and will likely
+// break horribly in practice... You've been warned.
+#  pragma warning(disable : 4251)
 // Export if this is our own source, otherwise import.
 #  if defined(THREE_SOURCE)
 #   define THREE_DECL __declspec(dllexport)
@@ -104,10 +107,10 @@
 #endif
 
 #if !THREE_HAS_RANGE_FOR
-//#  error Range-based for loop support required
+#  error Range-based for loop support required
 #endif
 #if !THREE_HAS_RVALUE_REFERENCES
-//#  error R-value reference support required
+#  error R-value reference support required
 #endif
 
 #if THREE_HAS_DELETED_FUNCTIONS

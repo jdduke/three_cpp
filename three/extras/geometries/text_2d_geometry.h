@@ -7,7 +7,7 @@
 
 namespace three {
 
-class Text2DGeometry : public Geometry {
+class THREE_DECL Text2DGeometry : public Geometry {
 public:
 
   typedef std::shared_ptr<Text2DGeometry> Ptr;

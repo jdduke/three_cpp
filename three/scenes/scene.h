@@ -9,7 +9,7 @@
 
 namespace three {
 
-class Scene : public Object3D {
+class THREE_DECL Scene : public Object3D {
 
 public:
 

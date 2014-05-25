@@ -6,7 +6,7 @@
 namespace three {
 
 class Renderable {
-	
+
 public:
 
   int id;

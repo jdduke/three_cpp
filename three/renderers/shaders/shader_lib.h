@@ -1,12 +1,13 @@
 #ifndef THREE_SHADER_LIB_H
 #define THREE_SHADER_LIB_H
 
+#include <three/common.h>
 #include <three/renderers/gl/gl_shader.h>
 
 namespace three {
 
-class ShaderLib {
-	
+class THREE_DECL ShaderLib {
+
 public:
 
   static const Shader& depth();

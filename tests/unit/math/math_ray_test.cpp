@@ -58,7 +58,7 @@ TEST(math_ray_test, recast_clone) {
 	auto d = a.clone();
 	auto e = d.clone().recast( 1 );
 	EXPECT_TRUE( d.equals( a ) );
-	EXPECT_TRUE( ! e.equals( d ) );
+	EXPECT_FALSE( e.equals( d ) );
 	EXPECT_TRUE( e.equals( c ) );
 }
 
@@ -84,15 +84,15 @@ TEST(math_ray_test, distanceToPoint) {
 
 	// behind the ray
 	auto b = a.distanceToPoint( zero3 );
-	EXPECT_TRUE( b == Math::sqrt( 3.f ) );
+	EXPECT_EQ( b, Math::sqrt( 3.f ) );
 
 	// front of the ray
 	auto c = a.distanceToPoint( Vector3( 0, 0, 50 ) );
-	EXPECT_TRUE( c == Math::sqrt( 2.f ) );
+	EXPECT_EQ( c, Math::sqrt( 2.f ) );
 
 	// exactly on the ray
 	auto d = a.distanceToPoint( one3 );
-	EXPECT_TRUE( d == 0 );
+	EXPECT_EQ( d, 0 );
 }
 
 TEST(math_ray_test, isIntersectionSphere) {
@@ -103,11 +103,11 @@ TEST(math_ray_test, isIntersectionSphere) {
 	auto e = Sphere( two3, 0.1 );
 	auto f = Sphere( two3, 1 );
 
-	EXPECT_TRUE( ! a.isIntersectionSphere( b ) );
-	EXPECT_TRUE( ! a.isIntersectionSphere( c ) );
+	EXPECT_FALSE( a.isIntersectionSphere( b ) );
+	EXPECT_FALSE( a.isIntersectionSphere( c ) );
 	EXPECT_TRUE( a.isIntersectionSphere( d ) );
-	EXPECT_TRUE( ! a.isIntersectionSphere( e ) );
-	EXPECT_TRUE( ! a.isIntersectionSphere( f ) );
+	EXPECT_FALSE( a.isIntersectionSphere( e ) );
+	EXPECT_FALSE( a.isIntersectionSphere( f ) );
 }
 
 TEST(math_ray_test, isIntersectionPlane) {
@@ -123,7 +123,7 @@ TEST(math_ray_test, isIntersectionPlane) {
 
 	// parallel plane behind the ray
 	auto d = Plane().setFromNormalAndCoplanarPoint( Vector3( 0, 0, 1 ), one3.clone().sub( Vector3( 0, 0, 1 ) ) );
-	EXPECT_TRUE( ! a.isIntersectionPlane( d ) );
+	EXPECT_FALSE( a.isIntersectionPlane( d ) );
 
 	// perpendical ray that overlaps exactly
 	auto e = Plane().setFromNormalAndCoplanarPoint( Vector3( 1, 0, 0 ), one3 );
@@ -131,7 +131,7 @@ TEST(math_ray_test, isIntersectionPlane) {
 
 	// perpendical ray that doesn't overlap
 	auto f = Plane().setFromNormalAndCoplanarPoint( Vector3( 1, 0, 0 ), zero3 );
-	EXPECT_TRUE( ! a.isIntersectionPlane( f ) );
+	EXPECT_FALSE( a.isIntersectionPlane( f ) );
 }
 
 TEST(math_ray_test, intersectPlane) {
@@ -139,11 +139,11 @@ TEST(math_ray_test, intersectPlane) {
 
 	// parallel plane behind
 	auto b = Plane().setFromNormalAndCoplanarPoint( Vector3( 0, 0, 1 ), Vector3( 1, 1, -1 ) );
-	EXPECT_TRUE( a.intersectPlane( b ) == 0 );
+	EXPECT_FALSE( a.intersectPlane( b ) );
 
 	// parallel plane coincident with origin
 	auto c = Plane().setFromNormalAndCoplanarPoint( Vector3( 0, 0, 1 ), Vector3( 1, 1, 0 ) );
-	EXPECT_TRUE( a.intersectPlane( c ) == 0 );
+	EXPECT_FALSE( a.intersectPlane( c ) );
 
 	// parallel plane infront
 	auto d = Plane().setFromNormalAndCoplanarPoint( Vector3( 0, 0, 1 ), Vector3( 1, 1, 1 ) );
@@ -155,7 +155,7 @@ TEST(math_ray_test, intersectPlane) {
 
 	// perpendical ray that doesn't overlap
 	auto f = Plane().setFromNormalAndCoplanarPoint( Vector3( 1, 0, 0 ), zero3 );
-	EXPECT_TRUE( a.intersectPlane( f ) == 0 );
+	EXPECT_FALSE( a.intersectPlane( f ) );
 }
 
 
@@ -173,14 +173,14 @@ TEST(math_ray_test, applyMatrix4) {
 	auto b = a.clone();
 	b.direction.negate();
 	auto a2 = a.clone().applyMatrix4( m );
-	EXPECT_TRUE( a2.origin.distanceTo( b.origin ) < 0.0001 );
-	EXPECT_TRUE( a2.direction.distanceTo( b.direction ) < 0.0001 );
+	EXPECT_LT( a2.origin.distanceTo( b.origin ), 0.0001 );
+	EXPECT_LT( a2.direction.distanceTo( b.direction ), 0.0001 );
 
 	a.origin = Vector3( 0, 0, 1 );
 	b.origin = Vector3( 0, 0, -1 );
 	a2 = a.clone().applyMatrix4( m );
-	EXPECT_TRUE( a2.origin.distanceTo( b.origin ) < 0.0001 );
-	EXPECT_TRUE( a2.direction.distanceTo( b.direction ) < 0.0001 );
+	EXPECT_LT( a2.origin.distanceTo( b.origin ), 0.0001 );
+	EXPECT_LT( a2.direction.distanceTo( b.direction ), 0.0001 );
 }
 
 
@@ -194,67 +194,66 @@ TEST(math_ray_test, distanceSqToSegment) {
 	auto v1 = Vector3( 50, 50, 50 ); // just a far away point
 	auto distSqr = a.distanceSqToSegment( v0, v1, &ptOnLine, &ptOnSegment );
 
-	EXPECT_TRUE( ptOnSegment.distanceTo( v0 ) < 0.0001 );
-	EXPECT_TRUE( ptOnLine.distanceTo( Vector3(1, 1, 50) ) < 0.0001 );
+	EXPECT_LT( ptOnSegment.distanceTo( v0 ), 0.0001 );
+	EXPECT_LT( ptOnLine.distanceTo( Vector3(1, 1, 50) ), 0.0001 );
 	// ((3-1) * (3-1) + (5-1) * (5-1) = 4 + 16 = 20
-	EXPECT_TRUE( Math::abs( distSqr - 20 ) < 0.0001 );
+	EXPECT_LT( Math::abs( distSqr - 20 ), 0.0001 );
 
 	//segment behind the ray
 	v0 = Vector3( -50, -50, -50 ); // just a far away point
 	v1 = Vector3( -3, -5, -4 );
 	distSqr = a.distanceSqToSegment( v0, v1, &ptOnLine, &ptOnSegment );
 
-	EXPECT_TRUE( ptOnSegment.distanceTo( v1 ) < 0.0001 );
-	EXPECT_TRUE( ptOnLine.distanceTo( one3 ) < 0.0001 );
+	EXPECT_LT( ptOnSegment.distanceTo( v1 ), 0.0001 );
+	EXPECT_LT( ptOnLine.distanceTo( one3 ), 0.0001 );
 	// ((-3-1) * (-3-1) + (-5-1) * (-5-1) + (-4-1) + (-4-1) = 16 + 36 + 25 = 77
-	EXPECT_TRUE( Math::abs( distSqr - 77 ) < 0.0001 );
+	EXPECT_LT( Math::abs( distSqr - 77 ), 0.0001 );
 
 	//exact intersection between the ray and the segment
 	v0 = Vector3( -50, -50, -50 );
 	v1 = Vector3( 50, 50, 50 );
 	distSqr = a.distanceSqToSegment( v0, v1, &ptOnLine, &ptOnSegment );
 
-	EXPECT_TRUE( ptOnSegment.distanceTo( one3 ) < 0.0001 );
-	EXPECT_TRUE( ptOnLine.distanceTo( one3 ) < 0.0001 );
-	EXPECT_TRUE( distSqr < 0.0001 );
+	EXPECT_LT( ptOnSegment.distanceTo( one3 ), 0.0001 );
+	EXPECT_LT( ptOnLine.distanceTo( one3 ), 0.0001 );
+	EXPECT_EQ( distSqr, 0.0001 );
 }
 
 TEST(math_ray_test, intersectBox) {
 
 	auto TOL = 0.0001;
-	
+
 	auto box = Box3( Vector3(  -1, -1, -1 ), Vector3( 1, 1, 1 ) );
 
 	auto a = Ray( Vector3( -2, 0, 0 ), Vector3( 1, 0, 0) );
 	//ray should intersect box at -1,0,0
-	EXPECT_TRUE( a.isIntersectionBox(box) == true );
-	EXPECT_TRUE( a.intersectBox(box)->distanceTo( Vector3( -1, 0, 0 ) ) < TOL );
+	EXPECT_TRUE( a.isIntersectionBox(box) );
+	EXPECT_LT( a.intersectBox(box)->distanceTo( Vector3( -1, 0, 0 ) ), TOL );
 
 	auto b = Ray( Vector3( -2, 0, 0 ), Vector3( -1, 0, 0) );
 	//ray is point away from box, it should not intersect
-	EXPECT_TRUE( b.isIntersectionBox(box) == false );
-	EXPECT_TRUE( b.intersectBox(box) == 0 );
+	EXPECT_FALSE( b.isIntersectionBox(box) );
+	EXPECT_FALSE( b.intersectBox(box) );
 
 	auto c = Ray( Vector3( 0, 0, 0 ), Vector3( 1, 0, 0) );
 	// ray is inside box, should return exit point
-	EXPECT_TRUE( c.isIntersectionBox(box) == true );
-	EXPECT_TRUE( c.intersectBox(box)->distanceTo( Vector3( 1, 0, 0 ) ) < TOL );
+	EXPECT_TRUE( c.isIntersectionBox(box) );
+	EXPECT_LT( c.intersectBox(box)->distanceTo( Vector3( 1, 0, 0 ) ), TOL );
 
 	auto d = Ray( Vector3( 0, 2, 1 ), Vector3( 0, -1, -1).normalize() );
 	//tilted ray should intersect box at 0,1,0
-	EXPECT_TRUE( d.isIntersectionBox(box) == true );
-	EXPECT_TRUE( d.intersectBox(box)->distanceTo( Vector3( 0, 1, 0 ) ) < TOL );
+	EXPECT_TRUE( d.isIntersectionBox(box) );
+	EXPECT_LT( d.intersectBox(box)->distanceTo( Vector3( 0, 1, 0 ) ), TOL );
 
 	auto e = Ray( Vector3( 1, -2, 1 ), Vector3( 0, 1, 0).normalize() );
 	//handle case where ray is coplanar with one of the boxes side - box in front of ray
-	EXPECT_TRUE( e.isIntersectionBox(box) == true );
-	EXPECT_TRUE( e.intersectBox(box)->distanceTo( Vector3( 1, -1, 1 ) ) < TOL );
-	
+	EXPECT_TRUE( e.isIntersectionBox(box) );
+	EXPECT_LT( e.intersectBox(box)->distanceTo( Vector3( 1, -1, 1 ) ), TOL );
+
 	auto f = Ray( Vector3( 1, -2, 0 ), Vector3( 0, -1, 0).normalize() );
 	//handle case where ray is coplanar with one of the boxes side - box behind ray
-	EXPECT_TRUE( f.isIntersectionBox(box) == false );
-	EXPECT_TRUE( f.intersectBox(box) == 0 );
-	
+	EXPECT_FALSE( f.isIntersectionBox(box) );
+	EXPECT_FALSE( f.intersectBox(box) );
 }
 
 

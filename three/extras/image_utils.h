@@ -7,7 +7,7 @@
 
 namespace three {
 
-class ImageUtils {
+class THREE_DECL ImageUtils {
 public:
 
   static Texture::Ptr loadTexture(

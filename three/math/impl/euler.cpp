@@ -106,6 +106,13 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
 
 }
 
+Euler& Euler::setFromQuaternion( const Quaternion& q ) {
+
+  return setFromQuaternion( q, _order );
+
+}
+
+
 Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotationOrder order ) {
 
 // q is assumed to be normalized

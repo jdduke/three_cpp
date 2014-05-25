@@ -7,7 +7,7 @@
 
 namespace three {
 
-class Vector2 {
+class THREE_DECL Vector2 {
 
 public:
 

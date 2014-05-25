@@ -5,7 +5,7 @@
 
 namespace three {
 
-class NonCopyable {
+class THREE_DECL NonCopyable {
 protected:
   NonCopyable() {}
   ~NonCopyable() {}

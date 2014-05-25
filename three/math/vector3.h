@@ -14,7 +14,7 @@
 
 namespace three {
 
-class Vector3 {
+class THREE_DECL Vector3 {
 
 public:
 
@@ -405,7 +405,7 @@ public:
   inline Vector3& cross( const Vector3& v) {
 
     auto x = this->x, y = this->y, z = this->z;
-      
+
     this->x = y * v.z - z * v.y;
     this->y = z * v.x - x * v.z;
     this->z = x * v.y - y * v.x;
@@ -418,7 +418,7 @@ public:
 
     auto ax = a.x, ay = a.y, az = a.z;
     auto bx = b.x, by = b.y, bz = b.z;
-      
+
     this->x = ay * bz - az * by;
     this->y = az * bx - ax * bz;
     this->z = ax * by - ay * bx;
@@ -430,9 +430,9 @@ public:
   inline float angleTo( const Vector3& v ) {
 
     auto theta = dot( v ) / ( length() * v.length() );
-      
+
     // clamp, to handle numerical problems
-      
+
     return Math::acos( Math::clamp( theta, -1.f, 1.f ) );
   }
 
@@ -447,7 +447,7 @@ public:
     auto dx = this->x - v.x;
     auto dy = this->y - v.y;
     auto dz = this->z - v.z;
-      
+
     return (dx * dx) + (dy * dy) + (dz * dz);
 
   }
@@ -503,7 +503,7 @@ public:
   }
 
 };
-    
+
 static_assert( sizeof( Vector3 ) == sizeof( float ) * 3, "Invalid Vector3 storage size" );
 
 inline Vector3 add( const Vector3& a, const Vector3& b ) {

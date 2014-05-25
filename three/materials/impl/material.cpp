@@ -1,7 +1,5 @@
-#ifndef THREE_MATERIAL_CPP
-#define THREE_MATERIAL_CPP
-
 #include <three/materials/material.h>
+
 #include <three/materials/attribute.h>
 
 #include <three/utils/conversion.h>
@@ -160,12 +158,14 @@ Material::Material( )
     gapSize ( 1.0f ),
     dashSize( 3.0f ) {
 
-      // TODO not for every material...
-      defaultAttributeValues["color"] = toVector( 1.f, 1.f, 1.f );
-      defaultAttributeValues["uv"] = toVector( 0.f, 0.f );
-      defaultAttributeValues["uv2"] = toVector( 0.f, 0.f );
+  // TODO not for every material...
+  defaultAttributeValues["color"] = toVector( 1.f, 1.f, 1.f );
+  defaultAttributeValues["uv"] = toVector( 0.f, 0.f );
+  defaultAttributeValues["uv2"] = toVector( 0.f, 0.f );
+}
 
-    }
+Material::~Material() {}
+
 
 template < typename T >
 inline bool load( const std::unordered_map<std::string, any>& parameters,
@@ -264,5 +264,3 @@ void Material::setParameters( const Parameters& parameters,
 #undef PARAM_LOAD
 
 } // namespace three
-
-#endif // THREE_MATERIAL_H

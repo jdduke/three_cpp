@@ -10,7 +10,7 @@
 
 namespace three {
 
-class Plane {
+class THREE_DECL Plane {
 
 public:
 
@@ -147,7 +147,7 @@ public:
   }
 
   optional<Vector3> intersectLine( const Line3& line );
-  
+
   optional<Vector3> intersectLine( const Line3& line, Vector3& target );
 
   inline Vector3 coplanarPoint() const {

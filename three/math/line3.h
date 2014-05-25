@@ -6,7 +6,7 @@
 
 namespace three {
 
-class Line3 {
+class THREE_DECL Line3 {
 
 public:
 

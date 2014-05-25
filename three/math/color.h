@@ -7,7 +7,7 @@
 
 namespace three {
 
-class HSL {
+class THREE_DECL HSL {
 
 public:
 
@@ -24,7 +24,7 @@ public:
 
 };
 
-class Color {
+class THREE_DECL Color {
 
 public:
 

@@ -1,7 +1,5 @@
-#ifndef THREE_PROJECTOR_CPP
-#define THREE_PROJECTOR_CPP
-
 #include <three/core/projector.h>
+
 #include <three/core/face.h>
 
 #include <three/cameras/camera.h>
@@ -635,5 +633,3 @@ Projector::RenderData& Projector::projectScene( Scene& scene, Camera& camera, bo
 
 
 } // namespace three
-
-#endif // THREE_PROJECTOR_CPP

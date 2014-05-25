@@ -8,7 +8,7 @@
 
 namespace three {
 
-class Sphere {
+class THREE_DECL Sphere {
 
 public:
 

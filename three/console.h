@@ -9,7 +9,7 @@
 
 namespace three {
 
-class Console {
+class THREE_DECL Console {
 private:
   class LogProxy;
 
@@ -37,7 +37,7 @@ private:
 
   LogP output;
 
-  class LogProxy {
+  class THREE_DECL LogProxy {
   public:
     LogProxy( LogProxy && other );
     ~LogProxy();
@@ -66,7 +66,7 @@ private:
   Console();
 };
 
-Console& console();
+THREE_DECL Console& console();
 
 } // namespace three
 

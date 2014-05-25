@@ -14,7 +14,7 @@
 
 namespace three {
 
-class ShadowMapPlugin : public IPlugin {
+class THREE_DECL ShadowMapPlugin : public IPlugin {
 
   void* _gl;
   GLRenderer* _renderer;

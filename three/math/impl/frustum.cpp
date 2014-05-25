@@ -1,10 +1,8 @@
-#ifndef THREE_FRUSTUM_CPP
-#define THREE_FRUSTUM_CPP
+#include <three/math/frustum.h>
 
 #include <three/core/object3d.h>
 #include <three/core/geometry.h>
 
-#include <three/math/frustum.h>
 #include <three/math/vector4.h>
 #include <three/math/sphere.h>
 #include <three/math/box3.h>
@@ -48,14 +46,14 @@ Frustum& Frustum::setFromMatrix( const Matrix4& m ) {
     float me4 = me[4], me5 = me[5], me6 = me[6], me7 = me[7];
     float me8 = me[8], me9 = me[9], me10 = me[10], me11 = me[11];
     float me12 = me[12], me13 = me[13], me14 = me[14], me15 = me[15];
-    
+
     planes[ 0 ].setComponents( me3 - me0, me7 - me4, me11 - me8, me15 - me12 ).normalize();
     planes[ 1 ].setComponents( me3 + me0, me7 + me4, me11 + me8, me15 + me12 ).normalize();
     planes[ 2 ].setComponents( me3 + me1, me7 + me5, me11 + me9, me15 + me13 ).normalize();
     planes[ 3 ].setComponents( me3 - me1, me7 - me5, me11 - me9, me15 - me13 ).normalize();
     planes[ 4 ].setComponents( me3 - me2, me7 - me6, me11 - me10, me15 - me14 ).normalize();
     planes[ 5 ].setComponents( me3 + me2, me7 + me6, me11 + me10, me15 + me14 ).normalize();
-    
+
     return *this;
 }
 
@@ -150,5 +148,3 @@ bool Frustum::containsPoint( const Vector3& point ) const {
 }
 
 } // namespace three
-
-#endif // THREE_FRUSTUM_CPP

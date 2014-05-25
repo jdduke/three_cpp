@@ -1,6 +1,3 @@
-#ifndef THREE_MATRIX3_CPP
-#define THREE_MATRIX3_CPP
-
 #include <three/math/matrix3.h>
 
 #include <three/math/matrix4.h>
@@ -53,5 +50,3 @@ Matrix3& Matrix3::getInverse( const Matrix4& m, bool throwOnInvertable ) {
 }
 
 } // namespace three
-
-#endif // THREE_MATRIX3_H

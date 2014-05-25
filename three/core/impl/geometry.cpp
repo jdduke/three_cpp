@@ -1,9 +1,5 @@
-#ifndef THREE_GEOMETRY_CPP
-#define THREE_GEOMETRY_CPP
-
-#include <three/common.h>
-
 #include <three/core/geometry.h>
+
 #include <three/core/face.h>
 #include <three/math/vector3.h>
 #include <three/math/vector4.h>
@@ -418,5 +414,3 @@ Geometry::Geometry()
 Geometry::~Geometry() { }
 
 } // namespace three
-
-#endif // THREE_GEOMETRY_CPP

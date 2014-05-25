@@ -32,7 +32,7 @@ typedef std::vector<std::string>     Identifiers;
 struct ProgramParameters;
 struct RendererParameters;
 
-class GLRenderer {
+class THREE_DECL GLRenderer {
 public:
 
   typedef std::shared_ptr<GLRenderer> Ptr;
@@ -147,7 +147,7 @@ private:
   void onMaterialDispose( Event& event );
 
   // Buffer allocation
-  
+
   void createParticleBuffers( Geometry& geometry );
   void createLineBuffers( Geometry& geometry );
   void createMeshBuffers( GeometryGroup& geometryGroup );

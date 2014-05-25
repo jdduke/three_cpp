@@ -9,7 +9,7 @@
 
 namespace three {
 
-class Euler {
+class THREE_DECL Euler {
 public:
 
   static const enums::EulerRotationOrder DefaultOrder = enums::EulerRotationOrder::XYZ;
@@ -79,20 +79,14 @@ public:
 
   Euler& setFromRotationMatrix( const Matrix4& m, const enums::EulerRotationOrder order );
 
-  Euler& setFromQuaternion( const Quaternion& q ) {
-
-    return setFromQuaternion( q, _order );
-
-  }
+  Euler& setFromQuaternion( const Quaternion& q );
 
   Euler& setFromQuaternion( const Quaternion& q, const enums::EulerRotationOrder order );
 
   inline Euler& reorder( enums::EulerRotationOrder newOrder ) {
 
     // WARNING: this discards revolution information -bhouston
-    setFromQuaternion( Quaternion().setFromEuler( *this ), newOrder );
-
-    return *this;
+    return setFromQuaternion( Quaternion().setFromEuler( *this ), newOrder );
 
   }
 

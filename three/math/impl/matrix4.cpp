@@ -1,11 +1,9 @@
-#ifndef THREE_MATRIX4_CPP
-#define THREE_MATRIX4_CPP
+#include <three/math/matrix4.h>
 
 #include <three/constants.h>
 
 #include <three/math/math.h>
 #include <three/math/vector4.h>
-#include <three/math/matrix4.h>
 #include <three/math/euler.h>
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
@@ -632,21 +630,21 @@ Matrix4& Matrix4::getInverse( const Matrix4& m, bool throwOnInvertible ) {
   auto det = n11 * te[ 0 ] + n21 * te[ 4 ] + n31 * te[ 8 ] + n41 * te[ 12 ];
 
   if ( det == 0 ) {
-        
+
     auto msg = "Matrix4.getInverse(): can't invert matrix, determinant is 0";
-        
+
     if ( throwOnInvertible || false ) {
-            
+
       throw -1;
-            
+
     } else {
-    
+
       console().warn( msg );
-            
+
     }
-        
+
     identity();
-        
+
     return *this;
   }
 
@@ -773,7 +771,7 @@ Matrix4& Matrix4::decompose( Vector3& position, Quaternion& quaternion, Vector3&
 
   // @todo priv members
   auto vector = Vector3();
-  
+
   const auto& te = elements;
 
   auto sx = vector.set( te[0], te[1], te[2] ).length();
@@ -866,11 +864,11 @@ Matrix4& Matrix4::makeOrthographic( float left, float right, float top, float bo
   auto w = right - left;
   auto h = top - bottom;
   auto p = far - near;
-    
+
   auto x = ( right + left ) / w;
   auto y = ( top + bottom ) / h;
   auto z = ( far + near ) / p;
-    
+
   te[0] = 2 / w;	te[4] = 0;	te[8] = 0;	te[12] = -x;
   te[1] = 0;	te[5] = 2 / h;	te[9] = 0;	te[13] = -y;
   te[2] = 0;	te[6] = 0;	te[10] = -2/p;	te[14] = -z;
@@ -880,5 +878,3 @@ Matrix4& Matrix4::makeOrthographic( float left, float right, float top, float bo
 }
 
 } // namespace three
-
-#endif // THREE_MATRIX4_CPP

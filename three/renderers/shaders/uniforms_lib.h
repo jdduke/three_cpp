@@ -5,7 +5,7 @@
 
 namespace three {
 
-class UniformsLib {
+class THREE_DECL UniformsLib {
 
 public:
 

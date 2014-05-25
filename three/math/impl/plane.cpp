@@ -1,7 +1,5 @@
-#ifndef THREE_PLANE_CPP
-#define THREE_PLANE_CPP
-
 #include <three/math/plane.h>
+
 #include <three/math/line3.h>
 #include <three/math/vector3.h>
 #include <three/math/matrix3.h>
@@ -14,7 +12,7 @@ optional<Vector3> Plane::intersectLine( const Line3& line) {
   auto target = Vector3();
 
   return intersectLine(line, target);
-    
+
 }
 
 optional<Vector3> Plane::intersectLine( const Line3& line, Vector3& target ) {
@@ -43,7 +41,7 @@ optional<Vector3> Plane::intersectLine( const Line3& line, Vector3& target ) {
     return nullptr;
 
   }
-    
+
   return target.copy( direction ).multiplyScalar( t ).add( line.start );
 }
 
@@ -75,7 +73,4 @@ Plane& Plane::applyMatrix4( const Matrix4& matrix, const Matrix3& normalMatrix) 
 
 }
 
-
 } // namespace three
-
-#endif //THREE_PLANE_CPP

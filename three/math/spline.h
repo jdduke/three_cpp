@@ -3,14 +3,14 @@
 
 #include <three/common.h>
 
-#include <three/math/math.h>
+#include <three/math/vector3.h>
 
 #include <vector>
 #include <tuple>
 
 namespace three {
 
-class Spline {
+class THREE_DECL Spline {
 
 public:
 

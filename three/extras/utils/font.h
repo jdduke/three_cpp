@@ -11,7 +11,7 @@
 
 namespace three {
 
-class Font : NonCopyable {
+class THREE_DECL Font : NonCopyable {
 public:
 
   typedef std::shared_ptr<Font> Ptr;

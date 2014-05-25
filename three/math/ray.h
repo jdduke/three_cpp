@@ -8,7 +8,7 @@
 
 namespace three {
 
-class Ray {
+class THREE_DECL Ray {
 
 public:
 

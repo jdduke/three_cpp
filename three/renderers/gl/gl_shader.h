@@ -5,13 +5,13 @@
 
 namespace three {
 
-class Shader {
+class THREE_DECL Shader {
 
 public:
-	
+
   Shader( Uniforms uniforms, std::string vertexShader, std::string fragmentShader )
-    : uniforms( std::move( uniforms ) ), 
-      vertexShader( std::move( vertexShader ) ), 
+    : uniforms( std::move( uniforms ) ),
+      vertexShader( std::move( vertexShader ) ),
       fragmentShader( std::move( fragmentShader ) ) { }
 
   Uniforms uniforms;

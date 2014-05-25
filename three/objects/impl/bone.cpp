@@ -1,8 +1,3 @@
-#ifndef THREE_BONE_CPP
-#define THREE_BONE_CPP
-
-#include <three/common.h>
-
 #include <three/objects/bone.h>
 
 namespace three {
@@ -11,7 +6,7 @@ namespace three {
     : skin ( belongsToSkin ), skinMatrix( Matrix4() ), scl( scale ), parent( parentIn ) {}
 
   void Bone::update( const Matrix4* parentSkinMatrix, bool forceUpdate) {
-  	
+
   	// // update local
 
   	// if ( matrixAutoUpdate ) {
@@ -48,10 +43,9 @@ namespace three {
   	// 	child.update( skinMatrix, forceUpdate );
 
   	// }
-    
+
   }
-	
+
 
 }; // end namespace
 
-#endif // THREE_BONE_CPP

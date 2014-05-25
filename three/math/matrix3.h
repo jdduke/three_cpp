@@ -11,7 +11,7 @@
 
 namespace three {
 
-class Matrix3 {
+class THREE_DECL Matrix3 {
 
 public:
 
@@ -154,6 +154,7 @@ public:
     return *this;
 
   }
+
   template<typename TMatrix>
   inline Matrix3& getNormalMatrix( const TMatrix& m ) {
 

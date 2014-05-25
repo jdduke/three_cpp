@@ -12,23 +12,23 @@
 
 namespace three {
 
-class Projector : public NonCopyable {
+class THREE_DECL Projector : public NonCopyable {
 
 public:
 
   struct RenderData {
-        
+
     // TODO "JD: Fill these with pointers AFTER creating with the pool"
 
     std::vector<RenderableObject> objects;
     std::vector<RenderableObject> sprites;
     std::vector<Object3D*>        lights;
     std::vector<Renderable*>      elements;
-        
+
   };
-    
+
   struct Impl;
-    
+
   Projector();
 
   Vector3& projectVector( Vector3& vector, const Camera& camera );

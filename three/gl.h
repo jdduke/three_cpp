@@ -13,11 +13,13 @@
 #undef GL_GLEXT_PROTOTYPES
 #endif
 
+#include <three/common.h>
+
 namespace three {
 
-struct GLInterface {
+struct THREE_DECL GLInterface {
 public:
-  template <typename PtrType> class GLPtr {
+  template <typename PtrType> class THREE_DECL GLPtr {
   public:
     GLPtr() : _ptr( nullptr ) {}
     GLPtr operator=(PtrType ptr) { _ptr = ptr; return *this; }
@@ -45,7 +47,7 @@ public:
 #endif
 };
 
-struct GLInterfaceWrapper : public GLInterface {
+struct THREE_DECL GLInterfaceWrapper : public GLInterface {
   GLInterfaceWrapper(const GLInterface& gl);
 
   int Error( const char* file, int line ) const;

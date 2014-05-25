@@ -1,6 +1,3 @@
-#ifndef THREE_TESTS_CONSTANTS_CPP
-#define THREE_TESTS_CONSTANTS_CPP
-
 #include <three/math/math.h>
 #include <three/math/vector2.h>
 #include <three/math/vector3.h>
@@ -38,5 +35,3 @@ bool matrixEquals4 ( const Matrix4& a, const Matrix4& b, float tolerance = 0.000
 	}
 	return true;
 };
-
-#endif

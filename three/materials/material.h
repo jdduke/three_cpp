@@ -27,7 +27,7 @@
 
 namespace three {
 
-class Material : public NonCopyable {
+class THREE_DECL Material : public NonCopyable {
 
 public:
 
@@ -42,6 +42,8 @@ public:
   static Ptr create() {
     return make_shared<Material>( );
   }
+
+  ~Material();
 
   virtual enums::MaterialType type() const {
     return enums::Material;
@@ -160,7 +162,7 @@ public:
 
 protected:
 
-  Material( );
+  Material();
 
   template < typename MaterialType >
   static std::shared_ptr<MaterialType> clone( const MaterialType& src ) {

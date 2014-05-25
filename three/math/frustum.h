@@ -10,7 +10,7 @@
 
 namespace three {
 
-class Frustum {
+class THREE_DECL Frustum {
 public:
 
   Frustum() {
@@ -23,10 +23,10 @@ public:
   }
 
   Frustum( const Matrix4& m ) {
-    
+
     setFromMatrix( m );
   }
-    
+
   Frustum( const Plane& p0, const Plane& p1, const Plane& p2, const Plane& p3, const Plane& p4, const Plane& p5 ) {
     planes[0] = p0;
     planes[1] = p1;

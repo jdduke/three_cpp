@@ -1,14 +1,10 @@
-#ifndef THREE_VECTOR4_CPP
-#define THREE_VECTOR4_CPP
+#include <three/math/vector4.h>
 
 #include <three/math/vector3.h>
-#include <three/math/vector4.h>
 #include <three/math/matrix4.h>
 #include <three/math/quaternion.h>
 
 namespace three {
-
-
 
 Vector4& Vector4::applyMatrix4( const Matrix4& m ) {
 
@@ -169,5 +165,3 @@ Vector4& Vector4::setAxisAngleFromRotationMatrix( const Matrix4& m ) {
 }
 
 } // namespace three
-
-#endif // THREE_VECTOR4_CPP

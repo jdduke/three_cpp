@@ -11,13 +11,13 @@
 
 namespace three {
 
-  struct Intersect;
+struct Intersect;
 
-  typedef std::vector<Intersect> Intersects;
+typedef std::vector<Intersect> Intersects;
 
-  struct DescSort;
+struct DescSort;
 
-class Raycaster : public NonCopyable {
+class THREE_DECL Raycaster : public NonCopyable {
 
 public:
 

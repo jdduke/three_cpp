@@ -1,6 +1,3 @@
-#ifndef THREE_SCENE_CPP
-#define THREE_SCENE_CPP
-
 #include <three/scenes/scene.h>
 
 #include <three/visitor.h>
@@ -137,5 +134,3 @@ void Scene::__removeObject( const Object3D::Ptr& object ) {
 }
 
 } // namespace three
-
-#endif // THREE_SCENE_CPP

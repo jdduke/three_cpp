@@ -1,6 +1,3 @@
-#ifndef THREE_TEXT_2D_GEOMETRY_CPP
-#define THREE_TEXT_2D_GEOMETRY_CPP
-
 #include <three/extras/geometries/text_2d_geometry.h>
 
 #include <three/console.h>
@@ -8,7 +5,7 @@
 namespace three {
 
 Text2DGeometry::Ptr Text2DGeometry::create( const std::string& text,
-    const Font::Ptr& font ) {
+                                            const Font::Ptr& font ) {
 
   auto geometry = three::make_shared<Text2DGeometry>( text, font );
   geometry->update();
@@ -53,5 +50,3 @@ void Text2DGeometry::update() {
 }
 
 } // namespace three
-
-#endif // THREE_TEXT_2D_GEOMETRY_CPP

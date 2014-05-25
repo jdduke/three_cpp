@@ -11,7 +11,7 @@
 
 namespace three {
 
-class Matrix4 {
+class THREE_DECL Matrix4 {
 public:
 
   union {
@@ -30,11 +30,11 @@ public:
 
   Matrix4& operator= ( const Matrix4& other );
 
-  float& operator[]( const int i ) {
+  inline float& operator[]( const int i ) {
     return elements[i];
   }
 
-  const float operator[]( const int i ) const {
+  inline const float operator[]( const int i ) const {
     return elements[i];
   }
 
@@ -119,7 +119,7 @@ public:
 
   Matrix4& makeOrthographic( float left, float right, float top, float bottom, float near, float far );
 
-  Matrix4 clone() {
+  inline Matrix4 clone() {
     return *this;
   }
 

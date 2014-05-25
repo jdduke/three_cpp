@@ -1,6 +1,3 @@
-#ifndef THREE_MESH_CPP
-#define THREE_MESH_CPP
-
 #include <three/objects/mesh.h>
 
 #include <three/console.h>
@@ -48,5 +45,3 @@ Mesh::Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material )
 }
 
 } // namespace three
-
-#endif // THREE_MESH_CPP

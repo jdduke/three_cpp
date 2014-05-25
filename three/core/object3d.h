@@ -24,7 +24,7 @@
 
 namespace three {
 
-class Object3D : NonCopyable {
+class THREE_DECL Object3D : NonCopyable {
 public:
 
   typedef std::shared_ptr<Object3D> Ptr;
@@ -169,7 +169,7 @@ public:
   Material::Ptr material;
   Geometry::Ptr geometry;
 
-  struct GLData {
+  struct THREE_DECL GLData {
     GLData() : __glInit( false ), __glActive( false ) { }
 
     bool __glInit;
@@ -192,7 +192,7 @@ public:
     }
   } glData;
 
-  struct ImmediateGLData {
+  struct THREE_DECL ImmediateGLData {
     ImmediateGLData()
       : count( 0 ),
         hasPositions( false ), hasNormals( false ), hasUvs( false ), hasColors( false ),

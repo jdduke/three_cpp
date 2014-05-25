@@ -15,11 +15,7 @@ public:
   virtual ~IFog() { }
 };
 
-class IVector3 {
-  float x, y, z;
-};
-
-class IGeometry {
+class THREE_DECL IGeometry {
 public:
   virtual void applyMatrix( Matrix4& ) = 0;
   virtual void computeBoundingBox() = 0;
@@ -29,7 +25,7 @@ public:
   virtual ~IGeometry() { }
 };
 
-class IPlugin {
+class THREE_DECL IPlugin {
 public:
   typedef std::shared_ptr<IPlugin> Ptr;
   virtual void init( GLRenderer& renderer ) = 0;

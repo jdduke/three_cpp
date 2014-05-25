@@ -15,7 +15,7 @@ public:
     : Renderable( z ), object( object ) { }
 
   Object3D* object;
-  
+
 };
 
 struct PainterSort {

@@ -10,7 +10,7 @@
 
 namespace three {
 
-class Bone : Object3D {
+class THREE_DECL Bone : Object3D {
 
   typedef std::shared_ptr<Bone> Ptr;
 

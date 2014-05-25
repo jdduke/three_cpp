@@ -1,6 +1,3 @@
-#ifndef THREE_UNIFORMS_LIB_CPP
-#define THREE_UNIFORMS_LIB_CPP
-
 #include <three/renderers/shaders/uniforms_lib.h>
 
 #include <three/math/color.h>
@@ -120,5 +117,3 @@ Uniforms UniformsLib::shadowmap() {
 }
 
 } // namespace three
-
-#endif // THREE_UNIFORMS_LIB_CPP

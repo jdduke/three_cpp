@@ -1,10 +1,7 @@
-#ifndef THREE_BUFFER_GEOMETRY_CPP
-#define THREE_BUFFER_GEOMETRY_CPP
+#include <three/core/buffer_geometry.h>
 
-#include <three/common.h>
 #include <three/console.h>
 
-#include <three/core/buffer_geometry.h>
 #include <three/math/matrix4.h>
 #include <three/core/geometry.h>
 
@@ -412,5 +409,3 @@ BufferGeometry::BufferGeometry()
 }
 
 } // namespace three
-
-#endif // THREE_BUFFER_GEOMETRY_CPP

@@ -1,11 +1,8 @@
-#ifndef THREE_UNIFORM_CPP
-#define THREE_UNIFORM_CPP
+#include <three/materials/uniform.h>
 
 #include <three/constants.h>
 
 #include <three/console.h>
-
-#include <three/materials/uniform.h>
 
 #include <three/math/color.h>
 #include <three/math/vector2.h>
@@ -214,4 +211,3 @@ void Uniform::load( const GLInterfaceWrapper& gl, int location ) {
 
 } // namespace three
 
-#endif // THREE_UNIFORM_CPP

@@ -119,7 +119,7 @@ base_any_policy* get_policy() {
 
 }
 
-struct any {
+struct THREE_DECL any {
 private:
   detail::base_any_policy* policy;
   void* object;

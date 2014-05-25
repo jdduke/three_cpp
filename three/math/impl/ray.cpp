@@ -1,7 +1,5 @@
-#ifndef THREE_RAY_CPP
-#define THREE_RAY_CPP
-
 #include <three/math/ray.h>
+
 #include <three/math/plane.h>
 #include <three/math/box3.h>
 
@@ -416,5 +414,3 @@ Ray Ray::clone() {
 }
 
 } // namespace three
-
-#endif // THREE_RAY_CPP

@@ -1,6 +1,3 @@
-#ifndef THREE_GL_RENDERER_CPP
-#define THREE_GL_RENDERER_CPP
-
 #include <three/renderers/gl_renderer.h>
 
 #include <three/common.h>
@@ -61,13 +58,13 @@ struct NumericalSort {
         return a.second > b.second;
     }
 };
-    
+
 struct ProgramParameters {
   bool map, envMap, lightMap, bumpMap, normalMap, specularMap;
   enums::Colors vertexColors;
   IFog* fog;
   bool useFog;
-  bool fogExp; 
+  bool fogExp;
   bool sizeAttenuation;
   bool skinning;
   int maxBones;
@@ -253,7 +250,7 @@ void GLRenderer::setDefaultGLState() {
 }
 
 void GLRenderer::setSize( int width, int height ) {
-  
+
   _width = (int)(width * devicePixelRatio);
   _height = (int)(height * devicePixelRatio);
 
@@ -439,7 +436,7 @@ void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
 
 }
 
-// Events 
+// Events
 
 void GLRenderer::onGeometryDispose( Event& event ) {
   // TODO
@@ -1760,7 +1757,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     } else if ( customAttribute.size == 3 ) {
 
-      // TODO: Support colors! enums::c 
+      // TODO: Support colors! enums::c
       const auto& values = customAttribute.value.cast<std::vector<Vector3>>();
 
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
@@ -1960,7 +1957,7 @@ void GLRenderer::setDirectBuffers( Geometry& geometry, int hint, bool dispose ) 
 
   for ( auto& a : attributes ) {
 
-    const auto& attributeName = a.first;    
+    const auto& attributeName = a.first;
     auto& attributeItem = a.second;
 
     if ( attributeItem.needsUpdate ) {
@@ -2163,7 +2160,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
         _info.render.faces += offsets[ i ].count / 3;
 
       }
-    
+
     // non-indexed triangles
 
     } else {
@@ -2211,7 +2208,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
         _gl.DrawArrays(GL_TRIANGLES, 0, position.numItems / 3);
 
         _info.render.calls ++;
-        _info.render.vertices += position.numItems / 3; 
+        _info.render.vertices += position.numItems / 3;
         _info.render.faces += position.numItems / 3 / 3;
 
     }
@@ -2259,7 +2256,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
     _gl.DrawArrays(GL_POINTS, 0, position.numItems / 3);
 
     _info.render.calls ++;
-    _info.render.points += position.numItems / 3; 
+    _info.render.points += position.numItems / 3;
 
   } // ParticleSystem
   else if ( object.type() == enums::Line ) {
@@ -2294,7 +2291,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
           }
 
         }
-        
+
       }
 
       const auto& position = geometry.attributes[ AttributeKey::position() ];
@@ -2304,7 +2301,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
       _gl.DrawArrays(primitives, 0, position.numItems / 3);
 
       _info.render.calls ++;
-      _info.render.points += position.numItems; 
+      _info.render.points += position.numItems;
 
     }
   }
@@ -2531,7 +2528,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     _info.render.calls ++;
     _info.render.points += geometryGroup.__glParticleCount;
 
-  } 
+  }
 
 }
 
@@ -3157,7 +3154,7 @@ void GLRenderer::initGLObjects( Scene& scene ) {
   // update must be called after objects adding / removal
 
   for ( auto& glObject : scene.__glObjects ) {
-    
+
     //TODO(ea): Do we need the hack here?
 
     updateObject( *glObject.object );
@@ -3192,7 +3189,7 @@ static inline void addBufferImmediate( RenderList& objlist, Object3D& object ) {
 void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
   Geometry& geometry = *object.geometry;
-    
+
   if ( ! object.glData.__glInit ) {
 
     object.glData.__glInit = true;
@@ -4088,7 +4085,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
         setTexture( *texture, textureUnit );
       }
 
-    } 
+    }
 
   }
 
@@ -4156,7 +4153,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
     const auto distance  = light.distance;
 
     if ( light.type() == enums::AmbientLight ) {
-      
+
       if ( ! light.visible ) continue;
 
       if ( gammaInput ) {
@@ -4604,15 +4601,15 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
   }
 
   auto shadowMapTypeDefine = "SHADOWMAP_TYPE_BASIC";
-      
+
   if ( parameters.shadowMapType == enums::PCFShadowMap ) {
-      
+
       shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF";
-      
+
   } else if ( parameters.shadowMapType == enums::PCFSoftShadowMap ) {
-      
+
       shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF_SOFT";
-      
+
   }
 
   //console().log( "building new program " );
@@ -4735,7 +4732,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   auto prefix_fragment = [this, &parameters, &customDefines, &shadowMapTypeDefine]() -> std::string {
     std::stringstream ss;
-      
+
 #if defined(THREE_GLES)
     ss << "precision " << _precision << " float;" << std::endl;
     ss << "precision " << _precision << " int;" << std::endl;
@@ -5007,7 +5004,7 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
 
     setTextureParameters( GL_TEXTURE_2D, texture, isImagePowerOfTwo );
 
-    // TODO(ea): Update setTexture to r65+ 
+    // TODO(ea): Update setTexture to r65+
     //if ( texture.type() == enums::DataTexture ) {
 
     _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data.data() );
@@ -5257,7 +5254,7 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
           _gl.FramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderTarget->__glRenderbuffer[0] );
 
         }
-        
+
       } else {
         setupRenderBuffer( renderTarget->__glRenderbuffer[ 0 ], *renderTarget );
       }
@@ -5443,7 +5440,7 @@ int GLRenderer::paramThreeToGL( int p ) {
     return GL_SRC_ALPHA_SATURATE;
 
   /*
-    TODO S3TC/Compressed textures 
+    TODO S3TC/Compressed textures
   */
 
   default:
@@ -5508,7 +5505,7 @@ GLRenderer::LightCount GLRenderer::allocateLights( Lights& lights ) {
     if ( light->type() == enums::SpotLight ) spotLights ++;
     if ( light->type() == enums::SpotLight ) hemiLights ++;
   }
-    
+
   LightCount lightCount;
   lightCount.directional = dirLights;
   lightCount.point = pointLights;
@@ -5535,5 +5532,3 @@ int GLRenderer::allocateShadows( Lights& lights ) {
 }
 
 } // namespace three
-
-#endif // THREE_GL_RENDERER_CPP
