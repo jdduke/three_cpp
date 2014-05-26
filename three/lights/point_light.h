@@ -11,7 +11,7 @@ class PointLight : public Light {
 
 public:
 
-  typedef std::shared_ptr<PointLight> Ptr;
+  THREE_IMPL_OBJECT(PointLight);
 
   static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
 
@@ -19,25 +19,23 @@ public:
 
   }
 
-  virtual enums::Type type() const {
-
-    return enums::PointLight;
-
-  }
-
-  Ptr clone() {
-    
-    auto light = Light::clone();
-    
-    return std::static_pointer_cast<PointLight>(light);
-  }
-
 protected:
 
   PointLight( int hex, float intensity, float distance )
     : Light( hex, intensity, distance ) {
 
-    position.set( 0, 0, 0 );
+    position().set( 0, 0, 0 );
+
+  }
+
+
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+
+    Ptr light = target ? std::static_pointer_cast<PointLight>(target) : create( 0 );
+
+    Light::__clone( light, recursive );
+
+    return light;
 
   }
 

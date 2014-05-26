@@ -10,17 +10,14 @@ namespace three {
 
 // TODO "Impl"
 
-
 class Sprite : public Object3D {
 public:
 
-  typedef std::shared_ptr<Sprite> Ptr;
+  THREE_IMPL_OBJECT(Sprite);
 
   static Ptr create( const Material::Ptr& material ) {
     return three::make_shared<Sprite>( material );
   }
-
-  THREE_IMPL_OBJECT(Sprite)
 
 protected:
 

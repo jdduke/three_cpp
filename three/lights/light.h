@@ -13,11 +13,7 @@ class Light : public Object3D {
 
 public:
 
-  typedef std::shared_ptr<Light> Ptr;
-
-  virtual enums::Type type() const {
-    return enums::Light;
-  }
+  THREE_IMPL_OBJECT(Light);
 
   Color color;
   float intensity;
@@ -26,26 +22,6 @@ public:
   Object3D::Ptr target;
 
   bool castShadow, onlyShadow, shadowCascade;
-
-  Ptr clone() {
-
-    Object3D::Ptr object3d = Object3D::clone();
-    
-    Ptr clone = std::static_pointer_cast<Light>(object3d);
-
-    clone->color = color;
-    clone->intensity = intensity;
-    clone->distance = distance;
-      
-    clone->target = target;
-
-    clone->castShadow = castShadow;
-    clone->onlyShadow = onlyShadow;
-    clone->shadowCascade = shadowCascade;
-
-    return clone;
-    
-  }
 
 protected:
 
@@ -59,12 +35,26 @@ protected:
       onlyShadow( false ),
       shadowCascade( false ) { }
 
-  virtual void visit( Visitor& v ) {
-    v( *this );
-  }
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
 
-  virtual void visit( ConstVisitor& v ) const {
-    v( *this );
+    if ( !target )
+      THREE_ASSERT( false );
+
+    Object3D::__clone( target, recursive );
+
+    auto light = std::static_pointer_cast<Light>( target );
+
+    light->color = color;
+    light->intensity = intensity;
+    light->distance = distance;
+
+    light->target = target;
+
+    light->castShadow = castShadow;
+    light->onlyShadow = onlyShadow;
+    light->shadowCascade = shadowCascade;
+
+    return light;
   }
 
 };

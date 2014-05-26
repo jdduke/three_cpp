@@ -23,16 +23,16 @@ public:
 
   virtual enums::FogType type() const { return enums::Fog; }
 
-  Ptr clone() {
+  Ptr clone() const {
 
     return Fog::create(color.getHex(), near, far);
-    
+
   }
 
   std::string name;
 
   Color color;
-  
+
   float near;
   float far;
 

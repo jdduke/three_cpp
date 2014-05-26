@@ -3,7 +3,6 @@
 #include <tests/test_constants.h>
 
 #include <three/math/quaternion.h>
-#include <three/math/impl/quaternion.cpp>
 #include <three/math/euler.h>
 #include <three/math/matrix4.h>
 #include <three/constants.h>

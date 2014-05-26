@@ -10,9 +10,9 @@
 
 namespace three {
 
-class THREE_DECL Bone : Object3D {
+class THREE_DECL Bone : public Object3D {
 
-  typedef std::shared_ptr<Bone> Ptr;
+  THREE_IMPL_OBJECT(Bone);
 
   static Ptr create( const SkinnedMesh::Ptr& belongsToSkin, float scale = 1, int parent = -1 ) {
     return three::make_shared<Bone>(belongsToSkin, scale);
@@ -26,8 +26,6 @@ class THREE_DECL Bone : Object3D {
   float scl;
 
   int parent;
-
-  THREE_IMPL_OBJECT(Bone)
 
   void update( const Matrix4* parentSkinMatrix, bool forceUpdate = false);
 

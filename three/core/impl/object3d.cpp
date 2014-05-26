@@ -6,11 +6,50 @@
 
 namespace three {
 
+Object3D::SyncedEulerQuaternion::SyncedEulerQuaternion()
+    : _rotationDirty(false),
+      _quaternionDirty(false) { }
+
+Euler& Object3D::SyncedEulerQuaternion::rotation() {
+  syncRotationIfNecessary();
+  _rotationDirty = true;
+  return _rotation;
+}
+
+const Euler& Object3D::SyncedEulerQuaternion::rotation() const {
+  syncRotationIfNecessary();
+  return _rotation;
+}
+
+Quaternion& Object3D::SyncedEulerQuaternion::quaternion() {
+  syncQuaternionIfNecessary();
+  _quaternionDirty = true;
+  return _quaternion;
+}
+
+const Quaternion& Object3D::SyncedEulerQuaternion::quaternion() const {
+  syncQuaternionIfNecessary();
+  return _quaternion;
+}
+
+void Object3D::SyncedEulerQuaternion::syncRotationIfNecessary() const {
+  if ( _quaternionDirty ) {
+    _quaternionDirty = false;
+    _rotation.setFromQuaternion( _quaternion );
+  }
+}
+
+void Object3D::SyncedEulerQuaternion::syncQuaternionIfNecessary() const {
+  if ( _rotationDirty ) {
+    _rotationDirty = false;
+    _quaternion.setFromEuler( _rotation );
+  }
+}
+
 Object3D& Object3D::applyMatrix( Matrix4& matrix ) {
 
   matrix.multiplyMatrices( matrix, this->matrix );
-  matrix.decompose( position, _quaternion, scale );
-  onQuaternionUpdated();
+  matrix.decompose( position(), quaternion(), scale() );
 
   return *this;
 
@@ -18,8 +57,7 @@ Object3D& Object3D::applyMatrix( Matrix4& matrix ) {
 
 Object3D& Object3D::setRotationFromAxisAngle( Vector3& axis, float angle ) {
 
-  _quaternion.setFromAxisAngle( axis, angle );
-  onQuaternionUpdated();
+  quaternion().setFromAxisAngle( axis, angle );
 
   return *this;
 
@@ -27,8 +65,7 @@ Object3D& Object3D::setRotationFromAxisAngle( Vector3& axis, float angle ) {
 
 Object3D& Object3D::setRotationFromEuler( Euler& euler ) {
 
-  _quaternion.setFromEuler( euler );
-  onQuaternionUpdated();
+  quaternion().setFromEuler( euler );
 
   return *this;
 
@@ -38,8 +75,7 @@ Object3D& Object3D::setRotationFromMatrix( Matrix4& m ) {
 
   // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
-  _quaternion.setFromRotationMatrix( m );
-  onQuaternionUpdated();
+  quaternion().setFromRotationMatrix( m );
 
   return *this;
 
@@ -49,8 +85,7 @@ Object3D& Object3D::setRotationFromQuaternion( Quaternion& q ) {
 
   // assumes q is normalized
 
-  _quaternion.copy( q );
-  onQuaternionUpdated();
+  quaternion().copy( q );
 
   return *this;
 
@@ -65,8 +100,7 @@ Object3D& Object3D::rotateOnAxis( const Vector3& axis, float angle ) {
 
   q1.setFromAxisAngle( axis, angle );
 
-  _quaternion.multiply( q1 );
-  onQuaternionUpdated();
+  quaternion().multiply( q1 );
 
   return *this;
 
@@ -105,9 +139,9 @@ Object3D& Object3D::translateOnAxis( const Vector3& axis, float distance ) {
 
   v1.copy( axis );
 
-  v1.applyQuaternion( _quaternion );
+  v1.applyQuaternion( quaternion() );
 
-  position.add( v1.multiplyScalar( distance ) );
+  position().add( v1.multiplyScalar( distance ) );
 
   return *this;
 
@@ -160,10 +194,9 @@ void Object3D::lookAt( const Vector3& vector ) {
   // @todo priv member
   auto m1 = Matrix4();
 
-  m1.lookAt( vector, position, up );
+  m1.lookAt( vector, position(), up() );
 
-  _quaternion.setFromRotationMatrix( m1 );
-  onQuaternionUpdated();
+  quaternion().setFromRotationMatrix( m1 );
 
 }
 
@@ -312,7 +345,7 @@ std::vector<Object3D::Ptr>& Object3D::getDescendants(std::vector<Object3D::Ptr>&
 
 Object3D& Object3D::updateMatrix() {
 
-  matrix.compose( position, _quaternion, scale );
+  matrix.compose( position(), quaternion(), scale() );
 
   matrixWorldNeedsUpdate = true;
 
@@ -352,61 +385,11 @@ Object3D& Object3D::updateMatrixWorld( bool force ) {
 
 }
 
-Object3D::Ptr Object3D::clone( Object3D::Ptr object, bool recursive ) {
-
-  if(!object) {
-    object = Object3D::create();
-  }
-
-  object->name = this->name;
-
-  object->up.copy( this->up );
-
-  object->position.copy( this->position );
-  object->quaternion( this->quaternion() );
-  object->scale.copy( this->scale );
-
-  object->renderDepth = this->renderDepth;
-
-  object->rotationAutoUpdate = this->rotationAutoUpdate;
-
-  object->matrix.copy( this->matrix );
-  object->matrixWorld.copy( this->matrixWorld );
-
-  object->matrixAutoUpdate = this->matrixAutoUpdate;
-  object->matrixWorldNeedsUpdate = this->matrixWorldNeedsUpdate;
-
-  object->visible = this->visible;
-
-  object->castShadow = this->castShadow;
-  object->receiveShadow = this->receiveShadow;
-
-  object->frustumCulled = this->frustumCulled;
-
-  // TODO
-  //object.userData = JSON.parse( JSON.stringify( this->userData ) );
-
-  if ( recursive ) {
-
-    for ( size_t i = 0; i < children.size(); i ++ ) {
-
-      auto& child = children[ i ];
-      object->add( child->clone() );
-
-    }
-
-  }
-
-  return object;
-}
-
 Object3D::Object3D( const Material::Ptr& material ,
                     const Geometry::Ptr& geometry )
   : id( Object3DIdCount()++ ),
     uuid( Math::generateUUID() ),
     parent( nullptr ),
-    up( 0, 1, 0 ),
-    scale( 1, 1, 1 ),
     renderDepth( 0 ),
     rotationAutoUpdate( true ),
     matrix( Matrix4() ),
@@ -422,7 +405,9 @@ Object3D::Object3D( const Material::Ptr& material ,
     boneTextureHeight( 0 ),
     morphTargetBase( -1 ),
     material( material ),
-    geometry( geometry ) {
+    geometry( geometry ),
+    _up( 0, 1, 0 ),
+    _scale( 1, 1, 1 ) {
 }
 
 
@@ -432,18 +417,52 @@ void Object3D::__addObject( const Ptr& object ) { }
 
 void Object3D::__removeObject( const Ptr& object ) { }
 
+Object3D::Ptr Object3D::__clone( Ptr target, bool recursive ) const {
+
+  if ( !target ) {
+    THREE_ASSERT( type() == enums::Object3D );
+    target = create();
+  }
+
+  target->name = this->name;
+
+  target->up().copy( this->up() );
+  target->position().copy( this->position() );
+  target->quaternion().copy( this->quaternion() );
+  target->scale().copy( this->scale() );
+
+  target->renderDepth = this->renderDepth;
+
+  target->rotationAutoUpdate = this->rotationAutoUpdate;
+
+  target->matrix.copy( this->matrix );
+  target->matrixWorld.copy( this->matrixWorld );
+
+  target->matrixAutoUpdate = this->matrixAutoUpdate;
+  target->matrixWorldNeedsUpdate = this->matrixWorldNeedsUpdate;
+
+  target->visible = this->visible;
+
+  target->castShadow = this->castShadow;
+  target->receiveShadow = this->receiveShadow;
+
+  target->frustumCulled = this->frustumCulled;
+
+  // TODO
+  //target.userData = JSON.parse( JSON.stringify( this->userData ) );
+
+  if ( recursive ) {
+    for ( const auto& child : children )
+      target->add( child->__clone( nullptr, recursive ) );
+  }
+
+  return target;
+}
+
 void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
   if ( renderCallback ) {
     renderCallback( *this );
   }
-}
-
-void Object3D::onRotationUpdated() {
-  _quaternion.setFromEuler( _rotation );
-}
-
-void Object3D::onQuaternionUpdated() {
-  _rotation.setFromQuaternion( _quaternion );
 }
 
 } // namespace three

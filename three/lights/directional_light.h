@@ -11,17 +11,11 @@ class DirectionalLight : public Light {
 
 public:
 
-  typedef std::shared_ptr<DirectionalLight> Ptr;
+  THREE_IMPL_OBJECT(DirectionalLight);
 
   static Ptr create( int hex, float intensity = 1, float distance = 0 ) {
 
     return make_shared<DirectionalLight>( hex, intensity, distance );
-
-  }
-
-  virtual enums::Type type() const {
-
-    return enums::DirectionalLight;
 
   }
 
@@ -58,49 +52,6 @@ public:
   Camera::Ptr shadowCamera;
   Matrix4 shadowMatrix;
 
-  Ptr clone() {
-    
-    Light::Ptr light = Light::clone();
-
-    Ptr clone = std::static_pointer_cast<DirectionalLight>(light);
-
-    clone->shadowCameraNear = shadowCameraNear;
-    clone->shadowCameraFar = shadowCameraFar;
-
-    clone->shadowCameraLeft = shadowCameraLeft;
-    clone->shadowCameraRight = shadowCameraRight;
-    clone->shadowCameraTop = shadowCameraTop;
-    clone->shadowCameraBottom = shadowCameraBottom;
-
-    clone->shadowCameraVisible = shadowCameraVisible;
-
-    clone->shadowBias = shadowBias;
-    clone->shadowDarkness = shadowDarkness;
-
-    clone->shadowMapWidth = shadowMapWidth;
-    clone->shadowMapHeight = shadowMapHeight;
-
-    clone->shadowCascadeOffset = shadowCascadeOffset;
-    clone->shadowCascadeCount = clone->shadowCascadeCount;
-
-    clone->shadowCascadeBias = shadowCascadeBias;
-    clone->shadowCascadeWidth = shadowCascadeWidth;
-    clone->shadowCascadeHeight = shadowCascadeHeight;
-
-    clone->shadowCascadeNearZ = shadowCascadeNearZ;
-    clone->shadowCascadeFarZ = shadowCascadeFarZ;
-
-    clone->shadowCascadeArray = shadowCascadeArray;
-
-    clone->shadowMap = shadowMap;
-    clone->shadowMapSize = shadowMapSize;
-    clone->shadowCamera = shadowCamera;
-    clone->shadowMatrix = shadowMatrix;
-
-    return clone;
-    
-  }
-
 protected:
 
   DirectionalLight( int hex, float intensity, float distance )
@@ -124,16 +75,51 @@ protected:
 
     target = Object3D::create();
 
-    position.set( 0, 1, 0 );
+    position().set( 0, 1, 0 );
 
   }
 
-  virtual void visit( Visitor& v ) {
-    v( *this );
-  }
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
 
-  virtual void visit( ConstVisitor& v ) const {
-    v( *this );
+    Ptr light = target ? std::static_pointer_cast<DirectionalLight>(target) : create( 0 );
+
+    Light::__clone( light, recursive );
+
+    light->shadowCameraNear = shadowCameraNear;
+    light->shadowCameraFar = shadowCameraFar;
+
+    light->shadowCameraLeft = shadowCameraLeft;
+    light->shadowCameraRight = shadowCameraRight;
+    light->shadowCameraTop = shadowCameraTop;
+    light->shadowCameraBottom = shadowCameraBottom;
+
+    light->shadowCameraVisible = shadowCameraVisible;
+
+    light->shadowBias = shadowBias;
+    light->shadowDarkness = shadowDarkness;
+
+    light->shadowMapWidth = shadowMapWidth;
+    light->shadowMapHeight = shadowMapHeight;
+
+    light->shadowCascadeOffset = shadowCascadeOffset;
+    light->shadowCascadeCount = light->shadowCascadeCount;
+
+    light->shadowCascadeBias = shadowCascadeBias;
+    light->shadowCascadeWidth = shadowCascadeWidth;
+    light->shadowCascadeHeight = shadowCascadeHeight;
+
+    light->shadowCascadeNearZ = shadowCascadeNearZ;
+    light->shadowCascadeFarZ = shadowCascadeFarZ;
+
+    light->shadowCascadeArray = shadowCascadeArray;
+
+    light->shadowMap = shadowMap;
+    light->shadowMapSize = shadowMapSize;
+    light->shadowCamera = shadowCamera;
+    light->shadowMatrix = shadowMatrix;
+
+    return light;
+
   }
 
 };

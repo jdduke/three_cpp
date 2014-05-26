@@ -5,8 +5,31 @@
 #include <three/math/math.h>
 #include <three/math/euler.h>
 #include <three/math/matrix4.h>
+#include <three/math/vector3.h>
 
 namespace three {
+
+Quaternion& Quaternion::set( const float xIn, const float yIn, const float zIn, const float wIn ) {
+
+  x = xIn;
+  y = yIn;
+  z = zIn;
+  w = wIn;
+
+  return *this;
+
+}
+
+Quaternion& Quaternion::copy( const Quaternion& quaternion ) {
+
+  x = quaternion.x;
+  y = quaternion.y;
+  z = quaternion.z;
+  w = quaternion.w;
+
+  return *this;
+
+}
 
 Quaternion& Quaternion::setFromEuler( const Euler& euler ) {
 
@@ -142,6 +165,36 @@ Quaternion& Quaternion::setFromRotationMatrix( const Matrix4& m ) {
 
 }
 
+Quaternion& Quaternion::inverse() {
+
+  conjugate().normalize();
+
+  return *this;
+
+}
+
+Quaternion& Quaternion::conjugate() {
+
+  x *= -1;
+  y *= -1;
+  z *= -1;
+
+  return *this;
+
+}
+
+float Quaternion::lengthSq() const {
+
+  return x * x + y * y + z * z + w * w;
+
+}
+
+float Quaternion::length() const {
+
+  return Math::sqrt( lengthSq() );
+
+}
+
 Quaternion& Quaternion::normalize() {
 
   auto l = length();
@@ -247,6 +300,14 @@ Quaternion& Quaternion::slerp( const Quaternion& qb, float t ) {
 
   return *this;
 
+}
+
+bool Quaternion::equals( const Quaternion& quaternion ) const {
+  return ( quaternion.x == x ) && ( quaternion.y == y ) && ( quaternion.z == z ) && ( quaternion.w == w );
+}
+
+Quaternion Quaternion::clone() const {
+  return *this;
 }
 
 } // namespace three

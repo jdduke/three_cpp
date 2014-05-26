@@ -2,7 +2,6 @@
 #define THREE_BOX2_H
 
 #include <three/common.h>
-#include <three/math/math.h>
 #include <three/math/vector2.h>
 
 namespace three {
@@ -19,35 +18,8 @@ public:
 
   Vector2 min, max;
 
-  inline Box2& set( const Vector2& minIn, const Vector2& maxIn ) {
-
-    min.copy(minIn);
-    max.copy(maxIn);
-
-    return *this;
-
-  }
-
-  inline Box2& copy( const Box2& b ) {
-
-    min.copy(b.min);
-    max.copy(b.max);
-
-    return *this;
-
-  }
-
-  inline bool equals ( const Box2& box ) const {
-
-    return box.min.equals( min ) && box.max.equals( max );
-
-  }
-
-  inline Box2 clone() const {
-
-    return Box2(*this);
-
-  }
+  Box2& set( const Vector2& minIn, const Vector2& maxIn );
+  Box2& copy( const Box2& b );
 
   float distanceToPoint( const Vector2& point ) const;
 
@@ -81,6 +53,10 @@ public:
 
   Vector2 getParameter( const Vector2& point ) const;
   Vector2& getParameter( const Vector2& point, Vector2& target );
+
+  bool equals ( const Box2& box ) const;
+
+  Box2 clone() const;
 
 };
 

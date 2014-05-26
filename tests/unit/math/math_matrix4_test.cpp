@@ -2,10 +2,8 @@
 #include <tests/test_constants.h>
 
 #include <three/console.h>
-#include <three/impl/console.cpp>
 
 #include <three/math/matrix4.h>
-#include <three/math/impl/matrix4.cpp>
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
 #include <three/math/euler.h>

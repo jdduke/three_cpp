@@ -21,7 +21,7 @@ void geometry_hierarchy( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     60, ( float )renderer.width() / renderer.height(), 1, 10000
   );
-  camera->position.z = 500;
+  camera->position().z = 500;
 
   auto scene = Scene::create();
   scene->fog = Fog::create( 0xffffff, 1, 10000 );
@@ -33,13 +33,13 @@ void geometry_hierarchy( GLWindow& window, GLRenderer& renderer ) {
   for ( int i = 0; i < 1000; i ++ ) {
 
     auto mesh = Mesh::create( geometry, material );
-    mesh->position.x = Math::random() * 2000 - 1000;
-    mesh->position.y = Math::random() * 2000 - 1000;
-    mesh->position.z = Math::random() * 2000 - 1000;
+    mesh->position() = Vector3( Math::random() * 2000 - 1000,
+                                Math::random() * 2000 - 1000,
+                                Math::random() * 2000 - 1000 );
 
-    mesh->rotation( Euler( Math::random() * 2 * Math::PI(),
-                           Math::random() * 2 * Math::PI(),
-                           0 ) );
+    mesh->rotation() = Euler( Math::random() * 2 * Math::PI(),
+                              Math::random() * 2 * Math::PI(),
+                              0 );
 
     mesh->matrixAutoUpdate = false;
     mesh->updateMatrix();
@@ -77,15 +77,15 @@ void geometry_hierarchy( GLWindow& window, GLRenderer& renderer ) {
 
     time += dt;
 
-    camera->position.x += ( -3000.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += ( 3000.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+    camera->position().x += ( -3000.f * mouseX - camera->position().x ) * 3 * dt;
+    camera->position().y += ( 3000.f * mouseY - camera->position().y ) * 3 * dt;
+    camera->lookAt( scene->position() );
 
     auto rx = Math::sin( time * 0.7f ) * 0.5f,
     ry = Math::sin( time * 0.3f ) * 0.5f,
     rz = Math::sin( time * 0.2f ) * 0.5f;
 
-    group->rotation( Euler( rx, ry, rz ) );
+    group->rotation() = Euler( rx, ry, rz );
 
     renderer.render( *scene, *camera );
 
@@ -100,7 +100,7 @@ int main( int argc, char* argv[] ) {
   RendererParameters parameters;
   parameters.clearAlpha = 1.f;
   parameters.clearColor = Color(0xFFFFFF);
-    
+
   parameters.vsync = false;
 
   return RunExample( geometry_hierarchy, parameters );

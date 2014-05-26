@@ -8,6 +8,8 @@
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
 
+#include <three/utils/memory.h>
+
 #include <algorithm>
 
 namespace three {
@@ -32,7 +34,7 @@ Matrix4::Matrix4( const Matrix4& other ) {
   copy( other );
 }
 
-Matrix4& Matrix4::operator= ( const Matrix4& other ) {
+Matrix4& Matrix4::operator=( const Matrix4& other ) {
   return copy( other );
 }
 

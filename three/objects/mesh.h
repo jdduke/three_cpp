@@ -15,11 +15,9 @@ namespace three {
 class THREE_DECL Mesh : public Object3D {
 public:
 
-  typedef std::shared_ptr<Mesh> Ptr;
+  THREE_IMPL_OBJECT(Mesh)
 
   static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
-
-  THREE_IMPL_OBJECT(Mesh)
 
   float boundRadius;
   int morphTargetBase;

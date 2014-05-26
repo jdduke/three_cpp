@@ -7,6 +7,48 @@
 #include <three/math/quaternion.h>
 
 namespace three {
+namespace {
+
+float _clamp( float x ) {
+
+  return Math::min( Math::max( x, -1.f ), 1.f );
+
+}
+
+} // namespace
+
+Euler& Euler::set( float xIn, float yIn, float zIn) {
+
+  x = xIn;
+  y = yIn;
+  z = zIn;
+
+  return *this;
+
+}
+
+Euler& Euler::set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn ) {
+
+  x = xIn;
+  y = yIn;
+  z = zIn;
+
+  _order = orderIn;
+
+  return *this;
+
+}
+
+Euler& Euler::copy ( const Euler& euler ) {
+
+  x = euler.x;
+  y = euler.y;
+  z = euler.z;
+  _order = euler._order;
+
+  return *this;
+
+}
 
 Euler& Euler::setFromRotationMatrix( const Matrix4& m ) {
     return setFromRotationMatrix(m, _order);
@@ -167,6 +209,25 @@ Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotation
   _order = order;
 
   return *this;
+
+}
+
+Euler& Euler::reorder( enums::EulerRotationOrder newOrder ) {
+
+  // WARNING: this discards revolution information -bhouston
+  return setFromQuaternion( Quaternion().setFromEuler( *this ), newOrder );
+
+}
+
+bool Euler::equals( const Euler& euler ) const {
+
+  return ( euler.x == x ) && ( euler.y == y ) && ( euler.z == z ) && ( euler._order == _order );
+
+}
+
+Euler Euler::clone() const {
+
+  return Euler(*this);
 
 }
 

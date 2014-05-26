@@ -1,14 +1,16 @@
 #include <three/math/triangle.h>
 
+#include <three/math/math.h>
+
 namespace three {
 
-namespace details {
+namespace {
 
 class TriangleHelper {
 
 public:
 
-  inline static Vector3 normal( const Vector3& a, const Vector3& b, const Vector3& c) {
+  static Vector3 normal( const Vector3& a, const Vector3& b, const Vector3& c) {
 
     auto target = Vector3();
 
@@ -18,7 +20,7 @@ public:
 
   }
 
-  inline static Vector3 barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c) {
+  static Vector3 barycoordFromPoint( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c) {
 
     auto target = Vector3();
 
@@ -28,7 +30,7 @@ public:
 
   }
 
-  inline static bool containsPoint ( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c ) {
+  static bool containsPoint ( const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c ) {
 
     auto v1 = Vector3();
     auto result = TriangleHelper::barycoordFromPoint( point, a, b, c, v1 );
@@ -87,7 +89,37 @@ public:
 
 };
 
-} // namespace details
+} // namespace
+
+Triangle& Triangle::set( const Vector3& aIn, const Vector3& bIn, const Vector3& cIn ) {
+
+  a.copy( aIn );
+  b.copy( bIn );
+  c.copy( cIn );
+
+  return *this;
+
+}
+
+Triangle& Triangle::setFromPointsAndIndices( const Vector3 points[], size_t i0, size_t i1, size_t i2 ) {
+
+  a.copy( points[i0] );
+  b.copy( points[i1] );
+  c.copy( points[i2] );
+
+  return *this;
+
+}
+
+Triangle& Triangle::copy( const Triangle& triangle ) {
+
+  a.copy( triangle.a );
+  b.copy( triangle.b );
+  c.copy( triangle.c );
+
+  return *this;
+
+}
 
 float Triangle::area() const {
 
@@ -118,13 +150,13 @@ Vector3& Triangle::midpoint( Vector3& target ) const {
 
 Vector3 Triangle::normal() const {
 
-  return details::TriangleHelper::normal( a, b, c );
+  return TriangleHelper::normal( a, b, c );
 
 }
 
 Vector3& Triangle::normal( Vector3& target ) const {
 
-  return details::TriangleHelper::normal( a, b, c, target );
+  return TriangleHelper::normal( a, b, c, target );
 
 }
 
@@ -146,19 +178,31 @@ Plane& Triangle::plane( Plane& target ) const {
 
 Vector3 Triangle::barycoordFromPoint( const Vector3& point ) const {
 
-  return details::TriangleHelper::barycoordFromPoint( point, a, b, c );
+  return TriangleHelper::barycoordFromPoint( point, a, b, c );
 
 }
 
 Vector3& Triangle::barycoordFromPoint( const Vector3& point, Vector3& target ) const {
 
-  return details::TriangleHelper::barycoordFromPoint( point, a, b, c, target );
+  return TriangleHelper::barycoordFromPoint( point, a, b, c, target );
 
 }
 
 bool Triangle::containsPoint( const Vector3& point ) const {
 
-  return details::TriangleHelper::containsPoint( point, a, b, c );
+  return TriangleHelper::containsPoint( point, a, b, c );
+
+}
+
+bool Triangle::equals( const Triangle& triangle ) const {
+
+  return triangle.a.equals( a ) && triangle.b.equals( b ) && triangle.c.equals( c );
+
+}
+
+Triangle Triangle::clone() const {
+
+  return *this;
 
 }
 

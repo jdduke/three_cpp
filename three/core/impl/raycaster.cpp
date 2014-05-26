@@ -1,8 +1,10 @@
 #include <three/core/raycaster.h>
 
 #include <three/core/buffer_geometry.h>
+#include <three/core/object3d.h>
 #include <three/materials/mesh_face_material.h>
 #include <three/math/plane.h>
+#include <three/objects/mesh.h>
 #include <three/objects/sprite.h>
 #include <three/objects/LOD.h>
 #include <three/objects/line.h>
@@ -72,13 +74,13 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
     impl.matrixPosition.setFromMatrixPosition( object->matrixWorld );
     float distance = raycaster.ray.distanceToPoint( impl.matrixPosition );
 
-    if ( distance > object->scale.x ) {
+    if ( distance > object->scale().x ) {
 
       return;
 
     }
 
-    auto position = object->position;
+    auto position = object->position();
 
     intersects.push_back(Intersect(
                            distance,

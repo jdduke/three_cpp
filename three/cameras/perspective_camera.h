@@ -12,7 +12,7 @@ class PerspectiveCamera : public Camera {
 
 public:
 
-  typedef std::shared_ptr<PerspectiveCamera> Ptr;
+  THREE_IMPL_OBJECT(PerspectiveCamera);
 
   static Ptr create( float fov = 50.f, float aspect = 1.f, float near = 0.1f, float far = 2000.f ) {
 
@@ -111,25 +111,6 @@ public:
 
   }
 
-  Ptr clone() {
-
-    Camera::Ptr camera = Camera::clone();
-
-    Ptr perspectiveCamera = std::static_pointer_cast<PerspectiveCamera>(camera);
-
-    perspectiveCamera->fov = fov;
-    perspectiveCamera->aspect = aspect;
-    perspectiveCamera->fullWidth = fullWidth;
-    perspectiveCamera->fullHeight = fullHeight;
-    perspectiveCamera->x = x;
-    perspectiveCamera->y = y;
-    perspectiveCamera->width = width;
-    perspectiveCamera->height = height;
-
-    return perspectiveCamera;
-
-  }
-
 protected:
 
   PerspectiveCamera( float fov, float aspect, float near, float far )
@@ -139,6 +120,26 @@ protected:
     updateProjectionMatrix();
 
   }
+
+ virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+
+    Ptr camera = target ? std::static_pointer_cast<PerspectiveCamera>(target) : create();
+
+    Camera::__clone( target, recursive );
+
+    camera->fov = fov;
+    camera->aspect = aspect;
+    camera->fullWidth = fullWidth;
+    camera->fullHeight = fullHeight;
+    camera->x = x;
+    camera->y = y;
+    camera->width = width;
+    camera->height = height;
+
+    return camera;
+
+  }
+
 
 };
 

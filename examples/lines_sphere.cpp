@@ -19,7 +19,7 @@ void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     80, (float)renderer.width() / renderer.height(), 1, 3000
   );
-  camera->position.z = 1000;
+  camera->position().z = 1000;
 
   auto scene = Scene::create();
 
@@ -56,8 +56,8 @@ void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
     );
 
     auto line = Line::create( geometry, material, enums::LinePieces );
-    line->scale.x = line->scale.y = line->scale.z = scale;
-    line->rotation( Euler( 0, Math::random() * Math::PI(), 0 ) );
+    line->scale() = Vector3( scale );
+    line->rotation().y = Math::random() * Math::PI();
     line->updateMatrix();
     scene->add( line );
 
@@ -92,17 +92,15 @@ void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
     time += dt * 0.1f;
 
     //camera->position.x += ( -500.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += (  500.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+    camera->position().y += (  500.f * mouseY - camera->position().y ) * 3 * dt;
+    camera->lookAt( scene->position() );
 
     for ( size_t i = 0; i < scene->children.size(); i++ ) {
       auto& object = *scene->children[i];
       if ( object.type() == enums::Line ) {
-        object.rotation( Euler( 0, time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) ), 0 ) );
+        object.rotation().y = time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) );
         if ( i < 5 )
-          object.scale.x = object.scale.y
-                         = object.scale.z
-                         = originalScales[ i ] * ((float)i / 5.f + 1.f) * (1.f + 0.5f * Math::sin( 7.f * time ) );
+          object.scale() = Vector3( originalScales[ i ] * ((float)i / 5.f + 1.f) * (1.f + 0.5f * Math::sin( 7.f * time ) ) );
       }
     }
 

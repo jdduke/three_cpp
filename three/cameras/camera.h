@@ -18,7 +18,7 @@ class Camera : public Object3D {
 
 public:
 
-  typedef std::shared_ptr<Camera> Ptr;
+  THREE_IMPL_OBJECT(Camera);
 
   static Ptr create( float near = .1f, float far = 2000.f ) {
 
@@ -36,22 +36,9 @@ public:
 
     auto m1 = Matrix4();
 
-    m1.lookAt( position, vector, up );
+    m1.lookAt( position(), vector, up() );
 
-    quaternion( Quaternion().setFromRotationMatrix( m1 ) );
-
-  }
-
-  Ptr clone() const {
-
-    Ptr camera =  three::make_shared<Camera>( near, far );
-
-    camera->matrixWorldInverse = matrixWorldInverse;
-    camera->projectionMatrix = projectionMatrix;
-    camera->_viewMatrixArray = _viewMatrixArray;
-    camera->_projectionMatrixArray = _projectionMatrixArray;
-
-    return camera;
+    quaternion().setFromRotationMatrix( m1 );
 
   }
 
@@ -60,12 +47,21 @@ protected:
   explicit Camera( float near = .1f, float far = 2000.f )
     : Object3D(), near( near ), far( far ) { }
 
-  virtual void visit( Visitor& v ) {
-    v( *this );
-  }
+  Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
 
-  virtual void visit( ConstVisitor& v ) const {
-    v( *this );
+    Ptr camera = target ? std::static_pointer_cast<Camera>(target) : create(near, far);
+
+    Object3D::__clone( camera, recursive );
+
+    camera->near = near;
+    camera->far = far;
+    camera->matrixWorldInverse = matrixWorldInverse;
+    camera->projectionMatrix = projectionMatrix;
+    camera->_viewMatrixArray = _viewMatrixArray;
+    camera->_projectionMatrixArray = _projectionMatrixArray;
+
+    return camera;
+
   }
 
 private:

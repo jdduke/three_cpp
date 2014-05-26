@@ -39,7 +39,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
  auto camera = PerspectiveCamera::create(
     60, ( float )renderer.width() / renderer.height(), 1, 10000
   );
-  camera->position.z = 300;
+  camera->position().z = 300;
 
   auto scene = Scene::create();
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/spark1.png" ) );
@@ -124,7 +124,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
   window.animate( [&]( float dt ) -> bool {
 
     time += dt;
-    sphere->rotation( Euler( 0, 0, time * 0.03f ) );
+    sphere->rotation().z = time * 0.03f;
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

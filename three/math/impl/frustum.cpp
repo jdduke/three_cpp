@@ -147,4 +147,9 @@ bool Frustum::containsPoint( const Vector3& point ) const {
 
 }
 
+Frustum Frustum::clone() const {
+  return Frustum(*this);
+}
+
+
 } // namespace three

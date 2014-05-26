@@ -2,10 +2,6 @@
 #define THREE_QUATERNION_H
 
 #include <three/common.h>
-#include <three/math/math.h>
-#include <three/math/vector3.h>
-#include <three/utils/memory.h>
-#include <memory>
 
 namespace three {
 
@@ -30,79 +26,30 @@ public:
   float z;
   float w;
 
-  inline Quaternion& set( const float xIn, const float yIn, const float zIn, const float wIn ) {
+  Quaternion& set( const float xIn, const float yIn, const float zIn, const float wIn );
 
-    x = xIn;
-    y = yIn;
-    z = zIn;
-    w = wIn;
-
-    return *this;
-
-  }
-
-  inline Quaternion& copy( const Quaternion& quaternion ) {
-
-    x = quaternion.x;
-    y = quaternion.y;
-    z = quaternion.z;
-    w = quaternion.w;
-
-    return *this;
-
-  }
+  Quaternion& copy( const Quaternion& quaternion );
 
   Quaternion& setFromEuler( const Euler& euler );
-
   Quaternion& setFromAxisAngle( const Vector3& axis, const float angle );
-
   Quaternion& setFromRotationMatrix( const Matrix4& m );
 
-  Quaternion& inverse() {
+  Quaternion& inverse();
+  Quaternion& conjugate();
 
-    conjugate().normalize();
-
-    return *this;
-
-  }
-
-  inline Quaternion& conjugate() {
-
-    x *= -1;
-    y *= -1;
-    z *= -1;
-
-    return *this;
-
-  }
-
-  inline float lengthSq() const {
-
-    return x * x + y * y + z * z + w * w;
-
-  }
-
-  inline float length() const {
-
-    return Math::sqrt( lengthSq() );
-
-  }
+  float lengthSq() const;
+  float length() const;
 
   Quaternion& normalize();
 
   Quaternion& multiply( const Quaternion& q );
-
   Quaternion& multiplyQuaternions( const Quaternion& a, const Quaternion& b );
 
   Quaternion& slerp( const Quaternion& qb, float t );
 
-  inline bool equals( const Quaternion& quaternion ) const {
-    return ( quaternion.x == x ) && ( quaternion.y == y ) && ( quaternion.z == z ) && ( quaternion.w == w );
-  }
+  bool equals( const Quaternion& quaternion ) const;
 
-  inline Quaternion clone() {
-    return *this;
-  }
+  Quaternion clone() const;
 
 };
 

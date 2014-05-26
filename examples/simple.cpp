@@ -18,7 +18,7 @@ void simple( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     50, ( float )renderer.width() / renderer.height(), .1f, 1000.f
   );
-  camera->position.z = 300;
+  camera->position().z = 300;
 
 
   // Scene
@@ -28,7 +28,7 @@ void simple( GLWindow& window, GLRenderer& renderer ) {
 
   // Lights
   auto pointLight = PointLight::create( 0xFFFFFF );
-  pointLight->position = Vector3( 10, 50, 130 );
+  pointLight->position() = Vector3( 10, 50, 130 );
   scene->add( pointLight );
 
 
@@ -58,9 +58,9 @@ void simple( GLWindow& window, GLRenderer& renderer ) {
 
   window.animate( [&]( float dt ) -> bool {
 
-    camera->position.x += (-100.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += ( 100.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+    camera->position().x += (-100.f * mouseX - camera->position().x ) * 3 * dt;
+    camera->position().y += ( 100.f * mouseY - camera->position().y ) * 3 * dt;
+    camera->lookAt( scene->position() );
 
     renderer.render( *scene, *camera );
 

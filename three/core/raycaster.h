@@ -6,7 +6,6 @@
 #include <three/math/math.h>
 #include <three/math/vector3.h>
 #include <three/math/ray.h>
-#include <three/core/face.h>
 #include <three/core/object3d.h>
 
 namespace three {
@@ -35,9 +34,8 @@ public:
 
   Raycaster& set( const Vector3& origin, const Vector3& direction );
 
-  Intersects intersectObject ( const Object3D::Ptr& object, bool recursive = false );
-
-  Intersects intersectObjects ( const std::vector<Object3D::Ptr>& objects, bool recursive = false );
+  Intersects intersectObject( const Object3D::Ptr& object, bool recursive = false );
+  Intersects intersectObjects( const std::vector<Object3D::Ptr>& objects, bool recursive = false );
 
 protected:
 

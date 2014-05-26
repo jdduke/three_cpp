@@ -1,6 +1,26 @@
 #include <three/math/box2.h>
 
+#include <three/math/math.h>
+
 namespace three {
+
+Box2& Box2::set( const Vector2& minIn, const Vector2& maxIn ) {
+
+  min.copy(minIn);
+  max.copy(maxIn);
+
+  return *this;
+
+}
+
+Box2& Box2::copy( const Box2& b ) {
+
+  min.copy(b.min);
+  max.copy(b.max);
+
+  return *this;
+
+}
 
 float Box2::distanceToPoint( const Vector2& point ) const {
 
@@ -224,6 +244,19 @@ Vector2& Box2::getParameter( const Vector2& point, Vector2& target ) {
     ( point.x - min.x ) / ( max.x - min.x ),
     ( point.y - min.y ) / ( max.y - min.y )
   );
+
+}
+
+
+bool Box2::equals( const Box2& box ) const {
+
+  return box.min.equals( min ) && box.max.equals( max );
+
+}
+
+Box2 Box2::clone() const {
+
+  return Box2(*this);
 
 }
 

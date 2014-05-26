@@ -11,13 +11,11 @@ namespace three {
 class Particle : public Object3D {
 public:
 
-  typedef std::shared_ptr<Particle> Ptr;
+  THREE_IMPL_OBJECT(Particle)
 
   static Ptr create( const Material::Ptr& material ) {
     return three::make_shared<Particle>( material );
   }
-
-  THREE_IMPL_OBJECT(Particle)
 
 protected:
 

@@ -11,7 +11,9 @@
 # if defined(THREE_DYN_LINK)
 // WARNING: Shared library support is very much experimental, and will likely
 // break horribly in practice... You've been warned.
-#  pragma warning(disable : 4251)
+#  if defined(_MSC_VER)
+#   pragma warning(disable : 4251)
+#  endif
 // Export if this is our own source, otherwise import.
 #  if defined(THREE_SOURCE)
 #   define THREE_DECL __declspec(dllexport)

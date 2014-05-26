@@ -21,7 +21,7 @@ void trails( GLWindow& window, GLRenderer& renderer ) {
     (float)renderer.width() / renderer.height(),
     1, 10000
   );
-  camera->position.set( 100000, 0, 3200 );
+  camera->position().set( 100000, 0, 3200 );
 
   // Scene
   auto scene = Scene::create();
@@ -61,9 +61,9 @@ void trails( GLWindow& window, GLRenderer& renderer ) {
   // Rendering
   window.animate ( [&]( float dt ) -> bool {
 
-    camera->position.x += ( 1000.f * mouseX - camera->position.x ) * 5 * dt;
-    camera->position.y += ( 1000.f * mouseY - camera->position.y ) * 5 * dt;
-    camera->lookAt( scene->position );
+    camera->position().x += ( 1000.f * mouseX - camera->position().x ) * 5 * dt;
+    camera->position().y += ( 1000.f * mouseY - camera->position().y ) * 5 * dt;
+    camera->lookAt( scene->position() );
 
     renderer.render( *scene, *camera );
 

@@ -48,7 +48,7 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
  auto camera = PerspectiveCamera::create(
     40, ( float )renderer.width() / renderer.height(), 1, 1000
   );
-  camera->position.z = 500;
+  camera->position().z = 500;
 
   auto scene = Scene::create();
 
@@ -102,8 +102,8 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
 
   auto addGeo = [&]( const Geometry::Ptr& geo, float x, float y, float z, float ry ) {
     auto m = Mesh::create( geo, dummyMaterial );
-    m->position.set( x, y, z );
-    m->rotation( Euler( 0, ry, 0 ) );
+    m->position().set( x, y, z );
+    m->rotation().y = ry;
     GeometryUtils::merge( *geometry, *m );
   };
 
@@ -183,7 +183,8 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
   window.animate( [&]( float dt ) -> bool {
 
     time += dt;
-    object->rotation( Euler( 0, 0.02f * time, 0.02f * time ) );
+    object->rotation().y = 0.02f * time;
+    object->rotation().z = 0.02f * time;
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

@@ -84,8 +84,8 @@ void Stats::update( float deltaTime, bool render ) {
         impl->scene->add( mesh );
       }
 
-      mesh->position.x = 10.f;
-      mesh->position.y = renderer.height() - 30.f;
+      mesh->position().x = 10.f;
+      mesh->position().y = renderer.height() - 30.f;
 
       impl->camera->left   = 0;
       impl->camera->right  = (float)renderer.width();

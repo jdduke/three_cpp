@@ -153,6 +153,8 @@ enum Type {
   ImmediateRenderObject,
   Bone,
   Camera,
+  OrthographicCamera,
+  PerspectiveCamera,
   Light,
   AmbientLight,
   AreaLight,

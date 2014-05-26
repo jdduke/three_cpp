@@ -18,7 +18,7 @@ void particles_billboards_colors( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     50, ( float )renderer.width() / renderer.height(), 1.f, 3000
   );
-  camera->position.z = 1400;
+  camera->position().z = 1400;
 
   auto scene = Scene::create();
   scene->fog = FogExp2::create( 0x000000, .0009f );
@@ -83,9 +83,9 @@ void particles_billboards_colors( GLWindow& window, GLRenderer& renderer ) {
 
     time += dt * .15f;
 
-    camera->position.x += ( -1000.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += (  1000.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+    camera->position().x += ( -1000.f * mouseX - camera->position().x ) * 3 * dt;
+    camera->position().y += (  1000.f * mouseY - camera->position().y ) * 3 * dt;
+    camera->lookAt( scene->position() );
 
     const auto h = Math::fmod( 360.f * ( 1.f + time ), 360.f ) / 360.f;
     material->color.setHSL( h, 1.f, 0.6f );

@@ -12,7 +12,7 @@ namespace three {
 class Line : public Object3D {
 public:
 
-  typedef std::shared_ptr<Line> Ptr;
+  THREE_IMPL_OBJECT(Line);
 
   static Ptr create( const Geometry::Ptr& geometry,
                      const Material::Ptr& material,
@@ -23,8 +23,6 @@ public:
       return three::make_shared<Line>( geometry, defaultMaterial(), lineType );
     }
   }
-
-  THREE_IMPL_OBJECT(Line)
 
   enums::LineType lineType;
 

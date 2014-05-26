@@ -9,7 +9,7 @@ class SkinnedMesh : public Mesh {
 
 public:
 
-  typedef std::shared_ptr<SkinnedMesh> Ptr;
+  THREE_IMPL_OBJECT(SkinnedMesh);
 
   static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material, bool useVertexTexture = true ) {
     return three::make_shared<SkinnedMesh>( geometry, material, useVertexTexture );

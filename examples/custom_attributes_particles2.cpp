@@ -42,7 +42,7 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
  auto camera = PerspectiveCamera::create(
     45, ( float )renderer.width() / renderer.height(), 1, 10000
   );
-  camera->position.z = 300;
+  camera->position().z = 300;
 
   auto scene = Scene::create();
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/disc.png" ) );
@@ -125,7 +125,8 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
   window.animate( [&]( float dt ) -> bool {
 
     time += dt;
-    sphere->rotation( Euler( 0, time * .03f, time * .03f ) );
+    sphere->rotation().y = time * .03f;
+    sphere->rotation().z = time * .03f;
 
     auto& sizes = size.value.cast<std::vector<float>>();
     for( size_t i = 0; i < sizes.size(); i++ ) {

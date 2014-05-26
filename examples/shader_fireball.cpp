@@ -128,7 +128,7 @@ void shader_fireball( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     40, (float)renderer.width() / renderer.height(), 1, 3000
   );
-  camera->position.z = 4;
+  camera->position().z = 4;
 
   auto scene = Scene::create();
 
@@ -154,9 +154,8 @@ void shader_fireball( GLWindow& window, GLRenderer& renderer ) {
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    mesh->rotation( Euler( mesh->rotation().x + 0.1f * dt,
-                           mesh->rotation().y + 0.5f * dt,
-                           0 ) );
+    mesh->rotation().x += 0.1f * dt;
+    mesh->rotation().y += 0.5f * dt;
 
     renderer.render( *scene, *camera );
 

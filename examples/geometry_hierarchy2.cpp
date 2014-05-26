@@ -22,14 +22,14 @@ void geometry_hierarchy_2( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     60, (float)renderer.width() / renderer.height(), 1, 10000
   );
-  camera->position.z = 3000;
+  camera->position().z = 3000;
 
   auto scene = Scene::create();
   auto material = MeshNormalMaterial::create();
   auto geometry = CubeGeometry::create( 100, 100, 100 );
 
   auto root = Object3D::create();
-  root->position.x = 1000;
+  root->position().x = 1000;
   scene->add( root );
 
   auto amount = 100;
@@ -41,7 +41,7 @@ void geometry_hierarchy_2( GLWindow& window, GLRenderer& renderer ) {
     for ( int i = 0; i < amount; i ++ ) {
 
       auto object = Mesh::create( geometry, material );
-      object->position = offset;
+      object->position() = offset;
 
       parent->add( object );
       parent = object;
@@ -82,18 +82,18 @@ void geometry_hierarchy_2( GLWindow& window, GLRenderer& renderer ) {
     time += dt;
     ++frame;
 
-    camera->position.x += (-3000.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += ( 3000.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+    camera->position().x += (-3000.f * mouseX - camera->position().x ) * 3 * dt;
+    camera->position().y += ( 3000.f * mouseY - camera->position().y ) * 3 * dt;
+    camera->lookAt( scene->position() );
 
     auto rx = Math::sin( time * 0.7f ) * 0.2f,
          ry = Math::sin( time * 0.3f ) * 0.1f,
          rz = Math::sin( time * 0.2f ) * 0.1f;
 
-    root->position.x = Math::sin( time ) * 1000;
+    root->position().x = Math::sin( time ) * 1000;
 
     SceneUtils::traverseHierarchy( *root, [rx,ry,rz]( Object3D& object ) {
-      object.rotation( Euler( rx, ry, rz ) );
+      object.rotation() = Euler( rx, ry, rz );
     } );
 
     renderer.render( *scene, *camera );

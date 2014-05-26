@@ -6,6 +6,15 @@
 
 namespace three {
 
+Box3& Box3::set( const Vector3& minIn, const Vector3& maxIn ) {
+
+  min.copy(minIn);
+  max.copy(maxIn);
+
+  return *this;
+
+}
+
 Box3& Box3::addPoint ( const Vector3& point ) {
 
   if ( point.x < min.x ) {
@@ -334,6 +343,18 @@ Box3& Box3::translate( const Vector3& offset ) {
   max.add( offset );
 
   return *this;
+
+}
+
+bool Box3::equals( const Box3& box ) const {
+
+  return box.min.equals( min ) && box.max.equals( max );
+
+}
+
+Box3 Box3::clone() const {
+
+  return Box3(*this);
 
 }
 

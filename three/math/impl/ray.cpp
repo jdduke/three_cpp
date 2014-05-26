@@ -1,5 +1,6 @@
 #include <three/math/ray.h>
 
+#include <three/math/math.h>
 #include <three/math/plane.h>
 #include <three/math/box3.h>
 
@@ -409,7 +410,7 @@ bool Ray::equals( const Ray& ray ) const {
   return ray.origin.equals( this->origin ) && ray.direction.equals( this->direction );
 }
 
-Ray Ray::clone() {
+Ray Ray::clone() const {
   return *this;
 }
 

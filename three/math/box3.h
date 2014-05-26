@@ -22,26 +22,7 @@ public:
 
   Vector3 min, max;
 
-  inline Box3& set( const Vector3& minIn, const Vector3& maxIn ) {
-
-    min.copy(minIn);
-    max.copy(maxIn);
-
-    return *this;
-
-  }
-
-  inline bool equals ( const Box3& box ) const {
-
-    return box.min.equals( min ) && box.max.equals( max );
-
-  }
-
-  inline Box3 clone() const {
-
-    return Box3(*this);
-
-  }
+  Box3& set( const Vector3& minIn, const Vector3& maxIn );
 
   Box3& addPoint ( const Vector3& point );
   Box3& addPoint ( const Vector4& point );
@@ -87,6 +68,10 @@ public:
   Box3& applyMatrix4( const Matrix4& matrix);
 
   Box3& translate( const Vector3& offset );
+
+  bool equals( const Box3& box ) const;
+
+  Box3 clone() const;
 
   template <typename C>
   Box3& setFromPoints(const C& points ) {

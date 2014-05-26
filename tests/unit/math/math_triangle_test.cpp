@@ -36,7 +36,7 @@ TEST(math_triangle_test, copy) {
 TEST(math_triangle_test, setFromPointsAndIndices) {
   auto a = Triangle();
 
-  std::array<Vector3, 3> points = { one3, one3.clone().negate(), two3 };
+  Vector3 points[] = { one3, one3.clone().negate(), two3 };
   a.setFromPointsAndIndices( points, 1, 0, 2 );
   EXPECT_TRUE( a.a.equals( one3.clone().negate() ) );
   EXPECT_TRUE( a.b.equals( one3 ) );

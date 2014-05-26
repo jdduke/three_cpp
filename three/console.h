@@ -54,9 +54,9 @@ private:
 
     explicit LogProxy( LogP log, const char* msg = nullptr );
 
-    LogProxy& operator= ( LogProxy && other )     THREE_DECL_DELETE;
-    LogProxy( const LogProxy& other )             THREE_DECL_DELETE;
-    LogProxy& operator= ( const LogProxy& other ) THREE_DECL_DELETE;
+    LogProxy& operator=( LogProxy && other )     THREE_DECL_DELETE;
+    LogProxy( const LogProxy& other )            THREE_DECL_DELETE;
+    LogProxy& operator=( const LogProxy& other ) THREE_DECL_DELETE;
 
     std::unique_ptr<std::stringstream> stream;
     LogP log;

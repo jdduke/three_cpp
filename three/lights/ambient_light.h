@@ -11,32 +11,27 @@ class AmbientLight : public Light {
 
 public:
 
-  typedef std::shared_ptr<AmbientLight> Ptr;
+  THREE_IMPL_OBJECT(AmbientLight);
 
-  static Ptr create( int hex ) { 
+  static Ptr create( int hex ) {
 
-  	return make_shared<AmbientLight>( hex ); 
+    return make_shared<AmbientLight>( hex );
 
-  }
-
-  virtual enums::Type type() const { 
-
-  	return enums::AmbientLight; 
-
-  }
-
-  Ptr clone() {
-  	
-  	auto light = Light::clone();
-
-  	return std::static_pointer_cast<AmbientLight>(light);
-  	
   }
 
 protected:
 
-  AmbientLight( int hex ) 
-  	: Light( hex ) {}
+  AmbientLight( int hex )
+    : Light( hex ) {}
+
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+
+    Ptr light = target ? std::static_pointer_cast<AmbientLight>(target) : create( 0 );
+
+    Light::__clone( target, recursive );
+
+    return target;
+  }
 
 };
 

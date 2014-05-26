@@ -57,7 +57,7 @@ using namespace three_examples;
 void shader( GLWindow& window, GLRenderer& renderer ) {
 
   auto camera = Camera::create();
-  camera->position.z = 1;
+  camera->position().z = 1;
 
   auto scene = Scene::create();
 

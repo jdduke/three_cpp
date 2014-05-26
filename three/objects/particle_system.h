@@ -13,13 +13,11 @@ namespace three {
 class ParticleSystem : public Object3D {
 public:
 
-  typedef std::shared_ptr<ParticleSystem> Ptr;
+  THREE_IMPL_OBJECT(ParticleSystem)
 
   static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material ) {
     return three::make_shared<ParticleSystem> ( geometry, material );
   }
-
-  THREE_IMPL_OBJECT(ParticleSystem)
 
 protected:
 
@@ -29,10 +27,8 @@ protected:
     frustumCulled = false;
     if(!material) {
       Properties<std::string, any> params;
-        
-        params["color"] = Math::random() * 0xffffff;
-        
-        this->material = ParticleSystemMaterial::create( params );
+      params["color"] = Math::random() * 0xffffff;
+      this->material = ParticleSystemMaterial::create( params );
     }
   }
 

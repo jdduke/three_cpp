@@ -2,7 +2,6 @@
 #include <tests/test_constants.h>
 
 #include <three/math/matrix3.h>
-#include <three/math/impl/matrix3.cpp>
 #include <three/math/matrix4.h>
 
 using namespace three;

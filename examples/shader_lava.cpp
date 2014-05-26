@@ -73,7 +73,7 @@ void shader_lava( GLWindow& window, GLRenderer& renderer ) {
   auto camera = PerspectiveCamera::create(
     40, (float)renderer.width() / renderer.height(), 1, 3000
   );
-  camera->position.z = 4;
+  camera->position().z = 4;
 
   auto scene = Scene::create();
 
@@ -97,7 +97,7 @@ void shader_lava( GLWindow& window, GLRenderer& renderer ) {
 
   // Geometries
   auto mesh = Mesh::create( TorusGeometry::create( 0.65f, 0.3f, 30, 30 ), material );
-  mesh->rotation( Euler( 0.3f, 0, 0 ) );
+  mesh->rotation().x = 0.3f;
   scene->add( mesh );
 
   /////////////////////////////////////////////////////////////////////////
@@ -112,16 +112,15 @@ void shader_lava( GLWindow& window, GLRenderer& renderer ) {
 
   window.animate( [&]( float dt ) -> bool {
 
-    camera->position.x += (-2.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += ( 2.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+    camera->position().x += (-2.f * mouseX - camera->position().x ) * 3 * dt;
+    camera->position().y += ( 2.f * mouseY - camera->position().y ) * 3 * dt;
+    camera->lookAt( scene->position() );
 
     time += dt;
     material->uniforms[ "time" ].value = time;
 
-    mesh->rotation( Euler( mesh->rotation().x + 0.15f * dt,
-                           mesh->rotation().y + 0.0375f * dt,
-                           0 ) );
+    mesh->rotation().x += 0.15f * dt;
+    mesh->rotation().y += 0.0375f * dt;
 
     renderer.render( *scene, *camera );
 

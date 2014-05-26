@@ -23,10 +23,10 @@ public:
 
   virtual enums::FogType type() const { return enums::FogExp2; }
 
-  Ptr clone() {
+  Ptr clone() const {
 
     return FogExp2::create( color.getHex(), density );
-    
+
   }
 
   std::string name;

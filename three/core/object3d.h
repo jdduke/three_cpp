@@ -29,17 +29,15 @@ public:
 
   typedef std::shared_ptr<Object3D> Ptr;
 
-  static Ptr create() {
-    return three::make_shared<Object3D>();
-  }
+  static Ptr create() { return three::make_shared<Object3D>(); }
 
-  virtual enums::Type type() const {
-    return enums::Object3D;
-  }
-  virtual void visit( Visitor& v ) { };
-  virtual void visit( ConstVisitor& v ) const { };
-  virtual void visit( ConstRawPointerVisitor& v ) const { };
   virtual ~Object3D();
+
+  virtual enums::Type type() const { return enums::Object3D; }
+
+  virtual void visit( Visitor& v ) { }
+  virtual void visit( ConstVisitor& v ) const { }
+  virtual void visit( ConstRawPointerVisitor& v ) const { }
 
   unsigned int id;
 
@@ -49,12 +47,6 @@ public:
 
   Object3D* parent;
   std::vector<Object3D::Ptr> children;
-
-  Vector3 up;
-
-  Vector3 position;
-
-  Vector3 scale;
 
   float renderDepth;
 
@@ -76,35 +68,20 @@ public:
   // TODO
   //this.userdata = {};
 
-  inline const Euler& rotation() const {
+  inline const Vector3& position() const { return _position; }
+  inline Vector3& position() { return _position; }
 
-    return _rotation;
+  inline const Vector3& scale() const { return _scale; }
+  inline Vector3& scale() { return _scale; }
 
-  }
+  inline const Vector3& up() const { return _up; }
+  inline Vector3& up() { return _up; }
 
-  inline Object3D& rotation( const Euler& value ) {
+  inline const Euler& rotation() const { return _transform.rotation(); }
+  inline Euler& rotation() { return _transform.rotation(); }
 
-    _rotation = value;
-    onRotationUpdated();
-
-    return *this;
-
-  }
-
-  inline const Quaternion& quaternion() const {
-
-    return _quaternion;
-
-  }
-
-  inline Object3D& quaternion( const Quaternion& value ) {
-
-    _quaternion = value;
-    onQuaternionUpdated();
-
-    return *this;
-
-  }
+  inline const Quaternion& quaternion() const { return _transform.quaternion(); }
+  inline Quaternion& quaternion() { return _transform.quaternion(); }
 
   Object3D& applyMatrix( Matrix4& m );
 
@@ -153,7 +130,7 @@ public:
   Object3D& updateMatrix();
   Object3D& updateMatrixWorld( bool force = false );
 
-  Object3D::Ptr clone( Object3D::Ptr object = nullptr, bool recursive = true );
+  Ptr clone( bool recursive = true ) const { return __clone(nullptr, recursive); }
 
   bool sortParticles;
 
@@ -217,14 +194,33 @@ protected:
   // Fallback implementation. Used in scene
   virtual void __addObject( const Ptr& object );
   virtual void __removeObject( const Ptr& object );
+  virtual Ptr __clone( Ptr target, bool recursive ) const;
 
 private:
 
-  void onRotationUpdated();
-  void onQuaternionUpdated();
+  class SyncedEulerQuaternion {
+  public:
+    SyncedEulerQuaternion();
 
-  Euler _rotation;
-  Quaternion _quaternion;
+    Euler& rotation();
+    const Euler& rotation() const;
+
+    Quaternion& quaternion();
+    const Quaternion& quaternion() const;
+
+  private:
+    void syncRotationIfNecessary() const;
+    void syncQuaternionIfNecessary() const;
+
+    mutable Euler _rotation;
+    mutable Quaternion _quaternion;
+    mutable bool _rotationDirty;
+    mutable bool _quaternionDirty;
+  } _transform;
+
+  Vector3 _up;
+  Vector3 _position;
+  Vector3 _scale;
 
   static unsigned & Object3DIdCount() {
     static unsigned int sObject3DIdCount = 0;

@@ -2,8 +2,8 @@
 #include <tests/test_constants.h>
 
 #include <three/math/euler.h>
-#include <three/math/impl/euler.cpp>
 #include <three/math/matrix4.h>
+#include <three/math/quaternion.h>
 
 using namespace three;
 
