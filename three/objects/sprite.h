@@ -24,6 +24,8 @@ protected:
   Sprite( const Material::Ptr& material )
     : Object3D( material ) { }
 
+  // TODO "Sprite::_clone"
+
 };
 
 } // namespace three

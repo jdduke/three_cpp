@@ -191,6 +191,8 @@ protected:
 
   }
 
+  // TODO "SkinnedMesh::_clone"
+
 }; // SkinnedMesh
 
 } // namespace three

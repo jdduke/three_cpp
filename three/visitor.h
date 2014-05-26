@@ -4,7 +4,6 @@
 #include <three/config.h>
 #include <three/fwd.h>
 
-
 namespace three {
 
 class Visitor {

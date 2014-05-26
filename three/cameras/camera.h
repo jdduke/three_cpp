@@ -47,7 +47,7 @@ protected:
   explicit Camera( float near = .1f, float far = 2000.f )
     : Object3D(), near( near ), far( far ) { }
 
-  Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
 
     Ptr camera = target ? std::static_pointer_cast<Camera>(target) : create(near, far);
 

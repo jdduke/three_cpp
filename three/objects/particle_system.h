@@ -32,6 +32,8 @@ protected:
     }
   }
 
+  // TODO "ParticleSystem::_clone"
+
 };
 
 } // namespace three

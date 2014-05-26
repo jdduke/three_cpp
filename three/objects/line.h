@@ -40,6 +40,9 @@ protected:
     }
   }
 
+  // TODO "Line::__clone"
+
+
   static Material::Ptr defaultMaterial() {
     return LineBasicMaterial::create(
              Material::Parameters().add( "color", Color( (int)(Math::random() * 0xFFFFFF) ) )

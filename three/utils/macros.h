@@ -3,18 +3,20 @@
 
 #include <cassert>
 
+#include <three/config.h>
+
 #define THREE_IMPL_OBJECT(NAME) \
 typedef std::shared_ptr<NAME> Ptr; \
 Ptr cloneAndCast() const { return std::static_pointer_cast<NAME>(clone()); } \
-virtual enums::Type type() const { return enums::NAME; }  \
-virtual void visit( Visitor& v ) { v( *this ); }           \
-virtual void visit( ConstVisitor& v ) const { v( *this ); } \
-virtual void visit( ConstRawPointerVisitor& v ) const { v( &*this ); }
+virtual enums::Type type() const THREE_OVERRIDE { return enums::NAME; }  \
+virtual void visit( Visitor& v ) THREE_OVERRIDE { v( *this ); }           \
+virtual void visit( ConstVisitor& v ) const THREE_OVERRIDE { v( *this ); } \
+virtual void visit( ConstRawPointerVisitor& v ) const THREE_OVERRIDE { v( &*this ); }
 
 #define THREE_IMPL_VISITOR(NAME)                                       \
-virtual void visit( Visitor& v ) { v( *this ); }           \
-virtual void visit( ConstVisitor& v ) const { v( *this ); } \
-virtual void visit( ConstRawPointerVisitor& v ) const { v( &*this ); }
+virtual void visit( Visitor& v ) THREE_OVERRIDE { v( *this ); }           \
+virtual void visit( ConstVisitor& v ) const THREE_OVERRIDE { v( *this ); } \
+virtual void visit( ConstRawPointerVisitor& v ) const THREE_OVERRIDE { v( &*this ); }
 
 #define THREE_TYPE(NAME)                                       \
 virtual enums::Type type() const { return enums::NAME; }

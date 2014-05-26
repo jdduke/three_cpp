@@ -24,7 +24,7 @@ protected:
   AmbientLight( int hex )
     : Light( hex ) {}
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
 
     Ptr light = target ? std::static_pointer_cast<AmbientLight>(target) : create( 0 );
 

@@ -16,6 +16,8 @@
 #include <three/utils/noncopyable.h>
 #include <three/utils/macros.h>
 
+#include <three/visitor.h>
+
 #include <algorithm>
 #include <functional>
 #include <memory>

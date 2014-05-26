@@ -65,6 +65,7 @@
 #    define THREE_HAS_RANGE_FOR 1
 #  endif
 #  if GCC_VERSION >= 40700
+#    define THREE_HAS_OVERRIDE 1
 #    define THREE_HAS_ALIAS_TEMPLATES 1
 #  endif
 #elif defined(__clang__)
@@ -73,6 +74,7 @@
 #  define THREE_HAS_RVALUE_REFERENCES  __has_feature(cxx_rvalue_references)
 #  define THREE_HAS_RANGE_FOR          __has_feature(cxx_range_for)
 #  define THREE_HAS_ALIAS_TEMPLATES    __has_feature(cxx_alias_templates)
+#  define THREE_HAS_OVERRIDE           __has_feature(cxx_override_control)
 #  define THREE_HAS_EXPLICIT_CONVERSION_OPERATORS __has_feature(cxx_explicit_conversions)
 #elif defined(_MSC_VER)
 // No variadics, no deleted functions, no fun :(
@@ -107,6 +109,9 @@
 #if !defined(THREE_HAS_ALIAS_TEMPLATES)
 # define THREE_HAS_ALIAS_TEMPLATES 0
 #endif
+#if !defined(THREE_HAS_OVERRIDE)
+# define THREE_HAS_OVERRIDE 0
+#endif
 
 #if !THREE_HAS_RANGE_FOR
 #  error Range-based for loop support required
@@ -127,6 +132,12 @@
 #  define THREE_EXPLICIT explicit
 #else
 #  define THREE_EXPLICIT
+#endif
+
+#if THREE_HAS_OVERRIDE
+#  define THREE_OVERRIDE override
+#else
+#  define THREE_OVERRIDE
 #endif
 
 #endif // THREE_CONFIG_H

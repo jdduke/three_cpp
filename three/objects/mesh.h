@@ -32,6 +32,8 @@ protected:
 
   Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material );
 
+  // TODO "Mesh::__clone"
+
 };
 
 } // namespace three

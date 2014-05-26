@@ -20,18 +20,6 @@ Scene::Scene()
 
 Scene::~Scene() { }
 
-void Scene::visit( Visitor& v )            {
-  v( *this );
-}
-
-void Scene::visit( ConstRawPointerVisitor& v ) const {
-  v( &*this );
-}
-
-void Scene::visit( ConstVisitor& v ) const {
-  v( *this );
-}
-
 namespace detail {
 
 struct FallbackVisitor : public Visitor {

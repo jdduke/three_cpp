@@ -171,6 +171,7 @@ enum Type {
   SkinnedMesh,
   Ribbon,
   Line,
+  LOD,
   Vector3,
   Box3,
   Sphere

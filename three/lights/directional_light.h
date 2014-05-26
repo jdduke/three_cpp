@@ -79,7 +79,7 @@ protected:
 
   }
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
 
     Ptr light = target ? std::static_pointer_cast<DirectionalLight>(target) : create( 0 );
 

@@ -33,6 +33,9 @@ protected:
 
   Bone( const SkinnedMesh::Ptr& belongsToSkin, float scale = 1, int parent = -1 );
 
+  // TODO "Bone::_clone"
+
+
 };
 
 }; // end namespace

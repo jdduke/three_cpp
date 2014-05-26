@@ -35,7 +35,7 @@ protected:
       onlyShadow( false ),
       shadowCascade( false ) { }
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
 
     if ( !target )
       THREE_ASSERT( false );

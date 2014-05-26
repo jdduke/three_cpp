@@ -13,14 +13,10 @@ class THREE_DECL Scene : public Object3D {
 
 public:
 
-  typedef std::shared_ptr<Scene> Ptr;
+  THREE_IMPL_OBJECT(Scene);
 
   static Ptr create() {
     return make_shared<Scene>();
-  }
-
-  virtual enums::Type type() const {
-    return enums::Scene;
   }
 
 public:
@@ -71,19 +67,10 @@ public:
 protected:
 
   Scene();
-
   ~Scene();
 
-  virtual void __addObject( const Object3D::Ptr& object );
-
-  virtual void __removeObject( const Object3D::Ptr& object );
-
-  virtual void visit( Visitor& v );
-
-  virtual void visit( ConstVisitor& v ) const;
-
-  virtual void visit( ConstRawPointerVisitor& v ) const;
-
+  virtual void __addObject( const Object3D::Ptr& object ) THREE_OVERRIDE;
+  virtual void __removeObject( const Object3D::Ptr& object ) THREE_OVERRIDE;
 
 };
 

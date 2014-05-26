@@ -42,7 +42,7 @@ protected:
       quadraticAttenuation( 0.1 ) {}
 
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
 
     Ptr light = target ? std::static_pointer_cast<AreaLight>(target) : create( 0 );
 

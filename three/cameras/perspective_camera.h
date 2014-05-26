@@ -121,7 +121,7 @@ protected:
 
   }
 
- virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const {
+ virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
 
     Ptr camera = target ? std::static_pointer_cast<PerspectiveCamera>(target) : create();
 
