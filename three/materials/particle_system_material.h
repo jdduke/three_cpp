@@ -10,18 +10,10 @@ namespace three {
 class ParticleSystemMaterial : public Material {
 public:
 
-  typedef std::shared_ptr<ParticleSystemMaterial> Ptr;
+  THREE_IMPL_MATERIAL(ParticleSystemMaterial);
 
   static Ptr create( const Parameters& parameters = Parameters() ) {
     return three::make_shared<ParticleSystemMaterial>( parameters );
-  }
-
-  virtual enums::MaterialType type() const {
-    return enums::ParticleSystemMaterial;
-  }
-
-  Ptr clone( ) {
-    return Material::clone( *this );
   }
 
 protected:

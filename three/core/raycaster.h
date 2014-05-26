@@ -25,7 +25,7 @@ public:
 
   struct Impl;
 
-  Raycaster( Vector3& origin, Vector3& direction, float near = 0.f, float far = Math::INF() );
+  Raycaster( const Vector3& origin, const Vector3& direction, float near = 0.f, float far = Math::INF() );
 
   Ray ray;
 

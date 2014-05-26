@@ -57,33 +57,32 @@ protected:
 
   }
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    Ptr light = target ? std::static_pointer_cast<SpotLight>(target) : create( 0 );
+    if ( !cloned ) cloned = create( 0 );
 
-    Light::__clone( light, recursive );
+    Light::__clone( cloned, recursive );
 
-    light->angle = angle;
-    light->exponent = exponent;
+    auto& light = static_cast<SpotLight&>( *cloned );
+    light.angle = angle;
+    light.exponent = exponent;
 
-    light->shadowCameraNear = shadowCameraNear;
-    light->shadowCameraFar = shadowCameraFar;
-    light->shadowCameraFov = shadowCameraFov;
+    light.shadowCameraNear = shadowCameraNear;
+    light.shadowCameraFar = shadowCameraFar;
+    light.shadowCameraFov = shadowCameraFov;
 
-    light->shadowCameraVisible = shadowCameraVisible;
+    light.shadowCameraVisible = shadowCameraVisible;
 
-    light->shadowBias = shadowBias;
-    light->shadowDarkness = shadowDarkness;
+    light.shadowBias = shadowBias;
+    light.shadowDarkness = shadowDarkness;
 
-    light->shadowMapWidth = shadowMapWidth;
-    light->shadowMapHeight = shadowMapHeight;
+    light.shadowMapWidth = shadowMapWidth;
+    light.shadowMapHeight = shadowMapHeight;
 
-    light->shadowMap = shadowMap;
-    light->shadowMapSize = shadowMapSize;
-    light->shadowCamera = shadowCamera;
-    light->shadowMatrix = shadowMatrix;
-
-    return light;
+    light.shadowMap = shadowMap;
+    light.shadowMapSize = shadowMapSize;
+    light.shadowCamera = shadowCamera;
+    light.shadowMatrix = shadowMatrix;
 
   }
 

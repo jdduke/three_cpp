@@ -21,9 +21,9 @@ public:
 
   }
 
-  virtual enums::FogType type() const { return enums::Fog; }
+  virtual enums::FogType type() const THREE_OVERRIDE { return enums::Fog; }
 
-  Ptr clone() const {
+  virtual IFog::Ptr clone() const THREE_OVERRIDE {
 
     return Fog::create(color.getHex(), near, far);
 

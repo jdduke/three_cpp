@@ -42,23 +42,22 @@ protected:
       quadraticAttenuation( 0.1 ) {}
 
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    Ptr light = target ? std::static_pointer_cast<AreaLight>(target) : create( 0 );
+    if ( !cloned ) cloned = create( 0 );
 
-    Light::__clone( light, recursive );
+    Light::__clone( cloned, recursive );
 
-    light->normal = normal;
-    light->right = right;
+    auto light = static_cast<AreaLight&>( *cloned );
+    light.normal = normal;
+    light.right = right;
 
-    light->right = width;
-    light->right = height;
+    light.right = width;
+    light.right = height;
 
-    light->constantAttenuation = constantAttenuation;
-    light->linearAttenuation = linearAttenuation;
-    light->quadraticAttenuation = quadraticAttenuation;
-
-    return light;
+    light.constantAttenuation = constantAttenuation;
+    light.linearAttenuation = linearAttenuation;
+    light.quadraticAttenuation = quadraticAttenuation;
 
   }
 

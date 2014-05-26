@@ -6,9 +6,30 @@
 
 namespace three {
 
+namespace {
+
+int nextMaterialID() {
+  static int sMaterialCount = 0;
+  return ++sMaterialCount;
+}
+
+} // namespace
+
 typedef std::pair<std::string, any> Parameter;
 
-Material& Material::clone( Material& material ) const {
+Material::Ptr Material::clone() const {
+  Ptr cloned;
+  __clone( cloned );
+  THREE_ASSERT( cloned );
+  return cloned;
+}
+
+void Material::__clone( Ptr& cloned ) const {
+
+  if ( !cloned )
+    cloned = create();
+
+  Material& material = *cloned;
 
   material.name                = name;
 
@@ -96,13 +117,11 @@ Material& Material::clone( Material& material ) const {
   material.gapSize         = shadowPass;
   material.dashSize        = shadowPass;
 
-  return material;
-
 }
 
 
 Material::Material( )
-  : id( MaterialCount()++ ),
+  : id( nextMaterialID() ),
     uuid( Math::generateUUID() ),
     side( enums::FrontSide ),
     opacity( 1 ),

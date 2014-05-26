@@ -24,13 +24,12 @@ protected:
   AmbientLight( int hex )
     : Light( hex ) {}
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    Ptr light = target ? std::static_pointer_cast<AmbientLight>(target) : create( 0 );
+    if ( !cloned ) cloned = create( 0 );
 
-    Light::__clone( target, recursive );
+    Light::__clone( cloned, recursive );
 
-    return target;
   }
 
 };

@@ -43,11 +43,13 @@ public:
     return make_shared<Material>( );
   }
 
-  ~Material();
+  virtual ~Material();
 
   virtual enums::MaterialType type() const {
     return enums::Material;
   }
+
+  Ptr clone() const;
 
 public:
 
@@ -150,10 +152,6 @@ public:
   void setParameters( const Parameters& parameters,
                       const ParameterKeys& keys = ParameterKeys() );
 
-  // TODO "Clone without passing a parameter"
-
-  Material& clone( Material& material ) const;
-
   // TODO "Implement"
 
   void dispose() {
@@ -163,13 +161,6 @@ public:
 protected:
 
   Material();
-
-  template < typename MaterialType >
-  static std::shared_ptr<MaterialType> clone( const MaterialType& src ) {
-    auto material = MaterialType::create();
-    static_cast<const Material&>( src ).clone( *material );
-    return material;
-  }
 
   static const ParameterKeys& defaultKeys() {
     static std::array<std::string, 15> sKeys = {
@@ -193,12 +184,9 @@ protected:
     return sKeysSet;
   }
 
-private:
+  virtual void __clone( Ptr& cloned ) const;
 
-  static int& MaterialCount() {
-    static int sMaterialCount = 0;
-    return sMaterialCount;
-  }
+private:
 
 };
 

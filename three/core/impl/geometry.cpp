@@ -74,7 +74,7 @@ void Geometry::computeCentroids() {
 void Geometry::computeFaceNormals() {
 
   Vector3 cb, ab;
-  
+
   for ( auto& face : faces ) {
 
     auto& vA = vertices[ face.a ];

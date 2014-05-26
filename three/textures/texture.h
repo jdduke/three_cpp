@@ -1,5 +1,5 @@
-#ifndef enums_TEXTURE_H
-#define enums_TEXTURE_H
+#ifndef THREE_TEXTURE_H
+#define THREE_TEXTURE_H
 
 #include <three/common.h>
 #include <three/constants.h>

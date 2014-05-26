@@ -11,18 +11,10 @@ class LineBasicMaterial : public Material {
 
 public:
 
-  typedef std::shared_ptr<LineBasicMaterial> Ptr;
+  THREE_IMPL_MATERIAL(LineBasicMaterial);
 
   static Ptr create( const Parameters& parameters = Parameters() ) {
     return three::make_shared<LineBasicMaterial>( parameters );
-  }
-
-  virtual enums::MaterialType type() const {
-    return enums::LineBasicMaterial;
-  }
-
-  Ptr clone( ) {
-    return Material::clone( *this );
   }
 
 protected:

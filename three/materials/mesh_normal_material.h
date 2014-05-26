@@ -6,21 +6,14 @@
 #include <three/materials/material.h>
 
 namespace three {
+
 class MeshNormalMaterial : public Material {
 public:
 
-  typedef std::shared_ptr<MeshNormalMaterial> Ptr;
+  THREE_IMPL_MATERIAL(MeshNormalMaterial);
 
   static Ptr create( const Parameters& parameters = Parameters() ) {
     return three::make_shared<MeshNormalMaterial>( parameters );
-  }
-
-  virtual enums::MaterialType type() const {
-    return enums::MeshNormalMaterial;
-  }
-
-  Ptr clone( ) {
-    return Material::clone( *this );
   }
 
 protected:

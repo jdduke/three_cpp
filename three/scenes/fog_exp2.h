@@ -21,11 +21,11 @@ public:
 
   }
 
-  virtual enums::FogType type() const { return enums::FogExp2; }
+  virtual enums::FogType type() const THREE_OVERRIDE { return enums::FogExp2; }
 
-  Ptr clone() const {
+  virtual IFog::Ptr clone() const THREE_OVERRIDE {
 
-    return FogExp2::create( color.getHex(), density );
+    return create( color.getHex(), density );
 
   }
 

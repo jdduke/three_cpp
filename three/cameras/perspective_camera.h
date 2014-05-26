@@ -121,22 +121,21 @@ protected:
 
   }
 
- virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    Ptr camera = target ? std::static_pointer_cast<PerspectiveCamera>(target) : create();
+    if ( !cloned ) cloned = create();
 
-    Camera::__clone( target, recursive );
+    Camera::__clone( cloned, recursive );
 
-    camera->fov = fov;
-    camera->aspect = aspect;
-    camera->fullWidth = fullWidth;
-    camera->fullHeight = fullHeight;
-    camera->x = x;
-    camera->y = y;
-    camera->width = width;
-    camera->height = height;
-
-    return camera;
+    auto& camera = static_cast<PerspectiveCamera&>( *cloned );
+    camera.fov = fov;
+    camera.aspect = aspect;
+    camera.fullWidth = fullWidth;
+    camera.fullHeight = fullHeight;
+    camera.x = x;
+    camera.y = y;
+    camera.width = width;
+    camera.height = height;
 
   }
 

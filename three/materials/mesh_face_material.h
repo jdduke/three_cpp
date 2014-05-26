@@ -28,15 +28,19 @@ public:
 
   std::vector<Material::Ptr> materials;
 
-  // TODO "MeshFaceMaterial::clone"
-
-
 protected:
 
   MeshFaceMaterial() {}
 
   MeshFaceMaterial( const std::vector<Material::Ptr>& materialsIn )
     : materials( materialsIn ) {}
+
+  virtual void __clone( Material::Ptr& target ) const THREE_OVERRIDE {
+    if ( !target )
+      target = create( materials );
+
+    Material::__clone( target );
+  }
 
 };
 

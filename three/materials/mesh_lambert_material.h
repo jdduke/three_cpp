@@ -10,18 +10,10 @@ namespace three {
 class MeshLambertMaterial : public Material {
 public:
 
-  typedef std::shared_ptr<MeshLambertMaterial> Ptr;
+  THREE_IMPL_MATERIAL(MeshLambertMaterial);
 
   static Ptr create( const Parameters& parameters = Parameters() ) {
     return three::make_shared<MeshLambertMaterial>( parameters );
-  }
-
-  virtual enums::MaterialType type() const {
-    return enums::MeshLambertMaterial;
-  }
-
-  Ptr clone( ) {
-    return Material::clone( *this );
   }
 
 protected:

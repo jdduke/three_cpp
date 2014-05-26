@@ -22,7 +22,7 @@ public:
 public:
 
   IFog::Ptr fog;
-  Material* overrideMaterial;
+  Material::Ptr overrideMaterial;
 
   bool autoUpdate;
   bool matrixAutoUpdate;
@@ -61,9 +61,6 @@ public:
 
   std::vector<Object3D*> __objects;
 
-  // TODO "Scene::clone"
-
-
 protected:
 
   Scene();
@@ -71,6 +68,7 @@ protected:
 
   virtual void __addObject( const Object3D::Ptr& object ) THREE_OVERRIDE;
   virtual void __removeObject( const Object3D::Ptr& object ) THREE_OVERRIDE;
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive) const THREE_OVERRIDE;
 
 };
 

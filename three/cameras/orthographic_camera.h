@@ -40,18 +40,17 @@ protected:
 
   }
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    Ptr camera = target ? std::static_pointer_cast<OrthographicCamera>(target) : create(left, right, top, bottom);
+    if ( !cloned ) cloned = create( left, right, top, bottom );
 
-    Camera::__clone( target, recursive );
+    Camera::__clone( cloned, recursive );
 
-    camera->left = left;
-    camera->right = right;
-    camera->top = top;
-    camera->bottom = bottom;
-
-    return camera;
+    auto& camera = static_cast<OrthographicCamera&>( *cloned );
+    camera.left = left;
+    camera.right = right;
+    camera.top = top;
+    camera.bottom = bottom;
 
   }
 

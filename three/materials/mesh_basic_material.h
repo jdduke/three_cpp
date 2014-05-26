@@ -11,18 +11,10 @@ class MeshBasicMaterial : public Material {
 
 public:
 
-  typedef std::shared_ptr<MeshBasicMaterial> Ptr;
+  THREE_IMPL_MATERIAL(MeshBasicMaterial);
 
   static Ptr create( const Parameters& parameters = Parameters() ) {
     return three::make_shared<MeshBasicMaterial>( parameters );
-  }
-
-  virtual enums::MaterialType type() const {
-    return enums::MeshBasicMaterial;
-  }
-
-  Ptr clone( ) {
-    return Material::clone( *this );
   }
 
 protected:

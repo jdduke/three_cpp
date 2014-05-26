@@ -79,46 +79,45 @@ protected:
 
   }
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    Ptr light = target ? std::static_pointer_cast<DirectionalLight>(target) : create( 0 );
+    if ( !cloned ) cloned = create( 0 );
 
-    Light::__clone( light, recursive );
+    Light::__clone( cloned, recursive );
 
-    light->shadowCameraNear = shadowCameraNear;
-    light->shadowCameraFar = shadowCameraFar;
+    auto& light = static_cast<DirectionalLight&>( *cloned );
+    light.shadowCameraNear = shadowCameraNear;
+    light.shadowCameraFar = shadowCameraFar;
 
-    light->shadowCameraLeft = shadowCameraLeft;
-    light->shadowCameraRight = shadowCameraRight;
-    light->shadowCameraTop = shadowCameraTop;
-    light->shadowCameraBottom = shadowCameraBottom;
+    light.shadowCameraLeft = shadowCameraLeft;
+    light.shadowCameraRight = shadowCameraRight;
+    light.shadowCameraTop = shadowCameraTop;
+    light.shadowCameraBottom = shadowCameraBottom;
 
-    light->shadowCameraVisible = shadowCameraVisible;
+    light.shadowCameraVisible = shadowCameraVisible;
 
-    light->shadowBias = shadowBias;
-    light->shadowDarkness = shadowDarkness;
+    light.shadowBias = shadowBias;
+    light.shadowDarkness = shadowDarkness;
 
-    light->shadowMapWidth = shadowMapWidth;
-    light->shadowMapHeight = shadowMapHeight;
+    light.shadowMapWidth = shadowMapWidth;
+    light.shadowMapHeight = shadowMapHeight;
 
-    light->shadowCascadeOffset = shadowCascadeOffset;
-    light->shadowCascadeCount = light->shadowCascadeCount;
+    light.shadowCascadeOffset = shadowCascadeOffset;
+    light.shadowCascadeCount = light.shadowCascadeCount;
 
-    light->shadowCascadeBias = shadowCascadeBias;
-    light->shadowCascadeWidth = shadowCascadeWidth;
-    light->shadowCascadeHeight = shadowCascadeHeight;
+    light.shadowCascadeBias = shadowCascadeBias;
+    light.shadowCascadeWidth = shadowCascadeWidth;
+    light.shadowCascadeHeight = shadowCascadeHeight;
 
-    light->shadowCascadeNearZ = shadowCascadeNearZ;
-    light->shadowCascadeFarZ = shadowCascadeFarZ;
+    light.shadowCascadeNearZ = shadowCascadeNearZ;
+    light.shadowCascadeFarZ = shadowCascadeFarZ;
 
-    light->shadowCascadeArray = shadowCascadeArray;
+    light.shadowCascadeArray = shadowCascadeArray;
 
-    light->shadowMap = shadowMap;
-    light->shadowMapSize = shadowMapSize;
-    light->shadowCamera = shadowCamera;
-    light->shadowMatrix = shadowMatrix;
-
-    return light;
+    light.shadowMap = shadowMap;
+    light.shadowMapSize = shadowMapSize;
+    light.shadowCamera = shadowCamera;
+    light.shadowMatrix = shadowMatrix;
 
   }
 

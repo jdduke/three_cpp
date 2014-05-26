@@ -48,7 +48,6 @@ void shader( GLWindow& window, GLRenderer& renderer ) {
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/disc.png" ) );
 
   Uniforms uniforms;
-  uniforms[ "amplitude" ]   = Uniform( enums::f, 1.0 );
   uniforms[ "color" ]   = Uniform( enums::c, Color( 0xffffff ) );
   uniforms[ "texture" ] = Uniform( enums::t, texture.get() );
   texture->wrapS = texture->wrapT = enums::RepeatWrapping;

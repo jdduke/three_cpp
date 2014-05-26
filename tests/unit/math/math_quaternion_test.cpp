@@ -125,10 +125,10 @@ TEST(math_quaternion_test, setFromEuler_setFromQuaternion) {
 TEST(math_quaternion_test, setFromEuler_setFromRotationMatrix) {
 
   // ensure euler conversion for Quaternion matches that of Matrix4
-  THREE_REVIEW("We don't use the order here?");
   for( const auto& order : orders ) {
-    auto q = Quaternion().setFromEuler( eulerAngles ); // EA: 2nd param removed
-    auto m = Matrix4().makeRotationFromEuler( eulerAngles ); // EA: 2nd param removed
+    auto angle = Euler().copy( eulerAngles ).reorder( order );
+    auto q = Quaternion().setFromEuler( angle ); // EA: 2nd param removed
+    auto m = Matrix4().makeRotationFromEuler( angle ); // EA: 2nd param removed
     auto q2 = Quaternion().setFromRotationMatrix( m );
 
     EXPECT_LT( qSub( q, q2 ).length(), 0.001 );
@@ -202,9 +202,9 @@ TEST(math_quaternion_test, multiplyVector3) {
   };
 
   // ensure euler conversion for Quaternion matches that of Matrix4
-  THREE_REVIEW("We don't use the order here?");
   for( const auto& order : orders ) {
-    for( const auto& angle : angles ) {
+    for( auto angle : angles ) {
+      angle.reorder( order );
       auto q = Quaternion().setFromEuler( angle );
       auto m = Matrix4().makeRotationFromEuler( angle );
 

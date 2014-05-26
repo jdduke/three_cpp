@@ -47,20 +47,19 @@ protected:
   explicit Camera( float near = .1f, float far = 2000.f )
     : Object3D(), near( near ), far( far ) { }
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    Ptr camera = target ? std::static_pointer_cast<Camera>(target) : create(near, far);
+    if ( !cloned ) cloned = create( near, far );
 
-    Object3D::__clone( camera, recursive );
+    Object3D::__clone( cloned, recursive );
 
-    camera->near = near;
-    camera->far = far;
-    camera->matrixWorldInverse = matrixWorldInverse;
-    camera->projectionMatrix = projectionMatrix;
-    camera->_viewMatrixArray = _viewMatrixArray;
-    camera->_projectionMatrixArray = _projectionMatrixArray;
-
-    return camera;
+    auto& camera = static_cast<Camera&>( *cloned );
+    camera.near = near;
+    camera.far = far;
+    camera.matrixWorldInverse = matrixWorldInverse;
+    camera.projectionMatrix = projectionMatrix;
+    camera._viewMatrixArray = _viewMatrixArray;
+    camera._projectionMatrixArray = _projectionMatrixArray;
 
   }
 

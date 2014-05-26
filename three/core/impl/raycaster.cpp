@@ -440,7 +440,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 }; // end namespace detail
 
 
-Raycaster::Raycaster( Vector3& origin, Vector3& direction, float near, float far)
+Raycaster::Raycaster( const Vector3& origin, const Vector3& direction, float near, float far)
   : ray( Ray( origin, direction ) ), near( near ), far( far ), impl( new Impl() ) { }
 
 Raycaster& Raycaster::set( const Vector3& origin, const Vector3& direction ) {

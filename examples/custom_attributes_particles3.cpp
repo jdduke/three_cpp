@@ -60,7 +60,6 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
   attributes[ "ca" ]   = Attribute( enums::c );
 
   Uniforms uniforms;
-  uniforms[ "amplitude" ]  = Uniform( enums::f, 1.0 );
   uniforms[ "color" ]      = Uniform( enums::c, Color( 0xffffff ) );
   uniforms[ "texture" ]    = Uniform( enums::t, texture.get() );
 

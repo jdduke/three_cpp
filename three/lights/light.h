@@ -35,26 +35,24 @@ protected:
       onlyShadow( false ),
       shadowCascade( false ) { }
 
-  virtual Object3D::Ptr __clone( Object3D::Ptr target, bool recursive ) const THREE_OVERRIDE {
+  virtual void __clone( Object3D::Ptr& cloned, bool recursive ) const THREE_OVERRIDE {
 
-    if ( !target )
-      THREE_ASSERT( false );
+    if ( !cloned ) THREE_ASSERT( false );
 
-    Object3D::__clone( target, recursive );
+    Object3D::__clone( cloned, recursive );
 
-    auto light = std::static_pointer_cast<Light>( target );
+    auto& light = static_cast<Light&>( *cloned );
 
-    light->color = color;
-    light->intensity = intensity;
-    light->distance = distance;
+    light.color = color;
+    light.intensity = intensity;
+    light.distance = distance;
 
-    light->target = target;
+    light.target = target;
 
-    light->castShadow = castShadow;
-    light->onlyShadow = onlyShadow;
-    light->shadowCascade = shadowCascade;
+    light.castShadow = castShadow;
+    light.onlyShadow = onlyShadow;
+    light.shadowCascade = shadowCascade;
 
-    return light;
   }
 
 };

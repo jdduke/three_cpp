@@ -132,7 +132,7 @@ public:
   Object3D& updateMatrix();
   Object3D& updateMatrixWorld( bool force = false );
 
-  Ptr clone( bool recursive = true ) const { return __clone(nullptr, recursive); }
+  Ptr clone( bool recursive = true ) const;
 
   bool sortParticles;
 
@@ -196,11 +196,11 @@ protected:
   // Fallback implementation. Used in scene
   virtual void __addObject( const Ptr& object );
   virtual void __removeObject( const Ptr& object );
-  virtual Ptr __clone( Ptr target, bool recursive ) const;
+  virtual void __clone( Ptr& cloned, bool recursive ) const;
 
 private:
 
-  class SyncedEulerQuaternion {
+  class THREE_DECL SyncedEulerQuaternion {
   public:
     SyncedEulerQuaternion();
 
@@ -223,11 +223,6 @@ private:
   Vector3 _up;
   Vector3 _position;
   Vector3 _scale;
-
-  static unsigned & Object3DIdCount() {
-    static unsigned int sObject3DIdCount = 0;
-    return sObject3DIdCount;
-  }
 
 };
 

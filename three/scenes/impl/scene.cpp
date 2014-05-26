@@ -14,7 +14,6 @@ namespace three {
 
 Scene::Scene()
   : Object3D(),
-    overrideMaterial( nullptr ),
     autoUpdate( true ),
     matrixAutoUpdate( false ) { }
 
@@ -119,6 +118,21 @@ void Scene::__removeObject( const Object3D::Ptr& object ) {
   for ( auto& child : object->children ) {
     __removeObject( child );
   }
+}
+
+void Scene::__clone( Object3D::Ptr& cloned, bool recursive ) const {
+
+  if ( !cloned ) cloned = create();
+
+  Object3D::__clone( cloned, recursive );
+
+  auto& scene = static_cast<Scene&>( *cloned );
+
+  if ( fog ) scene.fog = fog->clone();
+  if ( overrideMaterial ) scene.overrideMaterial = overrideMaterial->clone();
+  scene.autoUpdate = autoUpdate;
+  scene.matrixAutoUpdate = matrixAutoUpdate;
+
 }
 
 } // namespace three

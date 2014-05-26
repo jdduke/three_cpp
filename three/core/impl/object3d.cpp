@@ -6,6 +6,15 @@
 
 namespace three {
 
+namespace {
+
+unsigned nextObjectID() {
+  static unsigned int sObject3DIdCount = 0;
+  return ++sObject3DIdCount;
+}
+
+} // namespace
+
 Object3D::SyncedEulerQuaternion::SyncedEulerQuaternion()
     : _rotationDirty(false),
       _quaternionDirty(false) { }
@@ -385,9 +394,15 @@ Object3D& Object3D::updateMatrixWorld( bool force ) {
 
 }
 
+Object3D::Ptr Object3D::clone( bool recursive ) const {
+  Ptr cloned;
+  __clone( cloned, recursive );
+  return cloned;
+}
+
 Object3D::Object3D( const Material::Ptr& material ,
                     const Geometry::Ptr& geometry )
-  : id( Object3DIdCount()++ ),
+  : id( nextObjectID() ),
     uuid( Math::generateUUID() ),
     parent( nullptr ),
     renderDepth( 0 ),
@@ -417,46 +432,46 @@ void Object3D::__addObject( const Ptr& object ) { }
 
 void Object3D::__removeObject( const Ptr& object ) { }
 
-Object3D::Ptr Object3D::__clone( Ptr target, bool recursive ) const {
+void Object3D::__clone( Ptr& cloned, bool recursive ) const {
 
-  if ( !target ) {
+  if ( !cloned ) {
     THREE_ASSERT( type() == enums::Object3D );
-    target = create();
+    cloned = create();
   }
 
-  target->name = this->name;
+  auto& object = *cloned;
 
-  target->up().copy( this->up() );
-  target->position().copy( this->position() );
-  target->quaternion().copy( this->quaternion() );
-  target->scale().copy( this->scale() );
+  object.name = this->name;
 
-  target->renderDepth = this->renderDepth;
+  object.up().copy( this->up() );
+  object.position().copy( this->position() );
+  object.quaternion().copy( this->quaternion() );
+  object.scale().copy( this->scale() );
 
-  target->rotationAutoUpdate = this->rotationAutoUpdate;
+  object.renderDepth = this->renderDepth;
 
-  target->matrix.copy( this->matrix );
-  target->matrixWorld.copy( this->matrixWorld );
+  object.rotationAutoUpdate = this->rotationAutoUpdate;
 
-  target->matrixAutoUpdate = this->matrixAutoUpdate;
-  target->matrixWorldNeedsUpdate = this->matrixWorldNeedsUpdate;
+  object.matrix.copy( this->matrix );
+  object.matrixWorld.copy( this->matrixWorld );
 
-  target->visible = this->visible;
+  object.matrixAutoUpdate = this->matrixAutoUpdate;
+  object.matrixWorldNeedsUpdate = this->matrixWorldNeedsUpdate;
 
-  target->castShadow = this->castShadow;
-  target->receiveShadow = this->receiveShadow;
+  object.visible = this->visible;
 
-  target->frustumCulled = this->frustumCulled;
+  object.castShadow = this->castShadow;
+  object.receiveShadow = this->receiveShadow;
+
+  object.frustumCulled = this->frustumCulled;
 
   // TODO
   //target.userData = JSON.parse( JSON.stringify( this->userData ) );
 
   if ( recursive ) {
     for ( const auto& child : children )
-      target->add( child->__clone( nullptr, recursive ) );
+      object.add( child->clone( recursive ) );
   }
-
-  return target;
 }
 
 void Object3D::render( const std::function<void( Object3D& )> renderCallback ) {
