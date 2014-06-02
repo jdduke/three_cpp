@@ -116,14 +116,15 @@ public:
     }
     
   }
-  
+
   void dispatchEvent( const Event& event ) {
-    dispatchEvent( std::move(event) );
+      auto ev = std::move(event);
+      dispatchEvent(ev);
   }
   
   void dispatchEvent( const EventType& type ) {
     auto ev = Event( std::move(type) );
-    dispatchEvent( std::move(ev) );
+    dispatchEvent( ev );
   }
 
 };
