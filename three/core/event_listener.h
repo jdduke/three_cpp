@@ -47,8 +47,8 @@ public:
 
 private:
   
-  static int& EventListenerCount() {
-    static int sEventListenerCount = 0;
+  static unsigned int& EventListenerCount() {
+    static unsigned int sEventListenerCount = 0;
     return sEventListenerCount;
   }
     
