@@ -70,15 +70,21 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
-FIND_PATH(SDL2_INCLUDE_DIR SDL2
+if(APPLE)
+  set(SDL_FINDPATH SDL.h)
+else()
+  set(SDL_FINDPATH SDL2)
+endif()
+
+FIND_PATH(SDL2_INCLUDE_DIR ${SDL_FINDPATH}
   HINTS
   $ENV{SDL2DIR}
-  PATH_SUFFIXES include 
+  PATH_SUFFIXES include/SDL2 include
   PATHS
   ~/Library/Frameworks
   /Library/Frameworks
-  /usr/local/include
-  /usr/include
+  /usr/local/include/SDL2
+  /usr/include/SDL2
   /sw # Fink
   /opt/local # DarwinPorts
   /opt/csw # Blastwave
