@@ -20,7 +20,7 @@ public:
     func( std::move(funcIn) ) {}
 
   EventListener( const EventListener& other )
-  : id( other.id ),
+  : id( EventListenerCount()++ ),
     func( std::move(other.func) ) {}
 
   EventListener( EventListener&& other )
@@ -29,7 +29,7 @@ public:
 
 
   EventListener& operator=( const EventListener& other ) {
-    id = other.id;
+    id = EventListenerCount()++;
     func = std::move(other.func);
     return *this;
   }

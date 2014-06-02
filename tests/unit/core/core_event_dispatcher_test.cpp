@@ -69,7 +69,7 @@ TEST(core_event_listener_test, comparison_operator) {
     auto listener1 = (Listener) [](const Event& ev) {};
     auto listener2 = listener1;
     
-    EXPECT_EQ(listener1, listener2);
+    EXPECT_NE(listener1, listener2);
     EXPECT_NE(listener1, (Listener) [](const Event& ev) {});
 }
 
@@ -88,7 +88,7 @@ TEST(core_event_listener_test, copy_assignment) {
     auto listener3 = listener1;
     
     EXPECT_NE(listener1, listener2);
-    EXPECT_EQ(listener1, listener3);
+    EXPECT_NE(listener1, listener3);
 }
 
 TEST(core_event_dispatcher_test, addEventListener) {

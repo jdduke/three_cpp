@@ -21,7 +21,7 @@ public:
     auto listener = (EventListener<TEvent>) func;
 
     if(!hasEventListener(type, listener)) {
-      listeners[ type ].emplace_back( listener );
+        listeners[ type ].emplace_back( std::move(listener) );
     }
     
     return listener;
