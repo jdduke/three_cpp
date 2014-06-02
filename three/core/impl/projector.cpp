@@ -570,7 +570,6 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
 }
 
-THREE_REVIEW("sort params have a default value?")
 Projector::RenderData& Projector::projectScene( Scene& scene, Camera& camera, bool sortObjects, bool sortElements ) {
 
   auto& d = *impl;

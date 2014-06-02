@@ -27,7 +27,6 @@ public:
   bool autoUpdate;
   bool matrixAutoUpdate;
 
-  THREE_REVIEW("Proper cleanup of light pointers?")
   std::vector<Light*>    __lights;
 
   std::vector<Object3D::Ptr> __objectsAdded;

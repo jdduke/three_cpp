@@ -7,7 +7,6 @@
 
 namespace three {
 
-THREE_REVIEW("Unfortunate bloat here, due to 'required' inheritance of Material")
 class MeshFaceMaterial : public Material {
 
 public:

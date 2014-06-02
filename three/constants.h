@@ -1,9 +1,13 @@
 #ifndef THREE_CONSTANTS_H
 #define THREE_CONSTANTS_H
 
+#include <string>
+
 namespace three {
 
 typedef unsigned Buffer;
+
+typedef std::string EventType;
 
 namespace THREE {
 

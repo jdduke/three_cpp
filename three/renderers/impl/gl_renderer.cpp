@@ -200,7 +200,7 @@ void GLRenderer::initGL() {
 
   THREE_ASSERT( _gl.validate() );
 
-  THREE_REVIEW("Have client indicate whether these are supported.")
+  // TODO Have client indicate whether these are supported
   /*
   _glExtensionTextureFloat = glewIsExtensionSupported( "ARB_texture_float" ) != 0 ? true : false;
   _glExtensionStandardDerivatives = glewIsExtensionSupported( "OES_standard_derivatives" ) != 0 ? true : false;
@@ -243,7 +243,7 @@ void GLRenderer::setDefaultGLState() {
   _gl.BlendEquation( GL_FUNC_ADD );
   _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-  THREE_REVIEW("EA: Viewport values are 0/-1 here. Why?")
+  // TODO Viewport values are 0/-1 here. 
   //_gl.Viewport( _viewportX, _viewportY, _viewportWidth, _viewportHeight );
 
   _gl.ClearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearAlpha );
@@ -2519,7 +2519,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
     // TODO(jdd): Check usage with core profile.
     _gl.Enable(GL_VERTEX_PROGRAM_POINT_SIZE);
     //_gl.Enable(GL_POINT_SMOOTH);
-    THREE_REVIEW("EA: Without GL_POINT_SPRITE enabled, the particles aren't rendered, due to gl_PointCoord pointing to 0s")
+    //TODO EA: Without GL_POINT_SPRITE enabled, the particles aren't rendered, due to gl_PointCoord pointing to 0s
     _gl.Enable(GL_POINT_SPRITE);
     //glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 #endif
@@ -4045,8 +4045,6 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     uniform.load( _gl, location );
 
-    THREE_REVIEW("EA: What about the rest of the uniforms?")
-
     if ( uniform.type == THREE::t ) { // single THREE::Texture (2d or cube)
 
       const auto& texture = uniform.value.cast<Texture*>();
@@ -4632,8 +4630,6 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     if ( gammaInput )             ss << "#define GAMMA_INPUT" << std::endl;
     if ( gammaOutput )            ss << "#define GAMMA_OUTPUT" << std::endl;
-    THREE_REVIEW("EA: Obsolete?")
-    //if ( physicallyBasedShading ) ss << "#define PHYSICALLY_BASED_SHADING" << std::endl;
 
     ss << "#define MAX_DIR_LIGHTS "   << parameters.maxDirLights << std::endl <<
     "#define MAX_POINT_LIGHTS " << parameters.maxPointLights << std::endl <<
@@ -4654,9 +4650,6 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
     if ( parameters.skinning )          ss << "#define USE_SKINNING" << std::endl;
     if ( parameters.useVertexTexture )  ss << "#define BONE_TEXTURE" << std::endl;
-    THREE_REVIEW("EA: Obsolete?")
-    //if ( parameters.boneTextureWidth )  ss << "#define N_BONE_PIXEL_X " << parameters.boneTextureWidth << std::endl;
-    //if ( parameters.boneTextureHeight ) ss << "#define N_BONE_PIXEL_Y " << parameters.boneTextureHeight << std::endl;
 
     if ( parameters.morphTargets ) ss << "#define USE_MORPHTARGETS" << std::endl;
     if ( parameters.morphNormals ) ss << "#define USE_MORPHNORMALS" << std::endl;

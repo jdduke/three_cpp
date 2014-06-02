@@ -39,9 +39,7 @@ protected:
       "lightMap",
       "bumpMap",
       "bumpScale",
-      THREE_REVIEW("Check if normal map is working properly")
       "normalMap",
-      THREE_REVIEW("Normal scale in three.js is a vector2. Trivial?")
       "normalScale",
       "specularMap",
       "envMap",

@@ -3,11 +3,9 @@
 
 #include <three/common.h>
 
-#include <string>
+#include <three/constants.h>
 
 namespace three {
-
-typedef std::string EventType;
 
 class Event {
 public:

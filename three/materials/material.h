@@ -79,7 +79,6 @@ public:
 
   float alphaTest;
 
-  THREE_REVIEW("Needed? Also: changed to float in r65, was bool in r50.")
   float overdraw; // Overdrawn pixels (typically between 0 and 1) for fixing antialiasing gaps in CanvasRenderer
 
   bool visible;

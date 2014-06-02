@@ -98,7 +98,6 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
   // create internal buffers for reuse when calling this method repeatedly
   // (otherwise memory allocation / deallocation every frame is big resource hog)
 
-  THREE_REVIEW("EA: Efficiency/memory/performance")
   vertices.resize( vertices.size() );
   std::fill( vertices.begin(), vertices.end(), Vector3() );
 
