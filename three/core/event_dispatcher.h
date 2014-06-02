@@ -39,11 +39,11 @@ public:
     }
   }
 
-  bool hasEventListener( const TKey& type ) {
+  bool hasEventListener( const TKey& type ) const {
     return listeners.find( type ) != listeners.cend() ;
   }
 
-  bool hasEventListener( const TKey& type, const EventListener<TEvent>& listener ) {
+  bool hasEventListener( const TKey& type, const EventListener<TEvent>& listener ) const {
 
     auto typeListeners = listeners.find( type );
     if( typeListeners  == listeners.end() ) {
@@ -79,7 +79,7 @@ public:
     }
   }
   
-  void dispatchEvent( const TEvent& event ) {
+  void dispatchEvent( const TEvent& event ) const {
 
     auto typeListeners = listeners.find( event.type );
 
@@ -91,7 +91,7 @@ public:
 
   }
 
-  void dispatchEvent( TEvent&& event ) {
+  void dispatchEvent( TEvent&& event ) const {
     dispatchEvent( std::forward<TEvent>( event ) );
   }
 
