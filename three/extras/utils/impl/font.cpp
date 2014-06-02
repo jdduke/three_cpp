@@ -21,13 +21,13 @@ inline std::vector<unsigned char> load( const std::string& file ) {
   if (!fp) return std::vector<unsigned char>();
 
   fseek( fp, 0, SEEK_END );
-  int size = ftell( fp );
+  long int size = ftell( fp );
   fseek( fp, 0, SEEK_SET );
 
   std::vector<unsigned char> buffer( size );
   
   result = fread( buffer.data(), 1, size, fp );
-  if (result != size) {
+  if ((long int)result != size) {
     fputs ("Reading error", stderr); exit (1);
   }
   
