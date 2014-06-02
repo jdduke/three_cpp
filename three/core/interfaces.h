@@ -11,7 +11,7 @@ namespace three {
 class IFog {
 public:
   typedef std::shared_ptr<IFog> Ptr;
-  virtual enums::FogType type() const = 0;
+  virtual THREE::FogType type() const = 0;
   virtual Ptr clone() const = 0;
   virtual ~IFog() { }
 };

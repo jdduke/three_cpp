@@ -93,17 +93,17 @@ void lines_cubes( GLWindow& window, GLRenderer& renderer ) {
   auto m1 = LineBasicMaterial::create( Material::Parameters()
                                                    .add( "color", c1 )
                                                    .add( "opacity", 0.5f )
-                                                   .add( "blending", enums::AdditiveBlending )
+                                                   .add( "blending", THREE::AdditiveBlending )
                                                    .add( "transparent", true ) );
   auto m2 = LineBasicMaterial::create( Material::Parameters()
                                                    .add( "color", c2 )
                                                    .add( "opacity", 0.5f )
-                                                   .add( "blending", enums::AdditiveBlending )
+                                                   .add( "blending", THREE::AdditiveBlending )
                                                    .add( "transparent", true ) );
   auto m3 = LineBasicMaterial::create( Material::Parameters()
                                                    .add( "color", c3 )
                                                    .add( "opacity", 0.5f )
-                                                   .add( "blending", enums::AdditiveBlending )
+                                                   .add( "blending", THREE::AdditiveBlending )
                                                    .add( "transparent", true ) );
 
   addLine( Vector3(0,0,0),     scale, geometry,  m3);
@@ -143,7 +143,7 @@ void lines_cubes( GLWindow& window, GLRenderer& renderer ) {
     camera->lookAt( scene->position() );
 
     for ( size_t i = 0; i < scene->children.size(); i++ ) {
-      if (scene->children[i]->type() == enums::Line )
+      if (scene->children[i]->type() == THREE::Line )
         scene->children[i]->rotation().y = time * ( i % 2 ? 1 : -1);
     }
 

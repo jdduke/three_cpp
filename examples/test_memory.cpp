@@ -56,7 +56,7 @@ void test_memory( GLWindow& window, GLRenderer& renderer ) {
                                             Math::random() * 64,
                                             Math::random() * 32 );
 
-    auto texture = Texture::create( TextureDesc( createImage(), enums::RGBFormat ) );
+    auto texture = Texture::create( TextureDesc( createImage(), THREE::RGBFormat ) );
     texture->needsUpdate( true );
 
     auto material = //MeshPhongMaterial::create(

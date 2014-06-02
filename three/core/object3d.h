@@ -37,7 +37,7 @@ public:
 
   virtual ~Object3D();
 
-  virtual enums::Type type() const { return enums::Object3D; }
+  virtual THREE::Type type() const { return THREE::Object3D; }
 
   virtual void visit( Visitor& v ) { }
   virtual void visit( ConstVisitor& v ) const { }

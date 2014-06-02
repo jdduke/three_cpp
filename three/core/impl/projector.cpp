@@ -167,7 +167,7 @@ struct SceneVisitor : public Visitor {
 
 //    auto rotationMatrix = p._normalMatrix.getNormalMatrix( modelMatrix );
 
-    auto isFaceMaterial = object.material->type() == enums::MeshFaceMaterial;
+    auto isFaceMaterial = object.material->type() == THREE::MeshFaceMaterial;
     auto objectMaterials = isFaceMaterial ? object.material : nullptr;
 
     for ( const auto& v : vertices ) {
@@ -253,7 +253,7 @@ struct SceneVisitor : public Visitor {
                     ( v3.positionScreen.y - v1.positionScreen.y ) *
                     ( v2.positionScreen.x - v1.positionScreen.x ) ) < 0;
 
-        if ( side == enums::DoubleSide || visible == ( side == enums::FrontSide ) ) {
+        if ( side == THREE::DoubleSide || visible == ( side == THREE::FrontSide ) ) {
 
           _face = &p._faces.next();
 
@@ -276,7 +276,7 @@ struct SceneVisitor : public Visitor {
 
       _face->normalModel.copy( face.normal );
 
-      if ( visible == false && ( side == enums::BackSide || side == enums::DoubleSide ) ) {
+      if ( visible == false && ( side == THREE::BackSide || side == THREE::DoubleSide ) ) {
 
         _face->normalModel.negate();
 
@@ -295,7 +295,7 @@ struct SceneVisitor : public Visitor {
         auto& normalModel = _face->vertexNormalsModel[ n ];
         normalModel.copy( faceVertexNormals[ n ] );
 
-        if ( visible == false && ( side == enums::BackSide || side == enums::DoubleSide ) ) {
+        if ( visible == false && ( side == THREE::BackSide || side == THREE::DoubleSide ) ) {
 
           normalModel.negate();
 
@@ -346,7 +346,7 @@ struct SceneVisitor : public Visitor {
     v1.positionScreen.copy( vertices[ 0 ] ).applyMatrix4( p._modelViewProjectionMatrix );
 
     // Handle LineStrip and LinePieces
-    auto step = object.lineType == enums::LinePieces ? 2 : 1;
+    auto step = object.lineType == THREE::LinePieces ? 2 : 1;
 
     for ( size_t v = 1, vl = vertices.size(); v < vl; v ++ ) {
 
@@ -375,7 +375,7 @@ struct SceneVisitor : public Visitor {
 
         _line.material = object.material.get();
 
-        if ( object.material->vertexColors == enums::VertexColors ) {
+        if ( object.material->vertexColors == THREE::VertexColors ) {
 
           _line.vertexColors[ 0 ].copy( object.geometry->colors[ v ] );
           _line.vertexColors[ 1 ].copy( object.geometry->colors[ v - 1 ] );
@@ -517,7 +517,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
     if ( !object.visible ) return;
 
-    if ( ( object.type() == enums::Mesh || object.type() == enums::Line ) &&
+    if ( ( object.type() == THREE::Mesh || object.type() == THREE::Line ) &&
          ( !object.frustumCulled || d._frustum.intersectsObject( object ) ) ) {
 
       auto& vector3 = d._vector3;
@@ -531,7 +531,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
       d._renderData.objects.push_back( renderable );
 
-    } else if ( object.type() == enums::Sprite || object.type() == enums::Particle ) {
+    } else if ( object.type() == THREE::Sprite || object.type() == THREE::Particle ) {
 
       auto& vector3 = d._vector3;
 
@@ -544,7 +544,7 @@ Projector::RenderData& Projector::projectGraph( Object3D& root, bool sort ) {
 
       d._renderData.sprites.push_back( renderable );
 
-    } else if ( object.type() == enums::Light ) {
+    } else if ( object.type() == THREE::Light ) {
 
       d._renderData.lights.push_back( &object );
 
@@ -611,7 +611,7 @@ Projector::RenderData& Projector::projectScene( Scene& scene, Camera& camera, bo
 
     auto& object = *renderSprite.object;
 
-    if(object.type() == enums::Particle ) {
+    if(object.type() == THREE::Particle ) {
 
       detail::SpriteVisitor visitor( d, camera );
 

@@ -7,9 +7,9 @@
 
 using namespace three;
 
-auto eulerZero = Euler( 0, 0, 0, enums::EulerRotationOrder::XYZ );
-auto eulerAxyz = Euler( 1, 0, 0, enums::EulerRotationOrder::XYZ );
-auto eulerAzyx = Euler( 0, 1, 0, enums::EulerRotationOrder::ZYX );
+auto eulerZero = Euler( 0, 0, 0, THREE::EulerRotationOrder::XYZ );
+auto eulerAxyz = Euler( 1, 0, 0, THREE::EulerRotationOrder::XYZ );
+auto eulerAzyx = Euler( 0, 1, 0, THREE::EulerRotationOrder::ZYX );
 
 TEST(math_euler_test, constructor_equals) {
   auto a = Euler();
@@ -44,7 +44,7 @@ TEST(math_euler_test, clone_copy_equals) {
 TEST(math_euler_test, set) {
   auto a = Euler();
 
-  a.set( 0, 1, 0, enums::EulerRotationOrder::ZYX );
+  a.set( 0, 1, 0, THREE::EulerRotationOrder::ZYX );
   EXPECT_TRUE( a.equals( eulerAzyx ) );
   EXPECT_FALSE( a.equals( eulerAxyz ) );
   EXPECT_FALSE( a.equals( eulerZero ) );
@@ -78,11 +78,11 @@ TEST(math_euler_test, reorder) {
   for( auto v : testValues ) {
     auto q = Quaternion().setFromEuler( v );
 
-    v.reorder( enums::EulerRotationOrder::YZX );
+    v.reorder( THREE::EulerRotationOrder::YZX );
     auto q2 = Quaternion().setFromEuler( v );
     EXPECT_TRUE( q.equals( q2 ) );
 
-    v.reorder( enums::EulerRotationOrder::ZXY );
+    v.reorder( THREE::EulerRotationOrder::ZXY );
     auto q3 = Quaternion().setFromEuler( v );
     EXPECT_TRUE( q.equals( q3 ) );
   }

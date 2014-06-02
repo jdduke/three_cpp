@@ -81,18 +81,18 @@ void shader_lava( GLWindow& window, GLRenderer& renderer ) {
 
   auto texture1 = ImageUtils::loadTexture( threeDataPath("textures/lava/cloud.png") );
   auto texture2 = ImageUtils::loadTexture( threeDataPath("textures/lava/lavatile.jpg") );
-  texture1->wrapS = texture1->wrapT = enums::RepeatWrapping;
-  texture2->wrapS = texture2->wrapT = enums::RepeatWrapping;
+  texture1->wrapS = texture1->wrapT = THREE::RepeatWrapping;
+  texture2->wrapS = texture2->wrapT = THREE::RepeatWrapping;
 
   auto material = ShaderMaterial::create(
     vertexShader,
     fragmentShader,
-    Uniforms().add("fogDensity", Uniform( enums::f, .45f ))
-              .add("fogColor",   Uniform( enums::v3, Vector3(0, 0, 0)))
-              .add("time",       Uniform( enums::f, time ))
-              .add("uvScale",    Uniform( enums::v2, Vector2( 3.f, 1.f )))
-              .add("texture1",   Uniform( enums::t, texture1.get()))
-              .add("texture2",   Uniform( enums::t, texture2.get()))
+    Uniforms().add("fogDensity", Uniform( THREE::f, .45f ))
+              .add("fogColor",   Uniform( THREE::v3, Vector3(0, 0, 0)))
+              .add("time",       Uniform( THREE::f, time ))
+              .add("uvScale",    Uniform( THREE::v2, Vector2( 3.f, 1.f )))
+              .add("texture1",   Uniform( THREE::t, texture1.get()))
+              .add("texture2",   Uniform( THREE::t, texture2.get()))
   );
 
   // Geometries

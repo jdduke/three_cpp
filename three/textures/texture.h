@@ -28,13 +28,13 @@ struct Image {
 
 struct TextureDesc {
   explicit TextureDesc( Image image,
-                        enums::PixelFormat format = enums::RGBAFormat,
-                        enums::Mapping mapping    = enums::UVMapping,
-                        enums::Wrapping wrapS     = enums::ClampToEdgeWrapping,
-                        enums::Wrapping wrapT     = enums::ClampToEdgeWrapping,
-                        enums::Filter magFilter   = enums::LinearFilter,
-                        enums::Filter minFilter   = enums::LinearMipMapLinearFilter,
-                        enums::DataType dataType  = enums::UnsignedByteType,
+                        THREE::PixelFormat format = THREE::RGBAFormat,
+                        THREE::Mapping mapping    = THREE::UVMapping,
+                        THREE::Wrapping wrapS     = THREE::ClampToEdgeWrapping,
+                        THREE::Wrapping wrapT     = THREE::ClampToEdgeWrapping,
+                        THREE::Filter magFilter   = THREE::LinearFilter,
+                        THREE::Filter minFilter   = THREE::LinearMipMapLinearFilter,
+                        THREE::DataType dataType  = THREE::UnsignedByteType,
                         float anisotropy          = 1 )
     : image( std::move( image ) ),
       mapping( mapping ),
@@ -47,11 +47,11 @@ struct TextureDesc {
       anisotropy( anisotropy ) { }
 
   Image image;
-  enums::Mapping mapping;
-  enums::Wrapping wrapS, wrapT;
-  enums::Filter magFilter, minFilter;
-  enums::PixelFormat format;
-  enums::DataType dataType;
+  THREE::Mapping mapping;
+  THREE::Wrapping wrapS, wrapT;
+  THREE::Filter magFilter, minFilter;
+  THREE::PixelFormat format;
+  THREE::DataType dataType;
   float anisotropy;
 };
 
@@ -75,15 +75,15 @@ public:
 
   std::vector<Image> image;
 
-  enums::Mapping mapping;
+  THREE::Mapping mapping;
 
-  enums::Wrapping wrapS, wrapT;
+  THREE::Wrapping wrapS, wrapT;
 
-  enums::Filter magFilter, minFilter;
+  THREE::Filter magFilter, minFilter;
 
-  enums::PixelFormat format;
+  THREE::PixelFormat format;
 
-  enums::DataType dataType;
+  THREE::DataType dataType;
 
   float anisotropy;
 
@@ -96,9 +96,9 @@ public:
 
   std::function<void( void )> onUpdate;
 
-  virtual enums::TextureType type() const {
+  virtual THREE::TextureType type() const {
 
-    return enums::Texture;
+    return THREE::Texture;
 
   }
 

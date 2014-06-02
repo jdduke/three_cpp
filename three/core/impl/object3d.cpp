@@ -432,7 +432,7 @@ void Object3D::__removeObject( const Ptr& object ) { }
 void Object3D::__clone( Ptr& cloned, bool recursive ) const {
 
   if ( !cloned ) {
-    THREE_ASSERT( type() == enums::Object3D );
+    THREE_ASSERT( type() == THREE::Object3D );
     cloned = create();
   }
 

@@ -132,7 +132,7 @@ Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
 
   auto order = euler.order();
 
-  if ( order == enums::EulerRotationOrder::XYZ ) {
+  if ( order == THREE::EulerRotationOrder::XYZ ) {
 
     auto ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -148,7 +148,7 @@ Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
     te[6] = be + af * d;
     te[10] = a * c;
 
-  } else if ( order == enums::EulerRotationOrder::YXZ ) {
+  } else if ( order == THREE::EulerRotationOrder::YXZ ) {
 
     auto ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -164,7 +164,7 @@ Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
     te[6] = df + ce * b;
     te[10] = a * c;
 
-  } else if ( order == enums::EulerRotationOrder::ZXY ) {
+  } else if ( order == THREE::EulerRotationOrder::ZXY ) {
 
     auto ce = c * e, cf = c * f, de = d * e, df = d * f;
 
@@ -180,7 +180,7 @@ Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
     te[6] = b;
     te[10] = a * c;
 
-  } else if ( order == enums::EulerRotationOrder::ZYX ) {
+  } else if ( order == THREE::EulerRotationOrder::ZYX ) {
 
     auto ae = a * e, af = a * f, be = b * e, bf = b * f;
 
@@ -196,7 +196,7 @@ Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
     te[6] = b * c;
     te[10] = a * c;
 
-  } else if ( order == enums::EulerRotationOrder::YZX ) {
+  } else if ( order == THREE::EulerRotationOrder::YZX ) {
 
     auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 
@@ -212,7 +212,7 @@ Matrix4& Matrix4::makeRotationFromEuler( const Euler& euler ) {
     te[6] = ad * f + bc;
     te[10] = ac - bd * f;
 
-  } else if ( order == enums::EulerRotationOrder::XZY ) {
+  } else if ( order == THREE::EulerRotationOrder::XZY ) {
 
     auto ac = a * c, ad = a * d, bc = b * c, bd = b * d;
 

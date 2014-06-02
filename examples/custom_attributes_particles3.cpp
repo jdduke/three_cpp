@@ -53,15 +53,15 @@ void custom_attributes_particles3( GLWindow& window, GLRenderer& renderer ) {
   auto scene = Scene::create();
 
   auto texture = ImageUtils::loadTexture( threeDataPath( "textures/sprites/ball.png" ) );
-  texture->wrapS = texture->wrapT = enums::RepeatWrapping;
+  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
 
   Attributes attributes;
-  attributes[ "size" ] = Attribute( enums::f );
-  attributes[ "ca" ]   = Attribute( enums::c );
+  attributes[ "size" ] = Attribute( THREE::f );
+  attributes[ "ca" ]   = Attribute( THREE::c );
 
   Uniforms uniforms;
-  uniforms[ "color" ]      = Uniform( enums::c, Color( 0xffffff ) );
-  uniforms[ "texture" ]    = Uniform( enums::t, texture.get() );
+  uniforms[ "color" ]      = Uniform( THREE::c, Color( 0xffffff ) );
+  uniforms[ "texture" ]    = Uniform( THREE::t, texture.get() );
 
   auto shaderMaterial = ShaderMaterial::create(
     vertexShader,

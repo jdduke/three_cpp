@@ -60,10 +60,12 @@ public:
 
   void removeEventListener( const TKey& type ) {
     auto it = listeners.find( type );
+
     if(it != listeners.end()) {
       it->second.clear();
       listeners.erase(it);
     }
+
   }
 
   void removeEventListener( const TKey& type, const EventListener<TEvent>& listener ) {
@@ -72,11 +74,15 @@ public:
     auto it = std::find(typeListeners.cbegin(), typeListeners.cend(), listener);
     
     if( it != typeListeners.cend() ) {
+
       typeListeners.erase( it );
+
       if( typeListeners.empty() ){
         removeEventListener( type );
       }
+
     }
+
   }
   
   void dispatchEvent( const TEvent& event ) const {
@@ -84,9 +90,11 @@ public:
     auto typeListeners = listeners.find( event.type );
 
     if(typeListeners != listeners.cend()) {
+
       for ( const auto& listener : typeListeners->second ) {
         listener( event );
       }
+
     }
 
   }
@@ -110,16 +118,18 @@ public:
     event.target = this;
     
     if(typeListeners != listeners.cend()) {
+
       for ( const auto& listener : typeListeners->second ) {
         listener( event );
       }
+
     }
     
   }
 
   void dispatchEvent( const Event& event ) {
-      auto ev = std::move(event);
-      dispatchEvent(ev);
+    auto ev = std::move(event);
+    dispatchEvent(ev);
   }
   
   void dispatchEvent( const EventType& type ) {

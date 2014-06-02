@@ -62,7 +62,7 @@ struct NumericalSort {
 
 struct ProgramParameters {
   bool map, envMap, lightMap, bumpMap, normalMap, specularMap;
-  enums::Colors vertexColors;
+  THREE::Colors vertexColors;
   IFog* fog;
   bool useFog;
   bool fogExp;
@@ -82,7 +82,7 @@ struct ProgramParameters {
   int maxHemiLights;
   int maxShadows;
   bool shadowMapEnabled;
-  enums::ShadowTypes shadowMapType;
+  THREE::ShadowTypes shadowMapType;
   bool shadowMapDebug;
   bool shadowMapCascade;
 
@@ -115,8 +115,8 @@ GLRenderer::GLRenderer( const RendererParameters& parameters, const GLInterface&
     physicallyBasedShading( false ),
     shadowMapEnabled( false ),
     shadowMapAutoUpdate( true ),
-    shadowMapType( enums::PCFShadowMap ),
-    shadowMapCullFrontFace( enums::CullFaceFront ),
+    shadowMapType( THREE::PCFShadowMap ),
+    shadowMapCullFrontFace( THREE::CullFaceFront ),
     shadowMapDebug( false ),
     shadowMapCascade( false ),
     maxMorphTargets( 8 ),
@@ -167,11 +167,11 @@ GLRenderer::GLRenderer( const RendererParameters& parameters, const GLInterface&
 /*
 // default plugins (order is important)
 
-shadowMapPlugin = new enums::ShadowMapPlugin();
+shadowMapPlugin = new THREE::ShadowMapPlugin();
 addPrePlugin( shadowMapPlugin );
 
-addPostPlugin( new enums::SpritePlugin() );
-addPostPlugin( new enums::LensFlarePlugin() );
+addPostPlugin( new THREE::SpritePlugin() );
+addPostPlugin( new THREE::LensFlarePlugin() );
 */
 
 void GLRenderer::initialize() {
@@ -192,7 +192,7 @@ void GLRenderer::initialize() {
   _supportsVertexTextures = ( _maxVertexTextures > 0 );
   _supportsBoneTextures = _supportsVertexTextures && _glExtensionTextureFloat;
 
-  console().log() << "enums::GLRenderer initialized";
+  console().log() << "THREE::GLRenderer initialized";
 
 }
 
@@ -207,15 +207,15 @@ void GLRenderer::initGL() {
   _glExtensionTextureFilterAnisotropic = glewIsExtensionSupported( "EXT_texture_filter_anisotropic" ) != 0 ? true : false;
 
   if ( ! _glExtensionTextureFloat ) {
-    console().log( "enums::GLRenderer: Float textures not supported." );
+    console().log( "THREE::GLRenderer: Float textures not supported." );
   }
 
   if ( ! _glExtensionStandardDerivatives ) {
-    console().log( "enums::GLRenderer: Standard derivatives not supported." );
+    console().log( "THREE::GLRenderer: Standard derivatives not supported." );
   }
 
   if ( ! _glExtensionTextureFilterAnisotropic ) {
-    console().log( "enums::GLRenderer: Anisotropic texture filtering not supported." );
+    console().log( "THREE::GLRenderer: Anisotropic texture filtering not supported." );
   }
 
   */
@@ -333,15 +333,15 @@ void GLRenderer::addPrePlugin( const IPlugin::Ptr& plugin ) {
 
 //   auto& geometry = *object.geometry;
 
-//   if ( object.type() == enums::Mesh ) {
+//   if ( object.type() == THREE::Mesh ) {
 //     for ( auto& geometryGroup : geometry.geometryGroups ) {
 //       deleteMeshBuffers( *geometryGroup.second );
 //     }
-//   } else if ( object.type() == enums::Ribbon ) {
+//   } else if ( object.type() == THREE::Ribbon ) {
 //     deleteRibbonBuffers( geometry );
-//   } else if ( object.type() == enums::Line ) {
+//   } else if ( object.type() == THREE::Line ) {
 //     deleteLineBuffers( geometry );
-//   } else if ( object.type() == enums::ParticleSystem ) {
+//   } else if ( object.type() == THREE::ParticleSystem ) {
 //     deleteParticleBuffers( geometry );
 //   }
 
@@ -488,7 +488,7 @@ void GLRenderer::deallocateGeometry( Geometry& geometry ) {
 
   geometry.__glInit = false;
 
-  if ( geometry.type() == enums::BufferGeometry ) {
+  if ( geometry.type() == THREE::BufferGeometry ) {
 
     auto& attributes = geometry.attributes;
 
@@ -640,10 +640,10 @@ void GLRenderer::initCustomAttributes( Geometry& geometry, Object3D& object ) {
 
         auto size = 1;      // "f" and "i"
 
-        if      ( attribute.type == enums::v2 ) size = 2;
-        else if ( attribute.type == enums::v3 ) size = 3;
-        else if ( attribute.type == enums::v4 ) size = 4;
-        else if ( attribute.type == enums::c  ) size = 3;
+        if      ( attribute.type == THREE::v2 ) size = 2;
+        else if ( attribute.type == THREE::v3 ) size = 3;
+        else if ( attribute.type == THREE::v4 ) size = 4;
+        else if ( attribute.type == THREE::c  ) size = 3;
 
         attribute.size = size;
 
@@ -798,10 +798,10 @@ void GLRenderer::initMeshBuffers( GeometryGroup& geometryGroup, Mesh& object ) {
 
         auto size = 1;      // "f" and "i"
 
-        if ( attribute->type == enums::v2 ) size = 2;
-        else if ( attribute->type == enums::v3 ) size = 3;
-        else if ( attribute->type == enums::v4 ) size = 4;
-        else if ( attribute->type == enums::c ) size = 3;
+        if ( attribute->type == THREE::v2 ) size = 2;
+        else if ( attribute->type == THREE::v3 ) size = 3;
+        else if ( attribute->type == THREE::v4 ) size = 4;
+        else if ( attribute->type == THREE::c ) size = 3;
 
         attribute->size = size;
 
@@ -831,7 +831,7 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryBuffer* geome
 
   if( material ) {
 
-    if ( geometryBuffer && material->type() == enums::MeshFaceMaterial) {
+    if ( geometryBuffer && material->type() == THREE::MeshFaceMaterial) {
 
       auto geometry = object.geometry.get();
 
@@ -853,37 +853,37 @@ Material* GLRenderer::getBufferMaterial( Object3D& object, GeometryBuffer* geome
 }
 
 bool GLRenderer::materialNeedsSmoothNormals( const Material* material ) {
-  return material && material->shading == enums::SmoothShading;
+  return material && material->shading == THREE::SmoothShading;
 }
 
-enums::Shading GLRenderer::bufferGuessNormalType( const Material* material ) {
+THREE::Shading GLRenderer::bufferGuessNormalType( const Material* material ) {
 
   // only MeshBasicMaterial and MeshDepthMaterial don't need normals
 
   if ( material &&
-       (( material->type() == enums::MeshBasicMaterial && !material->envMap ) ||
-        ( material->type() == enums::MeshDepthMaterial )) ) {
-    return enums::NoShading;
+       (( material->type() == THREE::MeshBasicMaterial && !material->envMap ) ||
+        ( material->type() == THREE::MeshDepthMaterial )) ) {
+    return THREE::NoShading;
   }
 
   if ( materialNeedsSmoothNormals( material ) ) {
-    return enums::SmoothShading;
+    return THREE::SmoothShading;
   } else {
-    return enums::FlatShading;
+    return THREE::FlatShading;
   }
 
 }
 
-enums::Colors GLRenderer::bufferGuessVertexColorType( const Material* material ) {
+THREE::Colors GLRenderer::bufferGuessVertexColorType( const Material* material ) {
   if ( material ) {
     return material->vertexColors;
   }
-  return enums::NoColors;
+  return THREE::NoColors;
 }
 
 bool GLRenderer::bufferGuessUVType( const Material* material ) {
   // material must use some texture to require uvs
-  if ( material && ( material->map || material->lightMap || material->bumpMap || material->specularMap || material->type() == enums::ShaderMaterial ) ) {
+  if ( material && ( material->map || material->lightMap || material->bumpMap || material->specularMap || material->type() == THREE::ShaderMaterial ) ) {
     return true;
   }
   return false;
@@ -993,7 +993,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
       } else if ( customAttribute.size == 2 ) {
         fillFromAny<Vector2>( customAttribute.value, sortArray, customAttribute.array );
       } else if ( customAttribute.size == 3 ) {
-        if ( customAttribute.type == enums::c ) {
+        if ( customAttribute.type == THREE::c ) {
           fillFromAny<Color>( customAttribute.value, sortArray, customAttribute.array );
         } else {
           fillFromAny<Vector3>( customAttribute.value, sortArray, customAttribute.array );
@@ -1051,7 +1051,7 @@ void GLRenderer::setParticleBuffers( Geometry& geometry, int hint, Object3D& obj
         } else if ( customAttribute.size == 2 ) {
           fillFromAny<Vector2>( customAttribute.value, customAttribute.array );
         } else if ( customAttribute.size == 3 ) {
-          if ( customAttribute.type == enums::c ) {
+          if ( customAttribute.type == THREE::c ) {
             fillFromAny<Color>( customAttribute.value, customAttribute.array );
           } else {
             fillFromAny<Vector3>( customAttribute.value, customAttribute.array );
@@ -1172,7 +1172,7 @@ void GLRenderer::setLineBuffers( Geometry& geometry, int hint ) {
       } else if ( customAttribute.size == 2 ) {
         fillFromAny<Vector2>( customAttribute.value, customAttribute.array );
       } else if ( customAttribute.size == 3 ) {
-        if ( customAttribute.type == enums::c ) {
+        if ( customAttribute.type == THREE::c ) {
           fillFromAny<Color>( customAttribute.value, customAttribute.array );
         } else {
           fillFromAny<Vector3>( customAttribute.value, customAttribute.array );
@@ -1200,7 +1200,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
   const auto vertexColorType = bufferGuessVertexColorType( material );
   const auto uvType          = bufferGuessUVType( material );
 
-  const auto needsSmoothNormals = ( normalType == enums::SmoothShading );
+  const auto needsSmoothNormals = ( normalType == THREE::SmoothShading );
 
   Color c1, c2, c3, c4;
 
@@ -1452,7 +1452,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
       const auto& vertexColors = face.vertexColors;
       const auto& faceColor = face.color;
 
-      if ( face.size() == 3 && vertexColorType == enums::VertexColors ) {
+      if ( face.size() == 3 && vertexColorType == THREE::VertexColors ) {
 
         c1 = vertexColors[ 0 ];
         c2 = vertexColors[ 1 ];
@@ -1758,7 +1758,7 @@ void GLRenderer::setMeshBuffers( GeometryGroup& geometryGroup, Object3D& object,
 
     } else if ( customAttribute.size == 3 ) {
 
-      // TODO: Support colors! enums::c
+      // TODO: Support colors! THREE::c
       const auto& values = customAttribute.value.cast<std::vector<Vector3>>();
 
       if ( customAttribute.boundTo.empty() || customAttribute.boundTo == "vertices" ) {
@@ -2001,7 +2001,7 @@ void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Mate
 
   if ( object.glImmediateData.hasNormals ) {
 
-    if ( material.shading == enums::FlatShading ) {
+    if ( material.shading == THREE::FlatShading ) {
 
       auto& normalArray = object.glImmediateData.normalArray;
 
@@ -2053,7 +2053,7 @@ void GLRenderer::renderBufferImmediate( Object3D& object, Program& program, Mate
 
   }
 
-  if ( object.glImmediateData.hasColors && material.vertexColors != enums::NoColors ) {
+  if ( object.glImmediateData.hasColors && material.vertexColors != THREE::NoColors ) {
 
     _gl.BindAndBuffer( GL_ARRAY_BUFFER, object.glImmediateData.__glColorBuffer, object.glImmediateData.colorArray, GL_DYNAMIC_DRAW );
     _gl.EnableVertexAttribArray( program.attributes[AttributeKey::color()] );
@@ -2095,7 +2095,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
   // render mesh
 
-  if ( object.type() == enums::Mesh ) {
+  if ( object.type() == THREE::Mesh ) {
 
     if( geometry.attributes.contains( AttributeKey::index() ) ) {
 
@@ -2216,7 +2216,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
     // render particles
 
-  } else if ( object.type() == enums::ParticleSystem ) {
+  } else if ( object.type() == THREE::ParticleSystem ) {
 
     if ( updateBuffers ) {
 
@@ -2260,7 +2260,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
     _info.render.points += position.numItems / 3;
 
   } // ParticleSystem
-  else if ( object.type() == enums::Line ) {
+  else if ( object.type() == THREE::Line ) {
 
     if ( updateBuffers ) {
 
@@ -2297,7 +2297,7 @@ void GLRenderer::renderBufferDirect( Camera& camera, Lights& lights, IFog* fog, 
 
       const auto& position = geometry.attributes[ AttributeKey::position() ];
 
-      const auto primitives = ( static_cast<Line&>(object).lineType == enums::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
+      const auto primitives = ( static_cast<Line&>(object).lineType == THREE::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
 
       _gl.DrawArrays(primitives, 0, position.numItems / 3);
 
@@ -2474,7 +2474,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
   // render mesh
 
-  if ( object.type() == enums::Mesh ) {
+  if ( object.type() == THREE::Mesh ) {
 
     // wireframe
 
@@ -2500,9 +2500,9 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     // render lines
 
-  } else if ( object.type() == enums::Line ) {
+  } else if ( object.type() == THREE::Line ) {
 
-    const auto primitives = ( static_cast<Line&>(object).lineType == enums::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
+    const auto primitives = ( static_cast<Line&>(object).lineType == THREE::LineStrip ) ? GL_LINE_STRIP : GL_LINES;
 
     setLineWidth( material.linewidth );
 
@@ -2513,7 +2513,7 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     // render particles
 
-  } else if ( object.type() == enums::ParticleSystem ) {
+  } else if ( object.type() == THREE::ParticleSystem ) {
 
 #ifndef THREE_GLES
     // TODO(jdd): Check usage with core profile.
@@ -2757,7 +2757,7 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
     if ( object.visible ) {
 
-      if ( !( object.type() == enums::Mesh || object.type() == enums::ParticleSystem ) ||
+      if ( !( object.type() == THREE::Mesh || object.type() == THREE::ParticleSystem ) ||
            !( object.frustumCulled ) || _frustum.intersectsObject( object ) ) {
 
         setupMatrices( object, camera );
@@ -2814,22 +2814,22 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
     setDepthWrite( material.depthWrite );
     setPolygonOffset( material.polygonOffset, material.polygonOffsetFactor, material.polygonOffsetUnits );
 
-    renderObjects( scene.__glObjects, false, enums::Override, camera, lights, fog, true, &material );
-    renderObjectsImmediate( scene.__glObjectsImmediate, enums::Override, camera, lights, fog, false, &material );
+    renderObjects( scene.__glObjects, false, THREE::Override, camera, lights, fog, true, &material );
+    renderObjectsImmediate( scene.__glObjectsImmediate, THREE::Override, camera, lights, fog, false, &material );
 
   } else {
 
     // opaque pass (front-to-back order)
 
-    setBlending( enums::NoBlending );
+    setBlending( THREE::NoBlending );
 
-    renderObjects( scene.__glObjects, true, enums::Opaque, camera, lights, fog, false );
-    renderObjectsImmediate( scene.__glObjectsImmediate, enums::Opaque, camera, lights, fog, false );
+    renderObjects( scene.__glObjects, true, THREE::Opaque, camera, lights, fog, false );
+    renderObjectsImmediate( scene.__glObjectsImmediate, THREE::Opaque, camera, lights, fog, false );
 
     // transparent pass (back-to-front order)
 
-    renderObjects( scene.__glObjects, false, enums::Transparent, camera, lights, fog, true );
-    renderObjectsImmediate( scene.__glObjectsImmediate, enums::Transparent, camera, lights, fog, true );
+    renderObjects( scene.__glObjects, false, THREE::Transparent, camera, lights, fog, true );
+    renderObjectsImmediate( scene.__glObjectsImmediate, THREE::Transparent, camera, lights, fog, true );
 
   }
 
@@ -2841,8 +2841,8 @@ void GLRenderer::render( Scene& scene, Camera& camera, const GLRenderTarget::Ptr
 
   if ( renderTarget &&
        renderTarget->generateMipmaps &&
-       renderTarget->minFilter != enums::NearestFilter &&
-       renderTarget->minFilter != enums::LinearFilter ) {
+       renderTarget->minFilter != THREE::NearestFilter &&
+       renderTarget->minFilter != THREE::LinearFilter ) {
 
     updateRenderTargetMipmap( *renderTarget );
 
@@ -2874,7 +2874,7 @@ void GLRenderer::renderPlugins( std::vector<IPlugin::Ptr>& plugins, Scene& scene
 
 }
 
-void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial /*= nullptr*/ ) {
+void GLRenderer::renderObjects( RenderList& renderList, bool reverse, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial /*= nullptr*/ ) {
 
   int start, end, delta;
 
@@ -2908,7 +2908,7 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::Ren
 
       } else {
 
-        material = materialType == enums::Opaque ? glObject.opaque : glObject.transparent;
+        material = materialType == THREE::Opaque ? glObject.opaque : glObject.transparent;
 
         if ( ! material ) continue;
 
@@ -2923,7 +2923,7 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::Ren
 
       setMaterialFaces( *material );
 
-      if ( buffer.type() == enums::BufferGeometry ) {
+      if ( buffer.type() == THREE::BufferGeometry ) {
         renderBufferDirect( camera, lights, fog, *material, static_cast<BufferGeometry&>( buffer ), object );
       } else {
         renderBuffer( camera, lights, fog, *material, static_cast<GeometryGroup&>( buffer ), object );
@@ -2935,7 +2935,7 @@ void GLRenderer::renderObjects( RenderList& renderList, bool reverse, enums::Ren
 
 }
 
-void GLRenderer::renderObjectsImmediate( RenderList& renderList, enums::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial /*= nullptr*/ ) {
+void GLRenderer::renderObjectsImmediate( RenderList& renderList, THREE::RenderType materialType, Camera& camera, Lights& lights, IFog* fog, bool useBlending, Material* overrideMaterial /*= nullptr*/ ) {
 
   for ( auto& glObject : renderList ) {
 
@@ -2951,7 +2951,7 @@ void GLRenderer::renderObjectsImmediate( RenderList& renderList, enums::RenderTy
 
       } else {
 
-        material = materialType == enums::Opaque ? glObject.opaque : glObject.transparent;
+        material = materialType == THREE::Opaque ? glObject.opaque : glObject.transparent;
 
         if ( ! material ) continue;
 
@@ -3026,7 +3026,7 @@ void GLRenderer::unrollBufferMaterial( Scene::GLObject& globject ) {
 
   auto& meshMaterial = object.material;
 
-  if ( meshMaterial->type() == enums::MeshFaceMaterial ) {
+  if ( meshMaterial->type() == THREE::MeshFaceMaterial ) {
 
     const auto materialIndex = buffer.materialIndex;
 
@@ -3080,7 +3080,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry, Material& material ) {
   const auto numMorphTargets = ( int )geometry.morphTargets.size();
   const auto numMorphNormals = ( int )geometry.morphNormals.size();
 
-  const auto useFaceMaterial = material.type() == enums::MeshFaceMaterial;
+  const auto useFaceMaterial = material.type() == THREE::MeshFaceMaterial;
 
   geometry.geometryGroups.clear();
 
@@ -3117,7 +3117,7 @@ void GLRenderer::sortFacesByMaterial( Geometry& geometry, Material& material ) {
 
     }
 
-    THREE_ASSERT( face.type() == enums::Face3 );
+    THREE_ASSERT( face.type() == THREE::Face3 );
     geometryGroup->faces3.push_back( f );
 
     geometryGroup->vertices += vertices;
@@ -3199,11 +3199,11 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
     object.geometry->addEventListener( "dispose", std::bind(&GLRenderer::onGeometryDispose, this, std::placeholders::_1 ) );
       
-    if ( geometry.type() == enums::BufferGeometry ) {
+    if ( geometry.type() == THREE::BufferGeometry ) {
 
         initDirectBuffers( geometry );
 
-    } else if ( object.type() == enums::Mesh ) {
+    } else if ( object.type() == THREE::Mesh ) {
 
       if ( geometry.geometryGroups.empty() ) {
         sortFacesByMaterial( geometry, *static_cast<Mesh&>( object ).material );
@@ -3232,7 +3232,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
       }
 
-    } else if ( object.type() == enums::Line ) {
+    } else if ( object.type() == THREE::Line ) {
 
       if ( ! geometry.__glVertexBuffer ) {
 
@@ -3245,7 +3245,7 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
       }
 
-    } else if ( object.type() == enums::ParticleSystem ) {
+    } else if ( object.type() == THREE::ParticleSystem ) {
 
       if ( ! geometry.__glVertexBuffer ) {
 
@@ -3263,9 +3263,9 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
   if ( ! object.glData.__glActive ) {
 
-    if ( object.type() == enums::Mesh ) {
+    if ( object.type() == THREE::Mesh ) {
 
-      if ( geometry.type() == enums::BufferGeometry ) {
+      if ( geometry.type() == THREE::BufferGeometry ) {
 
         addBuffer( scene.__glObjects, geometry, object );
 
@@ -3279,20 +3279,20 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
 
       }
 
-    } else if ( object.type() == enums::Line ||
-                object.type() == enums::ParticleSystem ) {
+    } else if ( object.type() == THREE::Line ||
+                object.type() == THREE::ParticleSystem ) {
 
       addBuffer( scene.__glObjects, geometry, object );
 
-    } else if ( object.type() == enums::ImmediateRenderObject || object.immediateRenderCallback ) {
+    } else if ( object.type() == THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
 
       addBufferImmediate( scene.__glObjectsImmediate, object );
 
-    } else if ( object.type() == enums::Sprite ) {
+    } else if ( object.type() == THREE::Sprite ) {
 
       scene.__glSprites.push_back( &object );
 
-    } else if ( object.type() == enums::LensFlare ) {
+    } else if ( object.type() == THREE::LensFlare ) {
 
       scene.__glFlares.push_back( &object );
 
@@ -3316,10 +3316,10 @@ void GLRenderer::updateObject( Object3D& object ) {
   Material* material = nullptr;
   //GeometryGroup* geometryGroup = nullptr;
 
-  if ( geometry.type() == enums::BufferGeometry ) {
+  if ( geometry.type() == THREE::BufferGeometry ) {
     setDirectBuffers( geometry, GL_DYNAMIC_DRAW, !geometry.dynamic );
   }
-  else if ( object.type() == enums::Mesh ) {
+  else if ( object.type() == THREE::Mesh ) {
 
     // check all geometry groups
 
@@ -3357,7 +3357,7 @@ void GLRenderer::updateObject( Object3D& object ) {
     if( material->attributes.size() ) clearCustomAttributes( *material );
 
 
-  } else if ( object.type() == enums::Line ) {
+  } else if ( object.type() == THREE::Line ) {
 
     auto material = getBufferMaterial( object, &geometry );
 
@@ -3375,7 +3375,7 @@ void GLRenderer::updateObject( Object3D& object ) {
 
     clearCustomAttributes( *material );
 
-  } else if ( object.type() == enums::ParticleSystem ) {
+  } else if ( object.type() == THREE::ParticleSystem ) {
 
     auto material = getBufferMaterial( object, &geometry );
 
@@ -3420,15 +3420,15 @@ void GLRenderer::clearCustomAttributes( Material& material ) {
 
 void GLRenderer::removeObject( Object3D& object, Scene& scene ) {
 
-  if ( object.type() == enums::Mesh  ||
-       object.type() == enums::ParticleSystem ||
-       object.type() == enums::Line ) {
+  if ( object.type() == THREE::Mesh  ||
+       object.type() == THREE::ParticleSystem ||
+       object.type() == THREE::Line ) {
     removeInstances( scene.__glObjects, object );
-  } else if ( object.type() == enums::Sprite ) {
+  } else if ( object.type() == THREE::Sprite ) {
     removeInstancesDirect( scene.__glSprites, object );
-  } else if ( object.type() == enums::LensFlare ) {
+  } else if ( object.type() == THREE::LensFlare ) {
     removeInstancesDirect( scene.__glFlares, object );
-  } else if ( object.type() == enums::ImmediateRenderObject || object.immediateRenderCallback ) {
+  } else if ( object.type() == THREE::ImmediateRenderObject || object.immediateRenderCallback ) {
     removeInstances( scene.__glObjectsImmediate, object );
   }
 
@@ -3465,31 +3465,31 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   std::string shaderID;
 
   switch ( material.type() ) {
-  case enums::MeshDepthMaterial:
+  case THREE::MeshDepthMaterial:
     setMaterialShaders( material, ShaderLib::depth() );
     break;
-  case enums::MeshNormalMaterial:
+  case THREE::MeshNormalMaterial:
     setMaterialShaders( material, ShaderLib::normal() );
     break;
-  case enums::MeshBasicMaterial:
+  case THREE::MeshBasicMaterial:
     setMaterialShaders( material, ShaderLib::basic() );
     break;
-  case enums::MeshLambertMaterial:
+  case THREE::MeshLambertMaterial:
     setMaterialShaders( material, ShaderLib::lambert() );
     break;
-  case enums::MeshPhongMaterial:
+  case THREE::MeshPhongMaterial:
     setMaterialShaders( material, ShaderLib::phong() );
     break;
-  case enums::LineBasicMaterial:
+  case THREE::LineBasicMaterial:
     setMaterialShaders( material, ShaderLib::basic() );
     break;
-  case enums::LineDashedMaterial:
+  case THREE::LineDashedMaterial:
     setMaterialShaders( material, ShaderLib::dashed() );
     break;
-  case enums::ParticleSystemMaterial:
+  case THREE::ParticleSystemMaterial:
     setMaterialShaders( material, ShaderLib::particleBasic() );
     break;
-  case enums::ShaderMaterial:
+  case THREE::ShaderMaterial:
     break;
   default:
     console().warn( "GLRenderer::initMaterial: Unknown material type" );
@@ -3512,7 +3512,7 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   parameters.vertexColors = material.vertexColors;
   parameters.fog = fog;
   parameters.useFog = !!material.fog;
-  parameters.fogExp = fog ? fog->type() == enums::FogExp2 : false;
+  parameters.fogExp = fog ? fog->type() == THREE::FogExp2 : false;
   parameters.sizeAttenuation = material.sizeAttenuation;
   parameters.skinning = material.skinning;
   parameters.maxBones = maxBones;
@@ -3534,8 +3534,8 @@ void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Ob
   parameters.metal = material.metal;
   parameters.perPixel = material.perPixel;
   parameters.wrapAround = material.wrapAround;
-  parameters.doubleSided = material.side == enums::DoubleSide;
-  parameters.flipSided = material.side == enums::BackSide;
+  parameters.doubleSided = material.side == THREE::DoubleSide;
+  parameters.flipSided = material.side == THREE::BackSide;
 
   material.program = buildProgram( shaderID,
                                    material.fragmentShader,
@@ -3705,8 +3705,8 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
       refreshUniformsFog( m_uniforms, *fog );
     }
 
-    if ( material.type() == enums::MeshPhongMaterial ||
-         material.type() == enums::MeshLambertMaterial ||
+    if ( material.type() == THREE::MeshPhongMaterial ||
+         material.type() == THREE::MeshLambertMaterial ||
          material.lights ) {
 
       if ( _lightsNeedUpdate ) {
@@ -3717,30 +3717,30 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
       refreshUniformsLights( m_uniforms, _lights );
     }
 
-    if ( material.type() == enums::MeshBasicMaterial ||
-         material.type() == enums::MeshLambertMaterial ||
-         material.type() == enums::MeshPhongMaterial ) {
+    if ( material.type() == THREE::MeshBasicMaterial ||
+         material.type() == THREE::MeshLambertMaterial ||
+         material.type() == THREE::MeshPhongMaterial ) {
       refreshUniformsCommon( m_uniforms, material );
     }
 
     // refresh single material specific uniforms
 
-    if ( material.type() == enums::LineBasicMaterial ) {
+    if ( material.type() == THREE::LineBasicMaterial ) {
       refreshUniformsLine( m_uniforms, material );
-    } else if ( material.type() == enums::LineDashedMaterial ) {
+    } else if ( material.type() == THREE::LineDashedMaterial ) {
       refreshUniformsLine( m_uniforms, material );
       refreshUniformsDash( m_uniforms, material );
-    } else if ( material.type() == enums::ParticleSystemMaterial ) {
+    } else if ( material.type() == THREE::ParticleSystemMaterial ) {
       refreshUniformsParticle( m_uniforms, material );
-    } else if ( material.type() == enums::MeshPhongMaterial ) {
+    } else if ( material.type() == THREE::MeshPhongMaterial ) {
       refreshUniformsPhong( m_uniforms, material );
-    } else if ( material.type() == enums::MeshLambertMaterial ) {
+    } else if ( material.type() == THREE::MeshLambertMaterial ) {
       refreshUniformsLambert( m_uniforms, material );
-    } else if ( material.type() == enums::MeshDepthMaterial ) {
+    } else if ( material.type() == THREE::MeshDepthMaterial ) {
       m_uniforms[UniformKey::mNear()].value = camera.near;
       m_uniforms[UniformKey::mFar()].value = camera.far;
       m_uniforms[UniformKey::opacity()].value = material.opacity;
-    } else if ( material.type() == enums::MeshNormalMaterial ) {
+    } else if ( material.type() == THREE::MeshNormalMaterial ) {
       m_uniforms[UniformKey::opacity()].value = material.opacity;
     }
 
@@ -3750,14 +3750,14 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
     // load common uniforms
 
-    const bool warnOnNotFound = material.type() == enums::ShaderMaterial;
+    const bool warnOnNotFound = material.type() == THREE::ShaderMaterial;
     loadUniformsGeneric( program, material.uniformsList, warnOnNotFound );
 
     // load material specific uniforms
     // (shader material also gets them for the sake of genericity)
 
-    if ( material.type() == enums::ShaderMaterial ||
-         material.type() == enums::MeshPhongMaterial ||
+    if ( material.type() == THREE::ShaderMaterial ||
+         material.type() == THREE::MeshPhongMaterial ||
          material.envMap ) {
 
       const auto cameraPositionLocation = uniformLocation( p_uniforms, "cameraPosition" );
@@ -3768,9 +3768,9 @@ Program& GLRenderer::setProgram( Camera& camera, Lights& lights, IFog* fog, Mate
 
     }
 
-    if ( material.type() == enums::MeshPhongMaterial ||
-         material.type() == enums::MeshLambertMaterial ||
-         material.type() == enums::ShaderMaterial ||
+    if ( material.type() == THREE::MeshPhongMaterial ||
+         material.type() == THREE::MeshLambertMaterial ||
+         material.type() == THREE::ShaderMaterial ||
          material.skinning ) {
 
       const auto viewMatrixLocation = uniformLocation( p_uniforms, "viewMatrix" );
@@ -3845,7 +3845,7 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
   }
 
   uniforms[UniformKey::envMap()].value     = material.envMap.get();
-  uniforms[UniformKey::flipEnvMap()].value = ( material.envMap && material.envMap->type() == enums::GLRenderTargetCube ) ? 1 : -1;
+  uniforms[UniformKey::flipEnvMap()].value = ( material.envMap && material.envMap->type() == THREE::GLRenderTargetCube ) ? 1 : -1;
 
   if ( gammaInput ) {
     //uniforms.reflectivity.value = material.reflectivity * material.reflectivity;
@@ -3856,7 +3856,7 @@ void GLRenderer::refreshUniformsCommon( Uniforms& uniforms, Material& material )
 
   uniforms[UniformKey::refractionRatio()].value = material.refractionRatio;
   uniforms[UniformKey::combine()].value         = ( int )material.combine;
-  uniforms[UniformKey::useRefract()].value      = material.envMap && material.envMap->mapping == enums::CubeRefractionMapping;
+  uniforms[UniformKey::useRefract()].value      = material.envMap && material.envMap->mapping == THREE::CubeRefractionMapping;
 
 }
 
@@ -3888,14 +3888,14 @@ void GLRenderer::refreshUniformsParticle( Uniforms& uniforms, Material& material
 
 void GLRenderer::refreshUniformsFog( Uniforms& uniforms, IFog& fog ) {
 
-  if ( fog.type() == enums::Fog ) {
+  if ( fog.type() == THREE::Fog ) {
 
     auto& f = static_cast<Fog&>(fog);
     uniforms[UniformKey::fogColor()].value = f.color;
     uniforms[UniformKey::fogNear()].value  = f.near;
     uniforms[UniformKey::fogFar()].value   = f.far;
 
-  } else if ( fog.type() == enums::FogExp2 ) {
+  } else if ( fog.type() == THREE::FogExp2 ) {
 
     auto& f = static_cast<FogExp2&>(fog);
     uniforms[UniformKey::fogColor()].value   = f.color;
@@ -3982,7 +3982,7 @@ void GLRenderer::refreshUniformsShadow( Uniforms& uniforms, Lights& lights ) {
 
       if ( ! light.castShadow ) continue;
 
-      if ( light.type() == enums::SpotLight || ( light.type() == enums::DirectionalLight && ! light.shadowCascade ) ) {
+      if ( light.type() == THREE::SpotLight || ( light.type() == THREE::DirectionalLight && ! light.shadowCascade ) ) {
 
         uniforms[UniformKey::shadowMap()].value[ j ]   = light.shadowMap;
         uniforms[UniformKey::shadowMapSize()].value[ j ] = light.shadowMapSize;
@@ -4047,7 +4047,7 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
     THREE_REVIEW("EA: What about the rest of the uniforms?")
 
-    if ( uniform.type == enums::t ) { // single enums::Texture (2d or cube)
+    if ( uniform.type == THREE::t ) { // single THREE::Texture (2d or cube)
 
       const auto& texture = uniform.value.cast<Texture*>();
       const auto  textureUnit = getTextureUnit();
@@ -4058,13 +4058,13 @@ void GLRenderer::loadUniformsGeneric( Program& program, UniformsList& uniforms, 
 
       if ( texture->image.size() == 6 ) {
         setCubeTexture( *texture, textureUnit );
-      } else if ( texture->type() == enums::GLRenderTargetCube ) {
+      } else if ( texture->type() == THREE::GLRenderTargetCube ) {
         setCubeTextureDynamic( *texture, textureUnit );
       } else {
         setTexture( *texture, textureUnit );
       }
 
-    } else if ( uniform.type == enums::tv ) {
+    } else if ( uniform.type == THREE::tv ) {
 
       const auto& textures = uniform.value.cast<std::vector<Texture*>>();
 
@@ -4152,7 +4152,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
     const auto intensity = light.intensity;
     const auto distance  = light.distance;
 
-    if ( light.type() == enums::AmbientLight ) {
+    if ( light.type() == THREE::AmbientLight ) {
 
       if ( ! light.visible ) continue;
 
@@ -4170,7 +4170,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
       }
 
-    } else if ( light.type() == enums::DirectionalLight ) {
+    } else if ( light.type() == THREE::DirectionalLight ) {
 
       dirCount += 1;
 
@@ -4207,7 +4207,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
       dirLength += 1;
 
-    } else if ( light.type() == enums::PointLight ) {
+    } else if ( light.type() == THREE::PointLight ) {
 
       pointCount += 1;
 
@@ -4239,7 +4239,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
       pointLength += 1;
 
-    } else if ( light.type() == enums::SpotLight ) {
+    } else if ( light.type() == THREE::SpotLight ) {
 
       spotCount += 1;
 
@@ -4285,7 +4285,7 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
       spotLength += 1;
 
-    } else if ( light.type() == enums::HemisphereLight ) {
+    } else if ( light.type() == THREE::HemisphereLight ) {
 
       hemiCount += 1;
 
@@ -4350,23 +4350,23 @@ void GLRenderer::setupLights( Program& program, Lights& lights ) {
 
 // GL state setting
 
-void GLRenderer::setFaceCulling( enums::CullFace cullFace, enums::FrontFaceDirection frontFaceDirection ) {
+void GLRenderer::setFaceCulling( THREE::CullFace cullFace, THREE::FrontFaceDirection frontFaceDirection ) {
 
-  if ( cullFace == enums::CullFaceNone ) {
+  if ( cullFace == THREE::CullFaceNone ) {
 
     _gl.Disable( GL_CULL_FACE );
 
   } else {
 
-    if ( frontFaceDirection == enums::FrontFaceDirectionCW ) {
+    if ( frontFaceDirection == THREE::FrontFaceDirectionCW ) {
       _gl.FrontFace( GL_CW );
     } else {
       _gl.FrontFace( GL_CCW );
     }
 
-    if ( cullFace == enums::CullFaceBack ) {
+    if ( cullFace == THREE::CullFaceBack ) {
       _gl.CullFace( GL_BACK );
-    } else if ( cullFace == enums::CullFaceFront ) {
+    } else if ( cullFace == THREE::CullFaceFront ) {
       _gl.CullFace( GL_FRONT );
     } else {
       _gl.CullFace( GL_FRONT_AND_BACK );
@@ -4380,8 +4380,8 @@ void GLRenderer::setFaceCulling( enums::CullFace cullFace, enums::FrontFaceDirec
 
 void GLRenderer::setMaterialFaces( Material& material ) {
 
-  auto doubleSided = toInt( material.side == enums::DoubleSide );
-  auto flipSided = toInt( material.side == enums::BackSide );
+  auto doubleSided = toInt( material.side == THREE::DoubleSide );
+  auto flipSided = toInt( material.side == THREE::BackSide );
 
   if ( _oldDoubleSided != doubleSided ) {
 
@@ -4465,38 +4465,38 @@ void GLRenderer::setPolygonOffset( bool polygonoffset, float factor, float units
 
 }
 
-void GLRenderer::setBlending( enums::Blending blending,
-                              enums::BlendEquation blendEquation /*= enums::AddEquation*/,
-                              enums::BlendFactor blendSrc /*= enums::OneFactor*/,
-                              enums::BlendFactor blendDst /*= enums::OneFactor*/ ) {
+void GLRenderer::setBlending( THREE::Blending blending,
+                              THREE::BlendEquation blendEquation /*= THREE::AddEquation*/,
+                              THREE::BlendFactor blendSrc /*= THREE::OneFactor*/,
+                              THREE::BlendFactor blendDst /*= THREE::OneFactor*/ ) {
 
   if ( blending != _oldBlending ) {
 
-    if ( blending == enums::NoBlending ) {
+    if ( blending == THREE::NoBlending ) {
 
       _gl.Disable( GL_BLEND );
 
-    } else if ( blending == enums::AdditiveBlending ) {
+    } else if ( blending == THREE::AdditiveBlending ) {
 
       _gl.Enable( GL_BLEND );
       _gl.BlendEquation( GL_FUNC_ADD );
       _gl.BlendFunc( GL_SRC_ALPHA, GL_ONE );
 
-    } else if ( blending == enums::SubtractiveBlending ) {
+    } else if ( blending == THREE::SubtractiveBlending ) {
 
       // TODO: Find blendFuncSeparate() combination
       _gl.Enable( GL_BLEND );
       _gl.BlendEquation( GL_FUNC_ADD );
       _gl.BlendFunc( GL_ZERO, GL_ONE_MINUS_SRC_COLOR );
 
-    } else if ( blending == enums::MultiplyBlending ) {
+    } else if ( blending == THREE::MultiplyBlending ) {
 
       // TODO: Find blendFuncSeparate() combination
       _gl.Enable( GL_BLEND );
       _gl.BlendEquation( GL_FUNC_ADD );
       _gl.BlendFunc( GL_ZERO, GL_SRC_COLOR );
 
-    } else if ( blending == enums::CustomBlending ) {
+    } else if ( blending == THREE::CustomBlending ) {
 
       _gl.Enable( GL_BLEND );
 
@@ -4512,7 +4512,7 @@ void GLRenderer::setBlending( enums::Blending blending,
 
   }
 
-  if ( blending == enums::CustomBlending ) {
+  if ( blending == THREE::CustomBlending ) {
 
     if ( blendEquation != _oldBlendEquation ) {
       _gl.BlendEquation( paramThreeToGL( blendEquation ) );
@@ -4602,11 +4602,11 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   auto shadowMapTypeDefine = "SHADOWMAP_TYPE_BASIC";
 
-  if ( parameters.shadowMapType == enums::PCFShadowMap ) {
+  if ( parameters.shadowMapType == THREE::PCFShadowMap ) {
 
       shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF";
 
-  } else if ( parameters.shadowMapType == enums::PCFSoftShadowMap ) {
+  } else if ( parameters.shadowMapType == THREE::PCFSoftShadowMap ) {
 
       shadowMapTypeDefine = "SHADOWMAP_TYPE_PCF_SOFT";
 
@@ -4787,8 +4787,8 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   }();
 
-  auto glVertexShader   = getShader( enums::ShaderVertex,   prefix_vertex   + vertexShader );
-  auto glFragmentShader = getShader( enums::ShaderFragment, prefix_fragment + fragmentShader );
+  auto glVertexShader   = getShader( THREE::ShaderVertex,   prefix_vertex   + vertexShader );
+  auto glFragmentShader = getShader( THREE::ShaderFragment, prefix_fragment + fragmentShader );
 
   GL_CALL( _gl.AttachShader( glProgram, glVertexShader ) );
   GL_CALL( _gl.AttachShader( glProgram, glFragmentShader ) );
@@ -4941,13 +4941,13 @@ std::string GLRenderer::addLineNumbers( const std::string& string ) {
 
 }
 
-Buffer GLRenderer::getShader( enums::ShaderType type, const std::string& source ) {
+Buffer GLRenderer::getShader( THREE::ShaderType type, const std::string& source ) {
 
   Buffer shader = 0;
 
-  if ( type == enums::ShaderFragment ) {
+  if ( type == THREE::ShaderFragment ) {
     shader = GL_CALL( _gl.CreateShader( GL_FRAGMENT_SHADER ) );
-  } else if ( type == enums::ShaderVertex ) {
+  } else if ( type == THREE::ShaderVertex ) {
     shader = GL_CALL( _gl.CreateShader( GL_VERTEX_SHADER ) );
   }
 
@@ -5004,7 +5004,7 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
     setTextureParameters( GL_TEXTURE_2D, texture, isImagePowerOfTwo );
 
     // TODO(ea): Update setTexture to r65+
-    //if ( texture.type() == enums::DataTexture ) {
+    //if ( texture.type() == THREE::DataTexture ) {
 
     _gl.TexImage2D( GL_TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data.data() );
 
@@ -5181,7 +5181,7 @@ void GLRenderer::setupRenderBuffer( Buffer renderbuffer, GLRenderTarget& renderT
 
 void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
 
-  auto isCube = false;// TODO: ( renderTarget.type() == enums::WebglRenderTargetCube );
+  auto isCube = false;// TODO: ( renderTarget.type() == THREE::WebglRenderTargetCube );
 
   if ( renderTarget && renderTarget->__glFramebuffer.size() == 0 ) {
       
@@ -5318,7 +5318,7 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
 
 void GLRenderer::updateRenderTargetMipmap( GLRenderTarget& renderTarget ) {
 
-  if ( renderTarget.type() == enums::GLRenderTargetCube ) {
+  if ( renderTarget.type() == THREE::GLRenderTargetCube ) {
 
     _gl.BindTexture( GL_TEXTURE_CUBE_MAP, renderTarget.__glTexture );
     _gl.GenerateMipmap( GL_TEXTURE_CUBE_MAP );
@@ -5337,103 +5337,103 @@ void GLRenderer::updateRenderTargetMipmap( GLRenderTarget& renderTarget ) {
 // Fallback filters for non-power-of-2 textures
 
 int GLRenderer::filterFallback( int f ) {
-  if ( f == enums::NearestFilter || f == enums::NearestMipMapNearestFilter || f == enums::NearestMipMapLinearFilter ) {
+  if ( f == THREE::NearestFilter || f == THREE::NearestMipMapNearestFilter || f == THREE::NearestMipMapLinearFilter ) {
     return GL_NEAREST;
   }
   return GL_LINEAR;
 }
 
-// Map enums::cpp constants to WebGL constants
+// Map THREE::cpp constants to WebGL constants
 
 int GLRenderer::paramThreeToGL( int p ) {
 
   switch ( p ) {
 
-  case enums::RepeatWrapping:
+  case THREE::RepeatWrapping:
     return GL_REPEAT;
-  case enums::ClampToEdgeWrapping:
+  case THREE::ClampToEdgeWrapping:
     return GL_CLAMP_TO_EDGE;
-  case enums::MirroredRepeatWrapping:
+  case THREE::MirroredRepeatWrapping:
     return GL_MIRRORED_REPEAT;
 
-  case enums::NearestFilter:
+  case THREE::NearestFilter:
     return GL_NEAREST;
-  case enums::NearestMipMapNearestFilter:
+  case THREE::NearestMipMapNearestFilter:
     return GL_NEAREST_MIPMAP_NEAREST;
-  case enums::NearestMipMapLinearFilter:
+  case THREE::NearestMipMapLinearFilter:
     return GL_NEAREST_MIPMAP_LINEAR;
 
-  case enums::LinearFilter:
+  case THREE::LinearFilter:
     return GL_LINEAR;
-  case enums::LinearMipMapNearestFilter:
+  case THREE::LinearMipMapNearestFilter:
     return GL_LINEAR_MIPMAP_NEAREST;
-  case enums::LinearMipMapLinearFilter:
+  case THREE::LinearMipMapLinearFilter:
     return GL_LINEAR_MIPMAP_LINEAR;
 
-  case enums::UnsignedByteType:
+  case THREE::UnsignedByteType:
     return GL_UNSIGNED_BYTE;
-  case enums::UnsignedShort4444Type:
+  case THREE::UnsignedShort4444Type:
     return GL_UNSIGNED_SHORT_4_4_4_4;
-  case enums::UnsignedShort5551Type:
+  case THREE::UnsignedShort5551Type:
     return GL_UNSIGNED_SHORT_5_5_5_1;
-  case enums::UnsignedShort565Type:
+  case THREE::UnsignedShort565Type:
     return GL_UNSIGNED_SHORT_5_6_5;
 
-  case enums::ByteType:
+  case THREE::ByteType:
     return GL_BYTE;
-  case enums::ShortType:
+  case THREE::ShortType:
     return GL_SHORT;
-  case enums::UnsignedShortType:
+  case THREE::UnsignedShortType:
     return GL_UNSIGNED_SHORT;
-  case enums::IntType:
+  case THREE::IntType:
     return GL_INT;
-  case enums::UnsignedIntType:
+  case THREE::UnsignedIntType:
     return GL_UNSIGNED_INT;
-  case enums::FloatType:
+  case THREE::FloatType:
     return GL_FLOAT;
 
-  case enums::AlphaFormat:
+  case THREE::AlphaFormat:
     return GL_ALPHA;
-  case enums::RGBFormat:
+  case THREE::RGBFormat:
     return GL_RGB;
-  case enums::RGBAFormat:
+  case THREE::RGBAFormat:
     return GL_RGBA;
 #if !defined(THREE_GLES)
-  case enums::BGRFormat:
+  case THREE::BGRFormat:
     return GL_BGR;
-  case enums::BGRAFormat:
+  case THREE::BGRAFormat:
     return GL_BGRA;
 #endif
 
-  case enums::AddEquation:
+  case THREE::AddEquation:
     return GL_FUNC_ADD;
-  case enums::SubtractEquation:
+  case THREE::SubtractEquation:
     return GL_FUNC_SUBTRACT;
-  case enums::ReverseSubtractEquation:
+  case THREE::ReverseSubtractEquation:
     return GL_FUNC_REVERSE_SUBTRACT;
 
-  case enums::ZeroFactor:
+  case THREE::ZeroFactor:
     return GL_ZERO;
-  case enums::OneFactor:
+  case THREE::OneFactor:
     return GL_ONE;
-  case enums::SrcColorFactor:
+  case THREE::SrcColorFactor:
     return GL_SRC_COLOR;
-  case enums::OneMinusSrcColorFactor:
+  case THREE::OneMinusSrcColorFactor:
     return GL_ONE_MINUS_SRC_COLOR;
-  case enums::SrcAlphaFactor:
+  case THREE::SrcAlphaFactor:
     return GL_SRC_ALPHA;
-  case enums::OneMinusSrcAlphaFactor:
+  case THREE::OneMinusSrcAlphaFactor:
     return GL_ONE_MINUS_SRC_ALPHA;
-  case enums::DstAlphaFactor:
+  case THREE::DstAlphaFactor:
     return GL_DST_ALPHA;
-  case enums::OneMinusDstAlphaFactor:
+  case THREE::OneMinusDstAlphaFactor:
     return GL_ONE_MINUS_DST_ALPHA;
 
-  case enums::DstColorFactor:
+  case THREE::DstColorFactor:
     return GL_DST_COLOR;
-  case enums::OneMinusDstColorFactor:
+  case THREE::OneMinusDstColorFactor:
     return GL_ONE_MINUS_DST_COLOR;
-  case enums::SrcAlphaSaturateFactor:
+  case THREE::SrcAlphaSaturateFactor:
     return GL_SRC_ALPHA_SATURATE;
 
   /*
@@ -5469,7 +5469,7 @@ int GLRenderer::allocateBones( Object3D& object ) {
 
     auto maxBones = nVertexMatrices;
 
-    if ( object.type() == enums::SkinnedMesh ) {
+    if ( object.type() == THREE::SkinnedMesh ) {
 
       maxBones = Math::min( ( int )object.bones.size(), maxBones );
 
@@ -5497,10 +5497,10 @@ GLRenderer::LightCount GLRenderer::allocateLights( Lights& lights ) {
   for ( const auto& light : lights ) {
     if ( light->onlyShadow ) continue;
 
-    if ( light->type() == enums::DirectionalLight ) dirLights ++;
-    if ( light->type() == enums::PointLight ) pointLights ++;
-    if ( light->type() == enums::SpotLight ) spotLights ++;
-    if ( light->type() == enums::SpotLight ) hemiLights ++;
+    if ( light->type() == THREE::DirectionalLight ) dirLights ++;
+    if ( light->type() == THREE::PointLight ) pointLights ++;
+    if ( light->type() == THREE::SpotLight ) spotLights ++;
+    if ( light->type() == THREE::SpotLight ) hemiLights ++;
   }
 
   LightCount lightCount;
@@ -5520,8 +5520,8 @@ int GLRenderer::allocateShadows( Lights& lights ) {
   for ( const auto& light : lights ) {
     if ( ! light->castShadow ) continue;
 
-    if ( light->type() == enums::SpotLight ) maxShadows ++;
-    if ( light->type() == enums::DirectionalLight && ! light->shadowCascade ) maxShadows ++;
+    if ( light->type() == THREE::SpotLight ) maxShadows ++;
+    if ( light->type() == THREE::DirectionalLight && ! light->shadowCascade ) maxShadows ++;
   }
 
   return maxShadows;

@@ -282,7 +282,7 @@ void Geometry::computeTangents() {
     auto& face = faces[ f ];
     auto& uv = faceVertexUvs[ 0 ][ f ]; // use UV layer 0 for tangents
 
-    THREE_ASSERT( face.type() == enums::Face3 );
+    THREE_ASSERT( face.type() == THREE::Face3 );
 
     handleTriangle( uv, face.a, face.b, face.c, 0, 1, 2 );
   }

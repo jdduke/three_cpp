@@ -28,9 +28,9 @@ namespace three {
 
       Uniforms uniforms;
 
-      uniforms.add( "mNear",   Uniform( enums::f, 1.0f ) )
-      .add( "mFar",    Uniform( enums::f, 2000.0f ) )
-      .add( "opacity", Uniform( enums::f, 1.0f ) );
+      uniforms.add( "mNear",   Uniform( THREE::f, 1.0f ) )
+      .add( "mFar",    Uniform( THREE::f, 2000.0f ) )
+      .add( "opacity", Uniform( THREE::f, 1.0f ) );
 
       const char* vertexShader =
         "void main() {\n"
@@ -54,7 +54,7 @@ namespace three {
     static Shader normalCreate() {
 
       Uniforms uniforms;
-      uniforms.add( "opacity", Uniform( enums::f, 1.0f ) );
+      uniforms.add( "opacity", Uniform( THREE::f, 1.0f ) );
 
       std::stringstream vss;
       vss <<
@@ -166,9 +166,9 @@ namespace three {
 
       auto uniforms = UniformsUtils::merge( sourceUniforms );
 
-      uniforms.add( "scale",   Uniform( enums::f, 1.0f ) )
-              .add( "dashSize",    Uniform( enums::f, 1.0f ) )
-              .add( "totalSize", Uniform( enums::f, 2.0f ) );
+      uniforms.add( "scale",   Uniform( THREE::f, 1.0f ) )
+              .add( "dashSize",    Uniform( THREE::f, 1.0f ) )
+              .add( "totalSize", Uniform( THREE::f, 2.0f ) );
 
        std::stringstream vss;
         vss <<
@@ -231,9 +231,9 @@ namespace three {
       };
 
       auto uniforms = UniformsUtils::merge( sourceUniforms );
-      uniforms.add( "ambient",  Uniform( enums::c, Color( 0xffffff ) ) )
-      .add( "emissive", Uniform( enums::c, Color( 0x000000 ) ) )
-      .add( "wrapRGB",  Uniform( enums::v3, Vector3( 1, 1, 1 ) ) );
+      uniforms.add( "ambient",  Uniform( THREE::c, Color( 0xffffff ) ) )
+      .add( "emissive", Uniform( THREE::c, Color( 0x000000 ) ) )
+      .add( "wrapRGB",  Uniform( THREE::v3, Vector3( 1, 1, 1 ) ) );
 
       std::stringstream vss;
       vss <<
@@ -338,11 +338,11 @@ namespace three {
       };
 
       auto uniforms = UniformsUtils::merge( sourceUniforms );
-      uniforms.add( "ambient",   Uniform( enums::c, Color( 0xffffff ) ) )
-      .add( "emissive",  Uniform( enums::c, Color( 0x000000 ) ) )
-      .add( "specular",  Uniform( enums::c, Color( 0x111111 ) ) )
-      .add( "shininess", Uniform( enums::f, 30.f ) )
-      .add( "wrapRGB",   Uniform( enums::v3, Vector3( 1, 1, 1 ) ) );
+      uniforms.add( "ambient",   Uniform( THREE::c, Color( 0xffffff ) ) )
+      .add( "emissive",  Uniform( THREE::c, Color( 0x000000 ) ) )
+      .add( "specular",  Uniform( THREE::c, Color( 0x111111 ) ) )
+      .add( "shininess", Uniform( THREE::f, 30.f ) )
+      .add( "wrapRGB",   Uniform( THREE::v3, Vector3( 1, 1, 1 ) ) );
 
       std::stringstream vss;
       vss <<

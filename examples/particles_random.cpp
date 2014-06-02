@@ -92,7 +92,7 @@ void particles_random( GLWindow& window, GLRenderer& renderer ) {
 
     for ( size_t i = 0; i < scene->children.size(); ++i ) {
       auto& object = *scene->children[ i ];
-      if ( object.type() == enums::ParticleSystem ) {
+      if ( object.type() == THREE::ParticleSystem ) {
         object.rotation().y = time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) );
       }
     }

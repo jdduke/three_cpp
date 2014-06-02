@@ -46,7 +46,7 @@ void particles_sprites( GLWindow& window, GLRenderer& renderer ) {
     auto material = ParticleSystemMaterial::create(
       Material::Parameters().add( "size", size )
                             .add( "map", sprite )
-                            .add( "blending", enums::AdditiveBlending )
+                            .add( "blending", THREE::AdditiveBlending )
                             .add( "depthTest", false )
                             .add( "transparent", true )
     );
@@ -104,7 +104,7 @@ void particles_sprites( GLWindow& window, GLRenderer& renderer ) {
 
     for ( size_t i = 0; i < scene->children.size(); ++i ) {
       auto& object = *scene->children[ i ];
-      if ( object.type() == enums::ParticleSystem ) {
+      if ( object.type() == THREE::ParticleSystem ) {
         object.rotation().y = time * ( i < 4 ? i + 1 : - ( (int)i + 1 ) );
       }
     }

@@ -44,42 +44,42 @@ Quaternion& Quaternion::setFromEuler( const Euler& euler ) {
   auto s2 = Math::sin( euler.y / 2 );
   auto s3 = Math::sin( euler.z / 2 );
 
-  if ( euler.order() == enums::EulerRotationOrder::XYZ ) {
+  if ( euler.order() == THREE::EulerRotationOrder::XYZ ) {
 
     x = s1 * c2 * c3 + c1 * s2 * s3;
     y = c1 * s2 * c3 - s1 * c2 * s3;
     z = c1 * c2 * s3 + s1 * s2 * c3;
     w = c1 * c2 * c3 - s1 * s2 * s3;
 
-  } else if ( euler.order() == enums::EulerRotationOrder::YXZ ) {
+  } else if ( euler.order() == THREE::EulerRotationOrder::YXZ ) {
 
     x = s1 * c2 * c3 + c1 * s2 * s3;
     y = c1 * s2 * c3 - s1 * c2 * s3;
     z = c1 * c2 * s3 - s1 * s2 * c3;
     w = c1 * c2 * c3 + s1 * s2 * s3;
 
-  } else if ( euler.order() == enums::EulerRotationOrder::ZXY ) {
+  } else if ( euler.order() == THREE::EulerRotationOrder::ZXY ) {
 
     x = s1 * c2 * c3 - c1 * s2 * s3;
     y = c1 * s2 * c3 + s1 * c2 * s3;
     z = c1 * c2 * s3 + s1 * s2 * c3;
     w = c1 * c2 * c3 - s1 * s2 * s3;
 
-  } else if ( euler.order() == enums::EulerRotationOrder::ZYX ) {
+  } else if ( euler.order() == THREE::EulerRotationOrder::ZYX ) {
 
     x = s1 * c2 * c3 - c1 * s2 * s3;
     y = c1 * s2 * c3 + s1 * c2 * s3;
     z = c1 * c2 * s3 - s1 * s2 * c3;
     w = c1 * c2 * c3 + s1 * s2 * s3;
 
-  } else if ( euler.order() == enums::EulerRotationOrder::YZX ) {
+  } else if ( euler.order() == THREE::EulerRotationOrder::YZX ) {
 
     x = s1 * c2 * c3 + c1 * s2 * s3;
     y = c1 * s2 * c3 + s1 * c2 * s3;
     z = c1 * c2 * s3 - s1 * s2 * c3;
     w = c1 * c2 * c3 - s1 * s2 * s3;
 
-  } else if ( euler.order() == enums::EulerRotationOrder::XZY ) {
+  } else if ( euler.order() == THREE::EulerRotationOrder::XZY ) {
 
     x = s1 * c2 * c3 - c1 * s2 * s3;
     y = c1 * s2 * c3 - s1 * c2 * s3;

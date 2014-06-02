@@ -21,7 +21,7 @@ public:
 
   }
 
-  virtual enums::FogType type() const THREE_OVERRIDE { return enums::Fog; }
+  virtual THREE::FogType type() const THREE_OVERRIDE { return THREE::Fog; }
 
   virtual IFog::Ptr clone() const THREE_OVERRIDE {
 

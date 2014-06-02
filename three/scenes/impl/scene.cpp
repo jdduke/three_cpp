@@ -79,7 +79,7 @@ struct Remove : public FallbackVisitor {
   }
 
   void operator()( Light& light ) {
-    if(light.type() == enums::DirectionalLight) {
+    if(light.type() == THREE::DirectionalLight) {
       auto& directionalLight = static_cast<DirectionalLight&>(light);
       for(auto& shadowCascadeLight : directionalLight.shadowCascadeArray) {
         Remove(s, shadowCascadeLight);

@@ -21,9 +21,9 @@ public:
 
 	Image image;
 
-	virtual enums::TextureType type() const {
+	virtual THREE::TextureType type() const {
 
-		return enums::DataTexture;
+		return THREE::DataTexture;
 		
 	}
 

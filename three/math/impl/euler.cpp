@@ -27,7 +27,7 @@ Euler& Euler::set( float xIn, float yIn, float zIn) {
 
 }
 
-Euler& Euler::set( float xIn, float yIn, float zIn, enums::EulerRotationOrder orderIn ) {
+Euler& Euler::set( float xIn, float yIn, float zIn, THREE::EulerRotationOrder orderIn ) {
 
   x = xIn;
   y = yIn;
@@ -54,7 +54,7 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m ) {
     return setFromRotationMatrix(m, _order);
 }
 
-Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotationOrder order ) {
+Euler& Euler::setFromRotationMatrix( const Matrix4& m, const THREE::EulerRotationOrder order ) {
 
 // assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
@@ -64,7 +64,7 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
   auto m31 = te[2], m32 = te[6], m33 = te[10];
 
 
-  if ( order == enums::EulerRotationOrder::XYZ ) {
+  if ( order == THREE::EulerRotationOrder::XYZ ) {
 
     y = Math::asin( _clamp( m13 ) );
 
@@ -76,7 +76,7 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
       z = 0.f;
     }
 
-  } else if ( order == enums::EulerRotationOrder::YXZ ) {
+  } else if ( order == THREE::EulerRotationOrder::YXZ ) {
 
     x = Math::asin( - _clamp( m23 ) );
 
@@ -88,7 +88,7 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
       z = 0.f;
     }
 
-  } else if ( order == enums::EulerRotationOrder::ZXY ) {
+  } else if ( order == THREE::EulerRotationOrder::ZXY ) {
 
     x = Math::asin( _clamp( m32 ) );
 
@@ -100,7 +100,7 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
       z = Math::atan2( m21, m11 );
     }
 
-  } else if ( order == enums::EulerRotationOrder::ZYX ) {
+  } else if ( order == THREE::EulerRotationOrder::ZYX ) {
 
     y = Math::asin( - _clamp( m31 ) );
 
@@ -113,7 +113,7 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
 
     }
 
-  } else if ( order == enums::EulerRotationOrder::YZX ) {
+  } else if ( order == THREE::EulerRotationOrder::YZX ) {
 
     z = Math::asin( _clamp( m21 ) );
 
@@ -125,7 +125,7 @@ Euler& Euler::setFromRotationMatrix( const Matrix4& m, const enums::EulerRotatio
       y = Math::atan2( m13, m33 );
     }
 
-  } else if ( order == enums::EulerRotationOrder::XZY ) {
+  } else if ( order == THREE::EulerRotationOrder::XZY ) {
 
     z = Math::asin( - _clamp( m12 ) );
 
@@ -155,7 +155,7 @@ Euler& Euler::setFromQuaternion( const Quaternion& q ) {
 }
 
 
-Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotationOrder order ) {
+Euler& Euler::setFromQuaternion( const Quaternion& q, const THREE::EulerRotationOrder order ) {
 
 // q is assumed to be normalized
 // http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
@@ -165,37 +165,37 @@ Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotation
   auto sqz = q.z * q.z;
   auto sqw = q.w * q.w;
 
-  if ( order == enums::EulerRotationOrder::XYZ) {
+  if ( order == THREE::EulerRotationOrder::XYZ) {
 
     x = Math::atan2( 2 * ( q.x * q.w - q.y * q.z ), ( sqw - sqx - sqy + sqz ) );
     y = Math::asin(  _clamp( 2 * ( q.x * q.z + q.y * q.w ) ) );
     z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw + sqx - sqy - sqz ) );
 
-  } else if ( order == enums::EulerRotationOrder::YXZ ) {
+  } else if ( order == THREE::EulerRotationOrder::YXZ ) {
 
     x = Math::asin(  _clamp( 2 * ( q.x * q.w - q.y * q.z ) ) );
     y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw - sqx - sqy + sqz ) );
     z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw - sqx + sqy - sqz ) );
 
-  } else if ( order == enums::EulerRotationOrder::ZXY ) {
+  } else if ( order == THREE::EulerRotationOrder::ZXY ) {
 
     x = Math::asin(  _clamp( 2 * ( q.x * q.w + q.y * q.z ) ) );
     y = Math::atan2( 2 * ( q.y * q.w - q.z * q.x ), ( sqw - sqx - sqy + sqz ) );
     z = Math::atan2( 2 * ( q.z * q.w - q.x * q.y ), ( sqw - sqx + sqy - sqz ) );
 
-  } else if ( order == enums::EulerRotationOrder::ZYX ) {
+  } else if ( order == THREE::EulerRotationOrder::ZYX ) {
 
     x = Math::atan2( 2 * ( q.x * q.w + q.z * q.y ), ( sqw - sqx - sqy + sqz ) );
     y = Math::asin(  _clamp( 2 * ( q.y * q.w - q.x * q.z ) ) );
     z = Math::atan2( 2 * ( q.x * q.y + q.z * q.w ), ( sqw + sqx - sqy - sqz ) );
 
-  } else if ( order == enums::EulerRotationOrder::YZX ) {
+  } else if ( order == THREE::EulerRotationOrder::YZX ) {
 
     x = Math::atan2( 2 * ( q.x * q.w - q.z * q.y ), ( sqw - sqx + sqy - sqz ) );
     y = Math::atan2( 2 * ( q.y * q.w - q.x * q.z ), ( sqw + sqx - sqy - sqz ) );
     z = Math::asin(  _clamp( 2 * ( q.x * q.y + q.z * q.w ) ) );
 
-  } else if ( order == enums::EulerRotationOrder::XZY ) {
+  } else if ( order == THREE::EulerRotationOrder::XZY ) {
 
     x = Math::atan2( 2 * ( q.x * q.w + q.y * q.z ), ( sqw - sqx + sqy - sqz ) );
     y = Math::atan2( 2 * ( q.x * q.z + q.y * q.w ), ( sqw + sqx - sqy - sqz ) );
@@ -212,7 +212,7 @@ Euler& Euler::setFromQuaternion( const Quaternion& q, const enums::EulerRotation
 
 }
 
-Euler& Euler::reorder( enums::EulerRotationOrder newOrder ) {
+Euler& Euler::reorder( THREE::EulerRotationOrder newOrder ) {
 
   // WARNING: this discards revolution information -bhouston
   return setFromQuaternion( Quaternion().setFromEuler( *this ), newOrder );

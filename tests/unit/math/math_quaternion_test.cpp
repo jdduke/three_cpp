@@ -10,13 +10,13 @@
 
 using namespace three;
 
-std::array<enums::EulerRotationOrder, 6> orders = {
-    enums::EulerRotationOrder::XYZ,
-    enums::EulerRotationOrder::YXZ,
-    enums::EulerRotationOrder::ZXY,
-    enums::EulerRotationOrder::ZYX,
-    enums::EulerRotationOrder::YZX,
-    enums::EulerRotationOrder::XZY
+std::array<THREE::EulerRotationOrder, 6> orders = {
+    THREE::EulerRotationOrder::XYZ,
+    THREE::EulerRotationOrder::YXZ,
+    THREE::EulerRotationOrder::ZXY,
+    THREE::EulerRotationOrder::ZYX,
+    THREE::EulerRotationOrder::YZX,
+    THREE::EulerRotationOrder::XZY
 };
 
 auto eulerAngles = Euler( 0.1, -0.3, 0.25 );

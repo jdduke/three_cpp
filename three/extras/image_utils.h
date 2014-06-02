@@ -12,12 +12,12 @@ public:
 
   static Texture::Ptr loadTexture(
     const std::string& url
-    //,enums::Mapping mapping = enums::UVMapping
+    //,THREE::Mapping mapping = THREE::UVMapping
   );
 
   static Texture::Ptr loadCompressedTexture(
     const std::string& url,
-    enums::Mapping mapping = enums::UVMapping
+    THREE::Mapping mapping = THREE::UVMapping
   );
 
   static Texture::Ptr generateDataTexture(
@@ -30,12 +30,12 @@ public:
 
   static Texture::Ptr loadTextureCube(
     std::array<std: string, 6> array,
-    enums::Mapping mapping = enums::UVMapping
+    THREE::Mapping mapping = THREE::UVMapping
   );
 
   static Texture::Ptr loadCompressedTextureCube(
     std::array<std: string, 6> array,
-    enums::Mapping mapping = enums::UVMapping
+    THREE::Mapping mapping = THREE::UVMapping
   );
 
 #endif // TODO_LOAD_TEXTURE_CUBE

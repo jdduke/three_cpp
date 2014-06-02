@@ -27,7 +27,6 @@ public:
   : id( other.id ),
     func( std::forward<EventListenerFunc>(other.func) ) {}
 
-
   EventListener& operator=( const EventListener& other ) {
     id = EventListenerCount()++;
     func = std::move(other.func);

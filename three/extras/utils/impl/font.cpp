@@ -255,7 +255,7 @@ bool Font::initialize( const std::string& ttf,
                         impl->characterData.data() );
   impl->texture = Texture::create(
                     TextureDesc( Image(texels, textureWidth, textureHeight),
-                                 enums::AlphaFormat )
+                                 THREE::AlphaFormat )
                   );
 
   return !!impl->texture;

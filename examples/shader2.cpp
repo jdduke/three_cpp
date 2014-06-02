@@ -114,14 +114,14 @@ void shader2( GLWindow& window, GLRenderer& renderer ) {
   float time = 1;
 
   auto texture = ImageUtils::loadTexture( threeDataPath("textures/disturb.jpg") );
-  texture->wrapS = texture->wrapT = enums::RepeatWrapping;
+  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
 
   Uniforms uniforms1;
-  uniforms1.add( "time", Uniform( enums::f, time) );
+  uniforms1.add( "time", Uniform( THREE::f, time) );
 
   Uniforms uniforms2;
-  uniforms2.add( "time", Uniform( enums::f, time) )
-           .add( "texture", Uniform( enums::t, texture.get() ) );
+  uniforms2.add( "time", Uniform( THREE::f, time) )
+           .add( "texture", Uniform( THREE::t, texture.get() ) );
 
   std::vector<Material::Ptr> mlib;
   std::vector<Mesh::Ptr> meshes;

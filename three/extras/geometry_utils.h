@@ -10,7 +10,7 @@ public:
 
   static void merge( Geometry& geometry1, Object3D& object2, int materialIndexOffset = 0 ) {
 
-    if ( object2.type() == enums::Mesh ) {
+    if ( object2.type() == THREE::Mesh ) {
 
       if ( object2.matrixAutoUpdate )
         object2.updateMatrix();
@@ -62,7 +62,7 @@ public:
       const auto& faceVertexNormals = face.vertexNormals;
       const auto& faceVertexColors = face.vertexColors;
 
-      THREE_ASSERT( face.type() == enums::Face3 );
+      THREE_ASSERT( face.type() == THREE::Face3 );
       Face3 faceCopy( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset );
       faceCopy.normal.copy( face.normal );
 

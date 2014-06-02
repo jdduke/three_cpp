@@ -44,8 +44,8 @@ public:
     return make_shared<Geometry>();
   }
 
-  virtual enums::GeometryType type() const {
-    return enums::Geometry;
+  virtual THREE::GeometryType type() const {
+    return THREE::Geometry;
   }
 
   int id;

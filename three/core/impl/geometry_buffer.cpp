@@ -31,7 +31,7 @@ GeometryBuffer::GeometryBuffer( int numMorphTargets, int numMorphNormals, int ma
 
 GeometryBuffer::~GeometryBuffer() { }
 
-enums::GeometryType GeometryBuffer::type() const { return enums::Geometry; }
+THREE::GeometryType GeometryBuffer::type() const { return THREE::Geometry; }
 
 void GeometryBuffer::dispose() {
   __inittedArrays = false;

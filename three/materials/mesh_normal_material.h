@@ -20,7 +20,7 @@ protected:
 
   MeshNormalMaterial( const Parameters& parameters )
     : Material() {
-    shading = enums::FlatShading;
+    shading = THREE::FlatShading;
     setParameters( parameters, DefaultKeys() );
   }
 

@@ -11,12 +11,12 @@ namespace three {
 
 struct TargetDesc {
 
-  explicit TargetDesc( enums::Wrapping wrapS     = enums::ClampToEdgeWrapping,
-                       enums::Wrapping wrapT     = enums::ClampToEdgeWrapping,
-                       enums::Filter magFilter   = enums::LinearFilter,
-                       enums::Filter minFilter   = enums::LinearMipMapLinearFilter,
-                       enums::PixelFormat format = enums::RGBAFormat,
-                       enums::DataType dataType  = enums::UnsignedByteType,
+  explicit TargetDesc( THREE::Wrapping wrapS     = THREE::ClampToEdgeWrapping,
+                       THREE::Wrapping wrapT     = THREE::ClampToEdgeWrapping,
+                       THREE::Filter magFilter   = THREE::LinearFilter,
+                       THREE::Filter minFilter   = THREE::LinearMipMapLinearFilter,
+                       THREE::PixelFormat format = THREE::RGBAFormat,
+                       THREE::DataType dataType  = THREE::UnsignedByteType,
                        float anisotropy          = 1,
                        bool depthBuffer          = true,
                        bool stencilBuffer        = true )
@@ -30,11 +30,11 @@ struct TargetDesc {
       depthBuffer( depthBuffer ),
       stencilBuffer( stencilBuffer ) { }
 
-  enums::Mapping mapping;
-  enums::Wrapping wrapS, wrapT;
-  enums::Filter magFilter, minFilter;
-  enums::PixelFormat format;
-  enums::DataType dataType;
+  THREE::Mapping mapping;
+  THREE::Wrapping wrapS, wrapT;
+  THREE::Filter magFilter, minFilter;
+  THREE::PixelFormat format;
+  THREE::DataType dataType;
   float anisotropy;
   bool depthBuffer;
   bool stencilBuffer;
@@ -49,19 +49,19 @@ public:
     return make_shared<GLRenderTarget>( width, height, desc );
   }
 
-  virtual enums::TextureType type() const {
-    return enums::GLRenderTarget;
+  virtual THREE::TextureType type() const {
+    return THREE::GLRenderTarget;
   }
 
   int width, height;
 
-  enums::Wrapping wrapS, wrapT;
+  THREE::Wrapping wrapS, wrapT;
 
-  enums::Filter magFilter, minFilter;
+  THREE::Filter magFilter, minFilter;
 
-  enums::PixelFormat format;
+  THREE::PixelFormat format;
 
-  enums::DataType dataType;
+  THREE::DataType dataType;
 
   float anisotropy;
   int activeCubeFace;

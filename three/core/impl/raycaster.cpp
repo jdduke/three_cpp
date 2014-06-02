@@ -133,11 +133,11 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
     }
 
-    if ( geometry->type() == enums::BufferGeometry ) {
+    if ( geometry->type() == THREE::BufferGeometry ) {
 
       visitMeshBufferGeometry( object, (BufferGeometry*) geometry.get() );
 
-    } else if ( geometry->type() == enums::Geometry ) {
+    } else if ( geometry->type() == THREE::Geometry ) {
 
       visitMeshGeometry( object, (Geometry*) geometry.get() );
 
@@ -190,13 +190,13 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
           );
 
           optional<Vector3> intersectionPoint;
-          if ( material->side == enums::BackSide ) {
+          if ( material->side == THREE::BackSide ) {
 
             intersectionPoint = impl.localRay.intersectTriangle( impl.vC, impl.vB, impl.vA, true );
 
           } else {
 
-            intersectionPoint = impl.localRay.intersectTriangle( impl.vA, impl.vB, impl.vC, material->side != enums::DoubleSide );
+            intersectionPoint = impl.localRay.intersectTriangle( impl.vA, impl.vB, impl.vC, material->side != THREE::DoubleSide );
 
           }
 
@@ -249,13 +249,13 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
 
         optional<Vector3> intersectionPoint;
-        if ( material->side == enums::BackSide ) {
+        if ( material->side == THREE::BackSide ) {
 
           intersectionPoint = impl.localRay.intersectTriangle( impl.vC, impl.vB, impl.vA, true );
 
         } else {
 
-          intersectionPoint = impl.localRay.intersectTriangle( impl.vA, impl.vB, impl.vC, material->side != enums::DoubleSide );
+          intersectionPoint = impl.localRay.intersectTriangle( impl.vA, impl.vB, impl.vC, material->side != THREE::DoubleSide );
 
         }
 
@@ -283,7 +283,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
 
   void visitMeshGeometry( const Mesh* object, const Geometry* geometry ) {
 
-    bool isFaceMaterial = object->material->type() == enums::MeshFaceMaterial;
+    bool isFaceMaterial = object->material->type() == THREE::MeshFaceMaterial;
     auto& objectMaterials = ((MeshFaceMaterial*)object)->materials;
 
     Vector3 a, b, c;
@@ -345,13 +345,13 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
       }
 
       optional<Vector3> intersectionPoint;
-      if ( material->side == enums::BackSide ) {
+      if ( material->side == THREE::BackSide ) {
 
         intersectionPoint = impl.localRay.intersectTriangle( c, b, a, true );
 
       } else {
 
-        intersectionPoint = impl.localRay.intersectTriangle( a, b, c, material->side != enums::DoubleSide );
+        intersectionPoint = impl.localRay.intersectTriangle( a, b, c, material->side != THREE::DoubleSide );
 
       }
 
@@ -398,7 +398,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
     impl.inverseMatrix.getInverse( object->matrixWorld );
     impl.localRay.copy( raycaster.ray ).applyMatrix4( impl.inverseMatrix );
 
-    if ( geometry->type() == enums::Geometry ) {
+    if ( geometry->type() == THREE::Geometry ) {
 
       const auto& vertices = geometry->vertices;
 
@@ -406,7 +406,7 @@ struct IntersectObjectVisitor : public ConstRawPointerVisitor {
       Vector3 interSegment;
       Vector3 interRay;
 
-      int step = object->lineType == enums::LineStrip ? 1 : 2;
+      int step = object->lineType == THREE::LineStrip ? 1 : 2;
 
       for ( size_t i = 0; i < nbVertices - 1; i = i + step ) {
 

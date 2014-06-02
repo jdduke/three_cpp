@@ -44,8 +44,8 @@ public:
 
   Vector3 centroid;
 
-  enums::FaceType type() const {
-    return enums::Face3;
+  THREE::FaceType type() const {
+    return THREE::Face3;
   }
 
   int size() const {

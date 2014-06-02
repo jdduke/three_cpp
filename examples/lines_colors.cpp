@@ -108,7 +108,7 @@ void lines_colors( GLWindow& window, GLRenderer& renderer ) {
                           .add( "linewidth", 1.5f )
   );
 
-  material->vertexColors = enums::VertexColors;
+  material->vertexColors = THREE::VertexColors;
 
   auto scene = Scene::create();
 
@@ -145,7 +145,7 @@ void lines_colors( GLWindow& window, GLRenderer& renderer ) {
     camera->lookAt( scene->position() );
 
     for ( size_t i = 0; i < scene->children.size(); i++ ) {
-      if (scene->children[i]->type() == enums::Line )
+      if (scene->children[i]->type() == THREE::Line )
         scene->children[i]->rotation(). y = time * ( i % 2 ? 1 : -1);
     }
 

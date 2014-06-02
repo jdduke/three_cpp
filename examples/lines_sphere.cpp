@@ -55,7 +55,7 @@ void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
                             .add( "linewidth", width )
     );
 
-    auto line = Line::create( geometry, material, enums::LinePieces );
+    auto line = Line::create( geometry, material, THREE::LinePieces );
     line->scale() = Vector3( scale );
     line->rotation().y = Math::random() * Math::PI();
     line->updateMatrix();
@@ -97,7 +97,7 @@ void lines_sphere( GLWindow& window, GLRenderer& renderer ) {
 
     for ( size_t i = 0; i < scene->children.size(); i++ ) {
       auto& object = *scene->children[i];
-      if ( object.type() == enums::Line ) {
+      if ( object.type() == THREE::Line ) {
         object.rotation().y = time * ( i < 4 ? ( (float)i + 1.f ) : - ( (float)i + 1.f ) );
         if ( i < 5 )
           object.scale() = Vector3( originalScales[ i ] * ((float)i / 5.f + 1.f) * (1.f + 0.5f * Math::sin( 7.f * time ) ) );

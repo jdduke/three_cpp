@@ -35,7 +35,7 @@ public:
 
   virtual ~GeometryBuffer();
 
-  virtual enums::GeometryType type() const;
+  virtual THREE::GeometryType type() const;
 
   void dispose();
 

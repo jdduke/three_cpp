@@ -23,13 +23,13 @@
 namespace three {
 
 Uniform::Uniform( )
-  : type( enums::INVALID_UNIFORM ), value( ) { }
+  : type( THREE::INVALID_UNIFORM ), value( ) { }
 
-Uniform::Uniform( enums::UniformType type, any value /*= any()*/ )
+Uniform::Uniform( THREE::UniformType type, any value /*= any()*/ )
   : type( type ), value( std::move( value ) ) { }
 
 Uniform::Uniform( Uniform&& other )
-  : type( enums::INVALID_UNIFORM ) {
+  : type( THREE::INVALID_UNIFORM ) {
   swap( other );
 }
 
@@ -93,7 +93,7 @@ template < int UniformType > struct UniformToType { };
 
 #define DECLARE_UNIFORM(UNIFORM_TYPE, TYPE, FUNC, FUNC_IMPL)                  \
   template <>                                                                 \
-  struct UniformToType<enums::UNIFORM_TYPE> {                                 \
+  struct UniformToType<THREE::UNIFORM_TYPE> {                                 \
     static void load(const GLInterfaceWrapper& gl, int location, const any& value) { \
       FUNC_IMPL<TYPE>(gl, FUNC, location, value);                                 \
     }                                                                         \
@@ -101,7 +101,7 @@ template < int UniformType > struct UniformToType { };
 
 #define DECLARE_UNIFORM_V(UNIFORM_TYPE, TYPE, ELEM_TYPE, FUNC, STRIDE)        \
   template <>                                                                 \
-  struct UniformToType<enums::UNIFORM_TYPE> {                                 \
+  struct UniformToType<THREE::UNIFORM_TYPE> {                                 \
     static void load(const GLInterfaceWrapper& gl, int location, const any& value) { \
       loadv<TYPE, ELEM_TYPE>(gl, FUNC, location, value, STRIDE);                  \
     }                                                                         \
@@ -136,56 +136,56 @@ void Uniform::load( const GLInterfaceWrapper& gl, int location ) {
 
     switch ( type ) {
 
-    case enums::i: // single integer
-      UniformToType<enums::i>::load( gl, location, value );
+    case THREE::i: // single integer
+      UniformToType<THREE::i>::load( gl, location, value );
       break;
-    case enums::f: // single float
-      UniformToType<enums::f>::load( gl, location, value );
+    case THREE::f: // single float
+      UniformToType<THREE::f>::load( gl, location, value );
       break;
-    case enums::v2: // single enums::Vector2
-      UniformToType<enums::v2>::load( gl, location, value );
+    case THREE::v2: // single THREE::Vector2
+      UniformToType<THREE::v2>::load( gl, location, value );
       break;
-    case enums::v3: // single enums::Vector3
-      UniformToType<enums::v3>::load( gl, location, value );
+    case THREE::v3: // single THREE::Vector3
+      UniformToType<THREE::v3>::load( gl, location, value );
       break;
-    case enums::v4: // single enums::Vector4
-      UniformToType<enums::v4>::load( gl, location, value );
+    case THREE::v4: // single THREE::Vector4
+      UniformToType<THREE::v4>::load( gl, location, value );
       break;
-    case enums::c: // single enums::Color
-      UniformToType<enums::c>::load( gl, location, value );
+    case THREE::c: // single THREE::Color
+      UniformToType<THREE::c>::load( gl, location, value );
       break;
-    case enums::iv1: // flat array of integers (JS or typed array)
-      UniformToType<enums::iv1>::load( gl, location, value );
+    case THREE::iv1: // flat array of integers (JS or typed array)
+      UniformToType<THREE::iv1>::load( gl, location, value );
       break;
-    case enums::iv: // flat array of integers with 3 x N size (JS or typed array)
-      UniformToType<enums::iv>::load( gl, location, value );
+    case THREE::iv: // flat array of integers with 3 x N size (JS or typed array)
+      UniformToType<THREE::iv>::load( gl, location, value );
       break;
-    case enums::fv1: // flat array of floats (JS or typed array)
-      UniformToType<enums::fv1>::load( gl, location, value );
+    case THREE::fv1: // flat array of floats (JS or typed array)
+      UniformToType<THREE::fv1>::load( gl, location, value );
       break;
-    case enums::fv: // flat array of floats with 3 x N size (JS or typed array)
-      UniformToType<enums::fv>::load( gl, location, value );
+    case THREE::fv: // flat array of floats with 3 x N size (JS or typed array)
+      UniformToType<THREE::fv>::load( gl, location, value );
       break;
-    case enums::v2v: // array of enums::Vector2
-      UniformToType<enums::v2v>::load( gl, location, value );
+    case THREE::v2v: // array of THREE::Vector2
+      UniformToType<THREE::v2v>::load( gl, location, value );
       break;
-    case enums::v3v: // array of enums::Vector3
-      UniformToType<enums::v3v>::load( gl, location, value );
+    case THREE::v3v: // array of THREE::Vector3
+      UniformToType<THREE::v3v>::load( gl, location, value );
       break;
-    case enums::v4v: // array of enums::Vector4
-      UniformToType<enums::v4v>::load( gl, location, value );
+    case THREE::v4v: // array of THREE::Vector4
+      UniformToType<THREE::v4v>::load( gl, location, value );
       break;
-    case enums::m4: // single enums::Matrix4
-      UniformToType<enums::m4>::load( gl, location, value );
+    case THREE::m4: // single THREE::Matrix4
+      UniformToType<THREE::m4>::load( gl, location, value );
       break;
-    case enums::m4v: // array of enums::Matrix4
-      UniformToType<enums::m4v>::load( gl, location, value );
+    case THREE::m4v: // array of THREE::Matrix4
+      UniformToType<THREE::m4v>::load( gl, location, value );
       break;
-    case enums::t: // single enums::Texture (2d or cube)
+    case THREE::t: // single THREE::Texture (2d or cube)
       break;
-      //UniformToType<enums::t>::load( gl, location, value ); break;
+      //UniformToType<THREE::t>::load( gl, location, value ); break;
 #ifdef TODO_TEXTURE_ARRAY
-    case enums::tv: // array of enums::Texture (2d)
+    case THREE::tv: // array of THREE::Texture (2d)
       std::vector<int> _array( uniform.texture.size() );
       for ( i = 0, il = uniform.texture.size(); i < il; i ++ ) {
         _array[ i ] = value + i;

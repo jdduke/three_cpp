@@ -46,8 +46,8 @@ public:
 
   virtual ~Material();
 
-  virtual enums::MaterialType type() const {
-    return enums::Material;
+  virtual THREE::MaterialType type() const {
+    return THREE::Material;
   }
 
   Ptr clone() const;
@@ -59,16 +59,16 @@ public:
 
   std::string name;
 
-  enums::Side side;
+  THREE::Side side;
 
   float opacity;
   bool transparent;
 
-  enums::Blending blending;
+  THREE::Blending blending;
 
-  enums::BlendFactor blendSrc;
-  enums::BlendFactor blendDst;
-  enums::BlendEquation blendEquation;
+  THREE::BlendFactor blendSrc;
+  THREE::BlendFactor blendDst;
+  THREE::BlendEquation blendEquation;
 
   bool depthTest;
   bool depthWrite;
@@ -94,8 +94,8 @@ public:
   float size;
   bool sizeAttenuation;
 
-  enums::Shading shading;
-  enums::Colors vertexColors;
+  THREE::Shading shading;
+  THREE::Colors vertexColors;
 
   bool skinning;
   bool morphTargets;
@@ -113,7 +113,7 @@ public:
 
   float reflectivity;
   float refractionRatio;
-  enums::TextureConstant combine;
+  THREE::TextureConstant combine;
 
   bool metal;
   bool perPixel;
@@ -123,7 +123,7 @@ public:
   bool wireframe;
   float wireframeLinewidth;
   float linewidth;
-  enums::LineEndType linecap, linejoin;
+  THREE::LineEndType linecap, linejoin;
 
   int numSupportedMorphTargets;
   int numSupportedMorphNormals;
