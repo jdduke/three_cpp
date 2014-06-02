@@ -11,11 +11,11 @@
 #include <functional>
 
 namespace three {
-    
+  
 template<typename TKey, typename TEvent>
 class EventDispatcher {
 public:
-    
+  
   EventListener<TEvent> addEventListener( const TKey& type, const std::function<void(const TEvent&)>& func ) {
     
     auto listener = (EventListener<TEvent>) func;
@@ -23,13 +23,19 @@ public:
     if(!hasEventListener(type, listener)) {
       listeners[ type ].emplace_back( std::move(listener) );
     }
-      
+    
     return listener;
   }
 
   void addEventListener( const TKey& type, EventListener<TEvent>&& listener ) {
     if(!hasEventListener(type, listener)) {
       listeners[ type ].emplace_back( std::forward<EventListener<TEvent>>( listener ) );
+    }
+  }
+  
+  void addEventListener( const TKey& type, EventListener<TEvent>& listener ) {
+    if(!hasEventListener(type, listener)) {
+      listeners[ type ].emplace_back( std::move( listener ) );
     }
   }
 
@@ -64,23 +70,18 @@ public:
 
     auto& typeListeners = listeners[ type ];
     auto it = std::find(typeListeners.cbegin(), typeListeners.cend(), listener);
+    
     if( it != typeListeners.cend() ) {
-
       typeListeners.erase( it );
-
-      if( ! typeListeners.size()){
-
+      if( typeListeners.empty() ){
         removeEventListener( type );
-
       }
     }
-
   }
-
-  void dispatchEvent( TEvent& event ) {
+  
+  void dispatchEvent( const TEvent& event ) {
 
     auto typeListeners = listeners.find( event.type );
-    event.target = this;
 
     if(typeListeners != listeners.cend()) {
       for ( const auto& listener : typeListeners->second ) {
@@ -90,17 +91,8 @@ public:
 
   }
 
-  void dispatchEvent( const TEvent& event ) {
-    dispatchEvent( std::move(event) );
-  }
-
   void dispatchEvent( TEvent&& event ) {
-    dispatchEvent( event );
-  }
-
-  void dispatchEvent( const TKey& type ) {
-    auto ev = Event( std::move(type) );
-    dispatchEvent( ev );
+    dispatchEvent( std::forward<TEvent>( event ) );
   }
 
 protected:
@@ -108,9 +100,34 @@ protected:
   std::unordered_map<TKey, std::vector<EventListener<TEvent>>> listeners;
 
 };
+
+class DefaultEventDispatcher : public EventDispatcher<std::string, Event> {
+public:
+
+  void dispatchEvent( Event& event ) {
     
-typedef EventDispatcher<std::string, Event> DefaultEventDispatcher;
+    auto typeListeners = listeners.find( event.type );
+    event.target = this;
     
+    if(typeListeners != listeners.cend()) {
+      for ( const auto& listener : typeListeners->second ) {
+        listener( event );
+      }
+    }
+    
+  }
+  
+  void dispatchEvent( const Event& event ) {
+    dispatchEvent( std::move(event) );
+  }
+  
+  void dispatchEvent( const EventType& type ) {
+    auto ev = Event( std::move(type) );
+    dispatchEvent( std::move(ev) );
+  }
+
+};
+  
 } // namespace three
 
 #endif // THREE_EVENT_DISPATCHER_H
