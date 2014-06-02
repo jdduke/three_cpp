@@ -224,9 +224,8 @@ void Object3D::add( const Object3D::Ptr& object ) {
   }
 
   object->parent = this;
-  // TODO "EA: Dispatch event"
-
-  //object.dispatchEvent( { type: 'added' } );
+  object->dispatchEvent( "added" );
+    
   children.push_back( object );
 
   // add to scene
@@ -252,9 +251,7 @@ void Object3D::remove( const Object3D::Ptr& object ) {
     object->parent = nullptr;
     children.erase( index );
 
-    // TODO "EA: Dispatch event"
-
-    //object.dispatchEvent( { type: 'removed' } );
+    object->dispatchEvent( "removed" );
 
     // remove from scene
 

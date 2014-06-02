@@ -13,4 +13,6 @@ extern three::Vector3 unit3;
 
 bool matrixEquals4 ( const three::Matrix4& a, const three::Matrix4& b, float tolerance = 0.0001 );
 
+#define LOG(msg, val) std::cout << "[      LOG ] " << msg << " - " << val << std::endl;
+
 #endif

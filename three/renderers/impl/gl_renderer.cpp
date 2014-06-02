@@ -13,6 +13,7 @@
 
 #include <three/core/interfaces.h>
 #include <three/core/buffer_geometry.h>
+#include <three/core/event_dispatcher.h>
 #include <three/core/geometry.h>
 #include <three/core/geometry_group.h>
 #include <three/core/face.h>
@@ -438,20 +439,20 @@ void GLRenderer::createMeshBuffers( GeometryGroup& geometryGroup ) {
 
 // Events
 
-void GLRenderer::onGeometryDispose( Event& event ) {
-  // TODO
+void GLRenderer::onGeometryDispose( const Event& event ) {
+  console().warn("TODO onGeometryDispose");
 }
 
-void GLRenderer::onTextureDispose( Event& event ) {
-  // TODO
+void GLRenderer::onTextureDispose( const Event& event ) {
+  console().warn("TODO onTextureDispose");
 }
 
-void GLRenderer::onRenderTargetDispose( Event& event ) {
-  // TODO
+void GLRenderer::onRenderTargetDispose( const Event& event ) {
+  console().warn("TODO onRenderTargetDispose");
 }
 
-void GLRenderer::onMaterialDispose( Event& event ) {
-  // TODO
+void GLRenderer::onMaterialDispose( const Event& event ) {
+  console().warn("TODO onMaterialDispose");
 }
 
 // Buffer deallocation
@@ -3195,9 +3196,9 @@ void GLRenderer::addObject( Object3D& object, Scene& scene ) {
     object.glData.__glInit = true;
 
     geometry.__glInit = true;
-    // TODO ea: impl
-    //object.geometry.addEventListener( 'dispose', onGeometryDispose );
 
+    object.geometry->addEventListener( "dispose", std::bind(&GLRenderer::onGeometryDispose, this, std::placeholders::_1 ) );
+      
     if ( geometry.type() == enums::BufferGeometry ) {
 
         initDirectBuffers( geometry );
@@ -3459,8 +3460,7 @@ void GLRenderer::removeInstancesDirect( RenderListDirect& objlist, Object3D& obj
 
 void GLRenderer::initMaterial( Material& material, Lights& lights, IFog* fog, Object3D& object ) {
 
-  // TODO ea: impl
-  //material.addEventListener( 'dispose', onMaterialDispose );
+  material.addEventListener( "dispose", std::bind(&GLRenderer::onMaterialDispose, this, std::placeholders::_1) );
 
   std::string shaderID;
 
@@ -4978,9 +4978,8 @@ void GLRenderer::setTexture( Texture& texture, int slot ) {
     if ( ! texture.__glInit ) {
 
       texture.__glInit = true;
-
-      // TODO(Ea): impl
-      //texture.addEventListener( 'dispose', onTextureDispose );
+        
+      texture.addEventListener( "dispose", std::bind(&GLRenderer::onTextureDispose, this, std::placeholders::_1) );
 
       texture.__glTexture = _gl.CreateTexture();
 
@@ -5071,9 +5070,8 @@ void GLRenderer::setCubeTexture( Texture& texture, int slot ) {
     if ( texture.needsUpdate() ) {
 
       if ( ! texture.__glTextureCube ) {
-
-        // TODO(ea): impl
-        //texture.addEventListener( 'dispose', onTextureDispose );
+          
+        texture.addEventListener( "dispose", std::bind(&GLRenderer::onTextureDispose, this, std::placeholders::_1) );
 
         texture.__glTextureCube = _gl.CreateTexture();
 
@@ -5186,9 +5184,8 @@ void GLRenderer::setRenderTarget( const GLRenderTarget::Ptr& renderTarget ) {
   auto isCube = false;// TODO: ( renderTarget.type() == enums::WebglRenderTargetCube );
 
   if ( renderTarget && renderTarget->__glFramebuffer.size() == 0 ) {
-
-    // TODO(ea): impl
-    //renderTarget.addEventListener( 'dispose', onRenderTargetDispose );
+      
+    renderTarget->addEventListener( "dispose", std::bind(&GLRenderer::onRenderTargetDispose, this, std::placeholders::_1) );
 
     renderTarget->__glTexture = _gl.CreateTexture();
 

@@ -4,6 +4,7 @@
 #include <three/common.h>
 
 #include <three/core/interfaces.h>
+#include <three/core/event_dispatcher.h>
 
 #include <three/math/color.h>
 #include <three/math/vector3.h>
@@ -27,7 +28,7 @@
 
 namespace three {
 
-class THREE_DECL Material : public NonCopyable {
+class THREE_DECL Material : public NonCopyable, public DefaultEventDispatcher {
 
 public:
 
@@ -152,10 +153,12 @@ public:
   void setParameters( const Parameters& parameters,
                       const ParameterKeys& keys = ParameterKeys() );
 
-  // TODO "Implement"
+  // TODO "Clone without passing a parameter"
+
+  Material& clone( Material& material ) const;
 
   void dispose() {
-    //this.dispatchEvent( { type: 'dispose' } );
+    dispatchEvent( "dispose" );
   };
 
 protected:

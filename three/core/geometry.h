@@ -6,6 +6,7 @@
 #include <three/core/geometry_buffer.h>
 #include <three/core/geometry_group.h>
 #include <three/core/face.h>
+#include <three/core/event_dispatcher.h>
 
 #include <three/math/math.h>
 #include <three/math/color.h>
@@ -25,7 +26,7 @@
 
 namespace three {
 
-class THREE_DECL Geometry : public IGeometry, public GeometryBuffer {
+class THREE_DECL Geometry : public IGeometry, public GeometryBuffer, public DefaultEventDispatcher {
 
 public:
 

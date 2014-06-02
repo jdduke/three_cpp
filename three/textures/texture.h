@@ -4,6 +4,7 @@
 #include <three/common.h>
 #include <three/constants.h>
 #include <three/utils/memory.h>
+#include <three/core/event_dispatcher.h>
 #include <three/math/vector2.h>
 #include <three/textures/texture_buffer.h>
 
@@ -54,7 +55,7 @@ struct TextureDesc {
   float anisotropy;
 };
 
-class Texture : public TextureBuffer {
+class Texture : public TextureBuffer, public DefaultEventDispatcher {
 
 public:
 
@@ -119,23 +120,18 @@ public:
 
   }
 
-  // TODO "dispatcher"
+  inline void update()  {
 
-  inline void update() const {
-
-    //this.dispatchEvent( { type: 'update' } );
+     dispatchEvent( "update" );
 
   }
 
-  // TODO "dispatcher"
+  inline void dispose() {
 
-  inline void dispose() const {
-
-    //this.dispatchEvent( { type: 'dispose' } );
+    dispatchEvent( "dispose" );
 
   }
 
-  THREE_REVIEW("Why a vector with Image?")
   Texture::Ptr clone( ) const {
 
     auto texture = create( TextureDesc( image[0] ) );

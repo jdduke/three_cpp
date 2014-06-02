@@ -3,6 +3,8 @@
 
 #include <three/common.h>
 
+#include <three/core/event_dispatcher.h>
+
 #include <three/renderers/gl_render_target_buffer.h>
 
 namespace three {
@@ -38,7 +40,7 @@ struct TargetDesc {
   bool stencilBuffer;
 };
 
-class GLRenderTarget : public GLRenderTargetBuffer {
+class GLRenderTarget : public GLRenderTargetBuffer, public DefaultEventDispatcher {
 public:
 
   typedef std::shared_ptr<GLRenderTarget> Ptr;

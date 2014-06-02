@@ -12,7 +12,7 @@ dissect_version()
 
 set(THREE_TREAT_WARNINGS_AS_ERRORS FALSE CACHE BOOL "Treat warnings as errors")
 set(THREE_BUILD_EXAMPLES     TRUE CACHE BOOL "Build three.cpp examples")
-set(THREE_BUILD_TESTS        FALSE CACHE BOOL "Build three.cpp unit tests")
+set(THREE_BUILD_TESTS        TRUE CACHE BOOL "Build three.cpp unit tests")
 set(THREE_LIBRARY_STATIC     TRUE CACHE BOOL "If building three.cpp as a library, build statically")
 
 IF(NOT CMAKE_BUILD_TYPE)
@@ -207,8 +207,12 @@ if(THREE_BUILD_TESTS)
     )
   else()
     target_link_libraries(three_test
-      ${GTEST_LIBS_DIR}/libgtest.a
-      ${GTEST_LIBS_DIR}/libgtest_main.a
+      debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest.a
+      optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest.a
+    )
+    target_link_libraries(three_test
+      debug ${GTEST_LIBS_DIR}/DebugLibs/libgtest_main.a
+      optimized ${GTEST_LIBS_DIR}/ReleaseLibs/libgtest_main.a
     )
   endif()
   target_link_libraries(three_test ${THREE_LIB})

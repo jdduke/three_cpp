@@ -4,6 +4,7 @@
 #include "three/gl.h"
 #include "three/math/color.h"
 #include "three/utils/noncopyable.h"
+#include "three/core/event_dispatcher.h"
 #include "three/renderers/renderer_parameters.h"
 
 #include <SDL2/SDL.h>
@@ -15,18 +16,22 @@
 
 namespace three_examples {
 
-class GLWindow : public three::NonCopyable {
+using namespace three;
+    
+typedef SDL_Event                         SdlEvent;
+typedef SDL_EventType                     SdlEventType;
+
+typedef three::EventDispatcher<unsigned int, SdlEvent> SdlEventDispatcher;
+typedef three::EventListener<SdlEvent> SdlEventListener;
+    
+class GLWindow : public three::NonCopyable, public SdlEventDispatcher {
 public:
-  typedef SDL_Event                         Event;
-  typedef SDL_EventType                     EventType;
-  typedef std::function<void(const Event&)> EventListener;
+  
 
   GLWindow( const three::RendererParameters& );
   ~GLWindow();
 
   three::GLInterface createGLInterface();
-
-  void addEventListener( EventType, EventListener );
 
   typedef std::function<bool(float)> Update;
   void animate( Update update );
@@ -39,9 +44,10 @@ private:
 
   SDL_Window* window;
   SDL_GLContext context;
-  std::map<EventType, std::vector<EventListener>> listeners;
   bool renderStats;
 };
+
+
 
 } // namespace three_examples
 

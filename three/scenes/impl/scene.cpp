@@ -80,7 +80,6 @@ struct Remove : public FallbackVisitor {
 
   void operator()( Light& light ) {
     if(light.type() == enums::DirectionalLight) {
-      THREE_REVIEW("Works? :) wtb tests")
       auto& directionalLight = static_cast<DirectionalLight&>(light);
       for(auto& shadowCascadeLight : directionalLight.shadowCascadeArray) {
         Remove(s, shadowCascadeLight);
@@ -102,6 +101,10 @@ void Scene::__addObject( const Object3D::Ptr& object ) {
 
   detail::Add objectAdd( *this, object );
   object->visit( objectAdd );
+
+
+  dispatchEvent( Event("objectAdded", object.get()) );
+  object->dispatchEvent( Event("addedToScene", this) );
 
   for ( auto& child : object->children ) {
     __addObject( child );

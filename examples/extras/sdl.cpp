@@ -86,10 +86,6 @@ three::GLInterface GLWindow::createGLInterface() {
   return SDLGLInterface();
 }
 
-void GLWindow::addEventListener( EventType eventType, EventListener eventListener ) {
-  listeners[ eventType ].emplace_back( std::move(eventListener) );
-}
-
 void GLWindow::animate( Update update ) {
   SDL_assert( valid() );
 
@@ -146,12 +142,16 @@ bool GLWindow::processEvents() {
       };
     }
 
-    auto eventTypeListenersIt = listeners.find( static_cast<EventType>( event.type ) );
-    if ( eventTypeListenersIt == listeners.end() )
+    auto type = (unsigned int)event.type;
+      
+    auto eventTypeListenersIt = listeners.find( type  );
+    if ( eventTypeListenersIt == listeners.end() ) {
       continue;
-
-    for ( const auto& listener : eventTypeListenersIt->second )
+    }
+      
+    for ( const auto& listener : eventTypeListenersIt->second ) {
       listener( event );
+    }
   }
   return true;
 }

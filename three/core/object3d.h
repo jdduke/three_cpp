@@ -3,6 +3,9 @@
 
 #include <three/common.h>
 
+#include <three/core/geometry.h>
+#include <three/core/event_dispatcher.h>
+
 #include <three/math/vector3.h>
 #include <three/math/quaternion.h>
 #include <three/math/euler.h>
@@ -10,7 +13,6 @@
 #include <three/math/matrix4.h>
 
 #include <three/materials/material.h>
-#include <three/core/geometry.h>
 
 #include <three/utils/memory.h>
 #include <three/utils/noncopyable.h>
@@ -26,7 +28,7 @@
 
 namespace three {
 
-class THREE_DECL Object3D : NonCopyable {
+class THREE_DECL Object3D : public DefaultEventDispatcher, NonCopyable {
 public:
 
   typedef std::shared_ptr<Object3D> Ptr;
