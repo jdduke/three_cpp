@@ -100,10 +100,11 @@ TEST(core_event_dispatcher_test, addEventListener) {
     });
     
     a.addEventListener("click", (Listener) onSomeGlobalEvent );
-    a.addEventListener("update", std::bind(&Button::onSomeEvent, a, std::placeholders::_1) );
+    auto boundListener = a.addEventListener("update", std::bind(&Button::onSomeEvent, a, std::placeholders::_1) );
     
     EXPECT_TRUE(a.hasEventListener("click"));
     EXPECT_TRUE(a.hasEventListener("update"));
+    EXPECT_TRUE(a.hasEventListener("update", boundListener));
 }
 
 TEST(core_event_dispatcher_test, removeEventListener) {
@@ -113,6 +114,7 @@ TEST(core_event_dispatcher_test, removeEventListener) {
     auto listener = a.addEventListener("click", [](const Event& ev) {} );
     a.removeEventListener("click", listener);
     
+    EXPECT_FALSE(a.hasEventListener("click", listener));
     EXPECT_FALSE(a.hasEventListener("click"));
     
     // This will result in has click is TRUE, because the two passed event listeners
