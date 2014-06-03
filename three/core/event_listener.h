@@ -15,6 +15,8 @@ public:
 
   typedef std::function<void(const TEvent&)> EventListenerFunc;
 
+  virtual ~EventListener() {}
+
   EventListener( const EventListenerFunc& funcIn )
   : id( EventListenerCount()++ ),
     func( std::move(funcIn) ) {}

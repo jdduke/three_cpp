@@ -15,6 +15,8 @@ namespace three {
 template<typename TKey, typename TEvent>
 class EventDispatcher {
 public:
+
+  virtual ~EventDispatcher() {}
   
   EventListener<TEvent> addEventListener( const TKey& type, const std::function<void(const TEvent&)>& func ) {
     

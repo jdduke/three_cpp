@@ -6,12 +6,13 @@
 #include <three/math/vector3.h>
 #include <three/math/color.h>
 #include <three/utils/noncopyable.h>
+#include <three/core/event_dispatcher.h>
 
 #include <memory>
 
 namespace three {
 
-class THREE_DECL GeometryBuffer : NonCopyable {
+class THREE_DECL GeometryBuffer : NonCopyable, public DefaultEventDispatcher {
 public:
 
   struct THREE_DECL MorphTarget {
