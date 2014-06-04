@@ -62,7 +62,7 @@ void Object3D::SyncedEulerQuaternion::updateBeforeRotation() const {
     _rotation.setFromQuaternion( _quaternion );
     _lastUpdated = LastUpdatedRotationType::None;
       
-  } else if ( ! _prevRotation.equals( _rotation ) || ! _prevQuaternion.equals( _quaternion ) ) {
+  } else if ( ! _prevRotation.equals( _rotation ) ) {
 
     _quaternion.setFromEuler( _rotation );
     _prevRotation.copy( _rotation );
