@@ -213,14 +213,26 @@ private:
     const Quaternion& quaternion() const;
 
   private:
-    void syncRotationIfNecessary() const;
-    void syncQuaternionIfNecessary() const;
+
+    enum class LastUpdatedRotationType {
+        None,
+        Euler,
+        Quaternion
+    } mutable _lastUpdated;
+      
+    void updateBeforeRotation() const;
+    void updateBeforeQuaternion() const;
 
     mutable Euler _rotation;
+    mutable Euler _prevRotation;
     mutable Quaternion _quaternion;
-    mutable bool _rotationDirty;
-    mutable bool _quaternionDirty;
+    mutable Quaternion _prevQuaternion;
+      
   } _transform;
+
+ 
+
+
 
   Vector3 _up;
   Vector3 _position;

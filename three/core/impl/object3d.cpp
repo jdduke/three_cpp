@@ -16,43 +16,58 @@ unsigned nextObjectID() {
 } // namespace
 
 Object3D::SyncedEulerQuaternion::SyncedEulerQuaternion()
-    : _rotationDirty(false),
-      _quaternionDirty(false) { }
+    : _lastUpdated(LastUpdatedRotationType::None) { }
 
 Euler& Object3D::SyncedEulerQuaternion::rotation() {
-  syncRotationIfNecessary();
-  _rotationDirty = true;
+  updateBeforeRotation();
   return _rotation;
 }
 
 const Euler& Object3D::SyncedEulerQuaternion::rotation() const {
-  syncRotationIfNecessary();
+  updateBeforeRotation();
   return _rotation;
 }
 
 Quaternion& Object3D::SyncedEulerQuaternion::quaternion() {
-  syncQuaternionIfNecessary();
-  _quaternionDirty = true;
+  updateBeforeQuaternion();
   return _quaternion;
 }
 
 const Quaternion& Object3D::SyncedEulerQuaternion::quaternion() const {
-  syncQuaternionIfNecessary();
+  updateBeforeQuaternion();
   return _quaternion;
 }
 
-void Object3D::SyncedEulerQuaternion::syncRotationIfNecessary() const {
-  if ( _quaternionDirty ) {
-    _quaternionDirty = false;
+void Object3D::SyncedEulerQuaternion::updateBeforeQuaternion() const {
+
+  if( ! _prevRotation.equals( _rotation ) && _lastUpdated == LastUpdatedRotationType::Euler ) {
+
+    _quaternion.setFromEuler( _rotation );
+
+  } else if ( ! _prevQuaternion.equals( _quaternion ) ) {
+
     _rotation.setFromQuaternion( _quaternion );
+    _prevQuaternion.copy( _quaternion );
+    _lastUpdated = LastUpdatedRotationType::Quaternion;
+    
   }
+
 }
 
-void Object3D::SyncedEulerQuaternion::syncQuaternionIfNecessary() const {
-  if ( _rotationDirty ) {
-    _rotationDirty = false;
+void Object3D::SyncedEulerQuaternion::updateBeforeRotation() const {
+
+  if( ! _prevQuaternion.equals(_quaternion) && _lastUpdated == LastUpdatedRotationType::Quaternion ) {
+
+    _rotation.setFromQuaternion( _quaternion );
+
+  } else if ( ! _prevRotation.equals( _rotation ) ) {
+
     _quaternion.setFromEuler( _rotation );
+    _prevRotation.copy( _rotation );
+    _lastUpdated = LastUpdatedRotationType::Euler;
+
   }
+
 }
 
 Object3D& Object3D::applyMatrix( Matrix4& matrix ) {
