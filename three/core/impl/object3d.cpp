@@ -40,7 +40,7 @@ const Quaternion& Object3D::SyncedEulerQuaternion::quaternion() const {
 
 void Object3D::SyncedEulerQuaternion::updateBeforeQuaternion() const {
 
-  if( ! _prevRotation.equals( _rotation ) && (_lastUpdated == LastUpdatedRotationType::Euler || _lastUpdated == LastUpdatedRotationType::Init) ) {
+  if( (_lastUpdated == LastUpdatedRotationType::Euler || _lastUpdated == LastUpdatedRotationType::Init) && ! _prevRotation.equals( _rotation ) ) {
 
     _quaternion.setFromEuler( _rotation );
     _lastUpdated = LastUpdatedRotationType::None;
@@ -57,7 +57,7 @@ void Object3D::SyncedEulerQuaternion::updateBeforeQuaternion() const {
 
 void Object3D::SyncedEulerQuaternion::updateBeforeRotation() const {
 
-  if( ! _prevQuaternion.equals(_quaternion) && (_lastUpdated == LastUpdatedRotationType::Quaternion || _lastUpdated == LastUpdatedRotationType::Init) ) {
+  if( (_lastUpdated == LastUpdatedRotationType::Quaternion || _lastUpdated == LastUpdatedRotationType::Init) && ! _prevQuaternion.equals(_quaternion) ) {
 
     _rotation.setFromQuaternion( _quaternion );
     _lastUpdated = LastUpdatedRotationType::None;
