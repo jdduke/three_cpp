@@ -216,8 +216,9 @@ private:
 
     enum class LastUpdatedRotationType {
         None,
+        Skip,
         Euler,
-        Quaternion
+        Quaternion,
     } mutable _lastUpdated;
       
     void updateBeforeRotation() const;
