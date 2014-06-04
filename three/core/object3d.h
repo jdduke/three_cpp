@@ -215,8 +215,8 @@ private:
   private:
 
     enum class LastUpdatedRotationType {
+        Init,
         None,
-        Skip,
         Euler,
         Quaternion,
     } mutable _lastUpdated;

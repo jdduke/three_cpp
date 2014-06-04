@@ -16,7 +16,7 @@ unsigned nextObjectID() {
 } // namespace
 
 Object3D::SyncedEulerQuaternion::SyncedEulerQuaternion()
-    : _lastUpdated(LastUpdatedRotationType::None) {}
+    : _lastUpdated(LastUpdatedRotationType::Init) {}
 
 Euler& Object3D::SyncedEulerQuaternion::rotation() {
   updateBeforeRotation();
@@ -40,10 +40,10 @@ const Quaternion& Object3D::SyncedEulerQuaternion::quaternion() const {
 
 void Object3D::SyncedEulerQuaternion::updateBeforeQuaternion() const {
 
-  if( ! _prevRotation.equals( _rotation ) && (_lastUpdated == LastUpdatedRotationType::Euler || _lastUpdated == LastUpdatedRotationType::None) ) {
+  if( ! _prevRotation.equals( _rotation ) && (_lastUpdated == LastUpdatedRotationType::Euler || _lastUpdated == LastUpdatedRotationType::Init) ) {
 
     _quaternion.setFromEuler( _rotation );
-    _lastUpdated = LastUpdatedRotationType::Skip;
+    _lastUpdated = LastUpdatedRotationType::None;
       
   } else if ( ! _prevQuaternion.equals( _quaternion ) ) {
 
@@ -57,10 +57,10 @@ void Object3D::SyncedEulerQuaternion::updateBeforeQuaternion() const {
 
 void Object3D::SyncedEulerQuaternion::updateBeforeRotation() const {
 
-  if( ! _prevQuaternion.equals(_quaternion) && (_lastUpdated == LastUpdatedRotationType::Quaternion || _lastUpdated == LastUpdatedRotationType::None) ) {
+  if( ! _prevQuaternion.equals(_quaternion) && (_lastUpdated == LastUpdatedRotationType::Quaternion || _lastUpdated == LastUpdatedRotationType::Init) ) {
 
     _rotation.setFromQuaternion( _quaternion );
-    _lastUpdated = LastUpdatedRotationType::Skip;
+    _lastUpdated = LastUpdatedRotationType::None;
       
   } else if ( ! _prevRotation.equals( _rotation ) || ! _prevQuaternion.equals( _quaternion ) ) {
 
