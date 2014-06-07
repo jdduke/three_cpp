@@ -35,7 +35,7 @@ void particles_random( GLWindow& window, GLRenderer& renderer ) {
 
     //materials[i] = new THREE.ParticleBasicMaterial( { color: color, size: size } );
     auto material = ParticleSystemMaterial::create(
-      Material::Parameters().add( "size", size * .5f )
+      Material::Parameters().add( "size", size )
     );
 
     materials.push_back( material );

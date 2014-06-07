@@ -214,26 +214,21 @@ private:
 
   private:
 
+    void synchronizeRotation() const;
+    void synchronizeQuaternion() const;
+
     enum class LastUpdatedRotationType {
-        Init,
         None,
         Euler,
         Quaternion,
-    } mutable _lastUpdated;
-      
-    void updateBeforeRotation() const;
-    void updateBeforeQuaternion() const;
+    } mutable _lastMaybeUpdated;
 
     mutable Euler _rotation;
     mutable Euler _prevRotation;
     mutable Quaternion _quaternion;
     mutable Quaternion _prevQuaternion;
-      
+
   } _transform;
-
- 
-
-
 
   Vector3 _up;
   Vector3 _position;

@@ -16,57 +16,56 @@ unsigned nextObjectID() {
 } // namespace
 
 Object3D::SyncedEulerQuaternion::SyncedEulerQuaternion()
-    : _lastUpdated(LastUpdatedRotationType::Init) {}
+    : _lastMaybeUpdated( LastUpdatedRotationType::None ) {}
 
 Euler& Object3D::SyncedEulerQuaternion::rotation() {
-  updateBeforeRotation();
+  synchronizeRotation();
+  _lastMaybeUpdated = LastUpdatedRotationType::Euler;
   return _rotation;
 }
 
 const Euler& Object3D::SyncedEulerQuaternion::rotation() const {
-  updateBeforeRotation();
+  synchronizeRotation();
   return _rotation;
 }
 
 Quaternion& Object3D::SyncedEulerQuaternion::quaternion() {
-  updateBeforeQuaternion();
+  synchronizeQuaternion();
+  _lastMaybeUpdated = LastUpdatedRotationType::Quaternion;
   return _quaternion;
 }
 
 const Quaternion& Object3D::SyncedEulerQuaternion::quaternion() const {
-  updateBeforeQuaternion();
+  synchronizeQuaternion();
   return _quaternion;
 }
 
-void Object3D::SyncedEulerQuaternion::updateBeforeQuaternion() const {
+void Object3D::SyncedEulerQuaternion::synchronizeRotation() const {
+  if ( _lastMaybeUpdated == LastUpdatedRotationType::Quaternion ) {
 
-  if( (_lastUpdated == LastUpdatedRotationType::Euler || _lastUpdated == LastUpdatedRotationType::Init) && ! _prevRotation.equals( _rotation ) ) {
+     if ( ! _prevQuaternion.equals( _quaternion ) ) {
+       _rotation.setFromQuaternion( _quaternion );
+       _prevQuaternion.copy( _quaternion );
+       _prevRotation.copy( _rotation );
+     }
 
-    _quaternion.setFromEuler( _rotation );
-    _lastUpdated = LastUpdatedRotationType::None;
-      
-  } else if ( ! _prevQuaternion.equals( _quaternion ) ) {
+     _lastMaybeUpdated = LastUpdatedRotationType::None;
 
-    _rotation.setFromQuaternion( _quaternion );
-    _prevQuaternion.copy( _quaternion );
-    _lastUpdated = LastUpdatedRotationType::Quaternion;
-    
   }
 
 }
 
-void Object3D::SyncedEulerQuaternion::updateBeforeRotation() const {
+void Object3D::SyncedEulerQuaternion::synchronizeQuaternion() const {
 
-  if( (_lastUpdated == LastUpdatedRotationType::Quaternion || _lastUpdated == LastUpdatedRotationType::Init) && ! _prevQuaternion.equals(_quaternion) ) {
+  if ( _lastMaybeUpdated == LastUpdatedRotationType::Euler ) {
 
-    _rotation.setFromQuaternion( _quaternion );
-    _lastUpdated = LastUpdatedRotationType::None;
-      
-  } else if ( ! _prevRotation.equals( _rotation ) ) {
+     if ( ! _prevRotation.equals( _rotation ) ) {
+       _quaternion.setFromEuler( _rotation );
+       _prevRotation.copy( _rotation );
+       _prevQuaternion.copy( _quaternion );
+     }
 
-    _quaternion.setFromEuler( _rotation );
-    _prevRotation.copy( _rotation );
-    _lastUpdated = LastUpdatedRotationType::Euler;
+     _lastMaybeUpdated = LastUpdatedRotationType::None;
 
   }
 
@@ -242,7 +241,7 @@ void Object3D::add( const Object3D::Ptr& object ) {
 
   object->parent = this;
   object->dispatchEvent( "added" );
-    
+
   children.push_back( object );
 
   // add to scene
