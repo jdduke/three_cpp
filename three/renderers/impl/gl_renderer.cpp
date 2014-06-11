@@ -4571,8 +4571,7 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
                                        const Uniforms& uniforms,
                                        const Attributes& attributes,
                                        const Material::Defines& defines,
-                                       ProgramParameters& parameters/*,
-                                       const std::string& index0AttributeName*/) {
+                                       ProgramParameters& parameters) {
 
 
   // Generate code
@@ -4789,13 +4788,6 @@ Program::Ptr GLRenderer::buildProgram( const std::string& shaderID,
 
   GL_CALL( _gl.AttachShader( glProgram, glVertexShader ) );
   GL_CALL( _gl.AttachShader( glProgram, glFragmentShader ) );
-
-  //Force a particular attribute to index 0.
-  // because potentially expensive emulation is done by browser if attribute 0 is disabled.
-  //And, color, for example is often automatically bound to index 0 so disabling it
-  //if ( index0AttributeName.length() ) {
-  //  _gl.BindAttribLocation( glProgram, 0, index0AttributeName );
-  //}
 
   GL_CALL( _gl.LinkProgram( glProgram ) );
 
