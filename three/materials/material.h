@@ -106,10 +106,6 @@ public:
   //// use these default values in WebGL. This avoids errors when buffer data is missing.
   std::unordered_map<std::string, std::vector<float> > defaultAttributeValues;
 
-  //// By default, bind position to attribute index 0. In WebGL, attribute 0
-  //// should always be used to avoid potentially expensive emulation.
-  std::string index0AttributeName;
-
   float reflectivity;
   float refractionRatio;
   THREE::TextureConstant combine;

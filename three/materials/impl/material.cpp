@@ -151,7 +151,6 @@ Material::Material( )
     skinning( false ),
     morphTargets( false ),
     morphNormals( false ),
-    index0AttributeName( "position" ),
     reflectivity( 1.f ),
     refractionRatio( 0.98f ),
     combine( THREE::MultiplyOperation ),
