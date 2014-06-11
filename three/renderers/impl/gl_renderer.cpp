@@ -2380,13 +2380,17 @@ void GLRenderer::renderBuffer( Camera& camera, Lights& lights, IFog* fog, Materi
 
     if ( (index = attributes[AttributeKey::color()]) >= 0 ) {
 
-      _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
-      enableAttribute( attributes[AttributeKey::color()] );
-      _gl.VertexAttribPointer( index, 3, GL_FLOAT, false, 0, 0 );
+      if( ! object.geometry->colors.empty()) {
+            
+        _gl.BindBuffer( GL_ARRAY_BUFFER, geometryGroup.__glColorBuffer );
+        enableAttribute( attributes[AttributeKey::color()] );
+        _gl.VertexAttribPointer( index, 3, GL_FLOAT, false, 0, 0 );
 
-    } else {
+      } else {
 
-      _gl.VertexAttrib3fv( attributes[AttributeKey::color()], &material.defaultAttributeValues[ AttributeKey::color() ][0] );
+        _gl.VertexAttrib3fv( attributes[AttributeKey::color()], &material.defaultAttributeValues[ AttributeKey::color() ][0] );
+
+      }
 
     }
 
