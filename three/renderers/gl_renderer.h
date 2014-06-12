@@ -263,8 +263,7 @@ private:
                              const Uniforms& uniforms,
                              const Attributes& attributes,
                              const Material::Defines& defines,
-                             ProgramParameters& parameters/*,
-                             const std::string& index0AttributeName = ""*/);
+                             ProgramParameters& parameters);
 
   // Shader parameters cache
   void cacheUniformLocations( Program& program, const Identifiers& identifiers );

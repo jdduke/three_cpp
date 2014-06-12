@@ -39,10 +39,15 @@ GLWindow::GLWindow( const RendererParameters& parameters )
     : window( nullptr ),
       context( nullptr ),
       renderStats( true ) {
+          
+  if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS ) < 0 ) {
+    console().error() << "Unable to initialize SDL: " << SDL_GetError();
+    return;
+  }
 
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+  SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
 
   if ( parameters.vsync )
     SDL_GL_SetSwapInterval( 1 );
