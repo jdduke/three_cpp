@@ -18,6 +18,8 @@ CircleGeometry::Ptr CircleGeometry::create(float radius,
   return circleGeometry;
 }
 
+CircleGeometry::CircleGeometry() { };
+
 void CircleGeometry::initialize( float radius, size_t segments, float thetaStart, float thetaLength ) {
 
   std::vector<Vector2> uvs;
