@@ -15,6 +15,7 @@
 #include "three/extras/geometries/cylinder_geometry.h"
 #include "three/extras/geometries/plane_geometry.h"
 #include "three/extras/geometries/sphere_geometry.h"
+#include "three/extras/geometries/ring_geometry.h"
 
 
 using namespace three;
@@ -78,9 +79,9 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
   circle->position().set( 0, 0, 0 );
   scene->add( circle );
 
-  // object = new THREE.Mesh( new THREE.RingGeometry( 10, 50, 20, 5, 0, Math.PI * 2 ), material );
-  // object.position.set( 200, 0, 0 );
-  // scene.add( object );
+  auto ring = Mesh::create( RingGeometry::create( 10, 50, 20, 5, 0, Math::PI() * 2 ), material );
+  ring->position().set( 200, 0, 0 );
+  scene->add( ring );
 
   auto cylinder = Mesh::create( CylinderGeometry::create( 25, 75, 100, 40, 5 ), material );
   cylinder->position().set( 400, 0, 0 );

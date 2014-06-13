@@ -1,14 +1,15 @@
 #ifndef THREE_CUBE_GEOMETRY_CPP
 #define THREE_CUBE_GEOMETRY_CPP
 
-#include <three/core/face3.h>
 #include <three/extras/geometries/circle_geometry.h>
+
+#include <three/core/face3.h>
 
 namespace three {
 
 CircleGeometry::Ptr CircleGeometry::create(float radius,
-                  size_t segments, 
-                  float thetaStart, 
+                  size_t segments,
+                  float thetaStart,
                   float thetaLength) {
 
   auto circleGeometry = make_shared<CircleGeometry>();
