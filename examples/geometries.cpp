@@ -21,6 +21,8 @@
 #include "three/extras/geometries/octahedron_geometry.h"
 #include "three/extras/geometries/tetrahedron_geometry.h"
 #include "three/extras/geometries/lathe_geometry.h"
+#include "three/extras/geometries/torus_geometry.h"
+#include "three/extras/geometries/torus_knot_geometry.h"
 
 using namespace three;
 using namespace three_examples;
@@ -104,13 +106,13 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
   lathe->position().set( -400, 0, -200 );
   scene->add( lathe );
 
-  // object = new THREE.Mesh( new THREE.TorusGeometry( 50, 20, 20, 20 ), material );
-  // object.position.set( -200, 0, -200 );
-  // scene.add( object );
+  auto torus = Mesh::create( TorusGeometry::create( 50, 20, 20, 20 ), material );
+  torus->position().set( -200, 0, -200 );
+  scene->add( torus );
 
-  // object = new THREE.Mesh( new THREE.TorusKnotGeometry( 50, 10, 50, 20 ), material );
-  // object.position.set( 0, 0, -200 );
-  // scene.add( object );
+  auto torusKnot = Mesh::create( TorusKnotGeometry::create( 50, 10, 50, 20 ), material );
+  torusKnot->position().set( 0, 0, -200 );
+  scene->add( torusKnot );
 
   // object = new THREE.AxisHelper( 50 );
   // object.position.set( 200, 0, -200 );
