@@ -20,6 +20,7 @@
 #include "three/extras/geometries/icosahedron_geometry.h"
 #include "three/extras/geometries/octahedron_geometry.h"
 #include "three/extras/geometries/tetrahedron_geometry.h"
+#include "three/extras/geometries/lathe_geometry.h"
 
 using namespace three;
 using namespace three_examples;
@@ -92,17 +93,16 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
 
   //
 
-  // var points = [];
+  std::vector<Vector3> points;
+  for ( auto i = 0; i < 50; i ++ ) {
+        
+    points.push_back( Vector3( Math::sin( (float)i * 0.2 ) * Math::sin( (float)i * 0.1 ) * 15 + 50, 0, ( (float)i - 5 ) * 2 ) );
+        
+  }
 
-  // for ( var i = 0; i < 50; i ++ ) {
-
-  //   points.push( new THREE.Vector3( Math.sin( i * 0.2 ) * Math.sin( i * 0.1 ) * 15 + 50, 0, ( i - 5 ) * 2 ) );
-
-  // }
-
-  // object = new THREE.Mesh( new THREE.LatheGeometry( points, 20 ), material );
-  // object.position.set( -400, 0, -200 );
-  // scene.add( object );
+  auto lathe = Mesh::create( LatheGeometry::create( points, 20 ), material );
+  lathe->position().set( -400, 0, -200 );
+  scene->add( lathe );
 
   // object = new THREE.Mesh( new THREE.TorusGeometry( 50, 20, 20, 20 ), material );
   // object.position.set( -200, 0, -200 );

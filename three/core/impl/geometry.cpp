@@ -98,8 +98,10 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
   // create internal buffers for reuse when calling this method repeatedly
   // (otherwise memory allocation / deallocation every frame is big resource hog)
 
-  vertices.resize( vertices.size() );
-  std::fill( vertices.begin(), vertices.end(), Vector3() );
+  std::vector<Vector3> verticesTmp;
+  verticesTmp.resize( this->vertices.size() );
+
+  std::fill( verticesTmp.begin(), verticesTmp.end(), Vector3() );
 
 
   if( areaWeighted ) {
@@ -107,23 +109,21 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
     // vertex normals weighted by triangle areas
     // http://www.iquilezles.org/www/articles/normals/normals.htm
 
-      auto cb = Vector3(), ab = Vector3();
-      // TODO: unused vars?
-      //,db = Vector3(), dc = Vector3(), bc = Vector3();
+    auto cb = Vector3(), ab = Vector3();
 
     for ( const auto& face : faces ) {
 
-      auto& vA = vertices[ face.a ];
-      auto& vB = vertices[ face.b ];
-      auto& vC = vertices[ face.c ];
+      auto& vA = this->vertices[ face.a ];
+      auto& vB = this->vertices[ face.b ];
+      auto& vC = this->vertices[ face.c ];
 
       cb.subVectors( vC, vB );
       ab.subVectors( vA, vB );
       cb.cross( ab );
 
-      vertices[ face.a ].add( cb );
-      vertices[ face.b ].add( cb );
-      vertices[ face.c ].add( cb );
+      verticesTmp[ face.a ].add( cb );
+      verticesTmp[ face.b ].add( cb );
+      verticesTmp[ face.c ].add( cb );
 
     }
 
@@ -131,18 +131,16 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
 
     for ( const auto& face : faces ) {
 
-      for ( auto i = 0; i < face.size(); ++i ) {
-
-        vertices[ face.abc[ i ] ].add( face.normal );
-
-      }
+      verticesTmp[ face.a ].add( face.normal );
+      verticesTmp[ face.b ].add( face.normal );
+      verticesTmp[ face.c ].add( face.normal );
 
     }
 
   }
 
 
-  for ( auto& vertice : vertices ) {
+  for ( auto& vertice : verticesTmp ) {
 
     vertice.normalize();
 
@@ -150,9 +148,9 @@ void Geometry::computeVertexNormals( bool areaWeighted ) {
 
   for ( auto& face : faces ) {
 
-    face.vertexNormals[ 0 ].copy( vertices[ face.abc[ 0 ] ] );
-    face.vertexNormals[ 1 ].copy( vertices[ face.abc[ 1 ] ] );
-    face.vertexNormals[ 2 ].copy( vertices[ face.abc[ 2 ] ] );
+    face.vertexNormals[ 0 ].copy( verticesTmp[ face.abc[ 0 ] ].clone() );
+    face.vertexNormals[ 1 ].copy( verticesTmp[ face.abc[ 1 ] ].clone() );
+    face.vertexNormals[ 2 ].copy( verticesTmp[ face.abc[ 2 ] ].clone() );
 
   }
 

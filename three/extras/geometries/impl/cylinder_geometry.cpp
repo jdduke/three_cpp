@@ -46,7 +46,7 @@ void CylinderGeometry::initialize( float radiusTop,
     auto v = (float) y / heightSegments;
     auto radius = v * ( radiusBottom - radiusTop ) + radiusTop;
 
-      for ( unsigned int x = 0; x <= radialSegments; x ++ ) {
+      for ( x = 0; x <= radialSegments; x ++ ) {
 
         float u = (float)x / (float)radialSegments;
 

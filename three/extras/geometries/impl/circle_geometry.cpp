@@ -32,7 +32,7 @@ void CircleGeometry::initialize( float radius, size_t segments, float thetaStart
   vertices.push_back(center);
   uvs.push_back( centerUV );
 
-  for ( int i = 0; i <= segments; i ++ ) {
+  for ( unsigned int i = 0; i <= segments; i ++ ) {
 
     auto vertex = Vector3();
     float segment = thetaStart + (float)i / (float)segments * thetaLength;
@@ -47,7 +47,7 @@ void CircleGeometry::initialize( float radius, size_t segments, float thetaStart
 
   auto n = Vector3( 0, 0, 1 );
 
-  for ( int i = 1; i <= segments; i ++ ) {
+  for ( unsigned int i = 1; i <= segments; i ++ ) {
 
     auto v1 = (float)i;
     auto v2 = (float)i + 1.f ;
