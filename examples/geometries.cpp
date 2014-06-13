@@ -23,6 +23,7 @@
 #include "three/extras/geometries/lathe_geometry.h"
 #include "three/extras/geometries/torus_geometry.h"
 #include "three/extras/geometries/torus_knot_geometry.h"
+#include "three/extras/helpers/arrow_helper.h"
 
 using namespace three;
 using namespace three_examples;
@@ -118,9 +119,10 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
   // object.position.set( 200, 0, -200 );
   // scene.add( object );
 
-  // object = new THREE.ArrowHelper( new THREE.Vector3( 0, 1, 0 ), new THREE.Vector3( 0, 0, 0 ), 50 );
-  // object.position.set( 400, 0, -200 );
-  // scene.add( object );
+  auto arrow = ArrowHelper::create( Vector3( 0, 1, 0 ), Vector3( 0, 0, 0 ) );
+  arrow->setLength(50);
+  arrow->position().set( 400, 0, -200 );
+  scene->add( arrow );
 
 
   /*renderer.sortObjects = false;

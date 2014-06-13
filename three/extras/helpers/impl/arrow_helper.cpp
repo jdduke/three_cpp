@@ -2,6 +2,7 @@
 #define THREE_EXTRAS_ARROW_HELPER_CPP
 
 #include <three/common.h>
+#include <three/console.h>
 
 #include <three/math/math.h>
 
@@ -11,6 +12,15 @@
 #include <three/materials/line_basic_material.h>
 
 namespace three {
+
+ArrowHelper::Ptr ArrowHelper::create( const Vector3& dir,
+                                      const Vector3& origin,
+                                      float length,
+                                      int hex,
+                                      float headLength,
+                                      float headWidth ) {
+  return make_shared<ArrowHelper>( dir, origin, length, hex, headLength, headWidth );
+}
 
 void ArrowHelper::setDirection ( const Vector3& dir ) {
 
@@ -72,11 +82,11 @@ void ArrowHelper::setColor ( int hex ) {
 
 };
 
-ArrowHelper::ArrowHelper( const Vector3& dir, 
-             const Vector3& origin, 
-             float length , 
-             int hex, 
-             float headLength, 
+ArrowHelper::ArrowHelper( const Vector3& dir,
+             const Vector3& origin,
+             float length ,
+             int hex,
+             float headLength,
              float headWidth ) {
 
   this->position() = origin;
@@ -85,14 +95,17 @@ ArrowHelper::ArrowHelper( const Vector3& dir,
   lineGeometry->vertices.push_back( Vector3( 0, 0, 0 ) );
   lineGeometry->vertices.push_back( Vector3( 0, 1, 0 ) );
 
-    this->line = Line::create( lineGeometry, LineBasicMaterial::create( Material::Parameters().add( "color", hex ) ) );
+  this->line = Line::create( lineGeometry, LineBasicMaterial::create( Material::Parameters().add( "color", Color(hex) ) ) );
   this->line->matrixAutoUpdate = false;
   this->add( this->line );
 
   auto coneGeometry = CylinderGeometry::create( 0, 0.5, 1, 5, 1 );
   coneGeometry->applyMatrix( Matrix4().makeTranslation( 0, - 0.5, 0 ) );
 
-  this->cone = Mesh::create( coneGeometry, MeshBasicMaterial::create( Material::Parameters().add( "color", hex ) ) );
+  auto meshMaterial = MeshBasicMaterial::create( Material::Parameters().add( "color", Color(hex) ) );
+  meshMaterial->wireframe = true;
+
+  this->cone = Mesh::create( coneGeometry, meshMaterial );
   this->cone->matrixAutoUpdate = false;
   this->add( this->cone );
 

@@ -13,14 +13,12 @@ public:
 
   typedef std::shared_ptr<ArrowHelper> Ptr;
 
-  static Ptr create( const Vector3& dir, 
-                     const Vector3& origin, 
-                     float length = 1, 
-                     int hex = 0xffff00, 
-                     float headLength = 0.2, 
-                     float headWidth = 0.04 ) {
-    return make_shared<ArrowHelper>( dir, origin, length, hex, headLength, headWidth );
-  }
+  static Ptr create( const Vector3& dir,
+                     const Vector3& origin,
+                     float length = 50,
+                     int hex = 0xffff00,
+                     float headLength = 10,
+                     float headWidth = 2 );
 
   Line::Ptr line;
   Mesh::Ptr cone;
@@ -37,11 +35,11 @@ public:
 
 protected:
 
-  ArrowHelper( const Vector3& dir, 
-               const Vector3& origin, 
-               float length , 
-               int hex, 
-               float headLength, 
+  ArrowHelper( const Vector3& dir,
+               const Vector3& origin,
+               float length ,
+               int hex,
+               float headLength,
                float headWidth );
 
 };
