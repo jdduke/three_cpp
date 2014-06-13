@@ -16,6 +16,7 @@
 #include "three/extras/geometries/plane_geometry.h"
 #include "three/extras/geometries/sphere_geometry.h"
 #include "three/extras/geometries/ring_geometry.h"
+#include "three/extras/geometries/polyhedron_geometry.h"
 
 
 using namespace three;

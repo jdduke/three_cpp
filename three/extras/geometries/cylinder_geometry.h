@@ -2,7 +2,6 @@
 #define THREE_EXTRA_CYLINDER_GEOMETRY_H
 
 #include <three/core/geometry.h>
-#include <three/core/face3.h>
 
 namespace three {
 
