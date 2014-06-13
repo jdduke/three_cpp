@@ -8,9 +8,13 @@ namespace three {
 
 class THREE_DECL PolyhedronGeometry : public Geometry {
 private:
-    
-    struct IndexedVertex;
-    
+
+  struct IndexedVertex {
+    size_t index;
+    Vector3 vector;
+    Vector2 uv;
+  };
+
 public:
 
   typedef std::shared_ptr<PolyhedronGeometry> Ptr;
@@ -20,9 +24,12 @@ public:
                      float radius = 1,
                      int detail = 0 );
 
+  float radius;
+  int detail;
+
 protected:
 
-  PolyhedronGeometry();
+  PolyhedronGeometry( float radiusIn, int detailIn );
 
   void initialize( std::vector<std::array<float,3>> verticesIn,
                    std::vector<std::array<float,3>> facesIn,

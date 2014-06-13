@@ -3,27 +3,26 @@
 
 #include <three/extras/geometries/polyhedron_geometry.h>
 
-namespace three {
+#include <three/core/face3.h>
 
-struct PolyhedronGeometry::IndexedVertex {
-  size_t index;
-  Vector3 vector;
-  Vector2 uv;
-};
+#include <three/utils/conversion.h>
+
+namespace three {
 
 PolyhedronGeometry::Ptr PolyhedronGeometry::create( std::vector<std::array<float,3>> vertices,
                    std::vector<std::array<float,3>> faces,
                    float radius,
                    int detail ) {
 
-  auto polyhedronGeometry = make_shared<PolyhedronGeometry>();
+  auto polyhedronGeometry = make_shared<PolyhedronGeometry>( radius, detail );
 
   polyhedronGeometry->initialize( vertices, faces, radius, detail );
 
   return polyhedronGeometry;
 }
 
-PolyhedronGeometry::PolyhedronGeometry() {}
+PolyhedronGeometry::PolyhedronGeometry( float radiusIn, int detailIn )
+  : radius( radiusIn ), detail( detailIn ) {}
 
 void PolyhedronGeometry::initialize( std::vector<std::array<float,3>> verticesIn,
                    std::vector<std::array<float,3>> facesIn,
@@ -37,14 +36,14 @@ void PolyhedronGeometry::initialize( std::vector<std::array<float,3>> verticesIn
   }
 
   std::vector<Face3> f;
-
+    
   for ( size_t i = 0; i < facesIn.size(); i ++ ) {
 
     auto v1 = indexedVertices[ facesIn[ i ][ 0 ] ];
     auto v2 = indexedVertices[ facesIn[ i ][ 1 ] ];
     auto v3 = indexedVertices[ facesIn[ i ][ 2 ] ];
 
-    f[ i ] = Face3( v1.index, v2.index, v3.index, v1.vector.clone(), v2.vector.clone(), v3.vector.clone() );
+    f.push_back( Face3( v1.index, v2.index, v3.index, v1.vector.clone(), v2.vector.clone(), v3.vector.clone() ) );
 
   }
 
@@ -134,11 +133,11 @@ void PolyhedronGeometry::make( const IndexedVertex& v1, const IndexedVertex& v2,
 
   auto azi = azimuth( face.centroid );
 
-  this->faceVertexUvs[ 0 ].push_back( {
+  this->faceVertexUvs[ 0 ].push_back( toArray(
     correctUV( v1.uv, v1.vector, azi ),
     correctUV( v2.uv, v2.vector, azi ),
     correctUV( v3.uv, v3.vector, azi )
-  } );
+  ) );
 
 }
 
@@ -152,6 +151,7 @@ void PolyhedronGeometry::subdivide( const Face3& face, int detail ) {
   auto c = prepare( this->vertices[ face.c ] );
 
   std::vector<std::vector<IndexedVertex>> v;
+  v.resize(cols+1);
 
   // Construct all of the vertices for this subdivision.
 
@@ -165,11 +165,11 @@ void PolyhedronGeometry::subdivide( const Face3& face, int detail ) {
 
       if ( j == 0 && i == cols ) {
 
-        v[ i ][ j ] = aj;
+        v[ i ].push_back(aj);
 
       } else {
 
-        v[ i ][ j ] = prepare( aj.vector.clone().lerp( bj.vector, (float)j / rows ) );
+        v[ i ].push_back( prepare( aj.vector.clone().lerp( bj.vector, (float)j / rows ) ) );
 
       }
 

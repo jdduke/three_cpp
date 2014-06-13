@@ -4,6 +4,7 @@
 #include <three/extras/geometries/circle_geometry.h>
 
 #include <three/core/face3.h>
+#include <three/utils/conversion.h>
 
 namespace three {
 
@@ -53,7 +54,7 @@ void CircleGeometry::initialize( float radius, size_t segments, float thetaStart
     auto v3 = (float)0;
 
     faces.push_back( Face3( v1, v2, v3, n.clone(), n.clone(), n.clone()  ) );
-    faceVertexUvs[ 0 ].push_back( { uvs[ i ].clone(), uvs[ i + 1 ].clone(), centerUV.clone() } );
+    faceVertexUvs[ 0 ].push_back( toArray( uvs[ i ].clone(), uvs[ i + 1 ].clone(), centerUV.clone() ) );
 
   }
 

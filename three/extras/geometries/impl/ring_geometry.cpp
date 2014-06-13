@@ -3,6 +3,8 @@
 
 #include <three/extras/geometries/ring_geometry.h>
 
+#include <three/utils/conversion.h>
+
 #include <three/core/geometry.h>
 #include <three/core/face3.h>
 #include <three/math/sphere.h>
@@ -76,14 +78,14 @@ void RingGeometry::initialize( float innerRadius,
       auto v3 = segment + thetaSegments + 1 + i;
 
       this->faces.push_back( Face3( v1, v2, v3, n.clone(), n.clone(), n.clone() ) );
-      this->faceVertexUvs[ 0 ].push_back( { uvs[ v1 ].clone(), uvs[ v2 ].clone(), uvs[ v3 ].clone() } );
+      this->faceVertexUvs[ 0 ].push_back( toArray( uvs[ v1 ].clone(), uvs[ v2 ].clone(), uvs[ v3 ].clone() ) );
 
       v1 = segment + i;
       v2 = segment + thetaSegments + 1 + i;
       v3 = segment + 1 + i;
 
       this->faces.push_back( Face3( v1, v2, v3, n.clone(), n.clone(), n.clone() ) );
-      this->faceVertexUvs[ 0 ].push_back( { uvs[ v1 ].clone(), uvs[ v2 ].clone(), uvs[ v3 ].clone() } );
+      this->faceVertexUvs[ 0 ].push_back( toArray( uvs[ v1 ].clone(), uvs[ v2 ].clone(), uvs[ v3 ].clone() ) );
 
     }
 

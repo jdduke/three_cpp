@@ -4,6 +4,7 @@
 #include <three/extras/geometries/cylinder_geometry.h>
 
 #include <three/core/face3.h>
+#include <three/utils/conversion.h>
 
 namespace three {
 
@@ -104,10 +105,10 @@ void CylinderGeometry::initialize( float radiusTop,
       auto uv4 = uvsRows[ y ][ x + 1 ].clone();
 
       this->faces.push_back( Face3( v1, v2, v4, n1, n2, n4 ) );
-      this->faceVertexUvs[ 0 ].push_back( { uv1, uv2, uv4 } );
+      this->faceVertexUvs[ 0 ].push_back( toArray( uv1, uv2, uv4 ) );
 
       this->faces.push_back( Face3( v2, v3, v4, n2.clone(), n3, n4.clone() ) );
-      this->faceVertexUvs[ 0 ].push_back( { uv2.clone(), uv3, uv4.clone() } );
+      this->faceVertexUvs[ 0 ].push_back( toArray( uv2.clone(), uv3, uv4.clone() ) );
 
     }
 
