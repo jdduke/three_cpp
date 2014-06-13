@@ -19,6 +19,7 @@
 #include "three/extras/geometries/polyhedron_geometry.h"
 #include "three/extras/geometries/icosahedron_geometry.h"
 #include "three/extras/geometries/octahedron_geometry.h"
+#include "three/extras/geometries/tetrahedron_geometry.h"
 
 using namespace three;
 using namespace three_examples;
@@ -63,9 +64,9 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
   octa->position().set( 0, 0, 200 );
   scene->add( octa );
 
-  // object = new THREE.Mesh( new THREE.TetrahedronGeometry( 75, 0 ), material );
-  // object.position.set( 200, 0, 200 );
-  // scene.add( object );
+  auto tetra = Mesh::create( TetrahedronGeometry::create( 75, 0 ), material );
+  tetra->position().set( 200, 0, 200 );
+  scene->add( tetra );
 
   //
 
