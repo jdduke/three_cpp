@@ -24,6 +24,7 @@
 #include "three/extras/geometries/torus_geometry.h"
 #include "three/extras/geometries/torus_knot_geometry.h"
 #include "three/extras/helpers/arrow_helper.h"
+#include "three/extras/helpers/axis_helper.h"
 
 using namespace three;
 using namespace three_examples;
@@ -47,11 +48,11 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
   map->wrapS = map->wrapT = THREE::RepeatWrapping;
   map->anisotropy = 16;
 
-  auto material = MeshLambertMaterial::create( 
+  auto material = MeshLambertMaterial::create(
     Material::Parameters()
       .add( "ambient", Color( 0xbbbbbb ) )
       .add( "map", map )
-      .add( "side", THREE::DoubleSide ) 
+      .add( "side", THREE::DoubleSide )
   );
 
   //
@@ -98,9 +99,9 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
 
   std::vector<Vector3> points;
   for ( auto i = 0; i < 50; i ++ ) {
-        
+
     points.push_back( Vector3( Math::sin( (float)i * 0.2 ) * Math::sin( (float)i * 0.1 ) * 15 + 50, 0, ( (float)i - 5 ) * 2 ) );
-        
+
   }
 
   auto lathe = Mesh::create( LatheGeometry::create( points, 20 ), material );
@@ -115,49 +116,14 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
   torusKnot->position().set( 0, 0, -200 );
   scene->add( torusKnot );
 
-  // object = new THREE.AxisHelper( 50 );
-  // object.position.set( 200, 0, -200 );
-  // scene.add( object );
+  auto axis = AxisHelper::create( 50 );
+  axis->position().set( 200, 0, -200 );
+  scene->add( axis );
 
   auto arrow = ArrowHelper::create( Vector3( 0, 1, 0 ), Vector3( 0, 0, 0 ) );
   arrow->setLength(50);
   arrow->position().set( 400, 0, -200 );
   scene->add( arrow );
-
-
-  /*renderer.sortObjects = false;
-
- 
-
-  auto scene = Scene::create();
-  scene->fog = Fog::create( 0xffffff, 1, 10000 );
-
-  auto material = MeshNormalMaterial::create();
-  auto geometry = CubeGeometry::create( 100, 100, 100 );
-
-  auto group = Object3D::create();
-  for ( int i = 0; i < 1000; i ++ ) {
-
-    auto mesh = Mesh::create( geometry, material );
-    mesh->position() = Vector3( Math::random() * 2000 - 1000,
-                                Math::random() * 2000 - 1000,
-                                Math::random() * 2000 - 1000 );
-
-    mesh->rotation() = Euler( Math::random() * 2 * Math::PI(),
-                              Math::random() * 2 * Math::PI(),
-                              0 );
-
-    mesh->matrixAutoUpdate = false;
-    mesh->updateMatrix();
-
-    group->add( mesh );
-
-  }
-  scene->add( group );
-
-  auto light = DirectionalLight::create( 0xFFFFFF );
-  light->target = group;
-  scene->add( light );*/
 
   /////////////////////////////////////////////////////////////////////////
 
@@ -201,9 +167,6 @@ void geometries( GLWindow& window, GLRenderer& renderer ) {
 int main( int argc, char* argv[] ) {
 
   RendererParameters parameters;
-//  parameters.clearAlpha = 1.f;
-//  parameters.clearColor = Color(0xFFFFFF);
-
   parameters.vsync = false;
 
   return RunExample( geometries, parameters );

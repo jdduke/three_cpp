@@ -87,6 +87,29 @@ std::vector<T> toVector( const T& t0, const T& t1, const T& t2, const T& t3 ) {
 	result.push_back(t3);
 	return result;
 }
+template < typename T >
+std::vector<T> toVector( const T& t0, const T& t1, const T& t2, const T& t3, const T& t4 ) {
+	std::vector<T> result;
+	result.reserve(5);
+	result.push_back(t0);
+	result.push_back(t1);
+	result.push_back(t2);
+	result.push_back(t3);
+	result.push_back(t4);
+	return result;
+}
+template < typename T >
+std::vector<T> toVector( const T& t0, const T& t1, const T& t2, const T& t3, const T& t4, const T& t5 ) {
+	std::vector<T> result;
+	result.reserve(6);
+	result.push_back(t0);
+	result.push_back(t1);
+	result.push_back(t2);
+	result.push_back(t3);
+	result.push_back(t4);
+	result.push_back(t5);
+	return result;
+}
 #endif
 
 } // namespace three
