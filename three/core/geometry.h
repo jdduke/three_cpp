@@ -43,6 +43,8 @@ public:
     return make_shared<Geometry>();
   }
 
+  virtual ~Geometry();
+
   virtual THREE::GeometryType type() const {
     return THREE::Geometry;
   }
@@ -107,7 +109,6 @@ public:
 protected:
 
   Geometry();
-  virtual ~Geometry();
 
 private:
 
