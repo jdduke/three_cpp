@@ -9,11 +9,11 @@
 namespace three {
 
 CylinderGeometry::Ptr CylinderGeometry::create( float radiusTop,
-                              float radiusBottom,
-                              float height,
-                              size_t radialSegments,
-                              size_t heightSegments,
-                              bool openEnded ) {
+    float radiusBottom,
+    float height,
+    size_t radialSegments,
+    size_t heightSegments,
+    bool openEnded ) {
 
   auto cylinderGeometry = make_shared<CylinderGeometry>();
 
@@ -25,11 +25,11 @@ CylinderGeometry::Ptr CylinderGeometry::create( float radiusTop,
 CylinderGeometry::CylinderGeometry() {}
 
 void CylinderGeometry::initialize( float radiusTop,
-                 float radiusBottom,
-                 float height,
-                 size_t radialSegments,
-                 size_t heightSegments,
-                 bool openEnded ) {
+                                   float radiusBottom,
+                                   float height,
+                                   size_t radialSegments,
+                                   size_t heightSegments,
+                                   bool openEnded ) {
 
   auto heightHalf = height / 2.f;
 
@@ -46,21 +46,21 @@ void CylinderGeometry::initialize( float radiusTop,
     auto v = (float) y / heightSegments;
     auto radius = v * ( radiusBottom - radiusTop ) + radiusTop;
 
-      for ( x = 0; x <= radialSegments; x ++ ) {
+    for ( x = 0; x <= radialSegments; x ++ ) {
 
-        float u = (float)x / (float)radialSegments;
+      float u = (float)x / (float)radialSegments;
 
-        auto vertex = Vector3();
-        vertex.x = radius * Math::sin( u * Math::PI() * 2 );
-        vertex.y = - v * height + heightHalf;
-        vertex.z = radius * Math::cos( u * Math::PI() * 2 );
+      auto vertex = Vector3();
+      vertex.x = radius * Math::sin( u * Math::PI() * 2 );
+      vertex.y = - v * height + heightHalf;
+      vertex.z = radius * Math::cos( u * Math::PI() * 2 );
 
-        this->vertices.push_back( vertex );
+      this->vertices.push_back( vertex );
 
-        verticesRow.push_back( this->vertices.size() - 1 );
-        uvsRow.push_back( Vector2( u, 1 - v ) );
+      verticesRow.push_back( (int) this->vertices.size() - 1 );
+      uvsRow.push_back( Vector2( u, 1 - v ) );
 
-      }
+    }
 
     verticesRows.push_back( verticesRow );
     uvsRows.push_back( uvsRow );
@@ -124,7 +124,7 @@ void CylinderGeometry::initialize( float radiusTop,
 
       auto v1 = verticesRows[ 0 ][ x ];
       auto v2 = verticesRows[ 0 ][ x + 1 ];
-      auto v3 = this->vertices.size() - 1;
+      auto v3 = (int) this->vertices.size() - 1;
 
       auto n1 = Vector3( 0, 1, 0 );
       auto n2 = Vector3( 0, 1, 0 );
@@ -135,7 +135,7 @@ void CylinderGeometry::initialize( float radiusTop,
       auto uv3 = Vector2( uv2.x, 0 );
 
       this->faces.push_back( Face3( v1, v2, v3, n1, n2, n3 ) );
-      this->faceVertexUvs[ 0 ].push_back( { uv1, uv2, uv3 } );
+      this->faceVertexUvs[ 0 ].push_back( toArray( uv1, uv2, uv3 ) );
 
     }
 
@@ -151,7 +151,7 @@ void CylinderGeometry::initialize( float radiusTop,
 
       auto v1 = verticesRows[ y ][ x + 1 ];
       auto v2 = verticesRows[ y ][ x ];
-      auto v3 = this->vertices.size() - 1;
+      auto v3 = (int) this->vertices.size() - 1;
 
       auto n1 = Vector3( 0, - 1, 0 );
       auto n2 = Vector3( 0, - 1, 0 );
@@ -162,7 +162,7 @@ void CylinderGeometry::initialize( float radiusTop,
       auto uv3 = Vector2( uv2.x, 1 );
 
       this->faces.push_back( Face3( v1, v2, v3, n1, n2, n3 ) );
-      this->faceVertexUvs[ 0 ].push_back( { uv1, uv2, uv3 } );
+      this->faceVertexUvs[ 0 ].push_back( toArray( uv1, uv2, uv3 ) );
 
     }
 
