@@ -8,9 +8,9 @@ namespace three {
 
 namespace detail {
 
-inline const char* textVertexShader() {
-  return
-"\
+    inline const char* textVertexShader()
+    {
+        return "\
 varying vec2 vUv;\
 void main() {\
   vUv = uv;\
@@ -18,11 +18,11 @@ void main() {\
   gl_Position = projectionMatrix * mvPosition;\
 }\
 ";
-}
+    }
 
-inline const char* textFragmentShader() {
-  return
-"\
+    inline const char* textFragmentShader()
+    {
+        return "\
 uniform sampler2D texture;\
 uniform vec3 diffuse;\
 uniform float opacity;\
@@ -32,32 +32,28 @@ void main() {\
   gl_FragColor = vec4( diffuse, opacity * texOpacity );\
 }\
 ";
-}
+    }
 
 }
 
-ShaderMaterial::Ptr Text2DMaterial::create( const Font& font,
-                                            const Color& color,
-                                            float opacity ) {
+ShaderMaterial::Ptr Text2DMaterial::create(const Font& font,
+                                           const Color& color,
+                                           float opacity)
+{
 
-  auto material = ShaderMaterial::create(
-    std::string(detail::textVertexShader()),
-    std::string(detail::textFragmentShader()),
-    Uniforms().add( UniformKey::diffuse(), Uniform( THREE::c, color ) )
-              .add( UniformKey::opacity(), Uniform( THREE::f, opacity ) )
-              .add( "texture",             Uniform( THREE::t, font.texture().get() ) )
-  );
+    auto material = ShaderMaterial::create(
+        std::string(detail::textVertexShader()),
+        std::string(detail::textFragmentShader()),
+        Uniforms().add(UniformKey::diffuse(), Uniform(THREE::c, color)).add(UniformKey::opacity(), Uniform(THREE::f, opacity)).add("texture", Uniform(THREE::t, font.texture().get())));
 
-  //material->map = font.texture();
-  material->depthTest = material->depthWrite = false;
-  material->side = THREE::NoSide;
-  material->transparent = true;
+    //material->map = font.texture();
+    material->depthTest = material->depthWrite = false;
+    material->side = THREE::NoSide;
+    material->transparent = true;
 
-  return material;
-
+    return material;
 }
 
 } // namespace three
 
 #endif // THREE_TEXT_2D_MATERIAL_IPP
-

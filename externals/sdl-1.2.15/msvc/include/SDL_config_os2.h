@@ -27,18 +27,18 @@
 
 /* This is a set of defines to configure the SDL features */
 
-typedef signed char         int8_t;
-typedef unsigned char       uint8_t;
-typedef signed short        int16_t;
-typedef unsigned short      uint16_t;
-typedef signed int          int32_t;
-typedef unsigned int        uint32_t;
-typedef unsigned int        size_t;
-typedef unsigned long       uintptr_t;
-typedef signed long long    int64_t;
-typedef unsigned long long  uint64_t;
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef signed short int16_t;
+typedef unsigned short uint16_t;
+typedef signed int int32_t;
+typedef unsigned int uint32_t;
+typedef unsigned int size_t;
+typedef unsigned long uintptr_t;
+typedef signed long long int64_t;
+typedef unsigned long long uint64_t;
 
-#define SDL_HAS_64BIT_TYPE	1
+#define SDL_HAS_64BIT_TYPE 1
 
 /* Use Watcom's LIBC */
 #define HAVE_LIBC 1
@@ -109,33 +109,33 @@ typedef unsigned long long  uint64_t;
 #define HAVE_CLOCK_GETTIME 1
 
 /* Enable various audio drivers */
-#define SDL_AUDIO_DRIVER_DART	1
-#define SDL_AUDIO_DRIVER_DISK	1
-#define SDL_AUDIO_DRIVER_DUMMY	1
+#define SDL_AUDIO_DRIVER_DART 1
+#define SDL_AUDIO_DRIVER_DISK 1
+#define SDL_AUDIO_DRIVER_DUMMY 1
 
 /* Enable various cdrom drivers */
-#define SDL_CDROM_OS2	1
+#define SDL_CDROM_OS2 1
 
 /* Enable various input drivers */
-#define SDL_JOYSTICK_OS2	1
+#define SDL_JOYSTICK_OS2 1
 
 /* Enable various shared object loading systems */
-#define SDL_LOADSO_OS2	1
+#define SDL_LOADSO_OS2 1
 
 /* Enable various threading systems */
-#define SDL_THREAD_OS2	1
+#define SDL_THREAD_OS2 1
 
 /* Enable various timer systems */
-#define SDL_TIMER_OS2	1
+#define SDL_TIMER_OS2 1
 
 /* Enable various video drivers */
-#define SDL_VIDEO_DRIVER_DUMMY	1
-#define SDL_VIDEO_DRIVER_OS2FS	1
+#define SDL_VIDEO_DRIVER_DUMMY 1
+#define SDL_VIDEO_DRIVER_OS2FS 1
 
 /* Enable OpenGL support */
 /* Nothing here yet for OS/2... :( */
 
 /* Enable assembly routines where available */
-#define SDL_ASSEMBLY_ROUTINES	1
+#define SDL_ASSEMBLY_ROUTINES 1
 
 #endif /* _SDL_config_os2_h */

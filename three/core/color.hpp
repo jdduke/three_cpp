@@ -7,49 +7,60 @@
 
 namespace three {
 
-class Color {
+class Color
+{
 public:
-
     union {
-        struct { float r, g, b; };
+        struct
+        {
+            float r, g, b;
+        };
         float rgb[3];
     };
 
-    Color () : r ( 1 ), g ( 1 ), b ( 1 ) { }
+    Color()
+        : r(1), g(1), b(1) {}
 
-    explicit Color ( unsigned hex ) { setHex ( hex ); }
+    explicit Color(unsigned hex) { setHex(hex); }
 
-    Color ( float r, float g, float b )
-        : r ( r ), g ( g ), b ( b ) { }
+    Color(float r, float g, float b)
+        : r(r), g(g), b(b) {}
 
-    float& operator[] (const int i) { return rgb[i]; }
-    const float operator[] (const int i) const { return rgb[i]; }
+    float& operator[](const int i) { return rgb[i]; }
+    const float operator[](const int i) const { return rgb[i]; }
 
-    Color& copyGammaToLinear ( const Color& color ) {
+    Color& copyGammaToLinear(const Color& color)
+    {
         r = color.r * color.r;
         g = color.g * color.g;
         b = color.b * color.b;
         return *this;
     }
 
-    Color& setRGB ( float rIn, float gIn, float bIn ) {
+    Color& setRGB(float rIn, float gIn, float bIn)
+    {
         r = rIn;
         g = gIn;
         b = bIn;
         return *this;
     }
 
-    Color& setHSV ( float h, float s, float v ) {
-        if ( v == 0.f ) {
+    Color& setHSV(float h, float s, float v)
+    {
+        if (v == 0.f)
+        {
             r = g = b = 0;
-        } else {
-            auto i = ( int ) Math::floor ( h * 6.f );
-            auto f = ( h * 6 ) - i;
-            auto p = v * ( 1.f - s );
-            auto q = v * ( 1.f - ( s * f ) );
-            auto t = v * ( 1.f - ( s * ( 1.f - f ) ) );
+        }
+        else
+        {
+            auto i = (int)Math::floor(h * 6.f);
+            auto f = (h * 6) - i;
+            auto p = v * (1.f - s);
+            auto q = v * (1.f - (s * f));
+            auto t = v * (1.f - (s * (1.f - f)));
 
-            switch ( i ) {
+            switch (i)
+            {
             case 0:
                 r = v;
                 g = t;
@@ -87,21 +98,23 @@ public:
         return *this;
     }
 
-    Color& setHex ( unsigned hex ) {
-        r = ( float ) ( ( hex >> 16 ) & 255 ) / 255.f;
-        g = ( float ) ( ( hex >>  8 ) & 255 ) / 255.f;
-        b = ( float ) ( ( hex >>  0 ) & 255 ) / 255.f;
+    Color& setHex(unsigned hex)
+    {
+        r = (float)((hex >> 16) & 255) / 255.f;
+        g = (float)((hex >> 8) & 255) / 255.f;
+        b = (float)((hex >> 0) & 255) / 255.f;
         return *this;
     }
 
-    Color& copy( const Color& color ) {
+    Color& copy(const Color& color)
+    {
         return *this = color;
     }
 
-    Color clone() {
+    Color clone()
+    {
         return *this;
     }
-
 };
 
 } // namespace three

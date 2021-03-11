@@ -7,37 +7,37 @@
 
 namespace three {
 
-class OrthographicCamera : public Camera {
+class OrthographicCamera : public Camera
+{
 public:
+    typedef std::shared_ptr<OrthographicCamera> Ptr;
 
-  typedef std::shared_ptr<OrthographicCamera> Ptr;
+    static Ptr create(float left, float right, float top, float bottom, float near = 0.1f, float far = 2000)
+    {
+        return make_shared<OrthographicCamera>(left, right, top, bottom, near, far);
+    }
 
-  static Ptr create( float left, float right, float top, float bottom, float near = 0.1f, float far = 2000 ) {
-    return make_shared<OrthographicCamera>( left, right, top, bottom, near, far );
-  }
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
+    float left, right;
+    float top, bottom;
 
-  float left, right;
-  float top, bottom;
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
+    void updateProjectionMatrix()
+    {
+        projectionMatrix.makeOrthographic(left, right, top, bottom, near, far);
+    }
 
-  void updateProjectionMatrix() {
-    projectionMatrix.makeOrthographic( left, right, top, bottom, near, far );
-  }
-
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
 protected:
+    THREE_DECL OrthographicCamera(float left, float right, float top, float bottom, float near, float far)
+        : Camera(near, far), left(left), right(right), top(top), bottom(bottom)
+    {
 
-  THREE_DECL OrthographicCamera( float left, float right, float top, float bottom, float near, float far )
-    : Camera( near, far ), left( left ), right( right ), top( top ), bottom( bottom ) {
-
-    updateProjectionMatrix();
-
-  }
-
+        updateProjectionMatrix();
+    }
 };
 
 } // namespace three

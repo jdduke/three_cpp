@@ -10,8 +10,7 @@
 #include <three/extras/geometries/torus_geometry.hpp>
 #include <three/extras/image_utils.hpp>
 
-const std::string vertexShader =
-"\
+const std::string vertexShader = "\
 uniform vec2 uvScale;\
 varying vec2 vUv;\
 void main() {\
@@ -21,8 +20,7 @@ void main() {\
 }\
 ";
 
-const std::string fragmentShader =
-"\
+const std::string fragmentShader = "\
 uniform float time;\
 \
 uniform float fogDensity;\
@@ -67,91 +65,85 @@ void main( void ) {\
 
 using namespace three;
 
-void shader_fireball( GLRenderer::Ptr renderer ) {
+void shader_fireball(GLRenderer::Ptr renderer)
+{
 
-  auto camera = PerspectiveCamera::create(
-    40, (float)renderer->width() / renderer->height(), 1, 3000
-  );
-  camera->position.z = 4;
+    auto camera = PerspectiveCamera::create(
+        40, (float)renderer->width() / renderer->height(), 1, 3000);
+    camera->position.z = 4;
 
-  auto scene = Scene::create();
+    auto scene = Scene::create();
 
-  float time = 1;
+    float time = 1;
 
-  auto texture1 = ImageUtils::loadTexture( threeDataPath("textures/lava/cloud.png") );
-  auto texture2 = ImageUtils::loadTexture( threeDataPath("textures/lava/lavatile.jpg") );
-  texture1->wrapS = texture1->wrapT = THREE::RepeatWrapping;
-  texture2->wrapS = texture2->wrapT = THREE::RepeatWrapping;
+    auto texture1 = ImageUtils::loadTexture(threeDataPath("textures/lava/cloud.png"));
+    auto texture2 = ImageUtils::loadTexture(threeDataPath("textures/lava/lavatile.jpg"));
+    texture1->wrapS = texture1->wrapT = THREE::RepeatWrapping;
+    texture2->wrapS = texture2->wrapT = THREE::RepeatWrapping;
 
-  auto material = ShaderMaterial::create(
-    vertexShader,
-    fragmentShader,
-    Uniforms().add("fogDensity", Uniform( THREE::f, .45f ))
-              .add("fogColor",   Uniform( THREE::v3, Vector3(0, 0, 0)))
-              .add("time",       Uniform( THREE::f, time ))
-              .add("uvScale",    Uniform( THREE::v2, Vector2( 3.f, 1.f )))
-              .add("texture1",   Uniform( THREE::t, texture1.get()))
-              .add("texture2",   Uniform( THREE::t, texture2.get()))
-  );
+    auto material = ShaderMaterial::create(
+        vertexShader,
+        fragmentShader,
+        Uniforms().add("fogDensity", Uniform(THREE::f, .45f)).add("fogColor", Uniform(THREE::v3, Vector3(0, 0, 0))).add("time", Uniform(THREE::f, time)).add("uvScale", Uniform(THREE::v2, Vector2(3.f, 1.f))).add("texture1", Uniform(THREE::t, texture1.get())).add("texture2", Uniform(THREE::t, texture2.get())));
 
-  // Geometries
-  auto mesh = Mesh::create( TorusGeometry::create( 0.65f, 0.3f, 30, 30 ), material );
-  mesh->rotation.x = 0.3f;
-  scene->add( mesh );
+    // Geometries
+    auto mesh = Mesh::create(TorusGeometry::create(0.65f, 0.3f, 30, 30), material);
+    mesh->rotation.x = 0.3f;
+    scene->add(mesh);
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+    auto running = true;
+    sdl::addEventListener(SDL_KEYDOWN, [&](const sdl::Event&) {
+        running = false;
+    });
+    sdl::addEventListener(SDL_QUIT, [&](const sdl::Event&) {
+        running = false;
+    });
 
-  auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-  });
+    auto mouseX = 0.f, mouseY = 0.f;
+    sdl::addEventListener(SDL_MOUSEMOTION, [&](const sdl::Event& event) {
+        mouseX = 2.f * ((float)event.motion.x / renderer->width() - 0.5f);
+        mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+    });
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  anim::gameLoop( [&]( float dt ) -> bool {
+    anim::gameLoop([&](float dt) -> bool {
+        camera->position.x += (-2.f * mouseX - camera->position.x) * 3 * dt;
+        camera->position.y += (2.f * mouseY - camera->position.y) * 3 * dt;
+        camera->lookAt(scene->position);
 
-    camera->position.x += (-2.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += ( 2.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+        time += dt;
+        material->uniforms["time"].value = time;
 
-    time += dt;
-    material->uniforms[ "time" ].value = time;
+        mesh->rotation.y += 0.0375f * dt;
+        mesh->rotation.x += 0.15f * dt;
 
-    mesh->rotation.y += 0.0375f * dt;
-    mesh->rotation.x += 0.15f * dt;
+        renderer->render(*scene, *camera);
 
-    renderer->render( *scene, *camera );
-
-    return running;
-
-  } );
-
+        return running;
+    });
 }
 
-int main( int argc, char* argv[] ) {
+int main(int argc, char* argv[])
+{
 
-  auto onQuit = defer( sdl::quit );
+    auto onQuit = defer(sdl::quit);
 
-  RendererParameters parameters;
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
+    RendererParameters parameters;
+    if (!sdl::init(parameters) || !glew::init(parameters))
+    {
+        return 0;
+    }
+
+    auto renderer = GLRenderer::create(parameters);
+    if (!renderer)
+    {
+        return 0;
+    }
+
+    shader_fireball(renderer);
+
     return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  shader_fireball( renderer );
-
-  return 0;
 }

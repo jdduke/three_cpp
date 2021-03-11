@@ -8,13 +8,14 @@
 
 namespace three {
 
-class RenderableLine : public Renderable {
+class RenderableLine : public Renderable
+{
 public:
+    RenderableLine()
+        : Renderable(0), material(nullptr) {}
 
-  RenderableLine() : Renderable( 0 ), material( nullptr ) { }
-
-  RenderableVertex v1, v2;
-  Material* material;
+    RenderableVertex v1, v2;
+    Material* material;
 };
 
 } // namespace three

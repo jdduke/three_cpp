@@ -11,8 +11,7 @@
 #include <three/extras/image_utils.hpp>
 #include <three/extras/geometries/cube_geometry.hpp>
 
-const std::string vertexShader =
-"\
+const std::string vertexShader = "\
 varying vec2 vUv;\
 void main() {\
   vUv = uv;\
@@ -21,8 +20,7 @@ void main() {\
 }\
 ";
 
-const std::string fragmentShader1 =
-"\
+const std::string fragmentShader1 = "\
 uniform float time;\
 varying vec2 vUv;\
 void main(void) {\
@@ -52,8 +50,7 @@ void main(void) {\
 }\
 ";
 
-const std::string fragmentShader2 =
-"\
+const std::string fragmentShader2 = "\
 uniform float time;\
 varying vec2 vUv;\
 void main( void ) {\
@@ -65,8 +62,7 @@ void main( void ) {\
 }\
 ";
 
-const std::string fragmentShader3 =
-"\
+const std::string fragmentShader3 = "\
 uniform float time;\
 varying vec2 vUv;\
 void main( void ) {\
@@ -80,8 +76,7 @@ void main( void ) {\
 }\
 ";
 
-const std::string fragmentShader4 =
-"\
+const std::string fragmentShader4 = "\
 uniform float time;\
 uniform sampler2D texture;\
 varying vec2 vUv;\
@@ -101,114 +96,111 @@ void main( void ) {\
 
 using namespace three;
 
-void shader2( GLRenderer::Ptr renderer ) {
+void shader2(GLRenderer::Ptr renderer)
+{
 
-  auto camera = PerspectiveCamera::create(
-    40, (float)renderer->width() / renderer->height(), 1, 3000
-  );
-  camera->position.z = 6;
+    auto camera = PerspectiveCamera::create(
+        40, (float)renderer->width() / renderer->height(), 1, 3000);
+    camera->position.z = 6;
 
-  auto scene = Scene::create();
+    auto scene = Scene::create();
 
-  float time = 1;
+    float time = 1;
 
-  auto texture = ImageUtils::loadTexture( threeDataPath("textures/disturb.jpg") );
-  texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
+    auto texture = ImageUtils::loadTexture(threeDataPath("textures/disturb.jpg"));
+    texture->wrapS = texture->wrapT = THREE::RepeatWrapping;
 
-  Uniforms uniforms1;
-  uniforms1.add( "time", Uniform( THREE::f, time) );
+    Uniforms uniforms1;
+    uniforms1.add("time", Uniform(THREE::f, time));
 
-  Uniforms uniforms2;
-  uniforms2.add( "time", Uniform( THREE::f, time) )
-           .add( "texture", Uniform( THREE::t, texture.get() ) );
+    Uniforms uniforms2;
+    uniforms2.add("time", Uniform(THREE::f, time))
+        .add("texture", Uniform(THREE::t, texture.get()));
 
-  std::vector<Material::Ptr> mlib;
-  std::vector<Mesh::Ptr> meshes;
+    std::vector<Material::Ptr> mlib;
+    std::vector<Mesh::Ptr> meshes;
 
-  auto addCube = [&]( float size, float x, float y,
-                      const std::string& vertexShader,
-                      const std::string& fragmentShader,
-                      Uniforms& uniforms ) {
+    auto addCube = [&](float size, float x, float y,
+                       const std::string& vertexShader,
+                       const std::string& fragmentShader,
+                       Uniforms& uniforms) {
+        auto material = ShaderMaterial::create(
+            vertexShader,
+            fragmentShader,
+            uniforms);
 
-    auto material = ShaderMaterial::create(
-      vertexShader,
-      fragmentShader,
-      uniforms
-    );
+        mlib.push_back(material);
 
-    mlib.push_back( material );
+        auto mesh = Mesh::create(CubeGeometry::create(size, size, size,
+                                                      1, 1, 1,
+                                                      std::vector<Material::Ptr>(1, material)),
+                                 MeshFaceMaterial::create());
+        mesh->position.x = x;
+        mesh->position.y = y;
+        scene->add(mesh);
 
-    auto mesh = Mesh::create( CubeGeometry::create( size, size, size,
-                                                    1, 1, 1,
-                                                    std::vector<Material::Ptr>( 1, material ) ),
-                              MeshFaceMaterial::create() );
-    mesh->position.x = x;
-    mesh->position.y = y;
-    scene->add( mesh );
+        meshes.push_back(mesh);
+    };
 
-    meshes.push_back( mesh );
-
-  };
-
-  addCube( .75f, -1.5f, -.5f, vertexShader, fragmentShader1, uniforms1 );
-  addCube( .75f, -0.5f,  .5f, vertexShader, fragmentShader2, uniforms1 );
-  addCube( .75f,  0.5f, -.5f, vertexShader, fragmentShader3, uniforms1 );
-  addCube( .75f,  1.5f,  .5f, vertexShader, fragmentShader4, uniforms2 );
+    addCube(.75f, -1.5f, -.5f, vertexShader, fragmentShader1, uniforms1);
+    addCube(.75f, -0.5f, .5f, vertexShader, fragmentShader2, uniforms1);
+    addCube(.75f, 0.5f, -.5f, vertexShader, fragmentShader3, uniforms1);
+    addCube(.75f, 1.5f, .5f, vertexShader, fragmentShader4, uniforms2);
 
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+    auto running = true;
+    sdl::addEventListener(SDL_KEYDOWN, [&](const sdl::Event&) {
+        running = false;
+    });
+    sdl::addEventListener(SDL_QUIT, [&](const sdl::Event&) {
+        running = false;
+    });
 
-  auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-  });
+    auto mouseX = 0.f, mouseY = 0.f;
+    sdl::addEventListener(SDL_MOUSEMOTION, [&](const sdl::Event& event) {
+        mouseX = 2.f * ((float)event.motion.x / renderer->width() - 0.5f);
+        mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+    });
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  anim::gameLoop( [&]( float dt ) -> bool {
+    anim::gameLoop([&](float dt) -> bool {
+        camera->position.x += (-2.f * mouseX - camera->position.x) * 3 * dt;
+        camera->position.y += (2.f * mouseY - camera->position.y) * 3 * dt;
+        camera->lookAt(scene->position);
 
-    camera->position.x += (-2.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += ( 2.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+        time += dt;
 
-    time += dt;
+        for (auto& material : mlib)
+            material->uniforms["time"].value = time;
 
-    for ( auto& material : mlib )
-      material->uniforms[ "time" ].value = time;
+        renderer->render(*scene, *camera);
 
-    renderer->render( *scene, *camera );
-
-    return running;
-
-  } );
-
+        return running;
+    });
 }
 
-int main( int argc, char* argv[] ) {
+int main(int argc, char* argv[])
+{
 
-  auto onQuit = defer( sdl::quit );
+    auto onQuit = defer(sdl::quit);
 
-  RendererParameters parameters;
+    RendererParameters parameters;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
+    if (!sdl::init(parameters) || !glew::init(parameters))
+    {
+        return 0;
+    }
+
+    auto renderer = GLRenderer::create(parameters);
+    if (!renderer)
+    {
+        return 0;
+    }
+
+    shader2(renderer);
+
     return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  shader2( renderer );
-
-  return 0;
 }

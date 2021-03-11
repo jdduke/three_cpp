@@ -14,130 +14,134 @@
 
 using namespace three;
 
-void geometry_hierarchy_2( GLRenderer::Ptr renderer ) {
+void geometry_hierarchy_2(GLRenderer::Ptr renderer)
+{
 
-  renderer->sortObjects = false;
+    renderer->sortObjects = false;
 
-  auto camera = PerspectiveCamera::create(
-    60, (float)renderer->width() / renderer->height(), 1, 10000
-  );
-  camera->position.z = 3000;
+    auto camera = PerspectiveCamera::create(
+        60, (float)renderer->width() / renderer->height(), 1, 10000);
+    camera->position.z = 3000;
 
-  auto scene = Scene::create();
-  auto material = MeshNormalMaterial::create();
-  auto geometry = CubeGeometry::create( 100, 100, 100 );
+    auto scene = Scene::create();
+    auto material = MeshNormalMaterial::create();
+    auto geometry = CubeGeometry::create(100, 100, 100);
 
-  auto root = Object3D::create();
-  root->position.x = 1000;
-  scene->add( root );
+    auto root = Object3D::create();
+    root->position.x = 1000;
+    scene->add(root);
 
-  auto amount = 100;
-  auto parent = root;
+    auto amount = 100;
+    auto parent = root;
 
-  auto add = [&geometry, &material]( Object3D::Ptr parent,
-                                     int amount,
-                                     Vector3 offset ) {
-    for ( int i = 0; i < amount; i ++ ) {
+    auto add = [&geometry, &material](Object3D::Ptr parent,
+                                      int amount,
+                                      Vector3 offset) {
+        for (int i = 0; i < amount; i++)
+        {
 
-      auto object = Mesh::create( geometry, material );
-      object->position = offset;
+            auto object = Mesh::create(geometry, material);
+            object->position = offset;
 
-      parent->add( object );
-      parent = object;
-
-    }
-  };
-
-  add( root, amount, Vector3(-100,    0,    0) );
-  add( root, amount, Vector3( 100,    0,    0) );
-  add( root, amount, Vector3(   0, -100,    0) );
-  add( root, amount, Vector3(   0,  100,    0) );
-  add( root, amount, Vector3(   0,    0, -100) );
-  add( root, amount, Vector3(   0,    0,  100) );
-
-  /////////////////////////////////////////////////////////////////////////
-
-  auto running = true, renderStats = true;
-  sdl::addEventListener( SDL_KEYDOWN, [&]( const sdl::Event& e ) {
-    switch (e.key.keysym.sym) {
-    case SDLK_q:
-    case SDLK_ESCAPE:
-      running = false; break;
-    default:
-      renderStats = !renderStats; break;
+            parent->add(object);
+            parent = object;
+        }
     };
-  } );
 
-  sdl::addEventListener( SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  } );
+    add(root, amount, Vector3(-100, 0, 0));
+    add(root, amount, Vector3(100, 0, 0));
+    add(root, amount, Vector3(0, -100, 0));
+    add(root, amount, Vector3(0, 100, 0));
+    add(root, amount, Vector3(0, 0, -100));
+    add(root, amount, Vector3(0, 0, 100));
 
-  sdl::addEventListener( SDL_VIDEORESIZE, [&]( const sdl::Event event ) {
-    camera->aspect = ( float )event.resize.w / event.resize.h;
-    camera->updateProjectionMatrix();
-    renderer->setSize( event.resize.w, event.resize.h );
-  } );
+    /////////////////////////////////////////////////////////////////////////
 
-  auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-  });
+    auto running = true, renderStats = true;
+    sdl::addEventListener(SDL_KEYDOWN, [&](const sdl::Event& e) {
+        switch (e.key.keysym.sym)
+        {
+        case SDLK_q:
+        case SDLK_ESCAPE:
+            running = false;
+            break;
+        default:
+            renderStats = !renderStats;
+            break;
+        };
+    });
 
-  /////////////////////////////////////////////////////////////////////////
+    sdl::addEventListener(SDL_QUIT, [&](const sdl::Event&) {
+        running = false;
+    });
 
-  auto time = 0.f;
-  auto frame = 0;
-  const auto maxFrames = 50000;
+    sdl::addEventListener(SDL_VIDEORESIZE, [&](const sdl::Event event) {
+        camera->aspect = (float)event.resize.w / event.resize.h;
+        camera->updateProjectionMatrix();
+        renderer->setSize(event.resize.w, event.resize.h);
+    });
 
-  anim::gameLoop (
+    auto mouseX = 0.f, mouseY = 0.f;
+    sdl::addEventListener(SDL_MOUSEMOTION, [&](const sdl::Event& event) {
+        mouseX = 2.f * ((float)event.motion.x / renderer->width() - 0.5f);
+        mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+    });
 
-    [&]( float dt ) -> bool {
+    /////////////////////////////////////////////////////////////////////////
 
-      time += dt;
-      ++frame;
+    auto time = 0.f;
+    auto frame = 0;
+    const auto maxFrames = 50000;
 
-      camera->position.x += (-3000.f * mouseX - camera->position.x ) * 3 * dt;
-      camera->position.y += ( 3000.f * mouseY - camera->position.y ) * 3 * dt;
-      camera->lookAt( scene->position );
+    anim::gameLoop(
 
-      auto rx = Math::sin( time * 0.7f ) * 0.2f,
-           ry = Math::sin( time * 0.3f ) * 0.1f,
-           rz = Math::sin( time * 0.2f ) * 0.1f;
+        [&](float dt) -> bool {
+            time += dt;
+            ++frame;
 
-      root->position.x = Math::sin( time ) * 1000;
+            camera->position.x += (-3000.f * mouseX - camera->position.x) * 3 * dt;
+            camera->position.y += (3000.f * mouseY - camera->position.y) * 3 * dt;
+            camera->lookAt(scene->position);
 
-      SceneUtils::traverseHierarchy( *root, [rx,ry,rz]( Object3D& object ) {
-        object.rotation.x = rx;
-        object.rotation.y = ry;
-        object.rotation.z = rz;
-      } );
+            auto rx = Math::sin(time * 0.7f) * 0.2f,
+                 ry = Math::sin(time * 0.3f) * 0.1f,
+                 rz = Math::sin(time * 0.2f) * 0.1f;
 
-      renderer->render( *scene, *camera );
+            root->position.x = Math::sin(time) * 1000;
 
-      return running && frame < maxFrames;
+            SceneUtils::traverseHierarchy(*root, [rx, ry, rz](Object3D& object) {
+                object.rotation.x = rx;
+                object.rotation.y = ry;
+                object.rotation.z = rz;
+            });
 
-  }, 2000 );
+            renderer->render(*scene, *camera);
 
+            return running && frame < maxFrames;
+        },
+        2000);
 }
 
-int main ( int argc, char* argv[] ) {
+int main(int argc, char* argv[])
+{
 
-  auto onQuit = defer( sdl::quit );
+    auto onQuit = defer(sdl::quit);
 
-  RendererParameters parameters;
-  parameters.vsync = false;
+    RendererParameters parameters;
+    parameters.vsync = false;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
+    if (!sdl::init(parameters) || !glew::init(parameters))
+    {
+        return 0;
+    }
+
+    auto renderer = GLRenderer::create(parameters);
+    if (!renderer)
+    {
+        return 0;
+    }
+
+    geometry_hierarchy_2(renderer);
+
     return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  geometry_hierarchy_2( renderer );
-
-  return 0;
 }

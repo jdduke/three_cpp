@@ -10,77 +10,75 @@
 
 using namespace three;
 
-void simple( const GLRenderer::Ptr& renderer ) {
+void simple(const GLRenderer::Ptr& renderer)
+{
 
-  // Camera
-  auto camera = PerspectiveCamera::create(
-    50, ( float )renderer->width() / renderer->height(), .1f, 1000.f
-  );
-  camera->position.z = 300;
-
-
-  // Scene
-  auto scene = Scene::create();
-  scene->add( camera );
+    // Camera
+    auto camera = PerspectiveCamera::create(
+        50, (float)renderer->width() / renderer->height(), .1f, 1000.f);
+    camera->position.z = 300;
 
 
-  // Lights
-  auto pointLight = PointLight::create( 0xFFFFFF );
-  pointLight->position = Vector3( 10, 50, 130 );
-  scene->add( pointLight );
+    // Scene
+    auto scene = Scene::create();
+    scene->add(camera);
 
 
-  // Materials
-  auto sphereMaterial = MeshLambertMaterial::create(
-    Material::Parameters().add( "color", Color( 0xcc0000 ) )
-  );
+    // Lights
+    auto pointLight = PointLight::create(0xFFFFFF);
+    pointLight->position = Vector3(10, 50, 130);
+    scene->add(pointLight);
 
 
-  // Geometries
-  float radius = 50, segments = 16, rings = 16;
-  auto sphereGeometry = SphereGeometry::create( radius, segments, rings );
-
-  auto sphere = Mesh::create( sphereGeometry, sphereMaterial );
-  scene->add( sphere );
+    // Materials
+    auto sphereMaterial = MeshLambertMaterial::create(
+        Material::Parameters().add("color", Color(0xcc0000)));
 
 
-  // Events
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  auto mouseX = 0.f, mouseY = 0.f;
-  sdl::addEventListener(SDL_MOUSEMOTION, [&]( const sdl::Event& event ) {
-    mouseX = 2.f * ((float)event.motion.x / renderer->width()  - 0.5f);
-    mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
-  });
+    // Geometries
+    float radius = 50, segments = 16, rings = 16;
+    auto sphereGeometry = SphereGeometry::create(radius, segments, rings);
+
+    auto sphere = Mesh::create(sphereGeometry, sphereMaterial);
+    scene->add(sphere);
 
 
-  // Rendering
+    // Events
+    auto running = true;
+    sdl::addEventListener(SDL_KEYDOWN, [&](const sdl::Event&) {
+        running = false;
+    });
+    sdl::addEventListener(SDL_QUIT, [&](const sdl::Event&) {
+        running = false;
+    });
+    auto mouseX = 0.f, mouseY = 0.f;
+    sdl::addEventListener(SDL_MOUSEMOTION, [&](const sdl::Event& event) {
+        mouseX = 2.f * ((float)event.motion.x / renderer->width() - 0.5f);
+        mouseY = 2.f * ((float)event.motion.y / renderer->height() - 0.5f);
+    });
 
-  stats::Stats stats( *renderer );
-  anim::gameLoop( [&]( float dt ) -> bool {
 
-    camera->position.x += (-100.f * mouseX - camera->position.x ) * 3 * dt;
-    camera->position.y += ( 100.f * mouseY - camera->position.y ) * 3 * dt;
-    camera->lookAt( scene->position );
+    // Rendering
 
-    renderer->render( *scene, *camera );
+    stats::Stats stats(*renderer);
+    anim::gameLoop([&](float dt) -> bool {
+        camera->position.x += (-100.f * mouseX - camera->position.x) * 3 * dt;
+        camera->position.y += (100.f * mouseY - camera->position.y) * 3 * dt;
+        camera->lookAt(scene->position);
 
-    return running;
+        renderer->render(*scene, *camera);
 
-  }, 3000 );
-
+        return running;
+    },
+                   3000);
 }
 
-int main( int argc, char* argv[] ) {
+int main(int argc, char* argv[])
+{
 
-  ExampleSession session;
+    ExampleSession session;
 
-  session.run( simple );
+    session.run(simple);
 
-  return 0;
+    return 0;
 }

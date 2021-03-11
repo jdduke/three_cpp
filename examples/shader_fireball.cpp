@@ -8,8 +8,7 @@
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
-const std::string vertexShader =
-"\
+const std::string vertexShader = "\
 uniform float time;\
 uniform float scale;\
 varying vec3 vTexCoord3D;\
@@ -25,15 +24,15 @@ void main( void ) {\
 ";
 
 const std::string fragmentShader =
-//
-      // Description : Array and textureless GLSL 3D simplex noise function.
-      //      Author : Ian McEwan, Ashima Arts.
-      //  Maintainer : ijm
-      //     Lastmod : 20110409 (stegu)
-      //     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
-      //               Distributed under the MIT License. See LICENSE file.
-      //
-"\
+    //
+    // Description : Array and textureless GLSL 3D simplex noise function.
+    //      Author : Ian McEwan, Ashima Arts.
+    //  Maintainer : ijm
+    //     Lastmod : 20110409 (stegu)
+    //     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
+    //               Distributed under the MIT License. See LICENSE file.
+    //
+    "\
 uniform float time;\
 varying vec3 vTexCoord3D;\
 varying vec3 vNormal;\
@@ -122,74 +121,72 @@ void main( void ) {\
 
 using namespace three;
 
-void shader_fireball( GLRenderer::Ptr renderer ) {
+void shader_fireball(GLRenderer::Ptr renderer)
+{
 
-  auto camera = PerspectiveCamera::create(
-    40, (float)renderer->width() / renderer->height(), 1, 3000
-  );
-  camera->position.z = 4;
+    auto camera = PerspectiveCamera::create(
+        40, (float)renderer->width() / renderer->height(), 1, 3000);
+    camera->position.z = 4;
 
-  auto scene = Scene::create();
+    auto scene = Scene::create();
 
-  float time = 1;
+    float time = 1;
 
-  auto material = ShaderMaterial::create(
-    vertexShader,
-    fragmentShader,
-    Uniforms().add("time",  Uniform( THREE::f, time ))
-              .add("scale", Uniform( THREE::f, 1.5f ))
-  );
+    auto material = ShaderMaterial::create(
+        vertexShader,
+        fragmentShader,
+        Uniforms().add("time", Uniform(THREE::f, time)).add("scale", Uniform(THREE::f, 1.5f)));
 
-  // Geometries
-  auto mesh = Mesh::create( SphereGeometry::create( 0.75f, 64, 32 ), material );
-  scene->add( mesh );
+    // Geometries
+    auto mesh = Mesh::create(SphereGeometry::create(0.75f, 64, 32), material);
+    scene->add(mesh);
 
-  renderer->setClearColorHex( 0x050505, 0 );
+    renderer->setClearColorHex(0x050505, 0);
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+    auto running = true;
+    sdl::addEventListener(SDL_KEYDOWN, [&](const sdl::Event&) {
+        running = false;
+    });
+    sdl::addEventListener(SDL_QUIT, [&](const sdl::Event&) {
+        running = false;
+    });
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  anim::gameLoop( [&]( float dt ) -> bool {
+    anim::gameLoop([&](float dt) -> bool {
+        time += dt;
+        material->uniforms["time"].value = time;
 
-    time += dt;
-    material->uniforms[ "time" ].value = time;
+        mesh->rotation.y += 0.5f * dt;
+        mesh->rotation.x += 0.1f * dt;
 
-    mesh->rotation.y += 0.5f * dt;
-    mesh->rotation.x += 0.1f * dt;
+        renderer->render(*scene, *camera);
 
-    renderer->render( *scene, *camera );
-
-    return running;
-
-  } );
-
+        return running;
+    });
 }
 
-int main( int argc, char* argv[] ) {
+int main(int argc, char* argv[])
+{
 
-  auto onQuit = defer( sdl::quit );
+    auto onQuit = defer(sdl::quit);
 
-  RendererParameters parameters;
+    RendererParameters parameters;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
+    if (!sdl::init(parameters) || !glew::init(parameters))
+    {
+        return 0;
+    }
+
+    auto renderer = GLRenderer::create(parameters);
+    if (!renderer)
+    {
+        return 0;
+    }
+
+    shader_fireball(renderer);
+
     return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  shader_fireball( renderer );
-
-  return 0;
 }

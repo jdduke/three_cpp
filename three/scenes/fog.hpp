@@ -9,27 +9,26 @@
 
 namespace three {
 
-class Fog : public IFog, NonCopyable {
+class Fog : public IFog, NonCopyable
+{
 public:
+    typedef std::shared_ptr<Fog> Ptr;
 
-  typedef std::shared_ptr<Fog> Ptr;
+    static Ptr create(int hex, float near = 1, float far = 1000)
+    {
+        return three::make_shared<Fog>(hex, near, far);
+    }
 
-  static Ptr create( int hex, float near = 1, float far = 1000 ) {
-    return three::make_shared<Fog>( hex, near, far );
-  }
+    THREE::FogType type() const { return THREE::Fog; }
 
-  THREE::FogType type() const { return THREE::Fog; }
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
-
-  Color color;
-  float near, far;
+    Color color;
+    float near, far;
 
 protected:
-
-  Fog( int hex, float near, float far )
-    : IFog(), color( hex ), near( near ), far( far ) { }
-
+    Fog(int hex, float near, float far)
+        : IFog(), color(hex), near(near), far(far) {}
 };
 
 } // namespace three

@@ -3,13 +3,15 @@
 
 namespace three {
 
-class NonCopyable {
+class NonCopyable
+{
 protected:
-  NonCopyable() {}
-  ~NonCopyable() {}
+    NonCopyable() {}
+    ~NonCopyable() {}
+
 private:
-  NonCopyable( const NonCopyable& ) THREE_DECL_DELETE;
-  const NonCopyable& operator=( const NonCopyable& ) THREE_DECL_DELETE;
+    NonCopyable(const NonCopyable&) THREE_DECL_DELETE;
+    const NonCopyable& operator=(const NonCopyable&) THREE_DECL_DELETE;
 };
 
 } // namespace three

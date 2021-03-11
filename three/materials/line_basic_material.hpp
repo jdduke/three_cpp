@@ -7,47 +7,48 @@
 
 namespace three {
 
-class LineBasicMaterial : public Material {
+class LineBasicMaterial : public Material
+{
 public:
+    typedef std::shared_ptr<LineBasicMaterial> Ptr;
 
-  typedef std::shared_ptr<LineBasicMaterial> Ptr;
+    static Ptr create(const Parameters& parameters = Parameters())
+    {
+        return three::make_shared<LineBasicMaterial>(parameters);
+    }
 
-  static Ptr create( const Parameters& parameters = Parameters() ) {
-    return three::make_shared<LineBasicMaterial>( parameters );
-  }
+    virtual THREE::MaterialType type() const { return THREE::LineBasicMaterial; }
 
-  virtual THREE::MaterialType type() const { return THREE::LineBasicMaterial; }
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
-
-  Ptr clone( ) {
-    return Material::clone( *this );
-  }
+    Ptr clone()
+    {
+        return Material::clone(*this);
+    }
 
 protected:
+    LineBasicMaterial(const Parameters& parameters)
+        : Material()
+    {
+        fog = true;
+        setParameters(parameters, defaultKeys());
+    }
 
-  LineBasicMaterial( const Parameters& parameters )
-    : Material() {
-    fog = true;
-    setParameters( parameters, defaultKeys() );
-  }
-
-  static const ParameterKeys& defaultKeys() {
-    static std::array<std::string, 6> sKeys = {
-      "color",
-      "linewidth",
-      "linecap",
-      "linejoin",
-      "vertexColors",
-      "fog"
-    };
-    static ParameterKeys sKeysSet( sKeys.begin(), sKeys.end() );
-    return sKeysSet;
-  }
-
+    static const ParameterKeys& defaultKeys()
+    {
+        static std::array<std::string, 6> sKeys = {
+            "color",
+            "linewidth",
+            "linecap",
+            "linejoin",
+            "vertexColors",
+            "fog"
+        };
+        static ParameterKeys sKeysSet(sKeys.begin(), sKeys.end());
+        return sKeysSet;
+    }
 };
 
 } // namespace three
 
 #endif // THREE_LINE_BASIC_MATERIAL_HPP
-

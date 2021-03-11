@@ -11,144 +11,122 @@
 
 namespace three {
 
-struct Image {
-  Image() : width( 0 ), height ( 0 ), __glTextureCube( 0 ) { }
-  Image( unsigned char* buffer, int bufferLength, int width, int height )
-    : data( buffer, buffer + bufferLength ), width( width ), height( height ), __glTextureCube( 0 ) { }
-  Image( std::vector<unsigned char> data, int width, int height )
-    : data( std::move( data ) ), width( width ), height( height ), __glTextureCube( 0 ) { }
-  bool valid() const { return data.size() > 0 && width > 0 && height > 0; }
-  std::vector<unsigned char> data;
-  int width, height;
-  unsigned __glTextureCube;
+struct Image
+{
+    Image()
+        : width(0), height(0), __glTextureCube(0) {}
+    Image(unsigned char* buffer, int bufferLength, int width, int height)
+        : data(buffer, buffer + bufferLength), width(width), height(height), __glTextureCube(0) {}
+    Image(std::vector<unsigned char> data, int width, int height)
+        : data(std::move(data)), width(width), height(height), __glTextureCube(0) {}
+    bool valid() const { return data.size() > 0 && width > 0 && height > 0; }
+    std::vector<unsigned char> data;
+    int width, height;
+    unsigned __glTextureCube;
 };
 
-struct TextureDesc {
-  explicit TextureDesc( Image image,
-                        THREE::PixelFormat format = THREE::RGBAFormat,
-                        THREE::Mapping mapping    = THREE::UVMapping,
-                        THREE::Wrapping wrapS     = THREE::ClampToEdgeWrapping,
-                        THREE::Wrapping wrapT     = THREE::ClampToEdgeWrapping,
-                        THREE::Filter magFilter   = THREE::LinearFilter,
-                        THREE::Filter minFilter   = THREE::LinearMipMapLinearFilter,
-                        THREE::DataType dataType  = THREE::UnsignedByteType,
-                        float anisotropy          = 1 )
-    : image( std::move( image ) ),
-      mapping( mapping ),
-      wrapS( wrapS ),
-      wrapT( wrapT ),
-      magFilter( magFilter ),
-      minFilter( minFilter ),
-      format( format ),
-      dataType( dataType ),
-      anisotropy( anisotropy ) { }
+struct TextureDesc
+{
+    explicit TextureDesc(Image image,
+                         THREE::PixelFormat format = THREE::RGBAFormat,
+                         THREE::Mapping mapping = THREE::UVMapping,
+                         THREE::Wrapping wrapS = THREE::ClampToEdgeWrapping,
+                         THREE::Wrapping wrapT = THREE::ClampToEdgeWrapping,
+                         THREE::Filter magFilter = THREE::LinearFilter,
+                         THREE::Filter minFilter = THREE::LinearMipMapLinearFilter,
+                         THREE::DataType dataType = THREE::UnsignedByteType,
+                         float anisotropy = 1)
+        : image(std::move(image)), mapping(mapping), wrapS(wrapS), wrapT(wrapT), magFilter(magFilter), minFilter(minFilter), format(format), dataType(dataType), anisotropy(anisotropy) {}
 
-  Image image;
-  THREE::Mapping mapping;
-  THREE::Wrapping wrapS, wrapT;
-  THREE::Filter magFilter, minFilter;
-  THREE::PixelFormat format;
-  THREE::DataType dataType;
-  float anisotropy;
+    Image image;
+    THREE::Mapping mapping;
+    THREE::Wrapping wrapS, wrapT;
+    THREE::Filter magFilter, minFilter;
+    THREE::PixelFormat format;
+    THREE::DataType dataType;
+    float anisotropy;
 };
 
-class Texture : public TextureBuffer {
+class Texture : public TextureBuffer
+{
 public:
+    typedef std::shared_ptr<Texture> Ptr;
 
-  typedef std::shared_ptr<Texture> Ptr;
+    static Ptr create(const TextureDesc& desc) { return three::make_shared<Texture>(desc); }
 
-  static Ptr create( const TextureDesc& desc ) { return three::make_shared<Texture>( desc ); }
+    virtual THREE::TextureType type() const { return THREE::Texture; }
 
-  virtual THREE::TextureType type() const { return THREE::Texture; }
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
+    int id;
 
-  int id;
+    std::vector<Image> image;
 
-  std::vector<Image> image;
+    THREE::Mapping mapping;
 
-  THREE::Mapping mapping;
+    THREE::Wrapping wrapS, wrapT;
 
-  THREE::Wrapping wrapS, wrapT;
+    THREE::Filter magFilter, minFilter;
 
-  THREE::Filter magFilter, minFilter;
+    THREE::PixelFormat format;
 
-  THREE::PixelFormat format;
+    THREE::DataType dataType;
 
-  THREE::DataType dataType;
+    float anisotropy;
 
-  float anisotropy;
+    Vector2 offset;
+    Vector2 repeat;
 
-  Vector2 offset;
-  Vector2 repeat;
+    bool generateMipmaps;
+    bool premultiplyAlpha;
+    bool flipY;
 
-  bool generateMipmaps;
-  bool premultiplyAlpha;
-  bool flipY;
+    mutable bool needsUpdate;
 
-  mutable bool needsUpdate;
+    std::function<void(void)> onUpdate;
 
-  std::function<void( void )> onUpdate;
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
+    Texture::Ptr clone() const
+    {
 
-  Texture::Ptr clone( ) const {
+        auto texture = create(TextureDesc(image[0]));
 
-    auto texture = create( TextureDesc( image[0] ) );
+        texture->image = image;
 
-    texture->image = image;
+        texture->mapping = mapping;
 
-    texture->mapping = mapping;
+        texture->wrapS = wrapS;
+        texture->wrapT = wrapT;
 
-    texture->wrapS = wrapS;
-    texture->wrapT = wrapT;
+        texture->magFilter = magFilter;
+        texture->minFilter = minFilter;
 
-    texture->magFilter = magFilter;
-    texture->minFilter = minFilter;
+        texture->format = format;
+        texture->dataType = dataType;
 
-    texture->format = format;
-    texture->dataType = dataType;
+        texture->anisotropy = anisotropy;
 
-    texture->anisotropy = anisotropy;
+        texture->offset.copy(offset);
+        texture->repeat.copy(repeat);
 
-    texture->offset.copy( offset );
-    texture->repeat.copy( repeat );
+        texture->generateMipmaps = generateMipmaps;
+        texture->premultiplyAlpha = premultiplyAlpha;
+        texture->flipY = flipY;
 
-    texture->generateMipmaps = generateMipmaps;
-    texture->premultiplyAlpha = premultiplyAlpha;
-    texture->flipY = flipY;
-
-    return texture;
-
-  }
+        return texture;
+    }
 
 protected:
-
-  Texture( const TextureDesc& desc )
-    : id( TextureCount()++ ),
-      image( 1, desc.image ),
-      mapping( desc.mapping ),
-      wrapS( desc.wrapS ),
-      wrapT( desc.wrapT ),
-      magFilter( desc.magFilter ),
-      minFilter( desc.minFilter ),
-      format( desc.format ),
-      dataType( desc.dataType ),
-      anisotropy( desc.anisotropy ),
-      offset( 0, 0 ),
-      repeat( 1, 1 ),
-      generateMipmaps( true ),
-      premultiplyAlpha( false ),
-      flipY( true ),
-      needsUpdate( true ) { }
+    Texture(const TextureDesc& desc)
+        : id(TextureCount()++), image(1, desc.image), mapping(desc.mapping), wrapS(desc.wrapS), wrapT(desc.wrapT), magFilter(desc.magFilter), minFilter(desc.minFilter), format(desc.format), dataType(desc.dataType), anisotropy(desc.anisotropy), offset(0, 0), repeat(1, 1), generateMipmaps(true), premultiplyAlpha(false), flipY(true), needsUpdate(true) {}
 
 private:
-
-  static int& TextureCount() {
-    static int sTextureCount = 0;
-    return sTextureCount;
-  }
-
+    static int& TextureCount()
+    {
+        static int sTextureCount = 0;
+        return sTextureCount;
+    }
 };
 
 } // namespace three

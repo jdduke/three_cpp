@@ -50,6 +50,6 @@
  */
 
 #define SDL_QuitRequested() \
-        (SDL_PumpEvents(), SDL_PeepEvents(NULL,0,SDL_PEEKEVENT,SDL_QUITMASK))
+    (SDL_PumpEvents(), SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUITMASK))
 
 #endif /* _SDL_quit_h */
