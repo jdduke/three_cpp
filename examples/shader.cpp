@@ -8,18 +8,20 @@
 #include <three/renderers/renderer_parameters.hpp>
 #include <three/renderers/gl_renderer.hpp>
 
-std::string vertexShader() {
-  return std::string(
-"\
+std::string vertexShader()
+{
+    return std::string(
+        "\
 void main() { \
   gl_Position = vec4( position, 1.0 ); \
 }\
 ");
 }
 
-std::string fragmentShader() {
-  return std::string(
-"\
+std::string fragmentShader()
+{
+    return std::string(
+        "\
 uniform vec2 resolution; \
 uniform float time; \
 void main() { \
@@ -48,76 +50,74 @@ void main() { \
   gl_FragColor=vec4(vec3(f*i/1.6,i/2.0+d/13.0,i)*d*p.x+vec3(i/1.3+d/8.0,i/2.0+d/18.0,i)*d*(1.0-p.x),1.0); \
 }\
 ");
-
 }
 
 using namespace three;
 
-void shader( GLRenderer::Ptr renderer ) {
+void shader(GLRenderer::Ptr renderer)
+{
 
-  auto camera = Camera::create();
-  camera->position.z = 1;
+    auto camera = Camera::create();
+    camera->position.z = 1;
 
-  auto scene = Scene::create();
+    auto scene = Scene::create();
 
-  float time = 1;
+    float time = 1;
 
-  Uniforms uniforms;
-  uniforms[ "time" ]       = Uniform( THREE::f, time);
-  uniforms[ "resolution" ] = Uniform( THREE::v2, Vector2( (float)renderer->width(),
-                                                          (float)renderer->height()) );
+    Uniforms uniforms;
+    uniforms["time"] = Uniform(THREE::f, time);
+    uniforms["resolution"] = Uniform(THREE::v2, Vector2((float)renderer->width(), (float)renderer->height()));
 
-  auto material = ShaderMaterial::create(
-    vertexShader(),
-    fragmentShader(),
-    uniforms
-  );
+    auto material = ShaderMaterial::create(
+        vertexShader(),
+        fragmentShader(),
+        uniforms);
 
-  // Geometries
-  auto mesh = Mesh::create( PlaneGeometry::create( 2, 2 ), material );
-  scene->add( mesh );
+    // Geometries
+    auto mesh = Mesh::create(PlaneGeometry::create(2, 2), material);
+    scene->add(mesh);
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  auto running = true;
-  sdl::addEventListener(SDL_KEYDOWN, [&]( const sdl::Event& ) {
-    running = false;
-  });
-  sdl::addEventListener(SDL_QUIT, [&]( const sdl::Event& ) {
-    running = false;
-  });
+    auto running = true;
+    sdl::addEventListener(SDL_KEYDOWN, [&](const sdl::Event&) {
+        running = false;
+    });
+    sdl::addEventListener(SDL_QUIT, [&](const sdl::Event&) {
+        running = false;
+    });
 
-  /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
-  anim::gameLoop( [&]( float dt ) -> bool {
+    anim::gameLoop([&](float dt) -> bool {
+        time += dt;
+        material->uniforms["time"].value = time;
 
-    time += dt;
-    material->uniforms[ "time" ].value = time;
+        renderer->render(*scene, *camera);
 
-    renderer->render( *scene, *camera );
-
-    return running;
-
-  } );
-
+        return running;
+    });
 }
 
-int main( int argc, char* argv[] ) {
+int main(int argc, char* argv[])
+{
 
-  auto onQuit = defer( sdl::quit );
+    auto onQuit = defer(sdl::quit);
 
-  RendererParameters parameters;
+    RendererParameters parameters;
 
-  if ( !sdl::init( parameters ) || !glew::init( parameters ) ) {
+    if (!sdl::init(parameters) || !glew::init(parameters))
+    {
+        return 0;
+    }
+
+    auto renderer = GLRenderer::create(parameters);
+    if (!renderer)
+    {
+        return 0;
+    }
+
+    shader(renderer);
+
     return 0;
-  }
-
-  auto renderer = GLRenderer::create( parameters );
-  if ( !renderer ) {
-    return 0;
-  }
-
-  shader( renderer );
-
-  return 0;
 }

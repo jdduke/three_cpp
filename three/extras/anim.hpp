@@ -6,17 +6,17 @@
 namespace three {
 namespace anim {
 
-typedef std::function<bool( float )> Update;
-typedef std::function<bool( float )> Render;
+    typedef std::function<bool(float)> Update;
+    typedef std::function<bool(float)> Render;
 
-THREE_DECL void gameLoop( Update update, float frameRate = 60 );
-THREE_DECL void gameLoop( Update update, Render render, float frameRate = 60 );
+    THREE_DECL void gameLoop(Update update, float frameRate = 60);
+    THREE_DECL void gameLoop(Update update, Render render, float frameRate = 60);
 
 } // namespace anim
 } // namespace three
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/extras/impl/anim.ipp>
+#    include <three/extras/impl/anim.ipp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_ANIM_HPP

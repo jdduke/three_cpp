@@ -56,15 +56,16 @@ extern "C" {
  *	}
  *      @endcode
  */
-typedef struct SDL_keysym {
-	Uint8 scancode;			/**< hardware specific scancode */
-	SDLKey sym;			/**< SDL virtual keysym */
-	SDLMod mod;			/**< current key modifiers */
-	Uint16 unicode;			/**< translated character */
+typedef struct SDL_keysym
+{
+    Uint8 scancode; /**< hardware specific scancode */
+    SDLKey sym; /**< SDL virtual keysym */
+    SDLMod mod; /**< current key modifiers */
+    Uint16 unicode; /**< translated character */
 } SDL_keysym;
 
 /** This is the mask which refers to all hotkey bindings */
-#define SDL_ALL_HOTKEYS		0xFFFFFFFF
+#define SDL_ALL_HOTKEYS 0xFFFFFFFF
 
 /* Function prototypes */
 /**
@@ -81,8 +82,8 @@ typedef struct SDL_keysym {
  */
 extern DECLSPEC int SDLCALL SDL_EnableUNICODE(int enable);
 
-#define SDL_DEFAULT_REPEAT_DELAY	500
-#define SDL_DEFAULT_REPEAT_INTERVAL	30
+#define SDL_DEFAULT_REPEAT_DELAY 500
+#define SDL_DEFAULT_REPEAT_INTERVAL 30
 /**
  * Enable/Disable keyboard repeat.  Keyboard repeat defaults to off.
  *
@@ -96,7 +97,7 @@ extern DECLSPEC int SDLCALL SDL_EnableUNICODE(int enable);
  *  If 'delay' is set to 0, keyboard repeat is disabled.
  */
 extern DECLSPEC int SDLCALL SDL_EnableKeyRepeat(int delay, int interval);
-extern DECLSPEC void SDLCALL SDL_GetKeyRepeat(int *delay, int *interval);
+extern DECLSPEC void SDLCALL SDL_GetKeyRepeat(int* delay, int* interval);
 
 /**
  * Get a snapshot of the current state of the keyboard.
@@ -107,7 +108,7 @@ extern DECLSPEC void SDLCALL SDL_GetKeyRepeat(int *delay, int *interval);
  *	if ( keystate[SDLK_RETURN] ) //... \<RETURN> is pressed.
  *	@endcode
  */
-extern DECLSPEC Uint8 * SDLCALL SDL_GetKeyState(int *numkeys);
+extern DECLSPEC Uint8* SDLCALL SDL_GetKeyState(int* numkeys);
 
 /**
  * Get the current key modifier state
@@ -123,7 +124,7 @@ extern DECLSPEC void SDLCALL SDL_SetModState(SDLMod modstate);
 /**
  * Get the name of an SDL virtual keysym
  */
-extern DECLSPEC char * SDLCALL SDL_GetKeyName(SDLKey key);
+extern DECLSPEC char* SDLCALL SDL_GetKeyName(SDLKey key);
 
 
 /* Ends C function definitions when using C++ */

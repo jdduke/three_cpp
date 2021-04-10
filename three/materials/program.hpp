@@ -14,27 +14,27 @@
 
 namespace three {
 
-class Program : public NonCopyable {
+class Program : public NonCopyable
+{
 public:
+    typedef std::shared_ptr<Program> Ptr;
 
-  typedef std::shared_ptr<Program> Ptr;
+    static Ptr create(Buffer program, int id)
+    {
+        return three::make_shared<Program>(program, id);
+    }
 
-  static Ptr create( Buffer program, int id ) {
-    return three::make_shared<Program>( program, id );
-  }
+    /////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////
+    UniformLocations uniforms;
+    AttributeLocations attributes;
 
-  UniformLocations uniforms;
-  AttributeLocations attributes;
-
-  Buffer program;
-  int id;
+    Buffer program;
+    int id;
 
 protected:
-
-  Program( Buffer program, int id )
-    : program( program ), id( id ) { }
+    Program(Buffer program, int id)
+        : program(program), id(id) {}
 };
 
 //////////////////////////////////////////////////////////////////////////

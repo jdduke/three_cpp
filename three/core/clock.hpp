@@ -7,55 +7,59 @@
 
 namespace three {
 
-class Clock {
+class Clock
+{
 public:
-  typedef std::chrono::time_point< std::chrono::system_clock > Time;
-  typedef std::chrono::duration< float > Duration;
+    typedef std::chrono::time_point<std::chrono::system_clock> Time;
+    typedef std::chrono::duration<float> Duration;
 
-  Clock( bool autostart = true )
-    : mElapsedTime( Duration::zero() ),
-      mbAutoStart( autostart ),
-      mbRunning( false ) { }
+    Clock(bool autostart = true)
+        : mElapsedTime(Duration::zero()), mbAutoStart(autostart), mbRunning(false) {}
 
-  THREE_DECL void start() {
-    mStartTime = std::chrono::system_clock::now();
-    mOldTime = mStartTime;
-    mbRunning = true;
-  }
+    THREE_DECL void start()
+    {
+        mStartTime = std::chrono::system_clock::now();
+        mOldTime = mStartTime;
+        mbRunning = true;
+    }
 
-  THREE_DECL void stop() {
-    getElapsedTime();
-    mbRunning = false;
-  }
+    THREE_DECL void stop()
+    {
+        getElapsedTime();
+        mbRunning = false;
+    }
 
-  THREE_DECL float getElapsedTime() {
-    mElapsedTime += getDelta();
-    return mElapsedTime.count();
-  }
+    THREE_DECL float getElapsedTime()
+    {
+        mElapsedTime += getDelta();
+        return mElapsedTime.count();
+    }
 
 private:
+    THREE_DECL Duration getDelta()
+    {
+        Duration diff;
 
-  THREE_DECL Duration getDelta() {
-    Duration diff;
+        if (mbAutoStart && !mbRunning)
+        {
+            start();
+        }
 
-    if ( mbAutoStart && !mbRunning ) {
-      start();
+        if (mbRunning)
+        {
+            auto newTime = std::chrono::system_clock::now();
+            diff = std::chrono::duration_cast<Duration>(newTime - mOldTime);
+            mOldTime = newTime;
+        }
+
+        return diff;
     }
 
-    if ( mbRunning ) {
-      auto newTime = std::chrono::system_clock::now();
-      diff = std::chrono::duration_cast< Duration > ( newTime - mOldTime );
-      mOldTime = newTime;
-    }
-
-    return diff;
-  }
-
-  Time mStartTime;
-  Time mOldTime;
-  Duration mElapsedTime;
-  bool mbAutoStart;
-  bool mbRunning;
+    Time mStartTime;
+    Time mOldTime;
+    Duration mElapsedTime;
+    bool mbAutoStart;
+    bool mbRunning;
 };
 
 } // namespace three

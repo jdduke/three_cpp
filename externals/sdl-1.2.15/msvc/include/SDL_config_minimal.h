@@ -39,24 +39,24 @@ typedef unsigned int size_t;
 typedef unsigned long uintptr_t;
 
 /* Enable the dummy audio driver (src/audio/dummy/\*.c) */
-#define SDL_AUDIO_DRIVER_DUMMY	1
+#define SDL_AUDIO_DRIVER_DUMMY 1
 
 /* Enable the stub cdrom driver (src/cdrom/dummy/\*.c) */
-#define SDL_CDROM_DISABLED	1
+#define SDL_CDROM_DISABLED 1
 
 /* Enable the stub joystick driver (src/joystick/dummy/\*.c) */
-#define SDL_JOYSTICK_DISABLED	1
+#define SDL_JOYSTICK_DISABLED 1
 
 /* Enable the stub shared object loader (src/loadso/dummy/\*.c) */
-#define SDL_LOADSO_DISABLED	1
+#define SDL_LOADSO_DISABLED 1
 
 /* Enable the stub thread support (src/thread/generic/\*.c) */
-#define SDL_THREADS_DISABLED	1
+#define SDL_THREADS_DISABLED 1
 
 /* Enable the stub timer support (src/timer/dummy/\*.c) */
-#define SDL_TIMERS_DISABLED	1
+#define SDL_TIMERS_DISABLED 1
 
 /* Enable the dummy video driver (src/video/dummy/\*.c) */
-#define SDL_VIDEO_DRIVER_DUMMY	1
+#define SDL_VIDEO_DRIVER_DUMMY 1
 
 #endif /* _SDL_config_minimal_h */

@@ -13,36 +13,40 @@ namespace rapidjson {
 	\implements Stream
 */
 template <typename Encoding, typename Allocator = CrtAllocator>
-struct GenericStringBuffer {
-	typedef typename Encoding::Ch Ch;
+struct GenericStringBuffer
+{
+    typedef typename Encoding::Ch Ch;
 
-	GenericStringBuffer(Allocator* allocator = 0, size_t capacity = kDefaultCapacity) : stack_(allocator, capacity) {}
+    GenericStringBuffer(Allocator* allocator = 0, size_t capacity = kDefaultCapacity)
+        : stack_(allocator, capacity) {}
 
-	void Put(Ch c) { *stack_.template Push<Ch>() = c; }
-	void Flush() {}
+    void Put(Ch c) { *stack_.template Push<Ch>() = c; }
+    void Flush() {}
 
-	void Clear() { stack_.Clear(); }
+    void Clear() { stack_.Clear(); }
 
-	const Ch* GetString() const {
-		// Push and pop a null terminator. This is safe.
-		*stack_.template Push<Ch>() = '\0';
-		stack_.template Pop<Ch>(1);
+    const Ch* GetString() const
+    {
+        // Push and pop a null terminator. This is safe.
+        *stack_.template Push<Ch>() = '\0';
+        stack_.template Pop<Ch>(1);
 
-		return stack_.template Bottom<Ch>();
-	}
+        return stack_.template Bottom<Ch>();
+    }
 
-	size_t GetSize() const { return stack_.GetSize(); }
+    size_t GetSize() const { return stack_.GetSize(); }
 
-	static const size_t kDefaultCapacity = 256;
-	mutable internal::Stack<Allocator> stack_;
+    static const size_t kDefaultCapacity = 256;
+    mutable internal::Stack<Allocator> stack_;
 };
 
-typedef GenericStringBuffer<UTF8<> > StringBuffer;
+typedef GenericStringBuffer<UTF8<>> StringBuffer;
 
 //! Implement specialized version of PutN() with memset() for better performance.
-template<>
-inline void PutN(GenericStringBuffer<UTF8<> >& stream, char c, size_t n) {
-	memset(stream.stack_.Push<char>(n), c, n * sizeof(c));
+template <>
+inline void PutN(GenericStringBuffer<UTF8<>>& stream, char c, size_t n)
+{
+    memset(stream.stack_.Push<char>(n), c, n * sizeof(c));
 }
 
 } // namespace rapidjson

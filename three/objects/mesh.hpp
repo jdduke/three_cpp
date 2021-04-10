@@ -12,18 +12,18 @@
 
 namespace three {
 
-  class Mesh : public Object3D {
-  public:
-
+class Mesh : public Object3D
+{
+public:
     typedef std::shared_ptr<Mesh> Ptr;
 
-    THREE_DECL static Ptr create( const Geometry::Ptr& geometry, const Material::Ptr& material );
+    THREE_DECL static Ptr create(const Geometry::Ptr& geometry, const Material::Ptr& material);
 
     /////////////////////////////////////////////////////////////////////////
 
     virtual THREE::Type type() const { return THREE::Mesh; }
-    virtual void visit( Visitor& v ) { v( *this ); }
-    virtual void visit( ConstVisitor& v ) const { v( *this ); }
+    virtual void visit(Visitor& v) { v(*this); }
+    virtual void visit(ConstVisitor& v) const { v(*this); }
 
     /////////////////////////////////////////////////////////////////////////
 
@@ -36,19 +36,17 @@ namespace three {
 
     /////////////////////////////////////////////////////////////////////////
 
-    THREE_DECL int getMorphTargetIndexByName( const std::string& name );
+    THREE_DECL int getMorphTargetIndexByName(const std::string& name);
 
-  protected:
-
-    THREE_DECL Mesh( const Geometry::Ptr& geometry, const Material::Ptr& material );
-
-  };
+protected:
+    THREE_DECL Mesh(const Geometry::Ptr& geometry, const Material::Ptr& material);
+};
 
 } // namespace three
 
 
 #if defined(THREE_HEADER_ONLY)
-# include <three/objects/impl/mesh.ipp>
+#    include <three/objects/impl/mesh.ipp>
 #endif // defined(THREE_HEADER_ONLY)
 
 #endif // THREE_MESH_HPP

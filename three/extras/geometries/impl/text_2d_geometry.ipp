@@ -7,51 +7,53 @@
 
 namespace three {
 
-Text2DGeometry::Ptr Text2DGeometry::create( const std::string& text,
-                                            const Font::Ptr& font ) {
+Text2DGeometry::Ptr Text2DGeometry::create(const std::string& text,
+                                           const Font::Ptr& font)
+{
 
-  auto geometry = three::make_shared<Text2DGeometry>( text, font );
-  geometry->update();
+    auto geometry = three::make_shared<Text2DGeometry>(text, font);
+    geometry->update();
 
-  return geometry;
+    return geometry;
 }
 
 /////////////////////////////////////////////////////////////////////////
 
-Text2DGeometry::Text2DGeometry( const std::string& text,
-                                const Font::Ptr& font )
- : Geometry(), text( text ), font( font ) { }
+Text2DGeometry::Text2DGeometry(const std::string& text,
+                               const Font::Ptr& font)
+    : Geometry(), text(text), font(font) {}
 
 #ifdef TODO_THREE_DYNAMIC_GEOMETRY
-void Text2DGeometry::update( const std::string& text ) {
+void Text2DGeometry::update(const std::string& text)
+{
 
-  if ( this->text == text )
-    return;
+    if (this->text == text)
+        return;
 
-  this->text = text;
+    this->text = text;
 
-  update();
-
+    update();
 }
 #endif
 
-void Text2DGeometry::update() {
+void Text2DGeometry::update()
+{
 
-  if ( !font ) {
-    console().warn( "Text2DGeometry: Invalid font" );
-    return;
-  }
+    if (!font)
+    {
+        console().warn("Text2DGeometry: Invalid font");
+        return;
+    }
 
-  font->generate( text,
-                  vertices,
-                  faces,
-                  faceVertexUvs[ 0 ] );
+    font->generate(text,
+                   vertices,
+                   faces,
+                   faceVertexUvs[0]);
 
-  computeCentroids();
+    computeCentroids();
 
-  verticesNeedUpdate = true;
-  uvsNeedUpdate      = true;
-
+    verticesNeedUpdate = true;
+    uvsNeedUpdate = true;
 }
 
 } // namespace three

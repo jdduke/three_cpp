@@ -50,7 +50,7 @@ class Uniform;
 
 class GLRenderer;
 
-template < typename Key, typename Value >
+template <typename Key, typename Value>
 class Properties;
 
 } // namespace three

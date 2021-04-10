@@ -71,15 +71,16 @@ extern "C" {
  * @note The calculated values in this structure are calculated by SDL_OpenAudio()
  *
  */
-typedef struct SDL_AudioSpec {
-	int freq;		/**< DSP frequency -- samples per second */
-	Uint16 format;		/**< Audio data format */
-	Uint8  channels;	/**< Number of channels: 1 mono, 2 stereo */
-	Uint8  silence;		/**< Audio buffer silence value (calculated) */
-	Uint16 samples;		/**< Audio buffer size in samples (power of 2) */
-	Uint16 padding;		/**< Necessary for some compile environments */
-	Uint32 size;		/**< Audio buffer size in bytes (calculated) */
-	/**
+typedef struct SDL_AudioSpec
+{
+    int freq; /**< DSP frequency -- samples per second */
+    Uint16 format; /**< Audio data format */
+    Uint8 channels; /**< Number of channels: 1 mono, 2 stereo */
+    Uint8 silence; /**< Audio buffer silence value (calculated) */
+    Uint16 samples; /**< Audio buffer size in samples (power of 2) */
+    Uint16 padding; /**< Necessary for some compile environments */
+    Uint32 size; /**< Audio buffer size in bytes (calculated) */
+    /**
 	 *  This function is called when the audio device needs more data.
 	 *
 	 *  @param[out] stream	A pointer to the audio data buffer
@@ -88,8 +89,8 @@ typedef struct SDL_AudioSpec {
 	 *  Once the callback returns, the buffer will no longer be valid.
 	 *  Stereo samples are stored in a LRLRLR ordering.
 	 */
-	void (SDLCALL *callback)(void *userdata, Uint8 *stream, int len);
-	void  *userdata;
+    void(SDLCALL* callback)(void* userdata, Uint8* stream, int len);
+    void* userdata;
 } SDL_AudioSpec;
 
 /**
@@ -97,25 +98,25 @@ typedef struct SDL_AudioSpec {
  *  defaults to LSB byte order
  */
 /*@{*/
-#define AUDIO_U8	0x0008	/**< Unsigned 8-bit samples */
-#define AUDIO_S8	0x8008	/**< Signed 8-bit samples */
-#define AUDIO_U16LSB	0x0010	/**< Unsigned 16-bit samples */
-#define AUDIO_S16LSB	0x8010	/**< Signed 16-bit samples */
-#define AUDIO_U16MSB	0x1010	/**< As above, but big-endian byte order */
-#define AUDIO_S16MSB	0x9010	/**< As above, but big-endian byte order */
-#define AUDIO_U16	AUDIO_U16LSB
-#define AUDIO_S16	AUDIO_S16LSB
+#define AUDIO_U8 0x0008 /**< Unsigned 8-bit samples */
+#define AUDIO_S8 0x8008 /**< Signed 8-bit samples */
+#define AUDIO_U16LSB 0x0010 /**< Unsigned 16-bit samples */
+#define AUDIO_S16LSB 0x8010 /**< Signed 16-bit samples */
+#define AUDIO_U16MSB 0x1010 /**< As above, but big-endian byte order */
+#define AUDIO_S16MSB 0x9010 /**< As above, but big-endian byte order */
+#define AUDIO_U16 AUDIO_U16LSB
+#define AUDIO_S16 AUDIO_S16LSB
 
 /**
  *  @name Native audio byte ordering
  */
 /*@{*/
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define AUDIO_U16SYS	AUDIO_U16LSB
-#define AUDIO_S16SYS	AUDIO_S16LSB
+#    define AUDIO_U16SYS AUDIO_U16LSB
+#    define AUDIO_S16SYS AUDIO_S16LSB
 #else
-#define AUDIO_U16SYS	AUDIO_U16MSB
-#define AUDIO_S16SYS	AUDIO_S16MSB
+#    define AUDIO_U16SYS AUDIO_U16MSB
+#    define AUDIO_S16SYS AUDIO_S16MSB
 #endif
 /*@}*/
 
@@ -123,18 +124,19 @@ typedef struct SDL_AudioSpec {
 
 
 /** A structure to hold a set of audio conversion filters and buffers */
-typedef struct SDL_AudioCVT {
-	int needed;			/**< Set to 1 if conversion possible */
-	Uint16 src_format;		/**< Source audio format */
-	Uint16 dst_format;		/**< Target audio format */
-	double rate_incr;		/**< Rate conversion increment */
-	Uint8 *buf;			/**< Buffer to hold entire audio data */
-	int    len;			/**< Length of original audio buffer */
-	int    len_cvt;			/**< Length of converted audio buffer */
-	int    len_mult;		/**< buffer must be len*len_mult big */
-	double len_ratio; 	/**< Given len, final size is len*len_ratio */
-	void (SDLCALL *filters[10])(struct SDL_AudioCVT *cvt, Uint16 format);
-	int filter_index;		/**< Current audio conversion function */
+typedef struct SDL_AudioCVT
+{
+    int needed; /**< Set to 1 if conversion possible */
+    Uint16 src_format; /**< Source audio format */
+    Uint16 dst_format; /**< Target audio format */
+    double rate_incr; /**< Rate conversion increment */
+    Uint8* buf; /**< Buffer to hold entire audio data */
+    int len; /**< Length of original audio buffer */
+    int len_cvt; /**< Length of converted audio buffer */
+    int len_mult; /**< buffer must be len*len_mult big */
+    double len_ratio; /**< Given len, final size is len*len_ratio */
+    void(SDLCALL* filters[10])(struct SDL_AudioCVT* cvt, Uint16 format);
+    int filter_index; /**< Current audio conversion function */
 } SDL_AudioCVT;
 
 
@@ -147,7 +149,7 @@ typedef struct SDL_AudioCVT {
  * You should normally use SDL_Init() or SDL_InitSubSystem().
  */
 /*@{*/
-extern DECLSPEC int SDLCALL SDL_AudioInit(const char *driver_name);
+extern DECLSPEC int SDLCALL SDL_AudioInit(const char* driver_name);
 extern DECLSPEC void SDLCALL SDL_AudioQuit(void);
 /*@}*/
 
@@ -156,7 +158,7 @@ extern DECLSPEC void SDLCALL SDL_AudioQuit(void);
  * current audio driver, and returns a pointer to it if the audio driver has
  * been initialized.  It returns NULL if no driver has been initialized.
  */
-extern DECLSPEC char * SDLCALL SDL_AudioDriverName(char *namebuf, int maxlen);
+extern DECLSPEC char* SDLCALL SDL_AudioDriverName(char* namebuf, int maxlen);
 
 /**
  * This function opens the audio device with the desired parameters, and
@@ -175,12 +177,12 @@ extern DECLSPEC char * SDLCALL SDL_AudioDriverName(char *namebuf, int maxlen);
  *
  * @sa SDL_AudioSpec
  */
-extern DECLSPEC int SDLCALL SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);
+extern DECLSPEC int SDLCALL SDL_OpenAudio(SDL_AudioSpec* desired, SDL_AudioSpec* obtained);
 
 typedef enum {
-	SDL_AUDIO_STOPPED = 0,
-	SDL_AUDIO_PLAYING,
-	SDL_AUDIO_PAUSED
+    SDL_AUDIO_STOPPED = 0,
+    SDL_AUDIO_PLAYING,
+    SDL_AUDIO_PAUSED
 } SDL_audiostatus;
 
 /** Get the current audio state */
@@ -212,16 +214,16 @@ extern DECLSPEC void SDLCALL SDL_PauseAudio(int pause_on);
  * wave file cannot be opened, uses an unknown data format, or is 
  * corrupt.  Currently raw and MS-ADPCM WAVE files are supported.
  */
-extern DECLSPEC SDL_AudioSpec * SDLCALL SDL_LoadWAV_RW(SDL_RWops *src, int freesrc, SDL_AudioSpec *spec, Uint8 **audio_buf, Uint32 *audio_len);
+extern DECLSPEC SDL_AudioSpec* SDLCALL SDL_LoadWAV_RW(SDL_RWops* src, int freesrc, SDL_AudioSpec* spec, Uint8** audio_buf, Uint32* audio_len);
 
 /** Compatibility convenience function -- loads a WAV from a file */
 #define SDL_LoadWAV(file, spec, audio_buf, audio_len) \
-	SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"),1, spec,audio_buf,audio_len)
+    SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1, spec, audio_buf, audio_len)
 
 /**
  * This function frees data previously allocated with SDL_LoadWAV_RW()
  */
-extern DECLSPEC void SDLCALL SDL_FreeWAV(Uint8 *audio_buf);
+extern DECLSPEC void SDLCALL SDL_FreeWAV(Uint8* audio_buf);
 
 /**
  * This function takes a source format and rate and a destination format
@@ -231,9 +233,9 @@ extern DECLSPEC void SDLCALL SDL_FreeWAV(Uint8 *audio_buf);
  *
  * @return This function returns 0, or -1 if there was an error.
  */
-extern DECLSPEC int SDLCALL SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
-		Uint16 src_format, Uint8 src_channels, int src_rate,
-		Uint16 dst_format, Uint8 dst_channels, int dst_rate);
+extern DECLSPEC int SDLCALL SDL_BuildAudioCVT(SDL_AudioCVT* cvt,
+                                              Uint16 src_format, Uint8 src_channels, int src_rate,
+                                              Uint16 dst_format, Uint8 dst_channels, int dst_rate);
 
 /**
  * Once you have initialized the 'cvt' structure using SDL_BuildAudioCVT(),
@@ -244,7 +246,7 @@ extern DECLSPEC int SDLCALL SDL_BuildAudioCVT(SDL_AudioCVT *cvt,
  * cvt->buf should be allocated after the cvt structure is initialized by
  * SDL_BuildAudioCVT(), and should be cvt->len*cvt->len_mult bytes long.
  */
-extern DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT *cvt);
+extern DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT* cvt);
 
 
 #define SDL_MIX_MAXVOLUME 128
@@ -255,7 +257,7 @@ extern DECLSPEC int SDLCALL SDL_ConvertAudio(SDL_AudioCVT *cvt);
  * for full audio volume.  Note this does not change hardware volume.
  * This is provided for convenience -- you can mix your own audio data.
  */
-extern DECLSPEC void SDLCALL SDL_MixAudio(Uint8 *dst, const Uint8 *src, Uint32 len, int volume);
+extern DECLSPEC void SDLCALL SDL_MixAudio(Uint8* dst, const Uint8* src, Uint32 len, int volume);
 
 /**
  * @name Audio Locks

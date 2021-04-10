@@ -5,12 +5,12 @@
 
 namespace three {
 
-class EventTarget {
+class EventTarget
+{
 public:
+    // TODO: Implement
 
-  // TODO: Implement
-
-  /*
+    /*
     var listeners = {};
 
     template < typename T >
@@ -52,7 +52,6 @@ public:
 
     }
   */
-
 };
 
 } // namespace three

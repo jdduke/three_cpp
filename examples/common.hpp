@@ -16,30 +16,35 @@
 
 namespace three {
 
-struct ExampleSession {
+struct ExampleSession
+{
 
-  ExampleSession(  three::RendererParameters parameters = three::RendererParameters() ) {
-    if ( !three::sdl::init( parameters ) || !three::glew::init( parameters ) ) {
-      return;
+    ExampleSession(three::RendererParameters parameters = three::RendererParameters())
+    {
+        if (!three::sdl::init(parameters) || !three::glew::init(parameters))
+        {
+            return;
+        }
+        renderer = three::GLRenderer::create(parameters);
     }
-    renderer = three::GLRenderer::create( parameters );
-  }
 
-  ~ExampleSession() {
-    three::sdl::quit();
-  }
+    ~ExampleSession()
+    {
+        three::sdl::quit();
+    }
 
-  template < typename Example >
-  void run( Example example ) {
-    if ( renderer )
-      example( renderer );
-  }
+    template <typename Example>
+    void run(Example example)
+    {
+        if (renderer)
+            example(renderer);
+    }
 
 private:
-  ExampleSession(ExampleSession&);
-  ExampleSession& operator=(ExampleSession&);
+    ExampleSession(ExampleSession&);
+    ExampleSession& operator=(ExampleSession&);
 
-  three::GLRenderer::Ptr renderer;
+    three::GLRenderer::Ptr renderer;
 };
 
 } // namespace three

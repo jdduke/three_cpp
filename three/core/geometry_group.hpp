@@ -11,46 +11,39 @@
 
 namespace three {
 
-class GeometryGroup : public GeometryBuffer {
+class GeometryGroup : public GeometryBuffer
+{
 public:
+    typedef std::shared_ptr<GeometryGroup> Ptr;
 
-  typedef std::shared_ptr<GeometryGroup> Ptr;
+    static Ptr create(int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0)
+    {
+        return three::make_shared<GeometryGroup>(materialIndex, numMorphTargets, numMorphNormals);
+    }
 
-  static Ptr create( int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0 ) {
-    return three::make_shared<GeometryGroup>( materialIndex, numMorphTargets, numMorphNormals );
-  }
+    typedef GeometryBuffer::GLBuffer GLBuffer;
 
-  typedef GeometryBuffer::GLBuffer GLBuffer;
+    int id;
 
-  int id;
+    std::vector<std::vector<float>> __morphNormalsArrays;
+    std::vector<std::vector<float>> __morphTargetsArrays;
 
-  std::vector<std::vector<float>>   __morphNormalsArrays;
-  std::vector<std::vector<float>>   __morphTargetsArrays;
+    std::vector<int> faces3;
+    std::vector<int> faces4;
 
-  std::vector<int>  faces3;
-  std::vector<int>  faces4;
+    std::vector<int> offsets;
 
-  std::vector<int>  offsets;
+    GLBuffer vertexColorBuffer;
+    GLBuffer vertexIndexBuffer;
+    GLBuffer vertexNormalBuffer;
+    GLBuffer vertexPositionBuffer;
+    GLBuffer vertexUvBuffer;
 
-  GLBuffer vertexColorBuffer;
-  GLBuffer vertexIndexBuffer;
-  GLBuffer vertexNormalBuffer;
-  GLBuffer vertexPositionBuffer;
-  GLBuffer vertexUvBuffer;
-
-  int vertices;
+    int vertices;
 
 protected:
-
-  explicit GeometryGroup( int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0 )
-    : GeometryBuffer( numMorphTargets, numMorphNormals, materialIndex ),
-      id( -1 ),
-      vertexColorBuffer( 0 ),
-      vertexIndexBuffer( 0 ),
-      vertexNormalBuffer( 0 ),
-      vertexPositionBuffer( 0 ),
-      vertexUvBuffer( 0 ),
-      vertices( 0 ) { }
+    explicit GeometryGroup(int materialIndex = -1, int numMorphTargets = 0, int numMorphNormals = 0)
+        : GeometryBuffer(numMorphTargets, numMorphNormals, materialIndex), id(-1), vertexColorBuffer(0), vertexIndexBuffer(0), vertexNormalBuffer(0), vertexPositionBuffer(0), vertexUvBuffer(0), vertices(0) {}
 };
 
 } // namespace three
